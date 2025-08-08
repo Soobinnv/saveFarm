@@ -1,0 +1,142 @@
+.img-avatar {
+	width: 130px;
+	height: 130px;
+}
+
+a {
+    color: #039a63 !important; /* 메인 색상을 링크 색상으로 사용 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+a:hover {
+    text-decoration: underline; /* 호버 시 밑줄 표시 */
+}
+
+.page-title h1 {
+    color: #343a40; /* 어두운 글자색 */
+    font-weight: 700;
+}
+
+.page-title-underline-accent {
+    width: 60px;
+    height: 4px;
+    background-color: #039a63;
+    margin-top: 10px;
+    margin-bottom: 30px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.formControl {
+    display: block;
+    width: 100%;
+    padding: .75rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.formControl:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #039a63; /* 메인 색상으로 포커스 테두리 변경 */
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(3, 154, 99, .25);
+}
+
+/* 읽기 전용 입력창 */
+.formControl[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+/* 도움말 텍스트 */
+.formControl-plaintext {
+    display: block;
+    width: 100%;
+    padding-top: .5rem;
+    font-size: .875rem;
+    color: #6c757d;
+}
+
+/* 체크박스 스타일링 */
+.form-check-input:checked {
+    background-color: #039a63;
+    border-color: #039a63;
+}
+
+.form-check-label {
+    color: #495057;
+}
+
+/* 이미지 업로드 부분 */
+.img-avatar {
+    object-fit: cover;
+    border: 2px solid #ced4da;
+}
+
+.btn-accent,
+.btn-default {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.btn-accent {
+    color: #fff;
+    background-color: #039a63; /* 메인 색상 */
+    border-color: #039a63;
+}
+
+.btn-accent:hover {
+    background-color: #027a4d; /* 약간 어두운 메인 색상 */
+    border-color: #027a4d;
+}
+
+.btn-default {
+    color: #6c757d;
+    background-color: #e9ecef;
+    border-color: #e9ecef;
+}
+
+.btn-default:hover {
+    color: #495057;
+    background-color: #dae0e5;
+    border-color: #dae0e5;
+}
+
+.btn-lg {
+    padding: .75rem 2rem;
+    font-size: 1.25rem;
+}
+
+.m-5 {
+    margin: 3rem !important;
+}
+
+.wrap-loginId {
+    margin-bottom: 1rem;
+}
+
+.border-link-right {
+    border-right: 1px solid #ced4da;
+    padding-right: 10px;
+}

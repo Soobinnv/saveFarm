@@ -1,0 +1,665 @@
+﻿<%@ page contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core"%>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring</title>
+<jsp:include page="/WEB-INF/views/layout/headerResources.jsp" />
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
+	type="text/css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/dist/css/productStyle1.css"
+	type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/dist/css/productStyle2.css"
+	type="text/css">
+</head>
+<body>
+
+	<header>
+		<jsp:include page="/WEB-INF/views/layout/header.jsp" />
+	</header>
+
+	<!-- ================ start banner area ================= -->
+	<section class="blog-banner-area" id="category">
+		<div class="container h-100">
+			<div class="blog-banner">
+				<div class="text-center">
+					<h1>Shop Category</h1>
+					<nav aria-label="breadcrumb" class="banner-breadcrumb">
+						<ol class="breadcrumb">
+							<li class="breadcrumb-item"><a href="#">Home</a></li>
+							<li class="breadcrumb-item active" aria-current="page">Shop
+								Category</li>
+						</ol>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- ================ end banner area ================= -->
+
+
+	<div class="container-xxl py-5">
+		<div class="container">
+			<!-- Start Filter Bar -->
+			<div class="search-bar border rounded-2 border-dark-subtle mb-4">
+				<form id="search-form" class="text-center d-flex align-items-center"
+					action="">
+					<input type="text" class="form-control border-0 bg-transparent"
+						placeholder="Search Here" />
+					<iconify-icon icon="tabler:search" class="fs-4 me-3"></iconify-icon>
+				</form>
+			</div>
+			<!-- End Filter Bar -->
+			<!-- Start Best Seller -->
+			<section class="lattest-product-area pb-40 category-list m-3">
+				<div class="row">
+					<div class="container">
+						<div class="section-intro pb-60px">
+							<p>Popular Item in the market</p>
+							<h2>
+								<span class="section-intro__style">Product</span>
+							</h2>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Accessories</p>
+								<h4 class="card-product__title">
+									<a href="#">Quartz Belt Watch</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product2.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Beauty</p>
+								<h4 class="card-product__title">
+									<a href="#">Women Freshwash</a>
+								</h4>
+								<span class="card-product__price text-primary me-1">$19.00</span>
+								<span class="card-product__price text-decoration-line-through">$29.00</span>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product3.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Decor</p>
+								<h4 class="card-product__title">
+									<a href="#">Room Flash Light</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product4.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Decor</p>
+								<h4 class="card-product__title">
+									<a href="#">Room Flash Light</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product5.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Accessories</p>
+								<h4 class="card-product__title">
+									<a href="#">Man Office Bag</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product6.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Kids Toy</p>
+								<h4 class="card-product__title">
+									<a href="#">Charging Car</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product7.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Accessories</p>
+								<h4 class="card-product__title">
+									<a href="#">Blutooth Speaker</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product8.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Kids Toy</p>
+								<h4 class="card-product__title">
+									<a href="#">Charging Car</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-lg-3">
+						<div class="card text-center card-product">
+							<div class="card-product__img">
+								<img class="card-img"
+									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+									alt="">
+								<ul class="card-product__imgOverlay">
+									<li><button>
+											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										</button></li>
+									<li><button>
+											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										</button></li>
+								</ul>
+							</div>
+							<div class="card-body">
+								<p>Accessories</p>
+								<h4 class="card-product__title">
+									<a href="#">Quartz Belt Watch</a>
+								</h4>
+								<p class="card-product__price">$150.00</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<!-- End Best Seller -->
+
+
+			<!-- ================ top product area start ================= -->
+			<section class="related-product-area">
+				<div class="container">
+					<div class="section-intro pb-60px">
+						<p>Popular Item in the market</p>
+						<h2>
+							Top <span class="section-intro__style">Product</span>
+						</h2>
+					</div>
+					<div class="row mt-30">
+						<div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
+							<div class="single-search-product-wrapper">
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-1.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-2.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
+							<div class="single-search-product-wrapper">
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-4.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-5.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-6.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
+							<div class="single-search-product-wrapper">
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-7.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-8.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-9.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="col-sm-6 col-xl-3 mb-4 mb-xl-0">
+							<div class="single-search-product-wrapper">
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-1.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-2.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+								<div class="single-search-product d-flex">
+									<a href="#"><img
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+										alt=""></a>
+									<div class="desc">
+										<a href="#" class="title">Gray Coffee Cup</a>
+										<div class="price">$170.00</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+	<!-- ================ top product area end ================= -->
+
+	<div class="container py-5">
+		<div class="row g-5 justify-content-start">
+			<div class="section-intro pb-60px">
+				<p>Popular Item in the market</p>
+				<h2>
+					Top <span class="section-intro__style">Product</span>
+				</h2>
+			</div>
+			<div
+				class="col-md-6 col-lg-6 col-xl-4 wow fadeIn "
+				data-wow-delay="0.1s">
+				<div class="events-item bgGreen rounded">
+					<div class="events-inner position-relative">
+						<div
+							class="events-img overflow-hidden">
+							<img
+								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								class="img-fluid w-100 " alt="Image">
+						</div>
+						<div class="px-4 py-2 bgGreen text-center events-rate">29
+							Nov ~ 31 Nov</div>
+						<div
+							class="d-flex justify-content-between px-4 py-2 bg-white dateBox">
+							<small class="text-black"><i
+								class="fas fa-calendar me-1 text-primary"></i> 10:00am - 12:00pm</small>
+							<small class="text-black"><i
+								class="fas fa-map-marker-alt me-1 text-primary"></i> New York</small>
+						</div>
+					</div>
+					<div
+						class="events-text p-4 border bg-white border-top-0 rounded-bottom">
+						<a href="#" class="h4">Music  drawing workshop</a>
+						<p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur
+							adipiscing elit. Donec sed purus consectetur,</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="col-md-6 col-lg-6 col-xl-4 wow fadeIn "
+				data-wow-delay="0.1s">
+				<div class="events-item bgGreen rounded">
+					<div class="events-inner position-relative">
+						<div
+							class="events-img overflow-hidden">
+							<img
+								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								class="img-fluid w-100 " alt="Image">
+						</div>
+						<div class="px-4 py-2 bgGreen text-center events-rate">29
+							Nov ~ 31 Nov</div>
+						<div
+							class="d-flex justify-content-between px-4 py-2 bg-white dateBox">
+							<small class="text-black"><i
+								class="fas fa-calendar me-1 text-primary"></i> 10:00am - 12:00pm</small>
+							<small class="text-black"><i
+								class="fas fa-map-marker-alt me-1 text-primary"></i> New York</small>
+						</div>
+					</div>
+					<div
+						class="events-text p-4 border bg-white border-top-0 rounded-bottom">
+						<a href="#" class="h4">Music  drawing workshop</a>
+						<p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur
+							adipiscing elit. Donec sed purus consectetur,</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="col-md-6 col-lg-6 col-xl-4 wow fadeIn "
+				data-wow-delay="0.1s">
+				<div class="events-item bgGreen rounded">
+					<div class="events-inner position-relative">
+						<div
+							class="events-img overflow-hidden">
+							<img
+								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								class="img-fluid w-100 " alt="Image">
+						</div>
+						<div class="px-4 py-2 bgGreen text-center events-rate">29
+							Nov ~ 31 Nov</div>
+						<div
+							class="d-flex justify-content-between px-4 py-2 bg-white dateBox">
+							<small class="text-black"><i
+								class="fas fa-calendar me-1 text-primary"></i> 10:00am - 12:00pm</small>
+							<small class="text-black"><i
+								class="fas fa-map-marker-alt me-1 text-primary"></i> New York</small>
+						</div>
+					</div>
+					<div
+						class="events-text p-4 border bg-white border-top-0 rounded-bottom">
+						<a href="#" class="h4">Music  drawing workshop</a>
+						<p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur
+							adipiscing elit. Donec sed purus consectetur,</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="col-md-6 col-lg-6 col-xl-4 wow fadeIn "
+				data-wow-delay="0.1s">
+				<div class="events-item bgGreen rounded">
+					<div class="events-inner position-relative">
+						<div
+							class="events-img overflow-hidden">
+							<img
+								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								class="img-fluid w-100 " alt="Image">
+						</div>
+						<div class="px-4 py-2 bgGreen text-center events-rate">29
+							Nov ~ 31 Nov</div>
+						<div
+							class="d-flex justify-content-between px-4 py-2 bg-white dateBox">
+							<small class="text-black"><i
+								class="fas fa-calendar me-1 text-primary"></i> 10:00am - 12:00pm</small>
+							<small class="text-black"><i
+								class="fas fa-map-marker-alt me-1 text-primary"></i> New York</small>
+						</div>
+					</div>
+					<div
+						class="events-text p-4 border bg-white border-top-0 rounded-bottom">
+						<a href="#" class="h4">Music  drawing workshop</a>
+						<p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur
+							adipiscing elit. Donec sed purus consectetur,</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="col-md-6 col-lg-6 col-xl-4 wow fadeIn "
+				data-wow-delay="0.1s">
+				<div class="events-item bgGreen rounded">
+					<div class="events-inner position-relative">
+						<div
+							class="events-img overflow-hidden">
+							<img
+								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								class="img-fluid w-100 " alt="Image">
+						</div>
+						<div class="px-4 py-2 bgGreen text-center events-rate">29
+							Nov ~ 31 Nov</div>
+						<div
+							class="d-flex justify-content-between px-4 py-2 bg-white dateBox">
+							<small class="text-black"><i
+								class="fas fa-calendar me-1 text-primary"></i> 10:00am - 12:00pm</small>
+							<small class="text-black"><i
+								class="fas fa-map-marker-alt me-1 text-primary"></i> New York</small>
+						</div>
+					</div>
+					<div
+						class="events-text p-4 border bg-white border-top-0 rounded-bottom">
+						<a href="#" class="h4">Music  drawing workshop</a>
+						<p class="mb-0 mt-3">Lorem ipsum dolor sit amet, consectetur
+							adipiscing elit. Donec sed purus consectetur,</p>
+					</div>
+				</div>
+			</div>
+			
+
+		</div>
+	</div>
+
+
+
+
+
+	<!-- ================ Subscribe section start ================= -->
+	<section class="subscribe-position">
+		<div class="container">
+			<div class="subscribe text-center">
+				<h3 class="subscribe__title">Get Update From Anywhere</h3>
+				<p>Bearing Void gathering light light his eavening unto dont
+					afraid</p>
+				<div id="mc_embed_signup">
+					<form target="_blank"
+						action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93aamp;id=92a4423d01"
+						method="get" class="subscribe-form form-inline mt-5 pt-1">
+						<div class="form-group ml-sm-auto">
+							<input class="form-control mb-1" type="email" name="EMAIL"
+								placeholder="Enter your email" onfocus="this.placeholder = ''"
+								onblur="this.placeholder = 'Your Email Address '">
+							<div class="info"></div>
+						</div>
+						<button class="button button-subscribe mr-auto mb-1" type="submit">Subscribe
+							Now</button>
+						<div style="position: absolute; left: -5000px;">
+							<input name="b_36c4fd991d266f23781ded980_aefe40901a"
+								tabindex="-1" value="" type="text">
+						</div>
+
+					</form>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<!-- ================ Subscribe section end ================= -->
+
+<footer>
+	<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
+</footer>
+
+<jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
+
+</body>
+</html>

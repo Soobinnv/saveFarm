@@ -1,0 +1,51 @@
+.head, .top-filter-head {
+	background: #039a63 !important;
+}
+
+.common-filter .head {
+	background: #f1f6f7 !important;
+}
+
+.card-product__imgOverlay li button {
+	display:inline-block !important;
+	background-color: #039a63 !important;
+}
+
+.card-product:hover a {
+	color: #039a63 !important;
+}
+
+.button-subscribe {
+	background: #039a63 !important;
+}
+
+.button-subscribe:hover {
+	color: #039a63 !important;
+}
+
+.section-intro__style {
+	border-bottom: 1px solid #039a63 !important;
+}
+
+.blog-banner-area::after {
+	background-image: url("/dist/images/carousel-1.jpg");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+.single-search-product:hover a {
+	color: #039a63 !important;
+}
+
+.text-primary {
+	color: #039a63 !important;
+}
+
+.bgGreen {
+	background: #f1f6f7 !important;
+	color: #313131;
+}
+
+.dateBox {
+	border: 1px solid #f1f6f7 !important; 
+}

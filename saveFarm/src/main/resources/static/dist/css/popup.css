@@ -1,0 +1,77 @@
+﻿@charset "UTF-8";
+
+.hidden {
+  display: none !important;
+}
+
+.popupbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 25px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.popupbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  width: 90vw;
+  height: 90vh;
+  animation: zoomIn 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.popupbox-content .inline-content {
+  max-width: 100%;
+  max-height: 100%;
+  display: block !important;
+  border-radius: 4px;
+  opacity: 1;
+  overflow: auto;
+  background: #ffffff;
+}
+
+/* 닫기 버튼 */
+.popupbox-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  font-size: 2.5rem;
+  color: white;
+  cursor: pointer;
+  z-index: 1001;
+  opacity: 0.8;
+}
+
+.popupbox-close:hover{
+	opacity: 1;
+}
+
+@media (max-width: 768px) {
+	.popupbox-close { top: 0.2rem; right: 1.0rem; }
+}
+@media (max-width: 480px) {
+	.popupbox-close { top: 0.1rem; right: 0.5rem; }
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.8); }
+  to { transform: scale(1); }
+}

@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Meow+Script&family=PT+Serif+Caption:ital@0;1&family=Quicksand:wght@300..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Yesteryear&display=swap");
+
+/*----------------------------------
+# Full Screen
+----------------------------------*/
+.full-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    	
+    position: relative;
+	width: 100%;
+	min-height: 100vh;
+    background-color: rgba(244,247,250, 0.7);	
+}
+
+.full-main .card-container {
+	position: relative;
+    display: flex;
+    padding: 30px;
+}
+
+.full-main .card-wrapper {
+	position: relative;
+	z-index: 9999;
+    width: 100%;
+    max-width: 410px;
+    padding: 2.5rem !important;
+    background-color: #ffffff;
+    box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
+}
+
+.full-main .card-header {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.full-main .card-header a {
+	display: flex;
+    align-items: center;
+	color: #444444;
+}
+
+.full-main .card-header .brand-icon {
+	font-size: 35px;
+	padding-right: 7px;
+	/* color: #106eea; */
+    background: linear-gradient(90deg, #1dc4e9, #1de9b6);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;	
+}
+
+.full-main .card-header .brand-name {
+	font-family: "Quicksand", "Malgun Gothic", sans-serif;
+	color: #777777;
+	font-size: 21px;
+	font-weight: 300;
+}	
+.full-main .card-header a:hover {
+	color: #444444;
+}
+
+.full-main .login-form-header {
+	padding: 1rem 0;
+}
+.full-main .login-form-header h3 {
+	color: #444444;
+	text-align: center;
+    font-weight: 400;
+    font-size: 20px;
+    letter-spacing: 0.5px;
+}
+
+.full-main-bg .large-circle-1 {
+    position: absolute;
+    background-image: linear-gradient(-135deg, #1de9b6 0%, #1dc4e9 100%);
+    border-radius: 9999px;
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -100px;
+    animation: floating 7s infinite;
+}
+.full-main-bg .small-circle-1 {
+    position: absolute;
+    background-color: rgb(4, 169, 245);    
+    border-radius: 9999px;
+    width: 1.25rem;;
+    height: 1.25rem;;
+    top: 150px;
+    right: -150px;
+    animation: floating 9s infinite;
+}
+.full-main-bg .large-circle-2 {
+    position: absolute;
+    background-image: linear-gradient(-135deg, #899fd4 0%, #a389d4 100%);
+    border-radius: 9999px;
+    width: 300px;
+    height: 300px;
+    left: -100px;
+    bottom: -100px;
+    animation: floating 9s infinite;
+}
+.full-main-bg .small-circle-2 {
+    position: absolute;
+    background-image: linear-gradient(-135deg, #1de9b6 0%, #1dc4e9 100%);
+    border-radius: 9999px;
+    width: 1.25rem;
+    height: 1.25rem;
+    left: -150px;
+    bottom: 150px;
+    animation: floating 7s infinite;
+}
+
+@keyframes floating{
+  0%{
+    transform: rotate(0deg) translate(-10px) rotate(0deg);
+  }
+  100%{
+    transform: rotate(360deg) translate(-10px) rotate(-360deg);
+  }
+}
