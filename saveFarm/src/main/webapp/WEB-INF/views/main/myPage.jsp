@@ -54,20 +54,31 @@
       </div>
 
       <section class="tab-section">
-        <div class="tab-menu">
-          <div class="active">일반택배</div>
-          <div>정기배송 구독</div>
-          <div>취소/교환/반품</div>
-        </div>
-        <div class="order-steps">
-          <div><i class="fas fa-clipboard-list"></i>주문접수</div>
-          <div><i class="fas fa-credit-card"></i>결제완료</div>
-          <div><i class="fas fa-box"></i>상품준비중</div>
-          <div><i class="fas fa-truck"></i>배송중</div>
-          <div><i class="fas fa-gift"></i>배송완료</div>
-        </div>
-        <p style="text-align:center; color:#aaa; margin-top: 20px;">내역이 없습니다.</p>
-      </section>
+		  <div class="tab-menu">
+		    <button class="active" data-tab="tab1">일반택배</button>
+		    <button data-tab="tab2">정기배송 구독</button>
+		    <button data-tab="tab3">취소/교환/반품</button>
+		  </div>
+		
+		  <div class="tab-content" id="tab1">
+		    <div class="order-steps">
+		      <div><i class="fas fa-clipboard-list"></i>주문접수</div>
+		      <div><i class="fas fa-credit-card"></i>결제완료</div>
+		      <div><i class="fas fa-box"></i>상품준비중</div>
+		      <div><i class="fas fa-truck"></i>배송중</div>
+		      <div><i class="fas fa-gift"></i>배송완료</div>
+		    </div>
+		    <p style="text-align:center; color:#aaa; margin-top: 20px;">내역이 없습니다.</p>
+		  </div>
+		
+		  <div class="tab-content" id="tab2" style="display:none;">
+		    <p>정기배송 구독 내역이 없습니다.</p>
+		  </div>
+		
+		  <div class="tab-content" id="tab3" style="display:none;">
+		    <p>취소/교환/반품 내역이 없습니다.</p>
+		  </div>
+	</section>
 
       <section class="like-section">
         <h3>MY LIKE ITEMS</h3>
@@ -81,6 +92,28 @@
 </footer>
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+	  const buttons = document.querySelectorAll(".tab-menu button");
+	  const contents = document.querySelectorAll(".tab-content");
+
+	  buttons.forEach(btn => {
+	    btn.addEventListener("click", () => {
+	      // 모든 버튼 비활성화
+	      buttons.forEach(b => b.classList.remove("active"));
+	      // 클릭한 버튼 활성화
+	      btn.classList.add("active");
+
+	      // 모든 탭 내용 숨김
+	      contents.forEach(c => c.style.display = "none");
+	      // 해당 탭 내용만 표시
+	      document.getElementById(btn.dataset.tab).style.display = "block";
+	    });
+	  });
+	});
+</script>
+
 
 </body>
 </html>

@@ -15,6 +15,7 @@
       margin: auto;
       margin-top: 130px;
     }
+      
     .sidebar {
       width: 240px;
       padding-right: 30px;
@@ -27,11 +28,27 @@
     .sidebar ul {
       list-style: none;
     }
+    
     .sidebar li {
       margin-bottom: 10px;
-      font-size: 14px;
-      color: #555;
+      font-size: 15px;
+      color: #000;
+      font-weight: bold;
     }
+    
+	.sidebar li a {
+	  text-decoration: none;  /* 밑줄 제거 */
+	  color: #000;           /* 기본 검정색 */
+	  transition: color 0.3s;
+	  font-size: 14px;
+	  font-weight: normal;
+	}
+	
+	.sidebar li a:hover {
+	  color: #039a63;        /* hover 시 초록색 */
+	}
+	
+     
     .content {
       flex: 1;
       padding-left: 30px;
@@ -70,20 +87,46 @@
     .tab-section {
       margin-bottom: 30px;
     }
-    .tab-menu {
-      display: flex;
-      border-bottom: 2px solid #000;
-      margin-bottom: 20px;
-    }
-    .tab-menu div {
-      padding: 10px 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .tab-menu .active {
-      background: #000;
-      color: #fff;
-    }
+    
+	/* 탭 버튼 스타일 */
+
+	.tab-menu {
+	  display: flex;
+	  border-bottom: 2px solid #039a63;
+	  margin-bottom: 20px;
+	}
+
+	.tab-menu button {
+	  padding: 10px 20px;
+	  font-weight: bold;
+	  cursor: pointer;
+	  background-color: #f5f5f5;
+	  border: 1px solid #ddd;
+	  border-bottom: none;
+	  border-radius: 6px 6px 0 0;
+	  margin-right: 5px;
+	  transition: background 0.3s, color 0.3s;
+	}
+
+	.tab-menu button:hover {
+	  background-color: #039a63;
+	  color: #fff;
+	}
+
+	.tab-menu button.active {
+	  background-color: #039a63;
+	  color: #fff;
+	  border-color: #039a63;
+	}
+
+	/* 탭 내용 영역 */
+	.tab-content {
+	  padding: 20px;
+	  border: 1px solid #ddd;
+	  border-radius: 0 6px 6px 6px;
+	  background-color: #fff;
+	  min-height: 150px;
+	}
     .order-steps {
       display: flex;
       justify-content: space-around;
@@ -101,7 +144,7 @@
       color: #999;
     }
     .like-section {
-      border-top: 2px solid #000;
+      border-top: 2px solid #039a63;
       padding-top: 20px;
     }
     .like-section h3 {
