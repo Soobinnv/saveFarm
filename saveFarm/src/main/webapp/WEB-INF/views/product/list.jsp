@@ -6,28 +6,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spring</title>
+<title>SaveFarm</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp" />
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
-	type="text/css">
-<link rel="stylesheet"
-	href="${pageContext.request.contextPath}/dist/css/productStyle1.css"
-	type="text/css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/productStyle2.css"
 	type="text/css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
+	type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
 </head>
 <body>
 
 	<header>
 		<jsp:include page="/WEB-INF/views/layout/header.jsp" />
 	</header>
-
+<main>
 	<!-- ================ start banner area ================= -->
 	<section class="blog-banner-area" id="category">
-		<div class="container h-100">
+		<div class="container h-100 bannerImage">
 			<div class="blog-banner">
 				<div class="text-center">
 					<h1>Shop Category</h1>
@@ -64,18 +61,18 @@
 						<div class="section-intro pb-60px">
 							<p>Popular Item in the market</p>
 							<h2>
-								<span class="section-intro__style">Product</span>
+								<span class="section-intro__style">상품</span>
 							</h2>
 						</div>
 					</div>
 					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
+						<div class="card text-center card-product " onclick='location.href="${pageContext.request.contextPath}/product/info"'>
 							<div class="card-product__img">
 								<img class="card-img"
 									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 									alt="">
 								<ul class="card-product__imgOverlay">
-									<li><button>
+									<li><button onclick='location.href="${pageContext.request.contextPath}/product/info"'>
 											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
 										</button></li>
 									<li><button>
@@ -87,11 +84,10 @@
 								</ul>
 							</div>
 							<div class="card-body">
-								<p>Accessories</p>
-								<h4 class="card-product__title">
-									<a href="#">Quartz Belt Watch</a>
+								<h4 class="card-product__title mt-1">
+									<a href="#">개성만점 스낵당근 150g</a>
 								</h4>
-								<p class="card-product__price">$150.00</p>
+								<p class="card-product__price">100,000원</p>
 							</div>
 						</div>
 					</div>
@@ -114,12 +110,11 @@
 								</ul>
 							</div>
 							<div class="card-body">
-								<p>Beauty</p>
 								<h4 class="card-product__title">
-									<a href="#">Women Freshwash</a>
+									<a href="#">유기농 얼룩 달수고구마 500g</a>
 								</h4>
-								<span class="card-product__price text-primary me-1">$19.00</span>
-								<span class="card-product__price text-decoration-line-through">$29.00</span>
+								<span class="card-product__price text-primary me-1">100,000원</span>
+								<span class="card-product__price text-decoration-line-through">300,000원</span>
 							</div>
 						</div>
 					</div>
@@ -654,7 +649,7 @@
 		</div>
 	</section>
 	<!-- ================ Subscribe section end ================= -->
-
+</main>
 <footer>
 	<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 </footer>

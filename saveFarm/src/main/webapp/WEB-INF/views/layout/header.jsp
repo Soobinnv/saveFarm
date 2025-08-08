@@ -17,9 +17,11 @@
 		<a href="${pageContext.request.contextPath}/" class="fw-bold navbar-brand ms-4 ms-lg-0 logo">
 			Foody
 		</a>
-		<button type="button" class="navbar-toggler me-4"
+		<button type="button" class="navbar-toggler custom-toggler me-4"
 			data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-			<span class="navbar-toggler-icon"></span>
+			<span class="navbar-toggler-icon">
+				<iconify-icon icon="carbon:collapse-categories" class="fs-4"></iconify-icon>
+			</span>
 		</button>
 		<div class="collapse justify-content-center flex-grow-1 navbar-collapse" id="navbarCollapse">
 			<div class="navbar-nav p-4 p-lg-0 d-flex gap-5">

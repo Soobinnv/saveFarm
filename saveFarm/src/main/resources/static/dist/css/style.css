@@ -116,16 +116,72 @@
     color: var(--dark);
 }
 
+.navbar-toggler-icon {
+  background-image: none;
+  border: none;
+}
+
+.navbar-toggler {
+  border: none !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.collapsed {
+  border: none !important;
+}
+
 @media (max-width: 991.98px) {
-    .navbar .navbar-nav {
+    .navbar .navbar-collapse {
         margin-top: 10px;
         border-top: 1px solid rgba(0, 0, 0, .07);
-        background: #FFFFFF;
     }
 
     .navbar .navbar-nav .nav-link {
         padding: 10px 0;
     }
+    
+    .navbar-nav.ms-auto {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        gap: 15px;
+    }
+
+    .navbar .nav-item .dropdown-menu {
+        display: none; 
+        position: static; 
+        width: 100%;
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        
+        transform: none;
+        visibility: visible;
+        opacity: 1;
+        transition: none;
+    }
+
+	 .navbar .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
+    }
+	 .navbar .nav-item.dropdown:hover .dropdown-menu a:last-child {
+        margin-bottom: 0px;
+    }
+
+    .navbar .dropdown-menu .dropdown-item {
+        padding-left: 20px; 
+    }
+    
+    .dropdown-menu a {
+    	color: #fff;
+    }
+    .dropdown-menu a:hover {
+    	background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(3, 154, 99, 0.5));
+	}
+
 }
 
 @media (min-width: 992px) {
@@ -190,7 +246,7 @@
 }
 
 #header-carousel {
-    margin-top: 200px; /* header height에 맞게 조정 */
+    margin-top: 200px;
 }
 
 #header-carousel .carousel-item {

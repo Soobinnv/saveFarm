@@ -1,3 +1,7 @@
+main {
+	padding-top: 126px;
+}
+
 .head, .top-filter-head {
 	background: #039a63 !important;
 }
@@ -27,11 +31,6 @@
 	border-bottom: 1px solid #039a63 !important;
 }
 
-.blog-banner-area::after {
-	background-image: url("/dist/images/carousel-1.jpg");
-	background-repeat: no-repeat;
-	background-size: cover;
-}
 
 .single-search-product:hover a {
 	color: #039a63 !important;
@@ -52,4 +51,252 @@
 
 .searchIcon {
 	color: #313131;
+}
+
+.blackIcon {
+	color: #313131;
+}
+
+.blueIcon {
+	color: #0d6efd;
+}
+
+.product-container {
+    max-width: 960px;
+    margin: 2rem auto;
+}
+.original-price {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 1rem;
+}
+.sale-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fa622f;
+}
+.discount-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.quantity {
+	font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 전체 리스트 컨테이너 */
+.qna-list-wrapper {
+    border-top: 2px solid #333;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 리스트 아이템 (헤더, 본문) 공통 스타일 */
+.qna-list-header, .qna-item {
+    display: flex; /* Flexbox를 활성화하여 자식 요소들을 가로로 배치 */
+    align-items: center; /* 세로 중앙 정렬 */
+    padding: 15px 10px;
+    border-bottom: 1px solid #ededed;
+}
+
+.qna-list-header {
+    font-weight: bold;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ededed;
+}
+
+.qna-list .qna-item:last-child {
+    border-bottom: none;
+}
+
+/* 각 항목의 너비 비율 설정 */
+.qna-title  { flex: 5; text-align: left; } /* 제목은 5만큼의 너비 */
+.qna-date   { flex: 2; text-align: center; } /* 등록일은 2만큼 */
+.qna-author { flex: 2; text-align: center; } /* 작성자는 2만큼 */
+.qna-status { flex: 1; text-align: center; } /* 상태는 1만큼 */
+
+/* 로딩 또는 빈 메시지 스타일 */
+.qna-item-loading {
+    padding: 40px 10px;
+    text-align: center;
+    color: #888;
+}
+
+/* ul 태그 기본 스타일 제거 */
+.qna-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav {
+	border: none;
+}
+
+
+.nav-link {
+	color: #777;
+}
+
+
+.nav-link:hover {
+	color: #020715;
+}
+
+.nav .nav-link {
+	background: #f9f9f9;
+}
+.nav .nav-link.active {
+	background: #fff;
+	color: #039a63;
+	border-bottom: #f2f2f2;
+}
+
+.navbar .dropdown-toggle::after {
+    border: none !important;
+    content: "\f107";
+    font-family: "Font Awesome 5 Free" ;
+    font-weight: 900 !important;
+    vertical-align: middle !important;
+    margin-left: 8px !important;
+}
+
+.dropdown-item {
+	color: #323835 !important;
+}
+
+.dropdown-item:hover {
+	background: #039a63 !important;
+	color: #fff !important;
+}
+
+.btn-success {
+	background: #039a63;
+}
+
+.qna-list-wrapper {
+    border-top: 2px solid #333;
+}
+
+.qna-list-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    font-weight: bold;
+    background-color: #fcfcfc;
+    border-bottom: 1px solid #ddd;
+}
+
+/* [핵심] 아코디언 버튼에 Flexbox와 열 너비 적용 */
+.accordion-button {
+    display: flex !important; /* !important로 부트스트랩 스타일 덮어쓰기 */
+    width: 100%;
+    padding: 15px 10px;
+}
+
+/* 아코디언 기본 스타일 초기화 */
+.accordion-button, .accordion-button:not(.collapsed), .accordion-button:focus {
+    background-color: #fff;
+    box-shadow: none;
+    color: #212529;
+}
+
+/* 답변 없는 항목은 hover 효과 제거 */
+.accordion-button.disabled:hover {
+    background-color: #fff;
+}
+
+/* 아코디언 기본 화살표 아이콘 제거 */
+.accordion-button::after {
+    display: none;
+}
+
+/* 각 열의 너비 비율 설정 */
+.qna-status { flex: 1 !important; text-align: center; }
+.qna-title  { flex: 6 !important;   text-align: left; padding-left: 20px; }
+.qna-date   { flex: 2 !important;   text-align: center; }
+.qna-author { flex: 2 !important;   text-align: center; }
+
+.qna-status.answered {
+    color: #50c878;
+    font-weight: bold;
+}
+
+/* 답변 내용 스타일 */
+.accordion-body {
+    background-color: #f9f9f9;
+    border-top: 1px dashed #ddd;
+}
+
+.recommendation-section {
+	margin-top: 40px;
+}
+.recommendation-list {
+	display: flex;
+	overflow-x: auto; /* 모바일에서 좌우 스크롤 가능 */
+	gap: 16px; /* 상품 간 간격 */
+	padding-bottom: 10px;
+}
+/* 스크롤바 디자인 (선택 사항) */
+.recommendation-list::-webkit-scrollbar {
+  height: 5px;
+}
+.recommendation-list::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 10px;
+}
+.recommendation-item {
+	flex: 0 0 160px; /* 아이템 너비 고정 */
+	border: 1px solid #eee;
+	border-radius: 8px;
+	overflow: hidden;
+	text-align: left;
+}
+.recommendation-item a {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+}
+.recommendation-item img {
+	width: 100%;
+	height: 160px;
+	object-fit: cover; /* 이미지가 잘리지 않고 꽉 차게 */
+	display: block;
+}
+.item-info {
+	padding: 12px;
+}
+.item-title {
+	font-size: 14px;
+	font-weight: bold;
+	margin: 0 0 8px 0;
+	/* 두 줄 이상일 때 말줄임표 처리 (선택 사항) */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	height: 40px; /* 폰트 크기, 줄 간격에 따라 조절 필요 */
+}
+.item-price {
+	font-size: 14px;
+	font-weight: bold;
+}
+.discount-rate {
+	color: #fa622f;
+	margin-right: 4px;
+}
+.original-price {
+	font-size: 12px;
+	color: #aaa;
+	text-decoration: line-through;
+	margin-left: 4px;
+}
+
+
+@media (max-width: 991.98px) {
+	main {
+		margin-top: 100px; 
+		padding-top: 0px;
+	}
 }
