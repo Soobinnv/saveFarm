@@ -53,7 +53,7 @@
 					action="">
 					<input type="text" class="form-control border-0 bg-transparent"
 						placeholder="Search Here" />
-					<iconify-icon icon="tabler:search" class="fs-4 me-3"></iconify-icon>
+					<iconify-icon icon="tabler:search" class="searchIcon fs-4 ms-3 me-3"></iconify-icon>
 				</form>
 			</div>
 			<!-- End Filter Bar -->
@@ -477,7 +477,7 @@
 						<div
 							class="events-img overflow-hidden">
 							<img
-								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 								class="img-fluid w-100 " alt="Image">
 						</div>
 						<div class="px-4 py-2 bgGreen text-center events-rate">29
@@ -506,7 +506,7 @@
 						<div
 							class="events-img overflow-hidden">
 							<img
-								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 								class="img-fluid w-100 " alt="Image">
 						</div>
 						<div class="px-4 py-2 bgGreen text-center events-rate">29
@@ -535,7 +535,7 @@
 						<div
 							class="events-img overflow-hidden">
 							<img
-								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 								class="img-fluid w-100 " alt="Image">
 						</div>
 						<div class="px-4 py-2 bgGreen text-center events-rate">29
@@ -564,7 +564,7 @@
 						<div
 							class="events-img overflow-hidden">
 							<img
-								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 								class="img-fluid w-100 " alt="Image">
 						</div>
 						<div class="px-4 py-2 bgGreen text-center events-rate">29
@@ -593,7 +593,7 @@
 						<div
 							class="events-img overflow-hidden">
 							<img
-								src="${pageContext.request.contextPath}/dist/images/product/product-sm-3.png"
+								src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 								class="img-fluid w-100 " alt="Image">
 						</div>
 						<div class="px-4 py-2 bgGreen text-center events-rate">29
