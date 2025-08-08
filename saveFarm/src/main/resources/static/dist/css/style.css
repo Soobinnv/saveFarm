@@ -1,4 +1,6 @@
 /********** Template CSS **********/
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&display=swap');
 
 .back-to-top {
     position: fixed;
@@ -180,6 +182,20 @@
         height: 100%;
         object-fit: cover;
     }
+}
+
+#header-carousel {
+    margin-top: 200px; /* header height에 맞게 조정 */
+}
+
+#header-carousel .carousel-item {
+    height: 400px; 
+}
+
+#header-carousel .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .page-header {
@@ -475,4 +491,41 @@ h1.mb-1 {
 	color: #fff;
 }
 
+/* main 영역*/
+.rescue-section {
+    background-color: #fff5ee; /* 연한 복숭아빛 배경 */
+}
 
+/* 못난이 채소 이미지 */
+.rescue-img {
+    max-height: 180px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    object-fit: contain;
+}
+
+/* 카드 디자인 */
+.rescue-card {
+    border: 2px solid #333;
+    border-radius: 12px;
+    padding: 40px 20px;
+    font-size: 18px;
+    font-weight: 500;
+    background-color: #fff;
+    transition: transform 0.2s ease;
+}
+
+.rescue-card:hover {
+    transform: translateY(-5px);
+}
+
+/* 기존 버튼 스타일 확장 */
+.btnGreen {
+    background-color: #1abc9c;
+    color: white;
+}
+
+.btnGreen:hover {
+    background-color: #16a085;
+    color: white;
+}
