@@ -2,6 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Gowun+Dodum&display=swap');
 
+*{
+	font-family: Gowun Dodum, sans-serif;
+}
+
+
 .back-to-top {
     position: fixed;
     display: none;
