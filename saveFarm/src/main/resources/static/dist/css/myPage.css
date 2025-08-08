@@ -1,0 +1,114 @@
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #fff;
+      color: #222;
+      padding: 30px;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: auto;
+      margin-top: 130px;
+    }
+    .sidebar {
+      width: 240px;
+      padding-right: 30px;
+      border-right: 1px solid #ddd;
+    }
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar li {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #555;
+    }
+    .content {
+      flex: 1;
+      padding-left: 30px;
+    }
+    .welcome-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f7f7f7;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .welcome-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .welcome-left img {
+      width: 60px;
+    }
+    .welcome-right {
+      text-align: center;
+    }
+    .status-box {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #ddd;
+      margin-top: 20px;
+      padding-top: 20px;
+    }
+    .status-box div {
+      flex: 1;
+      text-align: center;
+    }
+    .tab-section {
+      margin-bottom: 30px;
+    }
+    .tab-menu {
+      display: flex;
+      border-bottom: 2px solid #000;
+      margin-bottom: 20px;
+    }
+    .tab-menu div {
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .tab-menu .active {
+      background: #000;
+      color: #fff;
+    }
+    .order-steps {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .order-steps div {
+      flex: 1;
+      font-size: 12px;
+      color: #777;
+    }
+    .order-steps i {
+      font-size: 24px;
+      margin-bottom: 6px;
+      display: block;
+      color: #999;
+    }
+    .like-section {
+      border-top: 2px solid #000;
+      padding-top: 20px;
+    }
+    .like-section h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .like-section p {
+      color: #999;
+      font-size: 13px;
+    }
