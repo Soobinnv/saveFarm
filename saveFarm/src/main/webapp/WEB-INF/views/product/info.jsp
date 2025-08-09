@@ -12,9 +12,6 @@
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
 	type="text/css">
 <link rel="stylesheet"
-	href="${pageContext.request.contextPath}/dist/css/productStyle1.css"
-	type="text/css">
-<link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/style.css"
 	type="text/css">
 <link rel="stylesheet"
@@ -109,7 +106,7 @@
 								<iconify-icon icon="ic:baseline-minus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 							&nbsp;&nbsp;
-							<p class="quantity my-0">3</p>
+							<p class="quantity my-0" id="quantity" data-stock="35" data-quantity="3">3</p>
 							&nbsp;&nbsp;
 							<button class="btn" type="button" id="btn-plus">
 								<iconify-icon icon="ic:baseline-plus" class="fs-4 blackIcon"></iconify-icon>
@@ -147,6 +144,7 @@
 				</div>
 			</nav>
 			<div class="tab-content pt-4" id="nav-tabContent">
+				
 				<div class="tab-pane fade show active" id="nav-detail"
 					role="tabpanel" aria-labelledby="nav-detail-tab">
 					<h4>상품 상세 정보</h4>
@@ -231,6 +229,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<div class="tab-pane fade" id="nav-qna" role="tabpanel"
 					aria-labelledby="nav-qna-tab">
 					
@@ -271,6 +270,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<div class="tab-pane fade" id="nav-refund" role="tabpanel"
 					aria-labelledby="nav-refund-tab">
 					<h4>반품 / 환불 안내</h4>
@@ -306,6 +306,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<div class="tab-pane fade show active" id="nav-review"
 					role="tabpanel" aria-labelledby="nav-review-tab">
 					<h4>상품 리뷰</h4>
@@ -400,5 +401,6 @@
 		<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 	</footer>
 	<jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
+	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
 </body>
 </html>
