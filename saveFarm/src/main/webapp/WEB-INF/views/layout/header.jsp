@@ -54,7 +54,7 @@
 						<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
 									icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
 						</a>
-						<a href="${pageContext.request.contextPath}/main/mypage" class="mx-3"> <iconify-icon
+						<a href="${pageContext.request.contextPath}/mypage" class="mx-3"> <iconify-icon
 									icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
 						</a>
 					</c:otherwise>
@@ -66,10 +66,12 @@
 
 				<li class=""><a href="index.html" class="mx-3"
 					data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-					aria-controls="offcanvasCart"> <iconify-icon icon="mdi:cart"
-							class="fs-4 position-relative"></iconify-icon> <span
-						class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
-							03 </span>
+					aria-controls="offcanvasCart"> 
+					<a href="${pageContext.request.contextPath}/member/cart">
+						<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+						<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
+							03 </span> 
+					</a> 
 				</a></li>
 			</ul>
 
