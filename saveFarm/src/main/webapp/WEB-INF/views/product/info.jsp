@@ -359,7 +359,7 @@
 										class="rounded me-2" alt="리뷰 이미지 1"
 										style="width: 100px; height: 100px; object-fit: cover;">
 									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+										src="${pageContext.request.contextPath}/dist/images/product/product2.png"
 										class="rounded me-2" alt="리뷰 이미지 2"
 										style="width: 100px; height: 100px; object-fit: cover;">
 									<img
