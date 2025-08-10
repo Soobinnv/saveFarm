@@ -67,7 +67,7 @@
 				<li class=""><a href="index.html" class="mx-3"
 					data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
 					aria-controls="offcanvasCart"> 
-					<a href="${pageContext.request.contextPath}/member/cart">
+					<a href="${pageContext.request.contextPath}/myShopping/cart">
 						<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
 						<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
 							03 </span> 
