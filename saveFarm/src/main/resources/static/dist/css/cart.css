@@ -1,21 +1,42 @@
-
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f8f8f8;
+        /* Reset & 기본 스타일 */
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f8f8;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+
+        /* 장바구니 컨테이너 */
         .container {
             width: 80%;
             margin: 40px auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
+            margin-top: 130px;
+        }
+        .content {
+            flex: 1;
+            padding-left: 30px;
         }
         h1 {
             font-size: 28px;
             margin-bottom: 20px;
         }
+
+        /* 테이블 */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -32,23 +53,24 @@
             width: 60px;
             height: auto;
         }
+        tbody tr {
+        	border-top: 1px solid #eee;
+        }
+
+        /* 수량 버튼 */
         .qty-btn {
             padding: 5px 10px;
             border: 1px solid #ddd;
             background: #fff;
             cursor: pointer;
         }
-        .shipping {
-            margin-top: 30px;
-        }
-        .shipping label {
-            display: block;
-            margin: 10px 0;
-            cursor: pointer;
-        }
+
+        /* 합계 영역 */
         .summary {
             margin-top: 30px;
             text-align: right;
+            margin-right: 50px;
+            border-top: 1px solid #eee;
         }
         .summary div {
             margin: 5px 0;

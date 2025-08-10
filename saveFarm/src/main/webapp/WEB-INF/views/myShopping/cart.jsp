@@ -18,76 +18,88 @@
 	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
 </header>
 
+<main class="content">
 <div class="container">
-    <h1>내 장바구니</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>상품</th>
-                <th>가격</th>
-                <th>수량</th>
-                <th>합계</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <img src="${pageContext.request.contextPath}/dist/images/product/product1.png" alt="당근">
-                    <div>
-                        <strong>당근</strong><br>
-                        상품번호: #214323543545352<br>
-                        개수: 1개 (개당 500g)
-                    </div>
-                </td>
-                <td>12,000원</td>
-                <td>
-                    <button class="qty-btn">-</button> 1 <button class="qty-btn">+</button>
-                </td>
-                <td>12,000원</td>
-            </tr>
-            <tr>
-                <td>
-                    <img src="${pageContext.request.contextPath}/dist/images/product/product2.png" alt="고구마">
-                    <div>
-                        <strong>고구마</strong><br>
-                        상품번호: #21432353246333<br>
-                        개수: 3개 (개당 500g)
-                    </div>
-                </td>
-                <td>8,000원</td>
-                <td>
-                    <button class="qty-btn">-</button> 3 <button class="qty-btn">+</button>
-                </td>
-                <td>24,000원</td>
-            </tr>
-        </tbody>
-    </table>
 
-    <div class="shipping">
-        <h3>배송 방법 선택:</h3>
-        <label>
-            <input type="radio" name="shipping" checked> 매장 픽업 (20분 이내) - 무료
-        </label>
-        <label>
-            <input type="radio" name="shipping"> 집으로 배송 (2~4일 이내) - 9.90 €
-            <br><small>주소: 서울특별시 강남구 테헤란로 123</small>
-        </label>
-    </div>
-
-    <div class="summary">
-        <div>소계: 1954.97 €</div>
-        <div>배송비: 무료</div>
-        <div><strong>총합계: 1954.97 €</strong></div>
-        <button class="checkout-btn">결제하기</button>
-    </div>
+	    <h1>내 장바구니</h1>
+	    <table>
+	        <thead>
+	        	<tr>
+	                <th><button class="checkout-btn">선택 삭제</button></th>
+	        	</tr>
+	            <tr>
+	            	<th><input type="checkbox" id="selectAll"></th>
+	                <th>상품</th>
+	                <th>가격</th>
+	                <th>수량</th>
+	                <th>합계</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	            <tr>
+	            	<td><input type="checkbox" class="itemCheckbox"></td>
+	                <td>
+	                    <img src="${pageContext.request.contextPath}/dist/images/product/product1.png" alt="당근">
+	                    <div>
+	                        <strong>당근</strong><br>
+	                        상품번호: #214323543545352<br>
+	                        개수: 1개 (개당 500g)
+	                    </div>
+	                </td>
+	                <td>12,000원</td>
+	                <td>
+	                    <button class="qty-btn">-</button> 1 <button class="qty-btn">+</button>
+	                </td>
+	                <td>12,000원</td>
+	            </tr>
+	            <tr>
+	            	<td><input type="checkbox" class="itemCheckbox"></td>
+	                <td>
+	                    <img src="${pageContext.request.contextPath}/dist/images/product/product2.png" alt="고구마">
+	                    <div>
+	                        <strong>고구마</strong><br>
+	                        상품번호: #21432353246333<br>
+	                        개수: 3개 (개당 500g)
+	                    </div>
+	                </td>
+	                <td>8,000원</td>
+	                <td>
+	                    <button class="qty-btn">-</button> 3 <button class="qty-btn">+</button>
+	                </td>
+	                <td>24,000원</td>
+	            </tr>
+	        </tbody>
+	    </table>
+	
+	    <div class="summary">
+	        <div><strong>총합계: 1954.97 €</strong></div>
+	        <button class="checkout-btn">선택상품 결제하기</button>
+	    </div>
+ 
 </div>
+</main>
 
 <footer>
 	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
 </footer>
-
+	
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
+ 
+
+<script type="text/javascript">
+document.getElementById("selectAll").addEventListener("change", function () {
+    const checkboxes = document.querySelectorAll(".itemCheckbox");
+    checkboxes.forEach(cb => cb.checked = this.checked);
+});
+
+document.querySelectorAll(".itemCheckbox").forEach(cb => {
+    cb.addEventListener("change", function () {
+        const allChecked = document.querySelectorAll(".itemCheckbox:checked").length === document.querySelectorAll(".itemCheckbox").length;
+        document.getElementById("selectAll").checked = allChecked;
+    });
+});
+</script>
 
 </body>
 </html>
