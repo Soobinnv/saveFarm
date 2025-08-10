@@ -22,6 +22,8 @@ public class Product {
 	private int unitPrice;
 	private int discountRate;
 	
+	private int discountedPrice;
+	
 	// 긴급 구출 상품 정보
 	private String endDate;
 	private long supplyNum;

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.ProductMapper">
+	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+	</select>
+
+	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, ENDDATE, FARMNUM
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		WHERE PRODUCTCLASSIFICATION = 200
+	</select>
+
+	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		WHERE p.PRODUCTNUM = #{productNum}
+	</select>
+
+	<select id="getRescuedProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, ENDDATE, FARMNUM
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200
+	</select>
+
+</mapper>

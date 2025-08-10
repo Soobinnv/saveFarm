@@ -1,6 +1,8 @@
 package com.sp.app.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.model.Product;
+import com.sp.app.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +24,37 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/product/")
 public class ProductController {
 
+	private final ProductService service;
+	
 	@GetMapping("list")
 	public String list(Model model) {
+		
+		try {
+			Map<String, Object> map = new HashMap<String, Object>();
+			
+			List<Product> list = service.getProductList(map);
+			
+			model.addAttribute("list", list);
+			
+		} catch (Exception e) {
+		
+		}
 		
 		return "product/list";
 	}
 	
-	@GetMapping("info")
-	// @GetMapping("{productNum}")
+	@GetMapping("{productNum}")
 	public String productInfo(
-			// @PathVariable("productNum") long productNum,
+			@PathVariable("productNum") long productNum,
 			HttpSession session, 
 			Model model
 		) throws Exception {
 		
 		try {
+			Product productInfo = service.getProductInfo(productNum);
+			
+			model.addAttribute("productInfo", productInfo);
+			
 			
 		} catch (Exception e) {
 			log.info("productDetail : ", e);

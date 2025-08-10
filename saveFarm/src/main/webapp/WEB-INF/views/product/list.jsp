@@ -65,248 +65,34 @@
 							</h2>
 						</div>
 					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product " onclick='location.href="${pageContext.request.contextPath}/product/info"'>
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button onclick='location.href="${pageContext.request.contextPath}/product/info"'>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<h4 class="card-product__title mt-1">
-									<a href="#">개성만점 스낵당근 150g</a>
-								</h4>
-								<p class="card-product__price">100,000원</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product2.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<h4 class="card-product__title">
-									<a href="#">유기농 얼룩 달수고구마 500g</a>
-								</h4>
-								<span class="card-product__price text-primary me-1">100,000원</span>
-								<span class="card-product__price text-decoration-line-through">300,000원</span>
+					<c:forEach var="dto" items="${list}">
+						<div class="col-md-6 col-lg-3">
+							<div class="card text-center card-product " onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"'>
+								<div class="card-product__img">
+									<img class="card-img"
+										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+										alt="">
+									<ul class="card-product__imgOverlay">
+										<li><button onclick='location.href="${pageContext.request.contextPath}/product/info"'>
+												<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
+											</button></li>
+										<li><button>
+												<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+											</button></li>
+										<li><button>
+												<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+											</button></li>
+									</ul>
+								</div>
+								<div class="card-body">
+									<h4 class="card-product__title mt-1">
+										<a href="#">${dto.productName}</a>
+									</h4>
+									<p class="card-product__price">${dto.unitPrice}원</p>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product3.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Decor</p>
-								<h4 class="card-product__title">
-									<a href="#">Room Flash Light</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product4.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Decor</p>
-								<h4 class="card-product__title">
-									<a href="#">Room Flash Light</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product5.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Accessories</p>
-								<h4 class="card-product__title">
-									<a href="#">Man Office Bag</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product6.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Kids Toy</p>
-								<h4 class="card-product__title">
-									<a href="#">Charging Car</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product7.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Accessories</p>
-								<h4 class="card-product__title">
-									<a href="#">Blutooth Speaker</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product8.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Kids Toy</p>
-								<h4 class="card-product__title">
-									<a href="#">Charging Car</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6 col-lg-3">
-						<div class="card text-center card-product">
-							<div class="card-product__img">
-								<img class="card-img"
-									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-									alt="">
-								<ul class="card-product__imgOverlay">
-									<li><button>
-											<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-										</button></li>
-									<li><button>
-											<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-										</button></li>
-								</ul>
-							</div>
-							<div class="card-body">
-								<p>Accessories</p>
-								<h4 class="card-product__title">
-									<a href="#">Quartz Belt Watch</a>
-								</h4>
-								<p class="card-product__price">$150.00</p>
-							</div>
-						</div>
-					</div>
+					</c:forEach>
 				</div>
 			</section>
 			<!-- End Best Seller -->

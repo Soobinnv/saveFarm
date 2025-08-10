@@ -75,11 +75,19 @@
 				</div>
 
 				<div class="col-md-6">
-					<h3>개성만점 스낵당근 150g</h3>
+					<h3>${productInfo.productName}</h3>
 
 					<div class="mt-3 mb-3">
-						<span class="badge bg-danger discount-badge">20%</span> <span
-							class="original-price">100,000원</span> <span class="sale-price">80,000원</span>
+						<c:choose>
+							<c:when test="${dto.discountRate != 0}">
+								<span class="badge bg-danger discount-badge">${productInfo.discountRate}%</span> 
+								<span class="original-price">${productInfo.unitPrice}원</span> 
+								<span class="sale-price">${productInfo.discountedPrice}원</span>
+							</c:when>
+							<c:otherwise>
+								<span class="final-price">${productInfo.unitPrice}원</span> 
+							</c:otherwise>
+						</c:choose>
 					</div>
 
 					<hr>
@@ -89,10 +97,7 @@
 							<i class="bi bi-truck"></i> 배송 정보
 						</h5>
 						<p class="mb-1">
-							<strong>배송비:</strong> 3,000원 (50,000원 이상 구매 시 무료)
-						</p>
-						<p class="mb-1">
-							<strong>배송사:</strong> CJ 대한통운
+							<strong>배송비:</strong> ${productInfo.deliveryFee}원 (50,000원 이상 구매 시 무료)
 						</p>
 						<p class="mb-1">
 							<strong>배송 예상:</strong> 1~2 영업일 이내 출고
@@ -100,20 +105,19 @@
 					</div>
 
 					<div class="mb-3">
-						<label for="quantity-input" class="form-label">수량</label>
+						<label for="quantity-input" class="form-label">수량</label> 
 						
 						<div class="d-flex align-items-center">
 							<button class="btn btn-minus" type="button">
 								<iconify-icon icon="ic:baseline-minus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 							&nbsp;&nbsp;
-							<p class="quantity my-0" data-stock="35" data-quantity="3" data-productNum="1">3</p>
+							<p class="quantity my-0" data-stock="${productInfo.stockQuantity}" data-quantity="3" data-productNum="${productInfo.productNum}">1</p>
 							&nbsp;&nbsp;
 							<button class="btn btn-plus" type="button">
 								<iconify-icon icon="ic:baseline-plus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 						</div>
-						
 					</div>
 
 					<hr>
@@ -152,11 +156,7 @@
 					<h4>상품 상세 정보</h4>
 					<br>
 					<p>
-						품목 요약 <br> 큰 당근을 깎거나 수확시기를 앞당겨 작게 만든 당근이 아니에요. 품종부터 아담한 스낵당근은
-						아삭한 식감과 은은한 단맛을 가지고 있어요. 한 손에 쏘옥 들어오는 크기로 간식처럼 즐기기 좋아요. 당근이 자라면서
-						상대적으로 햇빛에 많이 노출될 경우 윗부분이 초록빛을 띌 수 있어요. 드시는 데에는 문제가 없으니 안심하고 이용하셔도
-						좋아요. 크기가 다양하고 모양이 개성 있어요.<br> <br> 보관법 <br> 습기 없이
-						냉장보관 / 5일
+						${productInfo.productDesc}
 					</p>
 
 					<div class="recommendation-section">
@@ -404,5 +404,6 @@
 	</footer>
 	<jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
 	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productInfo.js"></script>
 </body>
 </html>
