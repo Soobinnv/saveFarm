@@ -101,17 +101,19 @@
 
 					<div class="mb-3">
 						<label for="quantity-input" class="form-label">수량</label>
-						<div class="input-group d-flex align-items-center">
-							<button class="btn" type="button" id="btn-minus">
+						
+						<div class="d-flex align-items-center">
+							<button class="btn btn-minus" type="button">
 								<iconify-icon icon="ic:baseline-minus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 							&nbsp;&nbsp;
-							<p class="quantity my-0" id="quantity" data-stock="35" data-quantity="3">3</p>
+							<p class="quantity my-0" data-stock="35" data-quantity="3" data-productNum="1">3</p>
 							&nbsp;&nbsp;
-							<button class="btn" type="button" id="btn-plus">
+							<button class="btn btn-plus" type="button">
 								<iconify-icon icon="ic:baseline-plus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 						</div>
+						
 					</div>
 
 					<hr>
@@ -307,7 +309,7 @@
 					</div>
 				</div>
 				
-				<div class="tab-pane fade show active" id="nav-review"
+				<div class="tab-pane fade" id="nav-review"
 					role="tabpanel" aria-labelledby="nav-review-tab">
 					<h4>상품 리뷰</h4>
 					<div class="review-list-wrapper mt-3">
