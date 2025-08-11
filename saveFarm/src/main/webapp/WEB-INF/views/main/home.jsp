@@ -123,7 +123,7 @@
         </div>
 
         <!-- 하단 버튼 -->
-        <a href="#" class="btn btnGreen rounded-pill px-4 py-2 mt-5">정기배송 더 알아보기</a>
+        <a href="${pageContext.request.contextPath}/package/main" class="btn btnGreen rounded-pill px-4 py-2 mt-5">정기배송 더 알아보기</a>
     </div>
 </div>
 	

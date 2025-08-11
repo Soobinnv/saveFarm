@@ -1,6 +1,7 @@
 package com.sp.app.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,5 +19,20 @@ public class packageController {
 		return "package/main";
 	}
 	
+	@GetMapping("homepackage")
+	public String homepackage(Model model) throws Exception{
+		
+		model.addAttribute("mode", "saladPackage");
+		
+		return "package/packageCart";
+	}
+	
+	
+	@GetMapping("saladpackage")
+	public String salpackage(Model model) throws Exception{
+			
+		model.addAttribute("mode", "saladPackage");
+		return "package/packageCart";
+	}
 	
 }

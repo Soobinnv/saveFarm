@@ -115,7 +115,7 @@ body{
 
                 <div class="card-body">
                     <p class="card-text">집에서 요리도 즐기고 농부에게 직접 수확 받은 못난이 채소를 가볍게 조리해보세요. 건강과 맛이 함께 와요!</p>
-                    <a href="#" class="btn btn-orange rounded-pill px-4 fw-bold mt-3">식탁 세이버 패키지 구매하러 가기 ❗❗</a>
+                    <a href="${pageContext.request.contextPath}/package/homepackage" class="btn btn-orange rounded-pill px-4 fw-bold mt-3">식탁 세이버 패키지 구매하러 가기 ❗❗</a>
                 </div>
             </div>
         </div>
@@ -127,14 +127,14 @@ body{
                 <!-- 카드 상단 텍스트 -->
                 <div class="card-header bg-transparent border-0">
                     <h5 class="fw-bold mb-1">샐러드패키지</h5>
-                    <small class="text-muted">날로 즐기는 신선 채소로 간편하게 샐러드!</small>
+                    <small class="text-muted">신선하고 저렴한 샐러드 야채와 시작하는 건강한 습관</small>
                 </div>
 
                 <img src="/dist/images/veggie-box-2.png" class="card-img-top rounded-3 mx-auto my-3" style="max-width: 280px;" alt="샐러드박스">
 
                 <div class="card-body">
                     <p class="card-text">직접 조리하기에는 시간이 어려우셨다면, 바로 씻고 먹을 수 있는 채소로 식이섬유도 챙기고 간편하게 한끼 해결하세요!</p>
-                    <a href="#" class="btn btn-sky rounded-pill px-4 fw-bold mt-3">샐러드 세이버 패키지 구매하러 가기 ❗❗</a>
+                    <a href="${pageContext.request.contextPath}/package/saladpackage" class="btn btn-sky rounded-pill px-4 fw-bold mt-3">샐러드 세이버 패키지 구매하러 가기 ❗❗</a>
                 </div>
             </div>
         </div>
