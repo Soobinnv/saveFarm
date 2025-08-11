@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MY PAGE</title>
+<title>saveFarm - 내 장바구니</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/cart.css" type="text/css">
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
@@ -26,57 +26,70 @@
 	    <table>
 	        <thead>
 	        	<tr>
-	                <th><button class="checkout-btn">선택 삭제</button></th>
+	                <th><button type="button" class="checkout-btn cart-deleteCheck" onclick="deleteCartSelect()();">선택삭제</button></th>
 	        	</tr>
 	            <tr>
-	            	<th><input type="checkbox" id="selectAll"></th>
-	                <th>상품</th>
-	                <th>가격</th>
-	                <th>수량</th>
-	                <th>합계</th>
+	            	<th width="35"><input type="checkbox" class="cart-selectAll" id="selectAll" name="selectAll"></th>
+	                <th colspan="2">상품</th>
+	                <th width="150">가격</th>
+	                <th width="150">수량</th>
+	                <th width="150">합계</th>
+	                <th width="70">삭제</th>
 	            </tr>
 	        </thead>
 	        <tbody>
-	            <tr>
-	            	<td><input type="checkbox" class="itemCheckbox"></td>
-	                <td>
-	                    <img src="${pageContext.request.contextPath}/dist/images/product/product1.png" alt="당근">
-	                    <div>
-	                        <strong>당근</strong><br>
-	                        상품번호: #214323543545352<br>
-	                        개수: 1개 (개당 500g)
-	                    </div>
-	                </td>
-	                <td>12,000원</td>
-	                <td>
-	                    <button class="qty-btn">-</button> 1 <button class="qty-btn">+</button>
-	                </td>
-	                <td>12,000원</td>
-	            </tr>
-	            <tr>
-	            	<td><input type="checkbox" class="itemCheckbox"></td>
-	                <td>
-	                    <img src="${pageContext.request.contextPath}/dist/images/product/product2.png" alt="고구마">
-	                    <div>
-	                        <strong>고구마</strong><br>
-	                        상품번호: #21432353246333<br>
-	                        개수: 3개 (개당 500g)
-	                    </div>
-	                </td>
-	                <td>8,000원</td>
-	                <td>
-	                    <button class="qty-btn">-</button> 3 <button class="qty-btn">+</button>
-	                </td>
-	                <td>24,000원</td>
-	            </tr>
+	        	<c:forEach varStatus="dto" items="${list}">
+		            <tr valign="middle">
+		            	<td><input type="checkbox" class="itemCheckbox" name="nums" value="${dto.productNum}"
+		            		data-totalStock="${dto.totalStock}" ${dto.totalStock == 0 ? "disabled":""}></td>
+		                <td width="55">
+		                    <img class="border rounded" width="50" height="50" src="${pageContext.request.contextPath}/uploads/products/${dto.thumnail}">
+		                </td>
+		                <td>
+		                	<p class="product-title p-1 mb-0 left">${dto.productName}</p>
+		                    <p class="product-qty p-1 mb-0 left">${dto.qty}개 (${개당 dto.unit})</p>
+		                    <input type="hidden" name="productNums" value="${dto.productNum}">
+		                    <!-- 
+		                    <div>
+		                        <strong>${dto.productName}</strong><br>
+		                        상품번호: #214323543545352<br>
+		                        개수: 1개 (개당 500g)
+		                    </div>
+		                     -->
+		                </td>
+		                <td>
+		                	<label><fmt:formatNumber value="${dto.price}"/></label><label>원</label>
+		                	<input type="hidden" name="prices" value="${dto.price}">
+		                </td>
+		                <td>
+		                    <button class="qty-btn">-</button> 1 <button class="qty-btn">+</button>
+		                </td>
+		                <td>
+		                	<label><fmt:formatNumber value="${dto.productMoney}"/></label><label>원</label>
+		                	<input type="hidden" name="productMoneys" value="${dto.productMoney}">
+						</td>
+						<td>
+							<button type="button" class="btn-default cart-delete" onclick="deleteCartItem('${dto.productNum}')"><i class="bi bi-x"></i></button>
+						</td>		                
+		            </tr>
+	            </c:forEach>
 	        </tbody>
 	    </table>
-	
-	    <div class="summary">
-	        <div><strong>총합계: 1954.97 €</strong></div>
-	        <button class="checkout-btn">선택상품 결제하기</button>
-	    </div>
- 
+	    
+	    <c:choose>
+	    	<c:when test="${list.size() == 0}">
+	    		<div class="mt-3 p-3 text-center">
+	    			장바구니가 비었습니다.
+	    		</div>
+	    	</c:when>
+	    	<c:otherwise>
+	    		<div class="summary">
+	    			<input type="hidden" name="mode" value="cart">
+	        		<div><strong>총합계: 1954.97 €</strong></div>
+	        		<button type="button" class="checkout-btn btn-accent" style="width: 200px;" onclick="sendOk();">선택상품 결제하기</button>
+	    		</div>
+	    	</c:otherwise>
+	    </c:choose>
 </div>
 </main>
 
@@ -85,6 +98,7 @@
 </footer>
 	
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
  
 
 <script type="text/javascript">

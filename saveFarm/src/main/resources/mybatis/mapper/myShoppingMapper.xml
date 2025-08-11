@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.MyShoppingMapper">
+	<!-- 장바구니 등록 -->
+	<insert id="insertCart" parameterType="com.sp.app.model.Order">
+		INSERT INTO cart(cartNum, memberId, productNum, qty, regDate)
+		VALUES (cart_seq.NEXTVAL, #{memberId}, #{productNum}, #{qty}, SYSDATE)
+	</insert>
+	
+</mapper>
