@@ -15,6 +15,9 @@
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
 	type="text/css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
+<script>
+    const contextPath = "${pageContext.request.contextPath}";
+</script>
 </head>
 <body>
 
@@ -46,16 +49,14 @@
 		<div class="container">
 			<!-- Start Filter Bar -->
 			<div class="search-bar border rounded-2 border-dark-subtle mb-4">
-				<form id="search-form" class="text-center d-flex align-items-center"
-					action="">
+				<div id="search-form" class="text-center d-flex align-items-center">
 					<input type="text" class="searchInput form-control border-0 bg-transparent" placeholder="Search Here" />
 					<iconify-icon icon="tabler:search" class="searchIcon fs-4 ms-3 me-3"></iconify-icon>
-				</form>
+				</div>
 			</div>
 			<!-- End Filter Bar -->
 			<!-- Start Best Seller -->
 			<section class="lattest-product-area pb-40 category-list m-3">
-				<div class="row">
 					<div class="container">
 						<div class="section-intro pb-60px">
 							<p>Popular Item in the market</p>
@@ -64,34 +65,8 @@
 							</h2>
 						</div>
 					</div>
-					<c:forEach var="dto" items="${list}">
-						<div class="col-md-6 col-lg-3">
-							<div class="card text-center card-product">
-								<div class="card-product__img">
-									<img onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"' class="card-img"
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										alt="">
-									<ul class="card-product__imgOverlay">
-										<li><button onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"'>
-												<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
-											</button></li>
-										<li><button onclick="addToCart(${dto.productNum}, this)">
-												<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-											</button></li>
-										<li><button onclick="addToWish(${dto.productNum}, this)">
-												<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-											</button></li>
-									</ul>
-								</div>
-								<div class="card-body">
-									<h4 class="card-product__title mt-1">
-										<a href="${pageContext.request.contextPath}/product/${dto.productNum}">${dto.productName}</a>
-									</h4>
-									<p class="card-product__price">${dto.unitPrice}원</p>
-								</div>
-							</div>
-						</div>
-					</c:forEach>
+				<div class="row" id="productLayout">
+
 				</div>
 			</section>
 			<!-- End Best Seller -->
@@ -441,6 +416,5 @@
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
-
 </body>
 </html>

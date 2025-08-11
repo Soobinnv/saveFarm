@@ -26,7 +26,7 @@
 		<div class="collapse justify-content-center flex-grow-1 navbar-collapse" id="navbarCollapse">
 			<div class="navbar-nav p-4 p-lg-0 d-flex gap-5">
 				<a href="about.html" class="nav-item nav-link headerNavText">About Us</a> 
-				<a href="${pageContext.request.contextPath}/product/list" class="nav-item nav-link headerNavText">장보기</a>
+				<a href="${pageContext.request.contextPath}/products" class="nav-item nav-link headerNavText">장보기</a>
 				<a href="${pageContext.request.contextPath}/package/main" class="nav-item nav-link active headerNavText">패키지</a>
 				<div class="nav-item dropdown">
 					<a href="#" class="nav-link dropdown-toggle headerNavText"

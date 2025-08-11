@@ -32,24 +32,6 @@ public class Product {
 	private long productImageNum;
 	private String productImageFilename;
 	
-	// 상품 리뷰
-	private long orderDetailNum;
-	private String review;
-	private int star;
-	private String reviewDate;
-	
-	// 상품 리뷰 이미지
-	private long productReviewImageNum;
-	private String productReviewImageFilename;
-	
-	// 상품 리뷰 댓글
-	private long replyNum;
-	private String regDate;
-	private String reply;
-	private long memberId;
-	private String name;
-	private String profilePhoto;
-	
 	// 회원의 찜 여부
 	private int userWish;
 }
