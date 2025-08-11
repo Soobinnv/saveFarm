@@ -48,8 +48,7 @@
 			<div class="search-bar border rounded-2 border-dark-subtle mb-4">
 				<form id="search-form" class="text-center d-flex align-items-center"
 					action="">
-					<input type="text" class="form-control border-0 bg-transparent"
-						placeholder="Search Here" />
+					<input type="text" class="searchInput form-control border-0 bg-transparent" placeholder="Search Here" />
 					<iconify-icon icon="tabler:search" class="searchIcon fs-4 ms-3 me-3"></iconify-icon>
 				</form>
 			</div>
@@ -76,10 +75,10 @@
 										<li><button onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"'>
 												<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
 											</button></li>
-										<li><button onclick="addToCart(${dto.productNum})">
+										<li><button onclick="addToCart(${dto.productNum}, this)">
 												<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
 											</button></li>
-										<li><button onclick="addToWish(${dto.productNum})">
+										<li><button onclick="addToWish(${dto.productNum}, this)">
 												<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
 											</button></li>
 									</ul>

@@ -37,7 +37,6 @@ public class ProductController {
 	public String list(Model model) {
 		
 		try {
-			
 			Map<String, Object> map = new HashMap<String, Object>();
 			
 			List<Product> list = service.getProductList(map);

@@ -133,7 +133,7 @@
 					<hr>
 
 					<div class="d-grid gap-2">
-						<button class="btn btn-success btn-lg" type="button">장바구니
+						<button onclick="sendOk('cart');" class="btn btn-success btn-lg" type="button">장바구니
 							담기</button>
 						<button class="btn btn-success btn-lg" type="button">바로
 							구매</button>
@@ -409,6 +409,18 @@
 
 		</div>
 	</main>
+	
+	<div id="product-template">
+		<input type="hidden" id="web-contextPath" value="${pageContext.request.contextPath}">
+		<input type="hidden" id="product-productNum" value="${productInfo.productNum}">
+		<input type="hidden" id="product-productName" value="${productInfo.productName}">
+		<input type="hidden" id="product-unit" value="${productInfo.unit}">
+		<input type="hidden" id="product-price" value="${productInfo.unitPrice}">
+		<input type="hidden" id="product-salePrice" value="${productInfo.discountedPrice}">
+		<input type="hidden" id="product-totalStock" value="${productInfo.stockQuantity}">
+		<input type="hidden" id="product-thumbnail" value="${productInfo.mainImageFilename}">
+	</div>
+	
 	<footer>
 		<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 	</footer>
