@@ -14,9 +14,11 @@
 	<nav
 		class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn d-flex justify-content-between headerNavbar"
 		data-wow-delay="0.1s">
-		<a href="${pageContext.request.contextPath}/" class="fw-bold navbar-brand ms-4 ms-lg-0 logo">
-			Foody
-		</a>
+		<div class="logo">
+			<a href="${pageContext.request.contextPath}/" class="fw-bold navbar-brand ms-4 ms-lg-0 logo">
+				<img src="${pageContext.request.contextPath}/dist/images/logo.png">
+			</a>
+		</div>
 		<button type="button" class="navbar-toggler custom-toggler me-4"
 			data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
 			<span class="navbar-toggler-icon">

@@ -1,17 +1,11 @@
-$(function() {
-
-
-
-});
-
 function sendOk(mode) {
 	const contextPath = document.getElementById('web-contextPath').value;
-
-	let totalQty = 0;
 	$('.quantity').each(function() {
 		let qty = parseInt($(this).text());
 
 		totalQty = qty;
+		
+		$('#qty').val(totalQty);
 	});
 
 	if (totalQty <= 0) {
@@ -30,9 +24,9 @@ function sendOk(mode) {
 			return false;
 		}
 
-		// f.method = 'post';
-		// f.action = contextPath + '/myShopping/saveCart';
+		f.method = 'post';
+		f.action = contextPath + '/myShopping/saveCart';
 	}
 
-	// f.submit();
+	f.submit();
 }

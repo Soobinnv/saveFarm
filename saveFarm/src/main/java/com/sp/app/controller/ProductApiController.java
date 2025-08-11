@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.model.Product;
+import com.sp.app.model.ProductQna;
+import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.service.ProductService;
 import com.sp.app.service.WishService;
@@ -75,10 +77,10 @@ public class ProductApiController {
         Map<String, Object> model = new HashMap<>();
         
         try {
-            List<Product> qnaList = null;
+            List<ProductQna> list = null;
             
             model.put("state", "true");
-            model.put("list", qnaList);
+            model.put("list", list);
         } catch (Exception e) {
             log.error("getProductQna: ", e);
             model.put("state", "false");
@@ -93,10 +95,10 @@ public class ProductApiController {
         Map<String, Object> model = new HashMap<>();
 
         try {
-            List<Product> reviewList = null;
+            List<ProductReview> list = null;
             
             model.put("state", "true");
-            model.put("list", reviewList);
+            model.put("list", list);
         } catch (Exception e) {
         	log.error("getProductReview: ", e);
             model.put("state", "false");
@@ -106,15 +108,12 @@ public class ProductApiController {
     }
 
     // 상품 환불/반품 데이터
-    @GetMapping("/{productNum}/refund-info")
+    @GetMapping("/{productNum}/refundInfo")
     public Map<String, Object> getProductRefundInfo(@PathVariable long productNum) {
         Map<String, Object> model = new HashMap<>();
 
         try {
             
-        	
-        	
-        	
             model.put("state", "true");
         } catch (Exception e) {
         	log.error("getProductRefundInfo: ", e);
@@ -132,7 +131,6 @@ public class ProductApiController {
 	) throws Exception {
 		Map<String, Object> model = new HashMap<String, Object>();
 
-		String state = "false";
 		try {
 			Map<String, Object> map = new HashMap<>();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");

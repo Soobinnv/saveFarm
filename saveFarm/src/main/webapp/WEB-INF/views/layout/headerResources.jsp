@@ -1,10 +1,6 @@
 ﻿<%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-
-<link rel="icon" href="data:;base64,iVBORw0KGgo=">
-<!-- Favicons -->
-<link href="${pageContext.request.contextPath}/dist/images/h.png" rel="icon">
   
 <!-- Fonts -->
 <link href="https://fonts.googleapis.com" rel="preconnect">
@@ -29,6 +25,9 @@
 
 <!-- Template CSS Files -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
+
+<!-- icon Files -->
+<link rel="icon" href="${pageContext.request.contextPath}/dist/images/logoIcon.png" type="image/png">
 
 <!-- Vendor JS Files -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor/jquery/js/jquery.min.js"></script>

@@ -5,6 +5,7 @@ document.addEventListener('keydown', function(event) {
   };
 });
 
+// 처음 접속 시 상품 리스트 로드
 $(function() {	
 	loadProducts("");
 });
@@ -29,7 +30,8 @@ function loadProducts(kwd) {
 		                <div class="card-product__img">
 		                    <img onclick="location.href='${contextPath}/products/${item.productNum}'" class="card-img"
 		                        src="${contextPath}/uploads/product/${item.mainImageFilename}"
-		                        alt="${item.productName} 이미지">
+		                        alt="${item.productName} 이미지"
+								onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';">
 		                    <ul class="card-product__imgOverlay">
 		                        <li>
 		                            <button onclick="location.href='${contextPath}/products/${item.productNum}'">
