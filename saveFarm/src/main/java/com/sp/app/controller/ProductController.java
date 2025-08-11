@@ -7,14 +7,17 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.model.Product;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.service.ProductService;
+import com.sp.app.service.WishService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductController {
 
 	private final ProductService service;
+	private final WishService wishService;
 	
 	// 상품 리스트
 	@GetMapping("list")
@@ -61,14 +65,13 @@ public class ProductController {
 			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
 
 			if(info != null) {
+				// 회원의 찜 여부
 				Map<String, Object> map = new HashMap<>();
 				map.put("memberId", info.getMemberId());
 				map.put("productNum", productInfo.getProductNum());
 				
-				
+				productInfo.setUserWish(wishService.findByWishId(map) == null ? 0 : 1);
 			}
-			
-			
 			
 			model.addAttribute("productInfo", productInfo);
 			
@@ -107,10 +110,60 @@ public class ProductController {
 	}
 	
 	// 찜 등록 - AJAX-JSON
-	@GetMapping("{productNum}/wish")
+	@PostMapping("{productNum}/wish")
 	@ResponseBody
-	public List<Product> addToWish(@PathVariable("productNum") long productNum) {
+	public Map<String, ?> wishSubmit(
+			@PathVariable(name = "productNum") Long productNum,
+			HttpSession session
+		) throws Exception {
 		
-		return null;
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		String state = "false";
+		
+		try {
+			Map<String, Object> map = new HashMap<>();
+			
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			map.put("memberId", info.getMemberId());
+			map.put("productNum", productNum);
+			
+			wishService.insertWish(map);
+			
+			state = "true";
+		} catch (Exception e) {
+		}
+		
+		model.put("state", state);
+		return model;
+	}	
+
+	// 찜 삭제 - AJAX-JSON
+	@DeleteMapping("{productNum}/wish")
+	@ResponseBody
+	public Map<String, ?> wishDelete(
+			@PathVariable(name = "productNum") Long productNum,
+			HttpSession session
+		) throws Exception {
+		
+		Map<String, Object> model = new HashMap<String, Object>();
+		
+		String state = "false";
+		
+		try {
+			Map<String, Object> map = new HashMap<>();
+			
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			map.put("memberId", info.getMemberId());
+			map.put("productNum", productNum);
+			
+			wishService.deleteWish(map);
+			
+			state = "true";
+		} catch (Exception e) {
+		}
+		
+		model.put("state", state);
+		return model;
 	}
 }

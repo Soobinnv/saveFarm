@@ -71,8 +71,15 @@
 							<span class="carousel-control-next-icon" aria-hidden="true"></span>
 							<span class="visually-hidden">Next</span>
 						</button>
-						<button onclick="alert('으아아');" class="position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
-							<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+						<button data-userWish="${productInfo.userWish}" onclick="alert('으아아');" class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
+							<c:choose>
+								<c:when test="${productInfo.userWish == '1'}">						
+									<iconify-icon icon="mdi:heart"></iconify-icon>
+								</c:when>
+								<c:otherwise>
+									<iconify-icon icon="lucide:heart"></iconify-icon>								
+								</c:otherwise>
+							</c:choose>
 						</button>
 					</div>
 				</div>
@@ -82,7 +89,7 @@
 
 					<div class="mt-3 mb-3">
 						<c:choose>
-							<c:when test="${dto.discountRate != 0}">
+							<c:when test="${productInfo.discountRate != 0}">
 								<span class="badge bg-danger discount-badge">${productInfo.discountRate}%</span> 
 								<span class="original-price">${productInfo.unitPrice}원</span> 
 								<span class="sale-price">${productInfo.discountedPrice}원</span>

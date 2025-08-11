@@ -50,4 +50,6 @@ public class Product {
 	private String name;
 	private String profilePhoto;
 	
+	// 회원의 찜 여부
+	private int userWish;
 }

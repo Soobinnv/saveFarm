@@ -25,9 +25,9 @@
 		</button>
 		<div class="collapse justify-content-center flex-grow-1 navbar-collapse" id="navbarCollapse">
 			<div class="navbar-nav p-4 p-lg-0 d-flex gap-5">
-				<a href="#" class="nav-item nav-link active headerNavText">Home</a> <a
-					href="about.html" class="nav-item nav-link headerNavText">About Us</a> <a
-					href="${pageContext.request.contextPath}/product/list" class="nav-item nav-link headerNavText">Products</a>
+				<a href="about.html" class="nav-item nav-link headerNavText">About Us</a> 
+				<a href="${pageContext.request.contextPath}/product/list" class="nav-item nav-link headerNavText">장보기</a>
+				<a href="${pageContext.request.contextPath}/package/main" class="nav-item nav-link active headerNavText">패키지</a>
 				<div class="nav-item dropdown">
 					<a href="#" class="nav-link dropdown-toggle headerNavText"
 						data-bs-toggle="dropdown headerNavText">Pages</a>
@@ -63,16 +63,14 @@
 				<li><a href="index.html" class="mx-3"> 
 				<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
 				</a></li>
-
-				<li class=""><a href="index.html" class="mx-3"
-					data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart"
-					aria-controls="offcanvasCart"> 
+				
+				<li class="ms-3"> 
 					<a href="${pageContext.request.contextPath}/myShopping/cart">
 						<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
 						<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
-							03 </span> 
-					</a> 
-				</a></li>
+							03 </span>  
+					</a>
+				</li>
 			</ul>
 
 		</div>
