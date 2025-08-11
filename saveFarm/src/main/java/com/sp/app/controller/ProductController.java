@@ -3,6 +3,7 @@ package com.sp.app.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.model.Product;
+import com.sp.app.model.SessionInfo;
 import com.sp.app.service.ProductService;
 
 import jakarta.servlet.http.HttpSession;
@@ -26,10 +28,12 @@ public class ProductController {
 
 	private final ProductService service;
 	
+	// 상품 리스트
 	@GetMapping("list")
 	public String list(Model model) {
 		
 		try {
+			
 			Map<String, Object> map = new HashMap<String, Object>();
 			
 			List<Product> list = service.getProductList(map);
@@ -43,6 +47,7 @@ public class ProductController {
 		return "product/list";
 	}
 	
+	// 상품 정보
 	@GetMapping("{productNum}")
 	public String productInfo(
 			@PathVariable("productNum") long productNum,
@@ -51,24 +56,30 @@ public class ProductController {
 		) throws Exception {
 		
 		try {
-			Product productInfo = service.getProductInfo(productNum);
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
+
+			if(info != null) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("memberId", info.getMemberId());
+				map.put("productNum", productInfo.getProductNum());
+				
+				
+			}
+			
+			
 			
 			model.addAttribute("productInfo", productInfo);
 			
+			return "product/info";
 			
+		} catch (NullPointerException e) {
 		} catch (Exception e) {
 			log.info("productDetail : ", e);
 		}
-		
-		return "product/info";
-	}
-	
-	// 상품 설명 - AJAX-JSON
-	@GetMapping("{productNum}/productDesc")
-	@ResponseBody
-	public List<Product> getProductDesc(@PathVariable("productNum") long productNum) {
-		
-		return null;
+
+		return "redirect:/product/list";
 	}
 	
 	// 상품 문의 - AJAX-JSON
@@ -90,11 +101,16 @@ public class ProductController {
 	// 상품 리뷰 - AJAX-JSON
 	@GetMapping("{productNum}/productReview")
 	@ResponseBody
-	public List<Product> getProductReview() {
+	public List<Product> getProductReview(@PathVariable("productNum") long productNum) {
 		
 		return null;
 	}
 	
-	
-	
+	// 찜 등록 - AJAX-JSON
+	@GetMapping("{productNum}/wish")
+	@ResponseBody
+	public List<Product> addToWish(@PathVariable("productNum") long productNum) {
+		
+		return null;
+	}
 }

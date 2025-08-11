@@ -71,6 +71,9 @@
 							<span class="carousel-control-next-icon" aria-hidden="true"></span>
 							<span class="visually-hidden">Next</span>
 						</button>
+						<button onclick="alert('으아아');" class="position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
+							<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+						</button>
 					</div>
 				</div>
 

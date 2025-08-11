@@ -67,26 +67,26 @@
 					</div>
 					<c:forEach var="dto" items="${list}">
 						<div class="col-md-6 col-lg-3">
-							<div class="card text-center card-product " onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"'>
+							<div class="card text-center card-product">
 								<div class="card-product__img">
-									<img class="card-img"
+									<img onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"' class="card-img"
 										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
 										alt="">
 									<ul class="card-product__imgOverlay">
-										<li><button onclick='location.href="${pageContext.request.contextPath}/product/info"'>
+										<li><button onclick='location.href="${pageContext.request.contextPath}/product/${dto.productNum}"'>
 												<iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
 											</button></li>
-										<li><button>
+										<li><button onclick="addToCart(${dto.productNum})">
 												<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
 											</button></li>
-										<li><button>
+										<li><button onclick="addToWish(${dto.productNum})">
 												<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
 											</button></li>
 									</ul>
 								</div>
 								<div class="card-body">
 									<h4 class="card-product__title mt-1">
-										<a href="#">${dto.productName}</a>
+										<a href="${pageContext.request.contextPath}/product/${dto.productNum}">${dto.productName}</a>
 									</h4>
 									<p class="card-product__price">${dto.unitPrice}원</p>
 								</div>
@@ -194,7 +194,7 @@
 								</div>
 								<div class="single-search-product d-flex">
 									<a href="#"><img
-										src="${pageContext.request.contextPath}/dist/images/product/product-sm-9.png"
+										src="${pageContext.request.contextPath}/dist/images/product/product-sm-8.png"
 										alt=""></a>
 									<div class="desc">
 										<a href="#" class="title">Gray Coffee Cup</a>
@@ -441,6 +441,7 @@
 </footer>
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
 
 </body>
 </html>

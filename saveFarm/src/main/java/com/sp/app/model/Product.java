@@ -49,4 +49,5 @@ public class Product {
 	private long memberId;
 	private String name;
 	private String profilePhoto;
+	
 }
