@@ -20,14 +20,14 @@
 
   <div class="container" id="container">
     <aside class="sidebar">
-      <h2>MY PAGE</h2>
+      <h2 onclick="loadContent('/api/myPage', renderMyPageMainHtml);">MY PAGE</h2>
       <ul>
         <li>주문내역 조회</li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">주문/배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">정기배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">취소/교환/반품 조회</a></li>
         <li>내 활동</li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="();"">찜</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/wish', renderMyWishListHtml);">찜</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">나의 리뷰</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">1:1 문의</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">상품 문의</a></li>

@@ -85,96 +85,68 @@ const renderMyPageMainHtml = function(data) {
 }
 
 /**
- * 상품 상세 HTML 문자열 생성
- * 상품 설명 / 추천 상품 목록
- * @param {object} data - 상품 상세 정보 / 추천 상품 목록 데이터
- * @param {object} data.productInfo - 상품 객체
- * @param {string} data.productInfo.productDesc - 상품 설명
- * @param {Array<object>} data.list - 추천 상품 객체 배열
+ * 마이 페이지 - 내 활동 - 찜
+ * @param {object} data - 내가 찜한 상품 데이터
+ * @param {Array<object>} data.list - 내가 찜한 상품 객체 배열
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
-const renderProductDetailHtml = function(data) {	
+const renderMyWishListHtml = function(data) {	
 	let html = `
-		<h4>상품 상세 정보</h4>
-		<br>
-		<p>
-			${data.productInfo.productDesc}
-		</p>
-		`
-	html += data.list.map(item => `
-		<div class="recommendation-section">
-			<h4>📢 이 상품은 어때요?</h4>
-			<div class="recommendation-list">
-				<div class="recommendation-item">
-					<img
-						src="${contextPath}/dist/images/product/product1.png"
-						onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
-						alt="유기농 방울토마토" class="recImage">
-					<div class="item-info">
-						<p class="item-title">[유기농] 달콤한 방울토마토 500g</p>
-						<div class="item-price">
-							<span class="discount-rate">15%</span> <span
-								class="final-price">5,950원</span> <span
-								class="original-price">7,000원</span>
-						</div>
-					</div>
-
-				</div>
-				<div class="recommendation-item">
-					<img
-						src="${contextPath}/dist/images/product/product1.png"
-						alt="아삭 양상추" class="recImage">
-					<div class="item-info">
-						<p class="item-title">[산지직송] 아삭 양상추 1통</p>
-						<div class="item-price">
-							<span class="final-price">2,800원</span>
-						</div>
-					</div>
-
-				</div>
-				<div class="recommendation-item">
-					<img
-						src="${contextPath}/dist/images/product/product1.png"
-						alt="파프리카" class="recImage">
-					<div class="item-info">
-						<p class="item-title">[과일처럼] 달콤 파프리카 2입</p>
-						<div class="item-price">
-							<span class="discount-rate">20%</span> <span
-								class="final-price">3,120원</span> <span
-								class="original-price">3,900원</span>
-						</div>
-					</div>
-
-				</div>
-				<div class="recommendation-item">
-					<img
-						src="${contextPath}/dist/images/product/product1.png"
-						alt="친환경 브로콜리" class="recImage">
-					<div class="item-info">
-						<p class="item-title">[친환경] 신선 브로콜리</p>
-						<div class="item-price">
-							<span class="final-price">2,500원</span>
-						</div>
-					</div>
-
-				</div>
-				<div class="recommendation-item">
-					<img
-						src="${contextPath}/dist/images/product/product1.png"
-						alt="미니 양배추" class="recImage">
-					<div class="item-info">
-						<p class="item-title">[간편채소] 미니 양배추 300g</p>
-						<div class="item-price">
-							<span class="discount-rate">10%</span> <span
-								class="final-price">3,780원</span> <span
-								class="original-price">4,200원</span>
-						</div>
-					</div>
-
-				</div>
+		<div class="container-lg p-4 p-sm-5">
+			<div class="mb-5">
+				<h1 class="display-5 fw-bold text-dark">찜한 상품</h1>
+				<p class="mt-2 text-muted">관심 있는 상품을 저장하고 관리하세요.</p>
+			</div>			
+			<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+			    <div class="d-flex align-items-center">
+			        <div class="form-check">
+			            <input class="form-check-input" type="checkbox" value="" id="selectAll">
+			            <label class="form-check-label fw-medium" for="selectAll">전체선택</label>
+			        </div>
+			        <span class="text-muted mx-3">|</span>
+			        <button id="deleteSelected" class="btn btn-link text-decoration-none text-danger p-0 fw-medium">선택삭제</button>
+			    </div>
+			    <div class="mt-3 mt-sm-0 text-body-secondary">
+			        총 <strong class="text-primary fw-bold">${data.list.length}</strong>개의 상품
+			    </div>
 			</div>
-		</div>
+			<div id="wishlist-container">
+	
+	`; 
+	html += data.list.map(item => `
+        <div class="card product-card mb-4 shadow-sm position-relative">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-12 col-sm-auto d-flex align-items-center mb-3 mb-sm-0">
+                        <input class="form-check-input me-4" type="checkbox" style="width: 1.25rem; height: 1.25rem;">
+                        <img src="${contextPath}/uploads/product/${item.mainImageFilename}" alt="상품 이미지" class="rounded" style="width: 8rem; height: 8rem; object-fit: cover;">
+                    </div>
+
+                    <div class="col-12 col-sm text-center text-sm-start">
+                        <p class="small text-muted mb-1">${item.wishDate}</p>
+                        <h3 class="h5 fw-semibold text-dark mb-2">
+                            <a href="#" class="text-decoration-none text-dark">${item.productName}(4개입)</a>
+                        </h3>
+                        <div class="d-flex align-items-center justify-content-center justify-content-sm-start mb-1">
+                            <span class="fs-5 fw-bold text-danger me-2">${item.discountRate}%</span>
+                            <span class="text-muted text-decoration-line-through me-3">${item.unitPrice}</span>
+                            <span class="fs-5 fw-bold text-dark">${item.discountedPrice}</span>
+                        </div>
+                        <p class="small text-muted">배송비: ${item.deliveryFee}원</p>
+                    </div>
+
+                    <div class="col-12 col-md-auto mt-3 mt-md-0">
+                        <div class="d-grid gap-2 d-sm-block">
+							<button onclick="sendOk('cart');" class="btn btn-success btn-lg" type="button">장바구니 담기</button>
+							<button onclick="sendOk('buy');" class="btn btn-success btn-lg" type="button">바로 구매</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close position-absolute top-0 end-0 p-3" aria-label="Close"></button>
+        </div>
 	`).join('');
+	html += `</div></div>`;
 	
 	return html;
 }

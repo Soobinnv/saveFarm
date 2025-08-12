@@ -19,4 +19,6 @@ public class Wish {
 	private int discountedPrice;
 	private int deliveryFee;
 	private String mainImageFilename;
+	
+	private int cartItemCount;
 }

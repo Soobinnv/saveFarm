@@ -50,7 +50,7 @@ public class WishServiceImpl implements WishService{
 			log.info("getWishList : ", e);
 		}
 		
-		return null;
+		return list;
 	}
 
 	@Override
