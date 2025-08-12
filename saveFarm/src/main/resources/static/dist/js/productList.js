@@ -14,10 +14,11 @@ function addToCart(productNum, btnEL) {
 	
 }
 
-function addToWish(productNum, btnEL) {
-	
-}
-
+/**
+ * AJAX 요청, 응답 데이터로 HTML 렌더링
+ * @param {string} kwd - 검색어
+ * @param {Array<object>} data.list - 상품 객체 배열
+ */
 function loadProducts(kwd) {
 	let url = contextPath + '/api/products';
 	let params = 'kwd=' + kwd;
@@ -40,13 +41,16 @@ function loadProducts(kwd) {
 		                        </li>
 		                        <li>
 		                            <button onclick="addToCart(${item.productNum}, this)">
-		                                <iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+		                                <iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
 		                            </button>
 		                        </li>
 		                        <li>
-		                            <button onclick="addToWish(${item.productNum}, this)">
-		                                <iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-		                            </button>
+									<button data-wish="${item.userWish}" onclick="updateWish(${item.productNum}, this);">
+									${item.userWish == '1'
+			                            ?`<iconify-icon icon="mdi:heart" class="wishIcon fs-4"></iconify-icon>`
+			                            :`<iconify-icon icon="lucide:heart" class="wishIcon fs-4"></iconify-icon>` 
+			                        }
+									</button>
 		                        </li>
 		                    </ul>
 		                </div>

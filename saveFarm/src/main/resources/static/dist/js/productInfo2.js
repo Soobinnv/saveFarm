@@ -3,20 +3,23 @@ const productNum = $('#product-productNum').val();
 
 // 처음 페이지 로딩 시
 $(function() {
+	// 상품 상세 출력
 	loadContent('/api/products/' + productNum, renderProductDetailHtml);
 });
 
 $(function() {
+	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의 tab 클릭
 	$('.nav-link').on('click', function() {
-		// 다른 탭 비활성화
+		// 다른 비활성화 tab - css 적용
 		$('.nav-link').removeClass('active');
 		
-		// 탭 활성화
+		// 활성화 tab - css 적용
 		$(this).addClass('active');
 		
-		// 탭 컨텐츠 load
+		// 선택한 tab id
 		let navId = $(this).attr('id');
 		
+		// tab 컨텐츠 AJAX 요청 및 렌더링
 		switch (navId) {
 	    	case 'nav-detail-tab':
 	            loadContent('/api/products/' + productNum, renderProductDetailHtml); 
@@ -35,11 +38,15 @@ $(function() {
 });
 
 /**
- * 
+ * 지정된 URL로 AJAX 요청, 응답 데이터로 HTML 렌더링
+ * @param {string} url - URL (contextPath 제외)
+ * @param {Function} renderFn - AJAX 응답 데이터를 인자로 받아 HTML 문자열을 반환하는 callback 함수
  */
 function loadContent(url, renderFn) {
+	// 요청 경로 생성
 	url = contextPath + url;
 	let params = '';
+	// 렌더링할 HTML 요소 선택자
 	let selector = '#productInfoLayout';
 	
 	const fn = function(data) {
@@ -51,21 +58,31 @@ function loadContent(url, renderFn) {
 	ajaxRequest(url, 'get', params, 'json', fn);
 }
 
-
+/**
+ * 상품 상세 HTML 문자열 생성
+ * 상품 설명 / 추천 상품 목록
+ * @param {object} data - 상품 상세 정보 / 추천 상품 목록 데이터
+ * @param {object} data.productInfo - 상품 객체
+ * @param {string} data.productInfo.productDesc - 상품 설명
+ * @param {Array<object>} data.list - 추천 상품 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
 const renderProductDetailHtml = function(data) {	
-	const html = `
+	let html = `
 		<h4>상품 상세 정보</h4>
 		<br>
 		<p>
 			${data.productInfo.productDesc}
 		</p>
-
+		`
+	html += data.list.map(item => `
 		<div class="recommendation-section">
 			<h4>📢 이 상품은 어때요?</h4>
 			<div class="recommendation-list">
 				<div class="recommendation-item">
 					<img
 						src="${contextPath}/dist/images/product/product1.png"
+						onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
 						alt="유기농 방울토마토" class="recImage">
 					<div class="item-info">
 						<p class="item-title">[유기농] 달콤한 방울토마토 500g</p>
@@ -131,21 +148,34 @@ const renderProductDetailHtml = function(data) {
 				</div>
 			</div>
 		</div>
-	`
+	`).join('');
 	
 	return html;
 }
 
+/**
+ * 상품 리뷰 HTML 문자열 생성
+ * 상품 리뷰 목록
+ * @param {object} data - 상품 리뷰 데이터
+ * @param {Array<object>} data.list - 상품 리뷰 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
 const renderProductReviewHtml = function(data) {
 	const html = data.list.map(item => `
 			
 		
 		
-		`).join('');;
+	`).join('');
 		
 	return html;
 }
 
+/**
+ * 상품 반품 / 환불 HTML 문자열 생성
+ * 상품 반품 / 환불 안내
+ * @param {object} data
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
 const renderRefundHtml = function(data) {	
 	const html = `
 	<h4>반품 / 환불 안내</h4>
@@ -185,12 +215,19 @@ const renderRefundHtml = function(data) {
 	return html;
 }
 
+/**
+ * 상품 문의 HTML 문자열 생성
+ * 상품 문의 목록
+ * @param {object} data - 상품 문의 데이터
+ * @param {Array<object>} data.list - 상품 문의 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
 const renderProductQnaHtml = function(data) {
 	const html = data.list.map(item => `
 		
 		
 		
-	`).join('');;
+	`).join('');
 	
 	return html;
 }

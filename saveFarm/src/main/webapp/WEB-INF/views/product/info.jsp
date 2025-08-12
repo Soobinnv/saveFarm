@@ -71,16 +71,9 @@
 							<span class="carousel-control-next-icon" aria-hidden="true"></span>
 							<span class="visually-hidden">Next</span>
 						</button>
-						<button data-userWish="${productInfo.userWish}" onclick="alert('으아아');" class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
-							<c:choose>
-								<c:when test="${productInfo.userWish == '1'}">						
-									<iconify-icon icon="mdi:heart"></iconify-icon>
-								</c:when>
-								<c:otherwise>
-									<iconify-icon icon="lucide:heart"></iconify-icon>								
-								</c:otherwise>
-							</c:choose>
-						</button>
+						<button data-wish="${productInfo.userWish}" onclick="updateWish(${productInfo.productNum}, this);" class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
+							<iconify-icon icon="${productInfo.userWish == '1' ? 'mdi:heart' : 'lucide:heart'}"></iconify-icon>
+						</button>							
 					</div>
 				</div>
 
@@ -318,5 +311,6 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productInfo.js"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/updateWish.js"></script>
 </body>
 </html>

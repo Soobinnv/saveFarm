@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,144 +36,134 @@ public class ProductApiController {
 	private final WishService wishService;
 
 	// 상품 리스트 데이터
-    @GetMapping
-    public Map<String, Object> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "")String kwd) {
-        Map<String, Object> model = new HashMap<>();
-        
-        try {
-            List<Product> list = service.getProductList(new HashMap<>());
-            model.put("state", "true");
-            model.put("list", list); 
-        } catch (Exception e) {
-            log.error("getProductList: ", e);
-            model.put("state", "false");
-        }
-        
-        return model;
-    }
+	// 상품 리스트 데이터
+	@GetMapping
+	public ResponseEntity<?> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			List<Product> list = service.getProductList(new HashMap<>());
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductList: ", e);
+			body.put("message", "상품 목록을 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
 
-    // 상품 상세 데이터
-    @GetMapping("/{productNum}")
-    public Map<String, Object> getProductInfo(@PathVariable long productNum) {
-        Map<String, Object> model = new HashMap<>();
+	// 상품 상세 데이터
+	@GetMapping("/{productNum}")
+	public ResponseEntity<?> getProductInfo(@PathVariable(name = "productNum") long productNum) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
 
-        try {
-            Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
-            
-            model.put("state", "true");
-            model.put("productInfo", productInfo); 
-            
-        } catch (NullPointerException e) {
-        	model.put("state", "false");        	
-        } catch (Exception e) {
-            log.error("getProductInfo: ", e);
-            model.put("state", "false");
-        }
-        
-        return model;
-    }
+			// 추천 리스트 (수정 필요)
+			List<Product> list = service.getProductList(new HashMap<>());
 
-    // 상품 문의 데이터
-    @GetMapping("/{productNum}/qnas")
-    public Map<String, Object> getProductQna(@PathVariable long productNum) {
-        Map<String, Object> model = new HashMap<>();
-        
-        try {
-            List<ProductQna> list = null;
-            
-            model.put("state", "true");
-            model.put("list", list);
-        } catch (Exception e) {
-            log.error("getProductQna: ", e);
-            model.put("state", "false");
-        }
-        
-        return model;
-    }
+			body.put("productInfo", productInfo);
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+
+		} catch (NullPointerException e) {
+			return ResponseEntity.notFound().build(); // 404 Not Found
+		} catch (Exception e) {
+			log.error("getProductInfo: ", e);
+			body.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+
+	// 상품 문의 데이터
+	@GetMapping("/{productNum}/qnas")
+	public ResponseEntity<?> getProductQna(@PathVariable(name = "productNum") long productNum) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			List<ProductQna> list = null; 
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductQna: ", e);
+			body.put("message", "문의 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
     
-    // 상품 리뷰 데이터
-    @GetMapping("/{productNum}/reviews")
-    public Map<String, Object> getProductReview(@PathVariable long productNum) {
-        Map<String, Object> model = new HashMap<>();
+	// 상품 리뷰 데이터
+	@GetMapping("/{productNum}/reviews")
+	public ResponseEntity<?> getProductReview(@PathVariable(name = "productNum") long productNum) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			List<ProductReview> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductReview: ", e);
+			body.put("message", "리뷰 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
 
-        try {
-            List<ProductReview> list = null;
-            
-            model.put("state", "true");
-            model.put("list", list);
-        } catch (Exception e) {
-        	log.error("getProductReview: ", e);
-            model.put("state", "false");
-        }
-        
-        return model;
-    }
-
-    // 상품 환불/반품 데이터
-    @GetMapping("/{productNum}/refundInfo")
-    public Map<String, Object> getProductRefundInfo(@PathVariable long productNum) {
-        Map<String, Object> model = new HashMap<>();
-
-        try {
-            
-            model.put("state", "true");
-        } catch (Exception e) {
-        	log.error("getProductRefundInfo: ", e);
-            model.put("state", "false");
-        }
-        
-        return model;
-    }
+	// 상품 환불/반품 데이터
+	@GetMapping("/{productNum}/refundInfo")
+	public ResponseEntity<?> getProductRefundInfo(@PathVariable(name = "productNum") long productNum) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductRefundInfo: ", e);
+			body.put("message", "환불/반품 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
 
 	// 찜 등록
 	@PostMapping("{productNum}/wish")
-	public Map<String, ?> insertWish(
+	public ResponseEntity<?> insertWish(
 			@PathVariable(name = "productNum") Long productNum,
-			HttpSession session
-	) throws Exception {
-		Map<String, Object> model = new HashMap<String, Object>();
-
+			HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
 		try {
-			Map<String, Object> map = new HashMap<>();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body); // 401 Unauthorized
+			}
 
+			Map<String, Object> map = new HashMap<>();
 			map.put("memberId", info.getMemberId());
 			map.put("productNum", productNum);
-
 			wishService.insertWish(map);
 
-			model.put("state", "true");
+			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("insertWish: ", e);
-			model.put("state", "false");
+			body.put("message", "찜 등록 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
-		
-		return model;
 	}
 
 	// 찜하기 취소
 	@DeleteMapping("{productNum}/wish")
-	public Map<String, ?> deleteWish(
-			@PathVariable(name = "productNum") Long productNum, 
-			HttpSession session
-		) throws Exception {
-
-		Map<String, Object> model = new HashMap<String, Object>();
+	public ResponseEntity<?> deleteWish(
+			@PathVariable(name = "productNum") Long productNum,
+			HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
 		try {
-			Map<String, Object> map = new HashMap<>();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body); // 401 Unauthorized
+			}
 
+			Map<String, Object> map = new HashMap<>();
 			map.put("memberId", info.getMemberId());
 			map.put("productNum", productNum);
-
 			wishService.deleteWish(map);
 
-			model.put("state", "true");
+			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("deleteWish: ", e);
-			model.put("state", "false");
+			body.put("message", "찜 취소 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
-
-		return model;
 	}
 }

@@ -21,9 +21,9 @@
 </head>
 <body>
 
-	<header>
-		<jsp:include page="/WEB-INF/views/layout/header.jsp" />
-	</header>
+<header>
+	<jsp:include page="/WEB-INF/views/layout/header.jsp" />
+</header>
 <main>
 	<!-- ================ start banner area ================= -->
 	<section class="blog-banner-area" id="category">
@@ -65,9 +65,7 @@
 							</h2>
 						</div>
 					</div>
-				<div class="row" id="productLayout">
-
-				</div>
+				<div class="row" id="productLayout"></div>
 			</section>
 			<!-- End Best Seller -->
 
@@ -416,5 +414,6 @@
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/updateWish.js"></script>
 </body>
 </html>
