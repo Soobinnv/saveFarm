@@ -4,9 +4,11 @@
 <mapper namespace="com.sp.app.mapper.ProductMapper">
 	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE
+			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND memberId = #{memberId, jdbcType=BIGINT}
+		WHERE PRODUCTCLASSIFICATION = 100
 	</select>
 
 	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
@@ -23,7 +25,7 @@
 			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
-		WHERE p.PRODUCTNUM = #{productNum}
+		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 100
 	</select>
 
 	<select id="getRescuedProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
@@ -35,4 +37,9 @@
 		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200
 	</select>
 
+	<select id="getProductImageList" parameterType="Long" resultType="com.sp.app.model.Product">
+		SELECT PRODUCTIMAGENUM, PRODUCTIMAGEFILENAME, PRODUCTNUM
+		FROM productImage
+		WHERE PRODUCTNUM = #{productNum}
+	</select>
 </mapper>

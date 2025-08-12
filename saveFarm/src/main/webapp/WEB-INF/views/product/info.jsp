@@ -33,47 +33,52 @@
 							<button type="button" data-bs-target="#productImageCarousel"
 								data-bs-slide-to="0" class="active" aria-current="true"
 								aria-label="Slide 1"></button>
-							<button type="button" data-bs-target="#productImageCarousel"
-								data-bs-slide-to="1" aria-label="Slide 2"></button>
-							<button type="button" data-bs-target="#productImageCarousel"
-								data-bs-slide-to="2" aria-label="Slide 3"></button>
+
+							<c:if test="${not empty productImageList}">
+								<c:forEach var="image" items="${productImageList}"
+									varStatus="status">
+									<button type="button" data-bs-target="#productImageCarousel"
+										data-bs-slide-to="${status.index + 1}"
+										aria-label="Slide ${status.index + 2}"></button>
+								</c:forEach>
+							</c:if>
 						</div>
+
 						<div class="carousel-inner">
 							<div class="carousel-item active">
-								<img
-									class="bd-placeholder-img bd-placeholder-img-lg d-block w-100 "
-									aria-label="Placeholder: First slide"
-									src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-									alt="">
+								<img class="d-block w-100 carousel-img-fixed"
+									src="${contextPath}/uploads/product/${productInfo.mainImageFilename}"
+									alt="Main product image">
 							</div>
-							<div class="carousel-item">
-								<img
-									class="bd-placeholder-img bd-placeholder-img-lg d-block w-100 "
-									aria-label="Placeholder: First slide"
-									src="${pageContext.request.contextPath}/dist/images/product/product2.png"
-									alt="">
-							</div>
-							<div class="carousel-item">
-								<img
-									class="bd-placeholder-img bd-placeholder-img-lg d-block w-100 "
-									aria-label="Placeholder: First slide"
-									src="${pageContext.request.contextPath}/dist/images/product/product3.png"
-									alt="">
-							</div>
+
+							<c:if test="${not empty productImageList}">
+								<c:forEach var="image" items="${productImageList}">
+									<div class="carousel-item">
+										<img class="d-block w-100 carousel-img-fixed"
+											src="${contextPath}/uploads/product/${image.savedFilename}"
+											alt="Product detail image">
+									</div>
+								</c:forEach>
+							</c:if>
 						</div>
-						<button class="carousel-control-prev" type="button"
-							data-bs-target="#productImageCarousel" data-bs-slide="prev">
-							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Previous</span>
+						<c:if test="${not empty productImageList}">
+							<button class="carousel-control-prev" type="button"
+								data-bs-target="#productImageCarousel" data-bs-slide="prev">
+								<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Previous</span>
+							</button>
+							<button class="carousel-control-next" type="button"
+								data-bs-target="#productImageCarousel" data-bs-slide="next">
+								<span class="carousel-control-next-icon" aria-hidden="true"></span>
+								<span class="visually-hidden">Next</span>
+							</button>
+						</c:if>
+						<button data-wish="${productInfo.userWish}"
+							onclick="updateWish(${productInfo.productNum}, this);"
+							class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
+							<iconify-icon class="fs-4"
+								icon="${productInfo.userWish == '1' ? 'mdi:heart' : 'lucide:heart'}"></iconify-icon>
 						</button>
-						<button class="carousel-control-next" type="button"
-							data-bs-target="#productImageCarousel" data-bs-slide="next">
-							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Next</span>
-						</button>
-						<button data-wish="${productInfo.userWish}" onclick="updateWish(${productInfo.productNum}, this);" class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
-							<iconify-icon icon="${productInfo.userWish == '1' ? 'mdi:heart' : 'lucide:heart'}"></iconify-icon>
-						</button>							
 					</div>
 				</div>
 
@@ -83,12 +88,12 @@
 					<div class="mt-3 mb-3">
 						<c:choose>
 							<c:when test="${productInfo.discountRate != 0}">
-								<span class="badge bg-danger discount-badge">${productInfo.discountRate}%</span> 
-								<span class="original-price">${productInfo.unitPrice}원</span> 
+								<span class="badge bg-danger discount-badge">${productInfo.discountRate}%</span>
+								<span class="original-price">${productInfo.unitPrice}원</span>
 								<span class="sale-price">${productInfo.discountedPrice}원</span>
 							</c:when>
 							<c:otherwise>
-								<span class="final-price">${productInfo.unitPrice}원</span> 
+								<span class="final-price">${productInfo.unitPrice}원</span>
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -100,7 +105,8 @@
 							<i class="bi bi-truck"></i> 배송 정보
 						</h5>
 						<p class="mb-1">
-							<strong>배송비:</strong> ${productInfo.deliveryFee}원 (50,000원 이상 구매 시 무료)
+							<strong>배송비:</strong> ${productInfo.deliveryFee}원 (50,000원 이상 구매
+							시 무료)
 						</p>
 						<p class="mb-1">
 							<strong>배송 예상:</strong> 1~2 영업일 이내 출고
@@ -108,14 +114,16 @@
 					</div>
 
 					<div class="mb-3">
-						<label for="quantity-input" class="form-label">수량</label> 
-						
+						<label for="quantity-input" class="form-label">수량</label>
+
 						<div class="d-flex align-items-center">
 							<button class="btn btn-minus" type="button">
 								<iconify-icon icon="ic:baseline-minus" class="fs-4 blackIcon"></iconify-icon>
 							</button>
 							&nbsp;&nbsp;
-							<p class="quantity my-0" data-stock="${productInfo.stockQuantity}" data-quantity="3" data-productNum="${productInfo.productNum}">1</p>
+							<p class="quantity my-0"
+								data-stock="${productInfo.stockQuantity}" data-quantity="3"
+								data-productNum="${productInfo.productNum}">1</p>
 							&nbsp;&nbsp;
 							<button class="btn btn-plus" type="button">
 								<iconify-icon icon="ic:baseline-plus" class="fs-4 blackIcon"></iconify-icon>
@@ -126,41 +134,33 @@
 					<hr>
 
 					<div class="d-grid gap-2">
-						<button onclick="sendOk('cart');" class="btn btn-success btn-lg" type="button">장바구니
-							담기</button>
-						<button onclick="sendOk('buy');" class="btn btn-success btn-lg" type="button">바로
-							구매</button>
+						<button onclick="sendOk('cart');" class="btn btn-success btn-lg"
+							type="button">장바구니 담기</button>
+						<button onclick="sendOk('buy');" class="btn btn-success btn-lg"
+							type="button">바로 구매</button>
 					</div>
 				</div>
 			</div>
 			<nav>
 				<div class="nav nav-tabs nav-fill mt-5" id="nav-tab">
-					<button class="nav-link active" id="nav-detail-tab"
-						type="button"
-						>상품
+					<button class="nav-link active" id="nav-detail-tab" type="button">상품
 						상세</button>
-					<button class="nav-link" id="nav-review-tab"
-						type="button"
-						>
+					<button class="nav-link" id="nav-review-tab" type="button">
 						상품 리뷰&nbsp;<span>(5231)</span>
 					</button>
-					<button class="nav-link" id="nav-refund-tab"
-						type="button"
-						>반품 / 환불</button>
-					<button class="nav-link" id="nav-qna-tab"
-						type="button"
-						>상품 문의</button>
+					<button class="nav-link" id="nav-refund-tab" type="button">반품
+						/ 환불</button>
+					<button class="nav-link" id="nav-qna-tab" type="button">상품
+						문의</button>
 				</div>
 			</nav>
 			<div class="tab-content pt-4" id="nav-tabContent">
-				
-				<div id="productInfoLayout">
-					
-				</div>
-				
+
+				<div id="productInfoLayout"></div>
+
 				<div class="tab-pane fade" id="nav-qna" role="tabpanel"
 					aria-labelledby="nav-qna-tab">
-					
+
 					<h4>상품 문의</h4>
 					<div class="qna-list-wrapper mt-3">
 						<div class="qna-list-header">
@@ -198,9 +198,9 @@
 						</div>
 					</div>
 				</div>
-				
-				<div class="tab-pane fade" id="nav-review"
-					role="tabpanel" aria-labelledby="nav-review-tab">
+
+				<div class="tab-pane fade" id="nav-review" role="tabpanel"
+					aria-labelledby="nav-review-tab">
 					<h4>상품 리뷰</h4>
 					<div class="review-list-wrapper mt-3">
 						<ul class="list-unstyled">
@@ -289,28 +289,37 @@
 
 		</div>
 	</main>
-	
+
 	<div id="product-template">
 		<form name="buyForm">
-			<input type="hidden" name="productNums" id="product-productNum" value="${productInfo.productNum}">
-			<input type="hidden" name="buyQtys" id="qty" value="">		
-			<input type="hidden" name="units" id="unit" value="${productInfo.unit}">		
+			<input type="hidden" name="productNums" id="product-productNum"
+				value="${productInfo.productNum}"> <input type="hidden"
+				name="buyQtys" id="qty" value=""> <input type="hidden"
+				name="units" id="unit" value="${productInfo.unit}">
 		</form>
-		<input type="hidden" id="web-contextPath" value="${pageContext.request.contextPath}">
-		<input type="hidden" id="product-productName" value="${productInfo.productName}">
-		<input type="hidden" id="product-price" value="${productInfo.unitPrice}">
-		<input type="hidden" id="product-salePrice" value="${productInfo.discountedPrice}">		
-		<input type="hidden" id="product-totalStock" value="${productInfo.stockQuantity}">
-		<input type="hidden" id="product-thumbnail" value="${productInfo.mainImageFilename}">
+		<input type="hidden" id="web-contextPath"
+			value="${pageContext.request.contextPath}"> <input
+			type="hidden" id="product-productName"
+			value="${productInfo.productName}"> <input type="hidden"
+			id="product-price" value="${productInfo.unitPrice}"> <input
+			type="hidden" id="product-salePrice"
+			value="${productInfo.discountedPrice}"> <input type="hidden"
+			id="product-totalStock" value="${productInfo.stockQuantity}">
+		<input type="hidden" id="product-thumbnail"
+			value="${productInfo.mainImageFilename}">
 	</div>
-	
+
 	<footer>
 		<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 	</footer>
 	<jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
-	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productInfo.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/updateWish.js"></script>
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/productInfo.js"></script>
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/updateWish.js"></script>
 </body>
 </html>

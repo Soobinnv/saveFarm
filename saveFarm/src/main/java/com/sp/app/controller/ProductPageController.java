@@ -1,6 +1,7 @@
 package com.sp.app.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class ProductPageController {
 	
 	// 상품 리스트
 	@GetMapping
-	public String listPage(Model model) {
+	public String productList(Model model) {
 		return "product/list";
 	}
 	
@@ -55,13 +56,16 @@ public class ProductPageController {
 				productInfo.setUserWish(wishService.findByWishId(map) == null ? 0 : 1);
 			}
 			
+			List<Product> productImageList = service.getProductImageList(productNum);
+			
 			model.addAttribute("productInfo", productInfo);
+			model.addAttribute("productImageList", productImageList);
 			
 			return "product/info";
 			
 		} catch (NullPointerException e) {
 		} catch (Exception e) {
-			log.info("productDetail : ", e);
+			log.info("productInfo : ", e);
 		}
 
 		return "redirect:/products";

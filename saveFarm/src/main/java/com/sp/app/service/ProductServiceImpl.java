@@ -49,4 +49,29 @@ public class ProductServiceImpl implements ProductService {
 		
 		return dto;
 	}
+
+	@Override
+	public List<Product> getRescuedProductList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Product getRescuedProductInfo(long productNum) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Product> getProductImageList(long productNum) {
+		List<Product> list = null;
+		
+		try {
+			list = mapper.getProductImageList(productNum);
+		} catch (Exception e) {
+			log.info("getProductImageList : ", e);
+		}
+		
+		return list;
+	}
 }

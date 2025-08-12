@@ -36,12 +36,21 @@ public class ProductApiController {
 	private final WishService wishService;
 
 	// 상품 리스트 데이터
-	// 상품 리스트 데이터
 	@GetMapping
-	public ResponseEntity<?> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd) {
+	public ResponseEntity<?> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd, HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
 		try {
-			List<Product> list = service.getProductList(new HashMap<>());
+			Map<String, Object> map = new HashMap<>();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			
+			if(info != null) {
+				map.put("memberId", info.getMemberId());				
+			}
+			
+			map.put("kwd", kwd);
+			
+			List<Product> list = service.getProductList(map);
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
