@@ -49,7 +49,7 @@ public class MyShoppingController {
 		} catch (Exception e) {
 		}
 		
-		return "redirect:/myShoppint/cart";
+		return "redirect:/myShopping/cart";
 	}
 	
 }

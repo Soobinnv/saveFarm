@@ -8,4 +8,27 @@
 		VALUES (cart_seq.NEXTVAL, #{memberId}, #{productNum}, #{qty}, SYSDATE)
 	</insert>
 	
+	<select id="findByCartId" parameterType="map" resultType="com.sp.app.model.Order">
+		SELECT cartNum, memberId, productNum, qty, regDate
+		FROM cart
+		WHERE productNum = #{productNum} AND memberId = #{memberId}
+	</select>
+	
+	<!-- 유저의 장바구니 리스트 -->
+	<select id="listCart" resultType="com.sp.app.model.Order" parameterType="Long">
+		SELECT ct.cartNum, ct.memberId, ct.productNum, ct.qty, ct.regDate,
+				p.productName, p.deliveryFee, p.mainImageFilename,
+				pd.stockQuantity, pd.unit, pd.unitPrice, pd.discountRate
+		FROM cart ct
+		JOIN (
+			SELECT productNum, productName, deliveryFee, mainImageFilename, productClassification
+			FROM product
+			WHERE productClassification = 100
+		) p ON ct.productNum = p.productNum
+		LEFT OUTER JOIN productDetail pd ON p.productNum = pd.productNum
+		WHERE ct.memberId = #{memberId}
+		ORDER BY cartNum DESC
+	</select>
+	
+	
 </mapper>

@@ -12,12 +12,12 @@ import lombok.Setter;
 public class Order {
 	private long productNum;
 	private String productName;
-	private String thumbnail;
-	private int price;
+	private String mainImageFilename;
+	private int stockQuantity;
 	private int discountRate;
 	private int discountPrice;
 	private int savedMoney;
-	private int delivery;
+	private int deliveryFee;
 	
 	private Long memberId;
 	private String loginId;
@@ -26,7 +26,7 @@ public class Order {
 	private long orderDetailNum;
 	private String orderDate;
 	private int usedSaved;
-	private int payment;
+	private int unitPrice;
 	private int totalMoney;
 	private int deliveryCharge;
 	private int salePrice;
@@ -39,7 +39,7 @@ public class Order {
 	private List<Long> productNums;
 	private List<Integer> buyQtys;
 	private List<Integer> productMoneys;
-	private List<Integer> prices;
+	private List<Integer> unitPrices;
 	private List<Integer> salePrices;
 	private List<String> units;
 	

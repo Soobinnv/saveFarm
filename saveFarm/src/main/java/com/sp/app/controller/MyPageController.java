@@ -15,6 +15,6 @@ public class MyPageController {
 	@GetMapping("/myPage")
 	public String handleMyPage(Model model) {
 		
-		return "main/myPage";
+		return "myPage/myPage";
 	}
 }

@@ -53,8 +53,8 @@
             width: 60px;
             height: auto;
         }
-        tbody tr {
-        	border-top: 1px solid #eee;
+        thead tr:nth-child(2), tbody tr {
+        	border-bottom: 1px solid #eee;
         }
 
         /* 수량 버튼 */
@@ -69,18 +69,31 @@
         .summary {
             margin-top: 30px;
             text-align: right;
-            border-top: 1px solid #eee;
         }
         .summary div {
             margin: 5px 0;
         }
+        
         .checkout-btn {
             margin-top: 20px;
-            background-color: #ff4d4f;
-            color: white;
+            background-color: #f5f5f5;
             padding: 10px 10px;
-            border: none;
+		 	border: 1px solid #ddd;
             border-radius: 30px;
             cursor: pointer;
             font-size: 16px;
+		  	font-weight: bold;
+		  	border-bottom: none;
+		  	transition: background 0.3s, color 0.3s;
         }
+        
+		.checkout-btn:hover {
+		  background-color: #039a63;
+		  color: #fff;
+		}
+	
+		.checkout-btn:active {
+		  background-color: #039a63;
+		  color: #fff;
+		  border-color: #039a63;
+		}

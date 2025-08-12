@@ -28,7 +28,6 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 			for(int i = 0 ; i < dto.getProductNums().size(); i++) {
 				dto.setProductNum(dto.getProductNums().get(i));
 				dto.setQty(dto.getBuyQtys().get(i));
-				dto.setUnit(dto.getUnits().get(i));
 				
 				map.put("productNum", dto.getProductNums().get(i));
 				
@@ -55,11 +54,11 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 			for(Order dto : list) {
 				int discountPrice = 0;
 				if(dto.getDiscountRate() > 0) {
-					discountPrice = (int)(dto.getPrice() * (dto.getDiscountRate()/100.0));
+					discountPrice = (int)(dto.getUnitPrice() * (dto.getDiscountRate()/100.0));
 					dto.setDiscountPrice(discountPrice);
 				}
 				
-				dto.setSalePrice(dto.getPrice() - discountPrice);
+				dto.setSalePrice(dto.getUnitPrice() - discountPrice);
 				dto.setProductMoney(dto.getSalePrice() * dto.getQty());
 			}
 		} catch (Exception e) {

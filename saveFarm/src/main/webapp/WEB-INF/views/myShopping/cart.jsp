@@ -19,17 +19,18 @@
 </header>
 
 <main class="content">
-<div class="container">
-
-
+  <div class="container">
+	<form name="cartForm" method="post">
 	    <h1>내 장바구니</h1>
 	    <table>
 	        <thead>
 	        	<tr>
-	                <th><button type="button" class="checkout-btn cart-deleteCheck" onclick="deleteCartSelect()();">선택삭제</button></th>
+	        		<th>
+	                	<button type="button" class="checkout-btn cart-deleteCheck" onclick="deleteCartSelect()();">선택삭제</button>
+	        		</th>
 	        	</tr>
 	            <tr>
-	            	<th width="35"><input type="checkbox" class="cart-selectAll" id="selectAll" name="selectAll"></th>
+	            	<th width="110"><input type="checkbox" class="cart-selectAll" id="selectAll" name="selectAll"></th>
 	                <th colspan="2">상품</th>
 	                <th width="150">가격</th>
 	                <th width="150">수량</th>
@@ -38,16 +39,16 @@
 	            </tr>
 	        </thead>
 	        <tbody>
-	        	<c:forEach varStatus="dto" items="${list}">
+	        	<c:forEach var="dto" items="${list}">
 		            <tr valign="middle">
 		            	<td><input type="checkbox" class="itemCheckbox" name="nums" value="${dto.productNum}"
-		            		data-totalStock="${dto.totalStock}" ${dto.totalStock == 0 ? "disabled":""}></td>
+		            		data-stockQuantity="${dto.stockQuantity}" ${dto.stockQuantity == 0 ? "disabled":""}></td>
 		                <td width="55">
-		                    <img class="border rounded" width="50" height="50" src="${pageContext.request.contextPath}/uploads/products/${dto.thumnail}">
+		                    <img class="border rounded" width="50" height="50" src="${pageContext.request.contextPath}/uploads/product/${dto.mainImageFilename}">
 		                </td>
 		                <td>
 		                	<p class="product-title p-1 mb-0 left">${dto.productName}</p>
-		                    <p class="product-qty p-1 mb-0 left">${dto.qty}개 (${개당 dto.unit})</p>
+		                    <p class="product-qty p-1 mb-0 left"> ${dto.unit} </p>
 		                    <input type="hidden" name="productNums" value="${dto.productNum}">
 		                    <!-- 
 		                    <div>
@@ -58,18 +59,18 @@
 		                     -->
 		                </td>
 		                <td>
-		                	<label><fmt:formatNumber value="${dto.price}"/></label><label>원</label>
-		                	<input type="hidden" name="prices" value="${dto.price}">
+		                	<label><fmt:formatNumber value="${dto.unitPrice}"/></label><label>원</label>
+		                	<input type="hidden" name="prices" value="${dto.unitPrice}">
 		                </td>
 		                <td>
-		                    <button class="qty-btn">-</button> 1 <button class="qty-btn">+</button>
+		                    <button class="qty-btn">-</button> ${dto.qty} <button class="qty-btn">+</button>
 		                </td>
 		                <td>
 		                	<label><fmt:formatNumber value="${dto.productMoney}"/></label><label>원</label>
 		                	<input type="hidden" name="productMoneys" value="${dto.productMoney}">
 						</td>
 						<td>
-							<button type="button" class="btn-default cart-delete" onclick="deleteCartItem('${dto.productNum}')"><i class="bi bi-x"></i></button>
+							<button type="button" class="cart-delete" onclick="deleteCartItem('${dto.productNum}')"><i class="bi bi-x"></i></button>
 						</td>		                
 		            </tr>
 	            </c:forEach>
@@ -85,12 +86,13 @@
 	    	<c:otherwise>
 	    		<div class="summary">
 	    			<input type="hidden" name="mode" value="cart">
-	        		<div><strong>총합계: 1954.97 €</strong></div>
-	        		<button type="button" class="checkout-btn btn-accent" style="width: 200px;" onclick="sendOk();">선택상품 결제하기</button>
+	        		<div><strong>총합계: ${dto.totalMoney}</strong></div>
+	        		<button type="button" class="checkout-btn" style="width: 200px;" onclick="sendOk();">선택상품 결제하기</button>
 	    		</div>
 	    	</c:otherwise>
 	    </c:choose>
-</div>
+	  </form>
+	</div>
 </main>
 
 <footer>
