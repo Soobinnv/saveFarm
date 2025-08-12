@@ -41,10 +41,16 @@
             width: 100%;
             border-collapse: collapse;
         }
-        th, td {
+        th, td, thead th {
             padding: 15px;
-            text-align: left;
+            text-align: center;
         }
+        
+        td:nth-child(2), td:nth-child(3), th:nth-child(2){
+        	padding-left: 50px;
+        	text-align: left;
+        }
+        
         th {
             border-bottom: 2px solid #eee;
             color: #888;
@@ -60,10 +66,15 @@
         /* 수량 버튼 */
         .qty-btn {
             padding: 5px 10px;
-            border: 1px solid #ddd;
+            border: none;
             background: #fff;
             cursor: pointer;
         }
+        
+        /* 테이블 내용 */
+		.product-title{
+			font-weight: bold;
+		}
 
         /* 합계 영역 */
         .summary {
@@ -88,12 +99,21 @@
         }
         
 		.checkout-btn:hover {
-		  background-color: #039a63;
-		  color: #fff;
+		    background-color: #039a63;
+		    color: #fff;
 		}
 	
 		.checkout-btn:active {
-		  background-color: #039a63;
-		  color: #fff;
-		  border-color: #039a63;
+		    background-color: #039a63;
+		    color: #fff;
+		    border-color: #039a63;
 		}
+
+		/* 상품 하나 삭제 버튼*/
+		.cart-delete {
+			border: none;
+			background-color: #fff;
+			cursor: pointer;
+		}
+		.cart-delete:hover{ color: #039a63; }
+		

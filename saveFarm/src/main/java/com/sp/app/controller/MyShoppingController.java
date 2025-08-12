@@ -1,13 +1,16 @@
 package com.sp.app.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sp.app.model.Order;
 import com.sp.app.model.SessionInfo;
@@ -37,6 +40,7 @@ public class MyShoppingController {
 		return "myShopping/cart";
 	}
 	
+	// 장바구니 저장
 	@PostMapping("saveCart")
 	public String saveCart(Order dto, HttpSession session) throws Exception {
 		try {
@@ -52,6 +56,66 @@ public class MyShoppingController {
 		return "redirect:/myShopping/cart";
 	}
 	
+	// 하나 상품 장바구니 비우기
+	@GetMapping("deleteCart")
+	public String deleteCart(
+			@RequestParam(name = "productNum") long productNum, 
+			HttpSession session) throws Exception {
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("gubun", "item");
+			map.put("memberId", info.getMemberId());
+			map.put("productNum", productNum);
+			
+			service.deleteCart(map);
+			
+		} catch (Exception e) {
+			log.info("deleteCart : ", e);
+		}
+		return "redirect:/myShopping/cart";
+	}
+	
+	// 선택상품 장바구니 비우기
+	@PostMapping("deleteListCart")
+	public String deleteListCart(
+			@RequestParam(name = "nums") List<Long> nums, 
+			HttpSession session) throws Exception {
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("gubun", "list");
+			map.put("memberId", info.getMemberId());
+			map.put("list", nums);
+			
+			service.deleteCart(map);
+			
+		} catch (Exception e) {
+			log.info("deleteListCart : ", e);
+		}
+		return "redirect:/myShopping/cart";
+	}
+	
+	// 장바구니 모두 비우기
+	@GetMapping("deleteCartAll")
+	public String deleteCartAll(HttpSession session) throws Exception {
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("gubun", "all");
+			map.put("memberId", info.getMemberId());
+		} catch (Exception e) {
+			log.info("deleteCartAll : ", e);
+		}
+		
+		return "redirect:/myShopping/cart";
+	}
 }
 
 

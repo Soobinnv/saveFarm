@@ -30,12 +30,12 @@
 	        		</th>
 	        	</tr>
 	            <tr>
-	            	<th width="110"><input type="checkbox" class="cart-selectAll" id="selectAll" name="selectAll"></th>
+	            	<th width="130"><input type="checkbox" class="cart-selectAll" id="selectAll" name="selectAll"></th>
 	                <th colspan="2">상품</th>
-	                <th width="150">가격</th>
-	                <th width="150">수량</th>
-	                <th width="150">합계</th>
-	                <th width="70">삭제</th>
+	                <th width="180">가격</th>
+	                <th width="180">수량</th>
+	                <th width="180">합계</th>
+	                <th width="70"></th>
 	            </tr>
 	        </thead>
 	        <tbody>
@@ -50,27 +50,36 @@
 		                	<p class="product-title p-1 mb-0 left">${dto.productName}</p>
 		                    <p class="product-qty p-1 mb-0 left"> ${dto.unit} </p>
 		                    <input type="hidden" name="productNums" value="${dto.productNum}">
-		                    <!-- 
-		                    <div>
-		                        <strong>${dto.productName}</strong><br>
-		                        상품번호: #214323543545352<br>
-		                        개수: 1개 (개당 500g)
-		                    </div>
-		                     -->
 		                </td>
 		                <td>
-		                	<label><fmt:formatNumber value="${dto.unitPrice}"/></label><label>원</label>
-		                	<input type="hidden" name="prices" value="${dto.unitPrice}">
+		                	<c:choose>
+			                	<c:when test="${dto.unitPrice != dto.salePrice}"> 
+			                		<!-- 할인된 경우 -->
+				                	<del><fmt:formatNumber value="${dto.unitPrice}" /></del>원
+							        <br>
+							        <span style="color:red; font-weight:bold;">
+							            <fmt:formatNumber value="${dto.salePrice}" />원
+							        </span>
+							        <input type="hidden" name="prices" value="${dto.salePrice}">
+						        </c:when>
+						        <c:otherwise>
+						        	<!-- 할인 안된 경우 -->
+						        	<span style="font-weight:bold;"><fmt:formatNumber value="${dto.salePrice}"/>원</span>
+			                		<input type="hidden" name="prices" value="${dto.salePrice}">
+						        </c:otherwise>
+					        </c:choose>
 		                </td>
 		                <td>
-		                    <button class="qty-btn">-</button> ${dto.qty} <button class="qty-btn">+</button>
+		                    <button class="qty-btn btn-minus"><i class="bi bi-dash" style="font-size: 1.3rem;"></i></button> 
+		                    ${dto.qty}
+		                    <button class="qty-btn btn-plus"><i class="bi bi-plus" style="font-size: 1.3rem;"></i></button>
 		                </td>
 		                <td>
 		                	<label><fmt:formatNumber value="${dto.productMoney}"/></label><label>원</label>
 		                	<input type="hidden" name="productMoneys" value="${dto.productMoney}">
 						</td>
 						<td>
-							<button type="button" class="cart-delete" onclick="deleteCartItem('${dto.productNum}')"><i class="bi bi-x"></i></button>
+							<button type="button" class="cart-delete" onclick="deleteCartItem('${dto.productNum}')"><i class="bi bi-x" style="font-size: 1.5rem;"></i></button>
 						</td>		                
 		            </tr>
 	            </c:forEach>

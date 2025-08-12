@@ -70,8 +70,13 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 
 	@Override
 	public void deleteCart(Map<String, Object> map) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.deleteCart(map);
+		} catch (Exception e) {
+			log.info("deleteCart : ", e);
+			
+			throw e;
+		}
 	}
 
 	@Override
