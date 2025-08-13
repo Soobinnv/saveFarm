@@ -10,10 +10,6 @@ $(function() {
 	loadProducts("");
 });
 
-function addToCart(productNum, btnEL) {
-	
-}
-
 /**
  * AJAX 요청, 응답 데이터로 HTML 렌더링
  * @param {string} kwd - 검색어

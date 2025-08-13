@@ -2,7 +2,7 @@ const contextPath = $('body').data('context-path');
 
 // 처음 페이지 로딩 시
 $(function() {
-	// 상품 상세 출력
+	// 마이페이지 메인 불러오기
 	loadContent('/api/myPage', renderMyPageMainHtml);
 });
 
@@ -92,7 +92,7 @@ const renderMyPageMainHtml = function(data) {
  */
 const renderMyWishListHtml = function(data) {	
 	let html = `
-		<div class="container-lg p-4 p-sm-5">
+		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
 				<h1 class="display-5 fw-bold text-dark">찜한 상품</h1>
 				<p class="mt-2 text-muted">관심 있는 상품을 저장하고 관리하세요.</p>

@@ -19,4 +19,5 @@ public class SessionInfo {
 	private int userLevel;
 	private String login_type; // local, kakao, naver, google
 	private String avatar; // profile photo
+	private int cartSize;
 }

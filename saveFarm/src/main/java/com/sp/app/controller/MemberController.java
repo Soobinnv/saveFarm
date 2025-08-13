@@ -19,6 +19,7 @@ import com.sp.app.common.StorageService;
 import com.sp.app.model.Member;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.service.MemberService;
+import com.sp.app.service.MyShoppingService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class MemberController {
 
 	private final MemberService service;
 	private final StorageService storageService;
+	private final MyShoppingService shoppingService;
 	
 	private String uploadPath;
 
@@ -62,7 +64,9 @@ public class MemberController {
 			model.addAttribute("message", "아이디 또는 패스워드가 일치하지 않습니다.");
 			return "member/login";
 		}
-
+		
+		// int cartSize = shoppingService.getCartSize(dto.getMemberId());
+		
 		SessionInfo info = SessionInfo.builder()
 				.memberId(dto.getMemberId())
 				.loginId(dto.getLoginId())
@@ -71,6 +75,7 @@ public class MemberController {
 				.userLevel(dto.getUserLevel())
 				.avatar(dto.getProfilePhoto())
 				.login_type("local")
+				// .cartSize(cartSize)
 				.build();
 		
 		session.setMaxInactiveInterval(30 * 60); // 30분. 기본:30분

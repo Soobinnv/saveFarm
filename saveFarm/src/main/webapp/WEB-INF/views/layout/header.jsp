@@ -69,8 +69,10 @@
 				<li class="ms-3"> 
 					<a href="${pageContext.request.contextPath}/myShopping/cart">
 						<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-						<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
-							03 </span>  
+						<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
+							<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
+							${sessionScope.member.cartSize}</span>  						
+						</c:if>
 					</a>
 				</li>
 			</ul>
