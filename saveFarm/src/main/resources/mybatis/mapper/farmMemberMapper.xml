@@ -38,7 +38,7 @@
 	</update>
 
 <!-- 삭제 -->	
-	<delete id="deleteFarm" parameterMap="map">
+	<delete id="deleteFarm" parameterType="map">
 		DELETE FROM farm
 		WHERE farmNum = #{farmNum}
 	</delete>
