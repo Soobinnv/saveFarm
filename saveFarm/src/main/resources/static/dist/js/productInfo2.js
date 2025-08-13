@@ -28,7 +28,7 @@ $(function() {
 	            loadContent('/api/products/' + productNum + '/reviews', renderProductReviewHtml);  
 	            break;
 	        case 'nav-refund-tab':
-	            loadContent('/api/products/' + productNum + '/refundInfo', renderRefundHtml); 
+	            loadContent('/api/products/' + productNum + '/refund-info', renderRefundHtml); 
 	            break;
 	        case 'nav-qna-tab':
 	        	loadContent('/api/products/' + productNum + '/qnas', renderProductQnaHtml); 
@@ -68,13 +68,37 @@ function loadContent(url, renderFn) {
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderProductDetailHtml = function(data) {	
-	let html = `
+	let html = '';
+	
+	if(! data.productInfo) {
+		html += `
+			<h4>상품 상세 정보</h4>
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">등록된 상품 정보가 없습니다.</p>
+		    </div>`;
+		return html;
+	}
+	
+	html += `
 		<h4>상품 상세 정보</h4>
 		<br>
 		<p>
 			${data.productInfo.productDesc}
 		</p>
-		`
+	`;
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<br>
+			<h4>📢 이 상품은 어때요?</h4>
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">추천 상품 목록이 없습니다.</p>
+		    </div>`;
+		return html;
+	}
+		
 	html += data.list.map(item => `
 		<div class="recommendation-section">
 			<h4>📢 이 상품은 어때요?</h4>
@@ -170,8 +194,10 @@ const renderProductReviewHtml = function(data) {
 		html += `
 			<li class="text-center p-5 border rounded">
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
-		        <p class="mt-3 mb-0 text-muted">등록된 리뷰가 없습니다.<br>첫 번째 리뷰를 작성해보세요!</p>
+		        <p class="mt-3 mb-0 text-muted">등록된 리뷰가 없습니다.<br>상품을 구매하고 첫 번째 리뷰를 작성해보세요!</p>
 		    </li>`;
+		
+		return html;
 	}
 			
 	html += data.list.map(item => `
@@ -310,11 +336,72 @@ const renderRefundHtml = function(data) {
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderProductQnaHtml = function(data) {
-	const html = data.list.map(item => `
-		
-		
-		
+	
+	let html = '';
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<h4>상품 문의</h4>
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">등록된 문의가 없습니다.</p>
+		    </div>
+			<div class="text-center mt-1 p-5">
+				<button onclick="" class="btn btn-success btn-lg" type="button">상품 문의</button>
+			</div>
+		`;
+		return html;
+	}
+	
+	html += `
+		<h4>상품 문의</h4>
+		<div class="qna-list-wrapper mt-3">
+			<div class="qna-list-header">
+				<span class="qna-status">상태</span> <span
+					class="qna-title text-center">제목</span> <span class="qna-date">등록일</span>
+				<span class="qna-author">작성자</span>
+			</div>
+		<div class="accordion accordion-flush" id="qna-list-body">
+	`;
+	
+	
+	html += data.list.map(item => `
+				<div class="accordion-item">
+					<h2 class="accordion-header">
+						<button class="accordion-button collapsed" type="button"
+							data-bs-toggle="collapse" data-bs-target="#qna-answer-1">
+							<span class="qna-status answered">답변완료</span> <span
+								class="qna-title">재입고 문의드립니다.</span> <span class="qna-date">2025-08-07</span>
+							<span class="qna-author">김*빈</span>
+						</button>
+					</h2>
+					<div id="qna-answer-1" class="accordion-collapse collapse"
+						data-bs-parent="#qna-list-body">
+						<div class="accordion-body">안녕하세요, 고객님. 문의하신 상품은 다음 주
+							금요일(8/15) 오후에 재입고될 예정입니다. 감사합니다.</div>
+					</div>
+				</div>
+
+				<div class="accordion-item">
+					<h2 class="accordion-header">
+						<button class="accordion-button disabled" type="button">
+							<span class="qna-status">답변대기</span> <span class="qna-title">배송
+								얼마나 걸리나요?</span> <span class="qna-date">2025-08-08</span> <span
+								class="qna-author">이*정</span>
+						</button>
+					</h2>
+				</div>
+
+			</div>
+		</div>
+			
 	`).join('');
+	
+	html += `
+		<div class="text-center mt-3 p-5">
+			<button onclick="" class="btn btn-success btn-lg" type="button">상품 문의</button>
+		</div>
+	`;
 	
 	return html;
 }

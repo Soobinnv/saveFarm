@@ -28,10 +28,10 @@
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">취소/교환/반품 조회</a></li>
         <li>내 활동</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/wish', renderMyWishListHtml);">찜</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">나의 리뷰</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">1:1 문의</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">상품 문의</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">FAQ</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/reviews', renderMyReviewListHtml);">나의 리뷰</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/inquirys', renderMyInquiryListHtml);">1:1 문의</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/qnas', renderMyQnaListHtml);">상품 문의</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/faqs', renderFaqListHtml);">FAQ</a></li>
         <li>회원정보</li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">회원정보 수정</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">회원탈퇴</a></li>

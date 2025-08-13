@@ -65,7 +65,7 @@ public class MemberController {
 			return "member/login";
 		}
 		
-		// int cartSize = shoppingService.getCartSize(dto.getMemberId());
+		int cartSize = shoppingService.getCartSize(dto.getMemberId());
 		
 		SessionInfo info = SessionInfo.builder()
 				.memberId(dto.getMemberId())
@@ -75,7 +75,7 @@ public class MemberController {
 				.userLevel(dto.getUserLevel())
 				.avatar(dto.getProfilePhoto())
 				.login_type("local")
-				// .cartSize(cartSize)
+				.cartSize(cartSize)
 				.build();
 		
 		session.setMaxInactiveInterval(30 * 60); // 30분. 기본:30분

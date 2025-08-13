@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sp.app.model.ProductQna;
+import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
 import com.sp.app.service.WishService;
@@ -26,7 +28,7 @@ public class MyPageApiController {
 
 	private final WishService wishService;
 
-	// 나의 찜 목록 데이터
+	// 마이페이지 - 메인 데이터
 	@GetMapping
 	public ResponseEntity<?> getMyPageMain(HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
@@ -40,7 +42,7 @@ public class MyPageApiController {
 		}
 	}
 	
-	// 나의 찜 목록 데이터
+	// 내 활동 - 찜 데이터
 	@GetMapping("/wish")
 	public ResponseEntity<?> getMyWishList(HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
@@ -51,8 +53,74 @@ public class MyPageApiController {
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getProductList: ", e);
-			body.put("message", "찜 목록을 불러오는 중 오류가 발생했습니다.");
+			log.error("getMyWishList: ", e);
+			body.put("message", "나의 찜 목록을 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 나의 리뷰 데이터
+	@GetMapping("/reviews")
+	public ResponseEntity<?> getMyReviewList(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			List<ProductReview> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getMyReviewList: ", e);
+			body.put("message", "나의 리뷰 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	// 내 활동 - 1:1 문의 데이터
+	@GetMapping("/inquirys")
+	public ResponseEntity<?> getMyInquiryList(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			List<ProductReview> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getMyInquiryList: ", e);
+			body.put("message", "나의 1:1 문의 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 상품 문의 데이터
+	@GetMapping("/qnas")
+	public ResponseEntity<?> getMyQnaList(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			List<ProductQna> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getMyQnaList: ", e);
+			body.put("message", "나의 상품 문의 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	// 내 활동 - FAQ 데이터
+	@GetMapping("/faqs")
+	public ResponseEntity<?> getMyFaqList(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			List<ProductReview> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getMyFaqList: ", e);
+			body.put("message", "FAQ 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

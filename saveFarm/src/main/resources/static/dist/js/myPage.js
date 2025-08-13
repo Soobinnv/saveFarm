@@ -94,7 +94,7 @@ const renderMyWishListHtml = function(data) {
 	let html = `
 		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
-				<h1 class="display-5 fw-bold text-dark">찜한 상품</h1>
+				<h3 class="display-6 fw-bold text-dark">찜한 상품</h3>
 				<p class="mt-2 text-muted">관심 있는 상품을 저장하고 관리하세요.</p>
 			</div>			
 			<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mb-4 p-3 bg-light rounded">
@@ -113,6 +113,20 @@ const renderMyWishListHtml = function(data) {
 			<div id="wishlist-container">
 	
 	`; 
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">찜한 상품이 없습니다.</p>
+		    </div>
+			<div class="text-center mt-3 p-5">
+				<button onclick="location.href='${contextPath}/products';" class="btn btn-success btn-lg" type="button">장보러가기</button>	
+			</div>
+		`;
+		return html;
+	}
+	
 	html += data.list.map(item => `
         <div class="card product-card mb-4 shadow-sm position-relative">
             <div class="card-body p-4">
@@ -151,3 +165,190 @@ const renderMyWishListHtml = function(data) {
 	return html;
 }
 
+/**
+ * 마이 페이지 - 내 활동 - 나의 리뷰
+ * @param {object} data - 내가 리뷰한 상품 데이터
+ * @param {Array<object>} data.list - 내가 리뷰한 상품 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderMyReviewListHtml = function(data) {	
+	let html = `
+		<div class="container-lg p-5 p-sm-5">
+			<div class="mb-5">
+				<h3 class="display-6 fw-bold text-dark">나의 리뷰</h3>
+				<p class="text-muted">내가 작성한 상품 리뷰를 확인하고 관리할 수 있습니다.</p>
+			</div>			
+	`; 
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">아직 작성한 리뷰가 없습니다.</p>
+		    </div>
+		`;
+		return html;
+	}
+	
+	html += data.list.map(item => `
+		<div class="card mb-4 shadow-sm">
+	        <div class="card-body p-4">
+	            <div class="d-flex justify-content-between align-items-start mb-3">
+	                <div class="d-flex align-items-center">
+	                    <img src="${item.reviewImageFilename}" 
+	                         class="rounded me-3" 
+	                         alt="${item.productName}" 
+	                         style="width: 60px; height: 60px; object-fit: cover;"
+	                         onerror="this.onerror=null;this.src=' ';">
+	                    <div>
+	                        <small class="text-muted">작성일: ${new Date(item.reviewDate).toLocaleDateString()}</small>
+	                        <h5 class="card-title mb-0 fw-semibold">${item.productName}</h5>
+	                    </div>
+	                </div>
+	                <div class="dropdown">
+	                    <button class="btn btn-light btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px;">
+	                        <iconify-icon icon="mdi:dots-vertical" class="align-middle"></iconify-icon>
+	                    </button>
+	                    <ul class="dropdown-menu dropdown-menu-end">
+	                        <li><a class="dropdown-item" href="#">
+	                            <iconify-icon icon="mdi:pencil-outline" class="me-2"></iconify-icon>수정하기
+	                        </a></li>
+	                        <li><a class="dropdown-item text-danger" href="#">
+	                            <iconify-icon icon="mdi:trash-can-outline" class="me-2"></iconify-icon>삭제하기
+	                        </a></li>
+	                    </ul>
+	                </div>
+	            </div>	
+	            <div class="mb-3 d-flex align-items-center">
+	                <div class="me-2">
+	                    ${[...Array(5)].map((_, i) => `
+	                        <iconify-icon icon="${i < item.star ? 'mdi:star' : 'mdi:star-outline'}" class="text-warning fs-5"></iconify-icon>
+	                    `).join('')}
+	                </div>
+	                <span class="fw-bold text-warning align-middle">${item.star.toFixed(1)}</span>
+	            </div>
+	
+	            <p class="card-text text-secondary mb-3">${item.content.replace(/\n/g, '<br>')}</p>
+	
+	            ${item.reviewImageList && item.reviewImageList.length > 0 ? `
+	            <div class="review-images d-flex overflow-auto mb-3 pb-2">
+	                ${item.reviewImageList.map(imgUrl => `
+	                    <img src="${imgUrl}" class="rounded me-2" alt="리뷰 이미지" style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;">
+	                `).join('')}
+	            </div>
+	            ` : ''}
+	
+	            <div class="d-flex justify-content-end align-items-center text-muted">
+	                <iconify-icon icon="mdi:thumb-up-outline" class="me-1"></iconify-icon>
+	                <span>도움돼요 ${item.helpfulCount}</span>
+	            </div>
+	        </div>
+	    </div>
+	`).join('');
+	html += `</div>`;
+	
+	return html;
+}
+
+/**
+ * 마이 페이지 - 내 활동 - 1:1 문의
+ * @param {object} data - 나의 문의 데이터
+ * @param {Array<object>} data.list - 내가 문의한 inquiry 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderMyInquiryListHtml = function(data) {	
+	let html = `
+		<div class="container-lg p-5 p-sm-5">
+			<div class="mb-5">
+				<h3 class="display-6 fw-bold text-dark">1:1 문의</h3>
+				<p class="text-muted">내가 문의한 내용을 확인하고, 관리자의 답변을 확인할 수 있습니다.</p>
+			</div>			
+	`; 
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">아직 문의한 내용이 없습니다.</p>
+		    </div>
+		`;
+		return html;
+	}
+	
+	html += data.list.map(item => `
+
+		
+	`).join('');
+	html += `</div>`;
+	
+	return html;
+}
+
+/**
+ * 마이 페이지 - 내 활동 - 나의 상품 문의
+ * @param {object} data - 내가 문의한 상품 데이터
+ * @param {Array<object>} data.list - 내가 문의한 상품 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderMyQnaListHtml = function(data) {	
+	let html = `
+		<div class="container-lg p-5 p-sm-5">
+			<div class="mb-5">
+				<h3 class="display-6 fw-bold text-dark">나의 상품 문의</h3>
+				<p class="text-muted">내가 문의한 상품을 확인하고, 관리자의 답변을 확인할 수 있습니다.</p>
+			</div>			
+	`; 
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">아직 문의한 상품이 없습니다.</p>
+		    </div>
+		`;
+		return html;
+	}
+	
+	html += data.list.map(item => `
+
+		
+		
+	`).join('');
+	html += `</div>`;
+	
+	return html;
+}
+
+/**
+ * 마이 페이지 - 내 활동 - FAQ
+ * @param {object} data - FAQ 데이터
+ * @param {Array<object>} data.list - FAQ 객체 배열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderFaqListHtml = function(data) {	
+	let html = `
+		<div class="container-lg p-5 p-sm-5">
+			<div class="mb-5">
+				<h3 class="display-6 fw-bold text-dark">FAQ</h3>
+				<p class="text-muted">자주 묻는 질문</p>
+			</div>			
+	`; 
+	
+	if(! data.list || data.list.length === 0) {
+		html += `
+			<div class="text-center mt-3 p-5 border rounded">
+		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <p class="mt-3 mb-0 text-muted">아직 등록된 FAQ가 없습니다.</p>
+		    </div>
+		`;
+		return html;
+	}
+	
+	html += data.list.map(item => `
+
+		
+	`).join('');
+	html += `</div>`;
+	
+	return html;
+}

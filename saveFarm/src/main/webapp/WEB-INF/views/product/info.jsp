@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SaveFarm</title>
+<title>${productInfo.productName}&nbsp;${productInfo.unit}</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp" />
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
@@ -83,7 +83,7 @@
 				</div>
 
 				<div class="col-md-6">
-					<h3>${productInfo.productName}</h3>
+					<h4>${productInfo.productName}&nbsp;${productInfo.unit}</h4>
 
 					<div class="mt-3 mb-3">
 						<c:choose>

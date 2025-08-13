@@ -31,28 +31,33 @@ function loadProducts(kwd) {
 								onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';">
 		                    <ul class="card-product__imgOverlay">
 		                        <li>
-		                            <button onclick="location.href='${contextPath}/products/${item.productNum}'">
+		                            <button type="button" onclick="location.href='${contextPath}/products/${item.productNum}'">
 		                                <iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
 		                            </button>
 		                        </li>
 		                        <li>
-		                            <button onclick="addToCart(${item.productNum}, this)">
+		                            <button type="button" onclick="addToCart(${item.productNum}, this)">
 		                                <iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
 		                            </button>
 		                        </li>
 		                        <li>
-									<button data-wish="${item.userWish}" onclick="updateWish(${item.productNum}, this);">
+									<button type="button" data-wish="${item.userWish}" onclick="updateWish(${item.productNum}, this);">
 									${item.userWish == '1'
 			                            ?`<iconify-icon icon="mdi:heart" class="wishIcon fs-4"></iconify-icon>`
 			                            :`<iconify-icon icon="lucide:heart" class="wishIcon fs-4"></iconify-icon>` 
 			                        }
 									</button>
+									<input type="hidden" name="thumbnail" value="${item.mainImageFilename}">
+									<input type="hidden" name="unit" value="${item.unit}">
+									<input type="hidden" name="productName" value="${item.productName}">
+									<input type="hidden" name="unitPrice" value="${item.unitPrice}">
+									<input type="hidden" name="stockQuantity" value="${item.stockQuantity}">
 		                        </li>
 		                    </ul>
 		                </div>
 		                <div class="card-body">
 		                    <h4 class="card-product__title mt-1">
-		                        <a href="${contextPath}/products/${item.productNum}">${item.productName}</a>
+		                        <a href="${contextPath}/products/${item.productNum}">${item.productName}&nbsp;${item.unit}</a>
 		                    </h4>
 		                    <p class="card-product__price">${item.unitPrice}원</p>
 		                </div>

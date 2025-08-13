@@ -68,7 +68,7 @@ public class ProductApiController {
 			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
 
 			// 추천 리스트 (수정 필요)
-			List<Product> list = service.getProductList(new HashMap<>());
+			List<Product> list = null;
 
 			body.put("productInfo", productInfo);
 			body.put("list", list);
@@ -114,7 +114,7 @@ public class ProductApiController {
 	}
 
 	// 상품 환불/반품 데이터
-	@GetMapping("/{productNum}/refundInfo")
+	@GetMapping("/{productNum}/refund-info")
 	public ResponseEntity<?> getProductRefundInfo(@PathVariable(name = "productNum") long productNum) {
 		Map<String, Object> body = new HashMap<>();
 		try {
