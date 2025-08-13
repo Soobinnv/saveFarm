@@ -14,7 +14,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
 	type="text/css">
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style type="text/css"> 	
 body{
 	font-family: Gowun Dodum, sans-serif;
@@ -56,6 +56,31 @@ body{
 /* 기존 그린 버튼 계열 */
 .btnGreen{ background:#039a63; color:#fff; border:none; }
 .btnGreen:hover{ background:#028453; }
+
+.picked-bar{
+  display:flex; flex-wrap:nowrap; gap:.5rem; align-items:center;
+  padding:.5rem .75rem; border:1px solid #e5e7eb; border-radius:12px; background:#fff;
+  min-height:48px; overflow-x:auto; overflow-y:hidden;
+  -webkit-overflow-scrolling: touch; scroll-snap-type:x proximity;
+}
+.picked-bar::-webkit-scrollbar{ height:8px; }
+.picked-bar::-webkit-scrollbar-thumb{ background:#cfd8dc; border-radius:999px; }
+
+.picked-chip{
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.35rem .6rem; border:1px solid #ffe3c2; background:#fff7ed;
+  border-radius:999px; white-space:nowrap; box-shadow:0 1px 0 rgba(0,0,0,.02);
+  scroll-snap-align:end;
+}
+.picked-chip img{ width:22px; height:22px; object-fit:cover; border-radius:6px; }
+.picked-chip .name{ max-width:220px; overflow:hidden; text-overflow:ellipsis; }
+.picked-chip .remove{ border:none; background:transparent; line-height:1; padding:0 .25rem; opacity:.6; }
+.picked-chip .remove:hover{ opacity:1; }
+
+/* 중복일 때 반짝 하이라이트 */
+.picked-chip.pulse{ animation:pulse-bg .4s ease-out; }
+@keyframes pulse-bg{ from{ box-shadow:0 0 0 0 rgba(3,154,99,.35);} to{ box-shadow:0 0 0 12px rgba(3,154,99,0);} }
+
 </style>
 </head>
 <body>
@@ -87,19 +112,22 @@ body{
     <a href="#" class="btn btnGreen w-100 rounded-pill py-2 mb-3">샐러드 세이브 패키지도 담기</a>
 
     <!-- 아이템 2 : 단품 -->
-    <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
-      <img src="${pageContext.request.contextPath}/dist/images/mushroom.png" alt="브라운양송이버섯"
-           class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
-      <div class="flex-grow-1">
-        <div class="fw-semibold">무농약 개성만점 브라운양송이버섯 150g</div>
-        <small class="text-muted">1,800 원</small>
-      </div>
-      <div class="qtybox">
-        <button class="btn qty-btn" type="button">−</button>
-        <input class="qty-input" type="number" value="1" min="1">
-        <button class="btn qty-btn" type="button">＋</button>
-      </div>
-    </div>
+    
+	    <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
+	      <!-- 상품 이미지 영역 -->
+	      <img src="${pageContext.request.contextPath}/dist/images/mushroom.png" alt="브라운양송이버섯"
+	           class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
+	      <div class="flex-grow-1">
+	      	<!-- 이름영역 -->
+	        <div class="fw-semibold">무농약 개성만점 브라운양송이버섯 150g</div>
+	        <small class="text-muted">1,800 원</small>
+	      </div>
+	      <div class="qtybox">
+	        <button class="btn qty-btn" type="button">−</button>
+	        <input class="qty-input" type="number" value="1" min="1">
+	        <button class="btn qty-btn" type="button">＋</button>
+	      </div>
+	    </div>
 
     
     <button class="btn addline w-100 rounded-pill py-2 mb-3">
@@ -136,7 +164,6 @@ body{
                   data-role="searchIcon">검색</button>
         </div>
 
-        <!-- 여기로 AJAX 카드들이 렌더링됨 -->
         <div class="row g-3" id="productLayout"></div>
 
         <!-- 스켈레톤/로딩 -->
@@ -146,6 +173,10 @@ body{
         </div>
       </div>
       <div class="modal-footer">
+		  <div id="pickedBar" class="picked-bar" aria-live="polite">
+		    <span class="picked-empty text-muted">선택한 상품이 여기에 표시됩니다.</span>
+		  </div>
+      
         <button class="btn addline" data-bs-dismiss="modal">닫기</button>
         <button class="btn btnGreen" type="button" id="confirmProducts">담기 완료</button>
       </div>
@@ -167,40 +198,9 @@ body{
 </footer>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
-<script type="text/javascript">
-(function(){
-	  // 모달 엘리먼트 & 트리거 버튼(장바구니 영역의 '정기결제 상품 추가')
-	  const modalEl = document.getElementById('productSelectModal');
-	  const trigger  = document.querySelector('.subcart .addline'); // 모달 footer의 '닫기'와 구분 위해 .subcart로 스코프
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/packageCartModal.js"></script>
 
-	  if (!modalEl || !trigger || typeof bootstrap === 'undefined') return;
 
-	  const modal = new bootstrap.Modal(modalEl, {
-	    backdrop: true,
-	    keyboard: true
-	  });
-
-	  // 클릭 시 모달 표시
-	  trigger.addEventListener('click', function(e){
-	    e.preventDefault();
-	    modal.show();
-	  });
-
-	  // 모달 열릴 때: 모달 전용 상품 리스트 초기화(있을 때만)
-	  let instance = null;
-	  modalEl.addEventListener('shown.bs.modal', function () {
-	    if (typeof initModalProductList === 'function') {
-	      instance = initModalProductList(modalEl); // 이전에 안내한 모달 스코프 초기화 함수
-	    }
-	  });
-
-	  // 모달 닫힐 때: 정리
-	  modalEl.addEventListener('hidden.bs.modal', function () {
-	    if (instance && typeof instance.destroy === 'function') instance.destroy();
-	    instance = null;
-	  });
-	})();
-</script>
 
 </body>
 </html>
