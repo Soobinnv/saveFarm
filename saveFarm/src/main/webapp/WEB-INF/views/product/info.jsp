@@ -309,6 +309,8 @@
 			id="product-totalStock" value="${productInfo.stockQuantity}">
 		<input type="hidden" id="product-thumbnail"
 			value="${productInfo.mainImageFilename}">
+		<input type="hidden" id="user-name"
+			value="${sessionScope.member.name}">
 	</div>
 
 	<footer>

@@ -11,5 +11,5 @@ public interface ProductQnaService {
 	public void deleteQna(long num) throws Exception;
 	
 	public List<ProductQna> getQnaList(Map<String, Object> map);
-	
+	public int getDataCount(Map<String, Object> map);
 }

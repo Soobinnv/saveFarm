@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.SupplyMapper">
+<!-- 납품넣기 -->
+	<insert id="insertSupply" parameterType="com.sp.app.model.Supply">
+		INSERT INTO supply(supplyNum, supplyQuantity, unitQuantity, unitPrice, harvestDate, state,
+			rescuedApply, coment, farmNum, productNum, varietyNum)
+		VALUES (#{supply_seq.NEXTVAL}, #{supplyQuantity}, #{unitQuantity}, #{unitPrice}, #harvestDate}, 0,
+			0, #{coment, jdbcType=VARCHAR}, #{farmNum}, #{productNum, jdbcType=VARCHAR}, #{varietyNum})
+	</insert>
+
+<!-- 납품수정 -->
+
+
+<!-- 납품삭제 -->
+
+
+<!-- 납품 조회 -->
+
+
+</mapper>

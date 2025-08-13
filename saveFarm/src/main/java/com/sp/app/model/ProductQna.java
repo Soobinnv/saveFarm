@@ -10,6 +10,7 @@ import lombok.Setter;
 public class ProductQna {
 	private long qnaNum;
 	private int secret;
+	private String title;
 	private String question;
 	private String answer;
 	private int block;

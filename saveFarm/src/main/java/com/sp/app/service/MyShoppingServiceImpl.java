@@ -36,6 +36,7 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 				} else {
 					mapper.updateCart(dto);
 				}
+				
 			}
 		} catch (Exception e) {
 			log.info("insertCart : ", e);
@@ -81,8 +82,11 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 
 	@Override
 	public void insertDestination(Destination dto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 
 	@Override

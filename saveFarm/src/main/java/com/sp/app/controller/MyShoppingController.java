@@ -43,17 +43,24 @@ public class MyShoppingController {
 	// 장바구니 저장
 	@PostMapping("saveCart")
 	public String saveCart(Order dto, HttpSession session) throws Exception {
-		try {
-			SessionInfo info = (SessionInfo)session.getAttribute("member");
-			
-			dto.setMemberId(info.getMemberId());
-			
-			service.insertCart(dto);
-			
-		} catch (Exception e) {
-		}
-		
-		return "redirect:/myShopping/cart";
+	    try {
+	        SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+	        dto.setMemberId(info.getMemberId());
+
+	        // 장바구니 저장
+	        service.insertCart(dto);
+
+	        // ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = service.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
+
+	    } catch (Exception e) {
+	        log.info("saveCart error : ", e);
+	    }
+
+	    return "redirect:/myShopping/cart";
 	}
 	
 	// 하나 상품 장바구니 비우기
@@ -110,6 +117,9 @@ public class MyShoppingController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("gubun", "all");
 			map.put("memberId", info.getMemberId());
+			
+			service.deleteCart(map);
+			
 		} catch (Exception e) {
 			log.info("deleteCartAll : ", e);
 		}

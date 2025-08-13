@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.sp.app.mapper.ProductQnaMapper;
 import com.sp.app.model.ProductQna;
 
 import lombok.RequiredArgsConstructor;
@@ -14,29 +15,76 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductQnaServiceImpl implements ProductQnaService {
-
+	private final ProductQnaMapper mapper;
+	
 	@Override
 	public void insertQna(ProductQna dto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.insertQna(dto);
+			
+		} catch (Exception e) {
+			log.info("insertQna : ", e);
+			
+			throw e;
+		}
 	}
 
 	@Override
 	public void updateQna(ProductQna dto) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			mapper.updateQna(dto);
+			
+		} catch (Exception e) {
+			log.info("updateQna : ", e);
+			
+			throw e;
+		}
 		
 	}
 
 	@Override
 	public void deleteQna(long num) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			mapper.deleteQna(num);
+			
+		} catch (Exception e) {
+			log.info("deleteQna : ", e);
+			
+			throw e;
+		}
 		
 	}
 	
 	@Override
 	public List<ProductQna> getQnaList(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProductQna> list = null;
+		
+		try {
+			list = mapper.getQnaList(map);
+			
+		} catch (Exception e) {
+			log.info("getQnaList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+
+	@Override
+	public int getDataCount(Map<String, Object> map) {
+		int count = 0;
+		
+		try {
+			count = mapper.getDataCount(map);
+			
+		} catch (Exception e) {
+			log.info("getDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
 	}
 
 }

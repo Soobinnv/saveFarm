@@ -59,7 +59,15 @@ function loadProducts(kwd) {
 		                    <h4 class="card-product__title mt-1">
 		                        <a href="${contextPath}/products/${item.productNum}">${item.productName}&nbsp;${item.unit}</a>
 		                    </h4>
-		                    <p class="card-product__price">${item.unitPrice}원</p>
+							<div class="d-flex align-items-center justify-content-center mt-2">
+								${item.discountRate != 0 
+									? `<span class="fs-5 fw-bold text-danger me-2">${item.discountRate}%</span>
+									   <span class="text-muted text-decoration-line-through">${item.unitPrice}원</span>
+									   <span class="ms-1 fw-bold text-dark">${item.discountedPrice}원</span>`
+									: `<span class="final-price fs-5">${item.unitPrice}원</span>`
+								}
+							</div>
+							
 		                </div>
 		            </div>
 		        </div>
