@@ -3,25 +3,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.mapper.WishMapper">
 	<insert id="insertWish" parameterType="map">
-		INSERT INTO wish(wishNum, memberId, productNum, wishDate)
-		VALUES (wish_seq.NEXTVAL, #{memberId}, #{productNum}, SYSDATE)
+		INSERT INTO wish(memberId, productNum, wishDate)
+		VALUES (#{memberId}, #{productNum}, SYSDATE)
 	</insert>
 
 	<select id="getWishList" resultType="com.sp.app.model.Wish" parameterType="Long">
-    	SELECT w.wishNum, w.memberId, w.productNum, wishDate,
+    	SELECT w.memberId, w.productNum, wishDate,
     		p.productName, pd.unitPrice, pd.discountRate, p.deliveryFee, p.mainImageFilename
     	FROM wish w
     	JOIN product p ON w.productNum = p.productNum
     	JOIN productDetail pd ON w.productNum = pd.productNum
 		WHERE w.memberId = #{memberId}
-		ORDER BY wishNum DESC
+		ORDER BY wishDate DESC
 	</select>
 
 	<select id="findByWishId" resultType="com.sp.app.model.Wish" parameterType="map">
-    	SELECT wishNum, memberId, productNum, wishDate
+    	SELECT memberId, productNum, wishDate
     	FROM wish
 		WHERE memberId = #{memberId} AND  productNum = #{productNum}
-		ORDER BY wishNum DESC
+		ORDER BY wishDate DESC
 	</select>
 	    
 	<delete id="deleteWish" parameterType="map">

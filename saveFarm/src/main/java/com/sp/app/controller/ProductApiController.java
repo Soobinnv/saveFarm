@@ -19,6 +19,7 @@ import com.sp.app.model.Product;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
+import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductService;
 import com.sp.app.service.WishService;
 
@@ -33,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductApiController {
 
 	private final ProductService service;
+	private final ProductQnaService qnaService;
 	private final WishService wishService;
 
 	// 상품 리스트 데이터
@@ -172,6 +174,35 @@ public class ProductApiController {
 		} catch (Exception e) {
 			log.error("deleteWish: ", e);
 			body.put("message", "찜 취소 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 문의 등록
+	@PostMapping("{productNum}/qnas")
+	public ResponseEntity<?> insertProductQna(
+			@PathVariable(name = "productNum") Long productNum,
+			ProductQna dto,
+			HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body); // 401 Unauthorized
+			}
+
+			dto.setMemberId(info.getMemberId());
+			dto.setProductNum(productNum);
+
+			qnaService.insertQna(dto);
+
+			// DB에서 가져온 시퀀스 값인 dto.qnaNum 클라이언트로 전송
+			body.put("qnaNum", dto.getQnaNum()); 
+
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("insertProductQna: ", e);
+			body.put("message", "상품 문의 등록 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

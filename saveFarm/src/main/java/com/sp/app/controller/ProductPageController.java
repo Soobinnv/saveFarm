@@ -71,5 +71,6 @@ public class ProductPageController {
 		return "redirect:/products";
 	}
 	
-
+	// 상품 문의 등록
+	
 }

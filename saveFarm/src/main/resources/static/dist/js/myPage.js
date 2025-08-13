@@ -142,9 +142,12 @@ const renderMyWishListHtml = function(data) {
                             <a href="#" class="text-decoration-none text-dark">${item.productName}(4개입)</a>
                         </h3>
                         <div class="d-flex align-items-center justify-content-center justify-content-sm-start mb-1">
-                            <span class="fs-5 fw-bold text-danger me-2">${item.discountRate}%</span>
-                            <span class="text-muted text-decoration-line-through me-3">${item.unitPrice}</span>
-                            <span class="fs-5 fw-bold text-dark">${item.discountedPrice}</span>
+							${item.discountRate != 0 
+								? `<span class="fs-5 fw-bold text-danger me-2">${item.discountRate}%</span>
+								   <span class="text-muted text-decoration-line-through">${item.unitPrice}원</span>
+								   <span class="ms-1 fw-bold text-dark">${item.discountedPrice}원</span>`
+								: `<span class="final-price fs-5">${item.unitPrice}원</span>`
+							}
                         </div>
                         <p class="small text-muted">배송비: ${item.deliveryFee}원</p>
                     </div>

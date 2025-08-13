@@ -3,8 +3,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.mapper.ProductQnaMapper">
 	<insert id="insertQna" parameterType="com.sp.app.model.ProductQna">
-		INSERT INTO productQna(qnaNum, secret, question, title, block, memberId, productNum, qnaDate)
-		VALUES(productQna_seq.NEXTVAL, #{secret}, #{question}, #{title}, 0, #{memberId}, #{productNum}, SYSDATE)
+		<selectKey keyProperty="qnaNum" resultType="long" order="BEFORE">
+	        SELECT productQna_seq.NEXTVAL FROM DUAL
+	    </selectKey>
+	    INSERT INTO productQna(qnaNum, secret, question, title, block, memberId, productNum, qnaDate)
+	    VALUES(#{qnaNum}, #{secret}, #{question}, #{title}, 0, #{memberId}, #{productNum}, SYSDATE)
 	</insert>
 	
 	<update id="updateQna" parameterType="com.sp.app.model.ProductQna">
@@ -17,5 +20,25 @@
 		WHERE qnaNum = #{qnaNum}
 	</delete>
 	
+	<select id="getQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">
+		SELECT qnaNum, secret, question, answer, block, memberId, answerId, productNum, 
+			qnaDate, answerdate, title
+		FROM productQna
+		WHERE block = 0;
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
 	
+	<select id="getMyQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">
+		SELECT qnaNum, secret, question, answer, block, memberId, answerId, productNum, 
+			qnaDate, answerdate, title
+		FROM productQna
+		WHERE block = 0 AND memberId = #{memberId};
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getDataCount" parameterType="map" resultType="Integer">
+		SELECT COUNT(*)
+		FROM productQna
+		WHERE productNum = #{productNum} AND block = 0
+	</select>
 </mapper>

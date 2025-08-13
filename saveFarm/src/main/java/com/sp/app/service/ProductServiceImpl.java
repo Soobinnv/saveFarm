@@ -23,6 +23,15 @@ public class ProductServiceImpl implements ProductService {
 		
 		try {
 			list = mapper.getProductList(map);
+			
+			int discountedPrice = 0;
+			for(Product dto : list) {
+				if(dto.getDiscountRate() > 0) {
+					discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
+					dto.setDiscountedPrice(discountedPrice);				
+				}				
+			}
+			
 		} catch (Exception e) {
 			log.info("getProductList : ", e);
 		}
