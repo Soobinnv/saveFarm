@@ -21,6 +21,9 @@
                         Designed By <a href="https://htmlcodex.com">HTML Codex</a>
                         <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
                     </div>
+                    <div>
+                    	<a href="${pageContext.request.contextPath}/farm">농가로 이동하는 임시링크입니다!!</a>
+                    </div>
                 </div>
             </div>
         </div>
