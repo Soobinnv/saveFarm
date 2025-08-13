@@ -16,4 +16,6 @@
 		DELETE FROM productQna
 		WHERE qnaNum = #{qnaNum}
 	</delete>
+	
+	
 </mapper>

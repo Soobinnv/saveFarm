@@ -6,7 +6,7 @@
 		SELECT m1.memberId, m1.loginId, password, snsProvider, snsId, 
 			name, email, userLevel, 
 			createdAt, updateAt, lastLogin, enabled, failureCnt,
-			m2.profilePhoto, m2.receive_email
+			m2.profilePhoto, m2.receiveEmail
 		FROM member1 m1
 		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId 
 		WHERE m1.loginId = #{loginId} AND m1.password = #{password} AND m1.enabled != 0
@@ -18,7 +18,7 @@
 			createdAt, lastLogin, enabled
 		FROM member1 m1
 		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId 
-		WHERE sns_provider = #{sns_provider, jdbcType=VARCHAR} AND sns_id = #{sns_id, jdbcType=VARCHAR}
+		WHERE sns_provider = #{snsProvider, jdbcType=VARCHAR} AND sns_id = #{snsId, jdbcType=VARCHAR}
 	</select>
 
 </mapper>
