@@ -346,60 +346,97 @@ const renderProductQnaHtml = function(data) {
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
 		        <p class="mt-3 mb-0 text-muted">등록된 문의가 없습니다.</p>
 		    </div>
-			<div class="text-center mt-1 p-5">
-				<button onclick="" class="btn btn-success btn-lg" type="button">상품 문의</button>
-			</div>
 		`;
-		return html;
+	} else {	
+		html += `
+			<h4>상품 문의</h4>
+			<div class="qna-list-wrapper mt-3">
+				<div class="qna-list-header">
+					<span class="qna-status">상태</span> <span
+						class="qna-title text-center">제목</span> <span class="qna-date">등록일</span>
+					<span class="qna-author">작성자</span>
+				</div>
+			<div class="accordion accordion-flush" id="qna-list-body">
+		`;
+		
+		
+		html += data.list.map(item => {
+			const isAnswered = item.answer && item.answer.trim() !== '';
+			const statusClass = isAnswered ? 'answered' : '';
+			const statusText = isAnswered ? '답변완료' : '답변대기';
+			const collapseId = `qna-answer-${item.id}`;
+			const authorMasked = item.author.substring(0, 1) + '*'.repeat(item.author.length - 1);
+
+			let itemHtml = `
+				<div class="accordion-item">
+					<h2 class="accordion-header">
+						<button 
+			                class="accordion-button ${isAnswered ? '' : 'collapsed'} ${!isAnswered ? 'disabled' : ''}" 
+			                type="button" 
+							${isAnswered ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}"` : 'aria-disabled="true"'}>
+							<span class="qna-status ${statusClass}">${statusText}</span>
+							<span class="qna-title">${item.isSecret ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2m6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2m-6 9c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4M9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2z"></path></svg> ' : ''}${item.title}</span>
+							<span class="qna-author">${authorMasked}</span>
+							<span class="qna-date">${item.date}</span>
+						</button>
+					</h2>`;
+
+			if (isAnswered) {
+				itemHtml += `
+					<div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#qna-list-body">
+						<div class="accordion-body">
+							<div class="qna-question-wrapper">
+								<strong class="qna-prefix q-prefix">Q.</strong>
+								<div class="qna-content">${item.question}</div>
+							</div>
+							<div class="qna-answer-wrapper">
+								<strong class="qna-prefix a-prefix">A.</strong>
+								<div class="qna-content">${item.answer}</div>
+							</div>
+						</div>
+					</div>`;
+			}
+
+			itemHtml += `</div>`;
+			return itemHtml;
+				
+		}).join('');
 	}
 	
 	html += `
-		<h4>상품 문의</h4>
-		<div class="qna-list-wrapper mt-3">
-			<div class="qna-list-header">
-				<span class="qna-status">상태</span> <span
-					class="qna-title text-center">제목</span> <span class="qna-date">등록일</span>
-				<span class="qna-author">작성자</span>
-			</div>
-		<div class="accordion accordion-flush" id="qna-list-body">
-	`;
-	
-	
-	html += data.list.map(item => `
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-						<button class="accordion-button collapsed" type="button"
-							data-bs-toggle="collapse" data-bs-target="#qna-answer-1">
-							<span class="qna-status answered">답변완료</span> <span
-								class="qna-title">재입고 문의드립니다.</span> <span class="qna-date">2025-08-07</span>
-							<span class="qna-author">김*빈</span>
-						</button>
-					</h2>
-					<div id="qna-answer-1" class="accordion-collapse collapse"
-						data-bs-parent="#qna-list-body">
-						<div class="accordion-body">안녕하세요, 고객님. 문의하신 상품은 다음 주
-							금요일(8/15) 오후에 재입고될 예정입니다. 감사합니다.</div>
-					</div>
-				</div>
-
-				<div class="accordion-item">
-					<h2 class="accordion-header">
-						<button class="accordion-button disabled" type="button">
-							<span class="qna-status">답변대기</span> <span class="qna-title">배송
-								얼마나 걸리나요?</span> <span class="qna-date">2025-08-08</span> <span
-								class="qna-author">이*정</span>
-						</button>
-					</h2>
-				</div>
-
-			</div>
-		</div>
-			
-	`).join('');
-	
-	html += `
+		</div></div>
 		<div class="text-center mt-3 p-5">
-			<button onclick="" class="btn btn-success btn-lg" type="button">상품 문의</button>
+			<button onclick="" class="btn btn-success btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#qnaFormModal">상품 문의</button>
+		</div>
+		<div class="modal fade" id="qnaFormModal" tabindex="-1" aria-labelledby="qnaFormModalLabel" aria-hidden="true">
+		  <div class="modal-dialog modal-dialog-centered">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h2 class="modal-title fs-5" id="qnaFormModalLabel">상품 문의하기</h1>
+		        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      </div>
+		      <div class="modal-body">
+		        <form id="productQnaForm">
+		          <div class="mb-3">
+		            <label for="qna-title-input" class="form-label"><strong>제목</strong></label>
+		            <input type="text" name="title" class="form-control" id="qna-title-input" placeholder="제목을 입력하세요." required>
+		          </div>
+		          <div class="mb-3">
+		            <label for="qna-question-textarea" class="form-label"><strong>문의 내용</strong></label>
+		            <textarea class="form-control" name="question" id="qna-question-textarea" rows="6" placeholder="문의하실 내용을 자세하게 입력해주세요." required></textarea>
+		          </div>
+		          <div class="mb-3">
+		            <input type="checkbox" name="secret" id="qna-secret-check">
+		            <label class="form-check-label" for="qna-secret-check">비공개 문의</label>
+		          </div>
+		        </form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+		        <button type="button" form="productQnaForm" class="btn btn-success">문의 등록</button>
+		      </div>
+		    </div>
+		  </div>
 		</div>
 	`;
 	
