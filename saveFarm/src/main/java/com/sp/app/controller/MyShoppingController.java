@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.model.Order;
 import com.sp.app.model.SessionInfo;
@@ -41,23 +40,27 @@ public class MyShoppingController {
 		return "myShopping/cart";
 	}
 	
-	// 장바구니 저장 : AJAX - JSON
+	// 장바구니 저장
 	@PostMapping("saveCart")
-	public String saveCart(
-			Order dto,
-			HttpSession session) throws Exception {
-		
-		try {
-			SessionInfo info = (SessionInfo)session.getAttribute("member");
-			
-			dto.setMemberId(info.getMemberId());
-			
-			service.insertCart(dto);
-			
-		} catch (Exception e) {
-		}
-		
-		return "redirect:/myShopping/cart"; 
+	public String saveCart(Order dto, HttpSession session) throws Exception {
+	    try {
+	        SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+	        dto.setMemberId(info.getMemberId());
+
+	        // 장바구니 저장
+	        service.insertCart(dto);
+
+	        // ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = service.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
+
+	    } catch (Exception e) {
+	        log.info("saveCart error : ", e);
+	    }
+
+	    return "redirect:/myShopping/cart";
 	}
 	
 	// 하나 상품 장바구니 비우기
