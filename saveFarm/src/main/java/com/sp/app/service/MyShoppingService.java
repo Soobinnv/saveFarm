@@ -18,4 +18,5 @@ public interface MyShoppingService {
 	public void updateDefaultDestination(Map<String, Object> map) throws Exception;
 	public void deleteDestination(Map<String, Object> map) throws Exception;
 	public Destination defaultDelivery(Long memberId);
+	public int getCartSize(Long memberId);
 }

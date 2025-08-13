@@ -28,5 +28,5 @@ public interface MyShoppingMapper {
 	public void updateDefaultDestination(Map<String, Object> map) throws SQLException;
 	public void deleteDestination(Map<String, Object> map) throws SQLException;
 	public Destination defaultDelivery(Long member_id);
-
+	public int getCartSize(Long memberId);
 }

@@ -120,5 +120,21 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	   public int getCartSize(Long memberId) {
+	      int size = 0;
+	      
+	      try {
+	         size = mapper.getCartSize(memberId);
+	      } catch (Exception e) {
+	         log.info("getCartSize : ", e);
+	         
+	         throw e;
+	      }
+	      return size;
+	   }
+
+
 
 }

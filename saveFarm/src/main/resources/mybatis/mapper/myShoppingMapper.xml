@@ -58,4 +58,11 @@
 		DELETE FROM cart
 		WHERE regDate + 15 &lt; SYSDATE
 	</delete>	
+	
+	<!-- 유저의 장바구니에 담긴 상품 개수 -->
+	<select id="getCartSize" parameterType="Long" resultType="Integer">
+	   SELECT COUNT(*) cartSize 
+	   FROM cart
+	   WHERE memberId = #{memberId}
+	</select>
 </mapper>
