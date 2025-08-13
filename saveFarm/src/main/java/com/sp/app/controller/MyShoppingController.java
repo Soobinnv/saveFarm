@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.model.Order;
 import com.sp.app.model.SessionInfo;
@@ -40,9 +41,12 @@ public class MyShoppingController {
 		return "myShopping/cart";
 	}
 	
-	// 장바구니 저장
+	// 장바구니 저장 : AJAX - JSON
 	@PostMapping("saveCart")
-	public String saveCart(Order dto, HttpSession session) throws Exception {
+	public String saveCart(
+			Order dto,
+			HttpSession session) throws Exception {
+		
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			
@@ -53,7 +57,7 @@ public class MyShoppingController {
 		} catch (Exception e) {
 		}
 		
-		return "redirect:/myShopping/cart";
+		return "redirect:/myShopping/cart"; 
 	}
 	
 	// 하나 상품 장바구니 비우기
@@ -110,6 +114,9 @@ public class MyShoppingController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("gubun", "all");
 			map.put("memberId", info.getMemberId());
+			
+			service.deleteCart(map);
+			
 		} catch (Exception e) {
 			log.info("deleteCartAll : ", e);
 		}

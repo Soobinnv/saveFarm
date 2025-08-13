@@ -20,13 +20,19 @@ function sendOk(mode) {
 		f.method = 'get';
 		f.action = contextPath + '/order/payment';
 	} else {
-		if (!confirm('선택한 상품을 장바구니에 담으시겠습니까 ? ')) {
-			return false;
+		if (confirm('선택한 상품을 장바구니에 담으시겠습니까 ? ')) {
+			const fn = function(data) {
+				const state = data.state;
+				
+				if(state === 'false') {
+					return false;
+				}
+			}
+			
+			f.method = 'post';
+			f.action = contextPath + '/myShopping/saveCart';
 		}
-
-		f.method = 'post';
-		f.action = contextPath + '/myShopping/saveCart';
 	}
-
-	f.submit();
+	f.submit();	
 }
+

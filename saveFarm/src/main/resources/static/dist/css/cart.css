@@ -64,12 +64,44 @@
         }
 
         /* 수량 버튼 */
-        .qty-btn {
-            padding: 5px 10px;
-            border: none;
-            background: #fff;
-            cursor: pointer;
-        }
+        .input-group {
+		    display: flex;
+		    align-items: center;
+		    border: 1px solid #ccc;
+		    border-radius: 8px;
+		    overflow: hidden;
+		    width: fit-content;
+		}
+		
+		.input-group button {
+		    background-color: #f8f8f8;
+		    border: none;
+		    padding: 8px 14px;
+		    font-size: 16px;
+		    cursor: pointer;
+		    transition: background-color 0.2s ease;
+		}
+		
+		.input-group button:hover {
+		    background-color: #e0e0e0;
+		}
+		
+		.input-group input {
+		    text-align: center;
+		    border: none;
+		    outline: none;
+		    font-size: 16px;
+		    padding: 6px;
+		}
+		
+		/* 버튼 위치 조정 */
+		.input-group button:first-child {
+		    border-right: 1px solid #ccc;
+		}
+		
+		.input-group button:last-child {
+		    border-left: 1px solid #ccc;
+		}
         
         /* 테이블 내용 */
 		.product-title{
