@@ -11,4 +11,15 @@ public interface ProductService {
 	public Product getProductInfo(long productNum);	
 	public Product getRescuedProductInfo(long productNum);	
 	public List<Product> getProductImageList(long productNum);	
+	
+	public void insertProduct(Product dto, String uploadPath) throws Exception;
+	public void insertProductDetail(Product dto) throws Exception;
+	public void insertRescuedProduct(Product dto, String uploadPath) throws Exception;
+	
+	public void updateProduct(Product dto, String uploadPath) throws Exception;
+	public void updateProductDetail(Product dto) throws Exception;
+	public void updateRescuedProduct(Product dto, String uploadPath) throws Exception;
+	
+	public void deleteProduct(long productNum, String uploadPath) throws Exception;
+	public boolean deleteProductImageFile(String uploadPath, String filename);	
 }

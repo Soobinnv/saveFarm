@@ -9,6 +9,7 @@
 <title>MY PAGE</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/myPage.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/myPage2.css" type="text/css">
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 
 </head>

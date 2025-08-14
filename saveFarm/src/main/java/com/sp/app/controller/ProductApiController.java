@@ -90,7 +90,14 @@ public class ProductApiController {
 	public ResponseEntity<?> getProductQna(@PathVariable(name = "productNum") long productNum) {
 		Map<String, Object> body = new HashMap<>();
 		try {
-			List<ProductQna> list = null; 
+			Map<String, Object> map = new HashMap<>();
+			
+			
+			map.put("offset", 0);
+			map.put("size", 20);
+			map.put("productNum", productNum);
+			
+			List<ProductQna> list = qnaService.getQnaList(map); 
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
@@ -206,4 +213,5 @@ public class ProductApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
+	
 }

@@ -363,8 +363,7 @@ const renderProductQnaHtml = function(data) {
 			const isAnswered = item.answer && item.answer.trim() !== '';
 			const statusClass = isAnswered ? 'answered' : '';
 			const statusText = isAnswered ? '답변완료' : '답변대기';
-			const collapseId = `qna-answer-${item.id}`;
-			const authorMasked = item.author.substring(0, 1) + '*'.repeat(item.author.length - 1);
+			const collapseId = `qna-answer-${item.qnaNum}`;
 
 			let itemHtml = `
 				<div class="accordion-item">
@@ -374,9 +373,9 @@ const renderProductQnaHtml = function(data) {
 				                type="button" 
 								${isAnswered ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}"` : 'aria-disabled="true"'}>
 							<span class="qna-status ${statusClass}">${statusText}</span>
-							<span class="qna-title">${item.isSecret ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2m6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2m-6 9c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4M9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2z"></path></svg> ' : ''}${item.title}</span>
-							<span class="qna-author">${authorMasked}</span>
-							<span class="qna-date">${item.date}</span>
+							<span class="qna-title">${item.secret == 1 ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2m6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2m-6 9c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4M9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2z"></path></svg> ' : ''}${item.title}</span>
+							<span class="qna-author">${item.name}</span>
+							<span class="qna-date">${item.qnaDate}</span>
 						</button>
 					</h2>`;
 

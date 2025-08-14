@@ -42,4 +42,85 @@
 		FROM productImage
 		WHERE PRODUCTNUM = #{productNum}
 	</select>
+	
+	<insert id="insertProduct" parameterType="com.sp.app.model.Product">
+        <selectKey keyProperty="productNum" resultType="long" order="BEFORE">
+            SELECT PRODUCT_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO product (
+            PRODUCTNUM, PRODUCTNAME, PRODUCTDESC,
+            DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION
+        ) VALUES (
+            #{productNum}, #{productName}, #{productDesc},
+            #{deliveryFee}, #{mainImageFileName}, #{productClassification}
+        )
+    </insert>
+
+    <insert id="insertProductDetail" parameterType="com.sp.app.model.Product">
+        INSERT INTO productDetail (
+            PRODUCTNUM, STOCKQUANTITY, UNIT,
+            UNITPRICE, DISCOUNTRATE
+        ) VALUES (
+            #{productNum}, #{stockQuantity}, #{unit},
+            #{unitPrice}, #{discountRate}
+        )
+    </insert>
+
+    <insert id="insertRescuedProduct" parameterType="com.sp.app.model.Product">
+        INSERT INTO rescuedProductInfo (
+            PRODUCTNUM, ENDDATE, SUPPLYNUM
+        ) VALUES (
+            #{productNum}, #{endDate}, #{supplyNum}
+        )
+    </insert>
+
+    <insert id="insertProductImage" parameterType="java.util.List">
+        INSERT INTO productImage (PRODUCTIMAGENUM, PRODUCTIMAGEFILENAME, PRODUCTNUM)
+        <foreach collection="list" item="image" separator=" UNION ALL ">
+            SELECT PRODUCTIMAGE_SEQ.NEXTVAL, #{image.productImageFileName}, #{image.productNum} FROM DUAL
+        </foreach>
+    </insert>
+
+
+    <update id="updateProduct" parameterType="com.sp.app.model.Product">
+        UPDATE product
+        <set>
+            <if test="productName != null and productName != ''">PRODUCTNAME = #{productName},</if>
+            <if test="productDesc != null and productDesc != ''">PRODUCTDESC = #{productDesc},</if>
+            <if test="deliveryFee != null and deliveryFee != ''">DELIVERYFEE = #{deliveryFee},</if>
+            <if test="mainImageFileName != null and mainImageFileName != ''">MAINIMAGEFILENAME = #{mainImageFileName},</if>
+        </set>
+        WHERE PRODUCTNUM = #{productNum}
+    </update>
+
+    <update id="updateProductDetail" parameterType="com.sp.app.model.Product">
+        UPDATE productDetail
+        <set>
+            <if test="stockQuantity != null and stockQuantity != ''">STOCKQUANTITY = #{stockQuantity},</if>
+            <if test="unit != null and unit != ''">UNIT = #{unit},</if>
+            <if test="unitPrice != null and unitPrice != ''">UNITPRICE = #{unitPrice},</if>
+            <if test="discountRate != null and discountRate != ''">DISCOUNTRATE = #{discountRate},</if>
+        </set>
+        WHERE PRODUCTNUM = #{productNum}
+    </update>
+
+    <update id="updateRescuedProduct" parameterType="com.sp.app.model.Product">
+        UPDATE rescuedProductInfo
+        <set>
+            <if test="endDate != null and endDate != ''">ENDDATE = #{endDate},</if>
+            <if test="supplyNum != null and supplyNum != ''">SUPPLYNUM = #{supplyNum},</if>
+        </set>
+        WHERE PRODUCTNUM = #{productNum}
+    </update>
+
+
+    <delete id="deleteProduct" parameterType="long">
+        DELETE FROM product
+        WHERE PRODUCTNUM = #{productNum}
+    </delete>
+    
+    <delete id="deleteProductImage" parameterType="long">
+        DELETE FROM productImage
+        WHERE PRODUCTNUM = #{productNum}
+    </delete>
 </mapper>

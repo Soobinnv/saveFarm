@@ -10,31 +10,43 @@
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/login.css" type="text/css">
 <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css"> 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/login.css" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 </head>
 <body>
 <header>
 	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
 </header>
-<main>
-        <div>
-           <div class="panel shadow1">
-                <form class="loginForm">
-                    <h1 class="animated fadeInUp animate1" id="title-login">Welcome Back !</h1>
-                    <fieldset id="login-fieldset" class="mt-5">
-                        <input class="login animated fadeInUp animate2" name="loginId" type="text"  required   placeholder="아이디" value="" >
-                        <input class="login animated fadeInUp animate3" name="password" type="password" required placeholder="비밀번호" value="">
-                    </fieldset>
-					<label class="login animated fadeInUp animate3 mt-4" for="rememberMe">아이디 저장</label>
-					<input class="login animated fadeInUp animate3" type="checkbox" id="rememberMe">					
-                    <input type="button" onclick="sendLogin();" class="login_form button animated fadeInUp animate4" value="로그인">
-                    <p><a id="lost-password-link" href="${pageContext.request.contextPath}/member/pwdFind" class="animated fadeIn animate5">비밀번호를 잊으셨나요 ?</a></p>
-                </form>
-            </div>
+<main class="mt-5">
+<div class="container">
+    <div class="form-box animated fadeInUp">
+        <div class="form-title">
+            <h2>로그인</h2>
         </div>
+        
+        <form name="loginForm" method="post">
+            <div class="form-group">
+                <label for="loginId">아이디</label>
+                <input type="text" name="loginId" id="loginId" class="form-control" placeholder="아이디를 입력하세요">
+            </div>
 
+            <div class="form-group">
+                <label for="password">패스워드</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="패스워드를 입력하세요">
+            </div>
 
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="rememberMe">
+                <label class="form-check-label" for="rememberMe">아이디 저장</label>
+            </div>
+            
+            <button type="button" class="btn btn-primary btn-block" onclick="sendLogin();">로그인</button>
+            
+            <div class="etc-links">
+                <a href="#">아이디/비밀번호 찾기</a> | <a href="#">회원가입</a>
+            </div>
+        </form>
+    </div>
+</div>
 </main>
 
 <script type="text/javascript">

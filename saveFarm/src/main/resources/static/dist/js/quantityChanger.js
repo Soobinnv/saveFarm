@@ -6,10 +6,8 @@ $(function() {
 		
 		// 수량
 		let quantity = Number($quantity.text());
-		console.log(quantity)
 		// 재고
 		let stock = $quantity.data('stock');
-		console.log(stock === 10)
 		if(quantity < stock) {
 			$quantity.text(quantity + 1);
 			

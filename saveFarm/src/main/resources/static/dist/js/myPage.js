@@ -11,10 +11,10 @@ $(function() {
  * @param {string} url - URL (contextPath 제외)
  * @param {Function} renderFn - AJAX 응답 데이터를 인자로 받아 HTML 문자열을 반환하는 callback 함수
  */
-function loadContent(url, renderFn) {
+function loadContent(url, renderFn, params) {
 	// 요청 경로 생성
 	url = contextPath + url;
-	let params = '';
+	params ? params : '';
 	// 렌더링할 HTML 요소 선택자
 	let selector = '#content';
 	
@@ -310,16 +310,79 @@ const renderMyQnaListHtml = function(data) {
 		    </div>
 		`;
 		return html;
-	}
-	
-	html += data.list.map(item => `
+	} else {
+			html += `
+				<h4>상품 문의</h4>
+				<div class="qna-list-wrapper mt-3">
+					<div class="qna-list-header">
+						<span class="qna-status">상태</span> <span
+							class="qna-title text-center">제목</span> 
+						<span class="qna-author">작성자</span>
+							<span class="qna-date">등록일</span>
+					</div>
+				<div class="accordion accordion-flush" id="qna-list-body">
+			`;
+			
+			
+			html += data.list.map(item => {
+				const isAnswered = item.answer && item.answer.trim() !== '';
+				const statusClass = isAnswered ? 'answered' : '';
+				const statusText = isAnswered ? '답변완료' : '답변대기';
+				const collapseId = `qna-answer-${item.qnaNum}`;
 
-		
-		
-	`).join('');
-	html += `</div>`;
+				let itemHtml = `
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button 
+				                class="accordion-button ${isAnswered ? '' : 'collapsed'} ${!isAnswered ? 'disabled' : ''}" 
+					                type="button" 
+									${isAnswered ? `data-bs-toggle="collapse" data-bs-target="#${collapseId}"` : 'aria-disabled="true"'}>
+								<span class="qna-status ${statusClass}">${statusText}</span>
+								<span class="qna-title">${item.secret == 1 ? '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2m6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2m-6 9c-2.21 0-4-1.79-4-4s1.79-4 4-4s4 1.79 4 4s-1.79 4-4 4M9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2z"></path></svg> ' : ''}${item.title}</span>
+								<span class="qna-author">${item.name}</span>
+								<span class="qna-date">${item.qnaDate}</span>
+							</button>
+						</h2>`;
+
+				if (isAnswered) {
+					itemHtml += `
+						<div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#qna-list-body">
+							<div class="accordion-body">
+								<div class="qna-question-wrapper">
+									<strong class="qna-prefix q-prefix">Q.</strong>
+									<div class="qna-content">${item.question}</div>
+								</div>
+								<div class="qna-answer-wrapper">
+									<strong class="qna-prefix a-prefix">A.</strong>
+									<div class="qna-content">${item.answer}</div>
+								</div>
+							</div>
+						</div>
+					`;
+				}
+
+				itemHtml += `</div>`;
+				return itemHtml;
+					
+			}).join('');
+		}	
+	
+	html += `</div></div></div>
+		<div class="qnaPaginate">
+			${data.paging}
+		</div>
+	`;
 	
 	return html;
+}
+
+/**
+ * 마이 페이지 - 내 활동 - 상품 문의 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function listPage(page) {
+	let parameter = {pageNo:page};
+	loadContent('/api/myPage/qnas', renderMyQnaListHtml, parameter)
 }
 
 /**

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
-
+import com.sp.app.common.MyUtil;
 import com.sp.app.mapper.ProductQnaMapper;
 import com.sp.app.model.ProductQna;
 
@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductQnaServiceImpl implements ProductQnaService {
+
+    private final MyUtil myUtil;
 	private final ProductQnaMapper mapper;
 	
 	@Override
@@ -43,9 +45,9 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 	}
 
 	@Override
-	public void deleteQna(long num) throws Exception {
+	public void deleteQna(long qnaNum) throws Exception {
 		try {
-			mapper.deleteQna(num);
+			mapper.deleteQna(qnaNum);
 			
 		} catch (Exception e) {
 			log.info("deleteQna : ", e);
@@ -62,8 +64,29 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 		try {
 			list = mapper.getQnaList(map);
 			
+			for(ProductQna dto : list) {
+				dto.setName(myUtil.nameMasking(dto.getName()));
+			}
+			
 		} catch (Exception e) {
 			log.info("getQnaList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+	
+	@Override
+	public List<ProductQna> getMyQnaList(Map<String, Object> map) {
+		List<ProductQna> list = null;
+		
+		try {
+			list = mapper.getMyQnaList(map);
+	
+			
+		} catch (Exception e) {
+			log.info("getMyQnaList : ", e);
 			
 			throw e;
 		}
@@ -80,6 +103,22 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 			
 		} catch (Exception e) {
 			log.info("getDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
+
+	@Override
+	public int getMyQnaDataCount(long memberId) {
+		int count = 0;
+		
+		try {
+			count = mapper.getMyQnaDataCount(memberId);
+			
+		} catch (Exception e) {
+			log.info("getMyQnaDataCount : ", e);
 			
 			throw e;
 		}

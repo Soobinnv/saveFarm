@@ -37,4 +37,10 @@ public class ProductReviewServiceImpl implements ProductReviewService {@Override
 		return null;
 	}
 
+	@Override
+	public List<ProductReview> getMyReviewList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -8,12 +8,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sp.app.common.PaginateUtil;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
+import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.WishService;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +30,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MyPageApiController {
 
 	private final WishService wishService;
-
+	private final ProductQnaService qnaService;
+	private final PaginateUtil paginateUtil;
+	
 	// 마이페이지 - 메인 데이터
 	@GetMapping
 	public ResponseEntity<?> getMyPageMain(HttpSession session) {
@@ -82,7 +87,8 @@ public class MyPageApiController {
 		try {
 			
 			
-			List<ProductReview> list = null;
+			List<ProductQna> list = null;
+			
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
@@ -94,13 +100,40 @@ public class MyPageApiController {
 	
 	// 내 활동 - 상품 문의 데이터
 	@GetMapping("/qnas")
-	public ResponseEntity<?> getMyQnaList(HttpSession session) {
+	public ResponseEntity<?> getMyQnaList(HttpSession session, @RequestParam(name = "pageNo", defaultValue = "1") int current_page) {
 		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+
 		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			
+			int size = 10;
+			int total_page = 0;
+			int dataCount = 0;
 			
-			List<ProductQna> list = null;
+			dataCount = qnaService.getMyQnaDataCount(info.getMemberId());
+			total_page = paginateUtil.pageCount(dataCount, size);
+			current_page = Math.min(current_page, total_page);
+			
+			// 리스트에 출력할 데이터를 가져오기
+			int offset = (current_page - 1) * size;
+			if(offset < 0) offset = 0;
+			
+			map.put("offset", offset);
+			map.put("size", size);
+			map.put("memberId", info.getMemberId());
+			
+			List<ProductQna> list = qnaService.getMyQnaList(map);
+			
+			// AJAX 용 페이징
+			String paging = paginateUtil.pagingMethod(current_page, total_page, "listPage");
+			
 			body.put("list", list);
+			body.put("pageNo", current_page);
+			body.put("replyCount", dataCount);
+			body.put("total_page", total_page);
+			body.put("paging", paging);
+			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getMyQnaList: ", e);

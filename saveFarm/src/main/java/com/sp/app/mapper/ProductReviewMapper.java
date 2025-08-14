@@ -14,4 +14,5 @@ public interface ProductReviewMapper {
 	public void deleteReview(long num, String uploadPath) throws Exception;
 	
 	public List<ProductReview> getReviewList(Map<String, Object> map);
+	public List<ProductReview> getMyReviewList(Map<String, Object> map);
 }

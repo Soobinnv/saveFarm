@@ -18,4 +18,8 @@ public class ProductQna {
 	private long answerId;
 	private long productNum;
 	private String qnaDate;
+	
+	private String name;
+	private String answerName;
+	
 }

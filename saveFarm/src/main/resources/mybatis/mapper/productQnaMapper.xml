@@ -21,18 +21,24 @@
 	</delete>
 	
 	<select id="getQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">
-		SELECT qnaNum, secret, question, answer, block, memberId, answerId, productNum, 
-			qnaDate, answerdate, title
-		FROM productQna
-		WHERE block = 0;
+		SELECT qnaNum, secret, question, answer, block, q.memberId, q.answerId, productNum, 
+			TO_CHAR(qnaDate, 'YYYY-MM-DD HH24:MI') qnaDate, answerdate, title, qm.name name, am.name answerName
+		FROM productQna q
+		LEFT OUTER JOIN member2 qm ON q.memberId = qm.memberId
+		LEFT OUTER JOIN member2 am ON q.answerId = am.memberId
+		WHERE block = 0 AND productNum = #{productNum}
+		ORDER BY qnaDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
 	<select id="getMyQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">
-		SELECT qnaNum, secret, question, answer, block, memberId, answerId, productNum, 
-			qnaDate, answerdate, title
-		FROM productQna
-		WHERE block = 0 AND memberId = #{memberId};
+		SELECT qnaNum, secret, question, answer, block, q.memberId, q.answerId, productNum,
+			TO_CHAR(qnaDate, 'YYYY-MM-DD HH24:MI') qnaDate, answerdate, title, qm.name name, am.name answerName
+		FROM productQna q
+		LEFT OUTER JOIN member2 qm ON q.memberId = qm.memberId
+		LEFT OUTER JOIN member2 am ON q.answerId = am.memberId
+		WHERE block = 0 AND q.memberId = #{memberId}
+		ORDER BY qnaDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
@@ -40,5 +46,11 @@
 		SELECT COUNT(*)
 		FROM productQna
 		WHERE productNum = #{productNum} AND block = 0
+	</select>
+
+	<select id="getMyQnaDataCount" parameterType="long" resultType="Integer">
+		SELECT COUNT(*)
+		FROM productQna
+		WHERE memberId = #{memberId} AND block = 0
 	</select>
 </mapper>

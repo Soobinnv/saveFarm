@@ -99,4 +99,3 @@ public class MemberSnsController {
         resp.getWriter().flush();
 	}
 }
-

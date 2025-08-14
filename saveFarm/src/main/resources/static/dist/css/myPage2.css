@@ -1,0 +1,119 @@
+
+.qna-list .qna-item:last-child {
+    border-bottom: none;
+}
+
+.qna-title  { flex: 5; text-align: left; } 
+.qna-date   { flex: 2; text-align: center; } 
+.qna-author { flex: 2; text-align: center; } 
+.qna-status { flex: 1; text-align: center; } 
+
+.qna-item-loading {
+    padding: 40px 10px;
+    text-align: center;
+    color: #888;
+}
+
+.qna-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.qna-status.answered {
+    color: #50c878;
+    font-weight: bold;
+}
+
+.qna-list-wrapper {
+    border-top: 2px solid #333;
+}
+
+.qna-list-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    font-weight: bold;
+    background-color: #fcfcfc;
+    border-bottom: 1px solid #ddd;
+}
+
+/* [핵심] 아코디언 버튼에 Flexbox와 열 너비 적용 */
+.accordion-button {
+    display: flex !important; /* !important로 부트스트랩 스타일 덮어쓰기 */
+    width: 100%;
+    padding: 15px 10px;
+}
+
+/* 아코디언 기본 스타일 초기화 */
+.accordion-button, .accordion-button:not(.collapsed), .accordion-button:focus {
+    background-color: #fff !important;
+    box-shadow: none !important;
+    color: #212529 !important;
+}
+
+/* 답변 없는 항목은 hover 효과 제거 */
+.accordion-button.disabled:hover {
+    background-color: #fff;
+}
+
+/* 아코디언 기본 화살표 아이콘 제거 */
+.accordion-button::after {
+    display: none;
+}
+
+/* 각 열의 너비 비율 설정 */
+.qna-status { flex: 1 !important; text-align: center; }
+.qna-title  { flex: 6 !important;   text-align: left; padding-left: 20px; }
+.qna-date   { flex: 2 !important;   text-align: center; }
+.qna-author { flex: 2 !important;   text-align: center; }
+
+.qna-status.answered {
+    color: #50c878;
+    font-weight: bold;
+}
+
+/* 답변 내용 스타일 */
+.accordion-body {
+    background-color: #f9f9f9;
+    border-top: 1px dashed #ddd;
+}
+
+/* 전체 페이징 영역 가운데 정렬 */
+.qnaPaginate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* 페이지 번호(a, span) 공통 스타일 */
+.qnaPaginate a,
+.qnaPaginate span {
+  display: inline-block;
+  min-width: 42px; /* 최소 너비 */
+  min-height: 42px; /* 최소 너비 */
+  padding: 8px;
+  margin: 0 2px;
+  border: 1px solid #ddd;
+  border-radius: 4px; /* 살짝 둥근 테두리 */
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none; /* a 태그 밑줄 제거 */
+  color: #333;
+  background-color: #fff;
+  transition: background-color 0.2s, color 0.2s; /* 부드러운 전환 효과 */
+}
+
+/* 현재 페이지(span) 스타일 */
+.qnaPaginate span {
+  background-color: #039a63; /* 강조 색상 */
+  color: #fff; /* 흰색 글자 */
+  border-color: #039a63;
+}
+
+/* 다른 페이지(a)에 마우스 올렸을 때 스타일 */
+.qnaPaginate a:hover {
+  background-color: #f0f0f0; /* 호버 시 배경색 */
+  cursor: pointer;
+}
