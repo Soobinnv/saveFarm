@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.OrderMapper">
+
+	<select id="findByMaxOrderNumber" resultType="String">
+		SELECT orderNum
+		FROM productOrder
+		ORDER BY orderDate DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<!-- 주문 등록 -->
+	<!-- orderState = 1 : 결제완료 -->
+	<insert id="inserOrder" parameterType="com.sp.app.model.Order">
+		INSERT INTO productOrder(orderNum, memberId, orderDate, totalMoney, 
+			deliveryCharge, payment, cancelAmount, orderState)
+		VALUES (#{orderNum}, #{memberId}, SYSDATE, #{totalMoney}, 
+			#{deliveryCharge}, #{payment}, 0, 1)
+	</insert>
+	
+	<!-- 결제 내역 등록 -->
+	<insert id="insertPayDetail" parameterType="com.sp.app.model.Order">
+		INSERT INTO payDetail(orderNum, impUid, payMethod, cardName, cardNumber, applyNum, applyDate) 
+		VALUES (#{orderNum}, #{impUid, jdbcType=VARCHAR}, #{payMethod, jdbcType=VARCHAR}, #{cardName, jdbcType=VARCHAR}, 
+			#{cardNumber, jdbcType=VARCHAR}, #{applyNum, jdbcType=VARCHAR},
+			TO_DATE(#{applyDate}, 'YYYY-MM-DD HH24:MI:SS') )
+	</insert>
+
+	<!-- 주문 상세 정보 등록 -->
+	<insert id="insertOrderDetail" parameterType="com.sp.app.model.Order">
+		INSERT INTO orderDetail(orderDetailNum, orderNum, qty, price, salePrice, 
+			productNum, productMoney) 
+		VALUES (orderDetail_seq.NEXTVAL, #{orderNum}, #{qty}, #{price}, #{salePrice}, 
+			#{productNum}, #{productMoney})
+	</insert>
+	
+	<!-- 주문 상태 업데이트 -->
+	<update id="updateOrderState" parameterType="com.sp.app.model.Order">
+		UPDATE productOrder SET orderState = #{orderState}
+		WHERE orderNum = #{orderNum};
+	</update>
+	
+	<!-- 배송지 등록 -->
+	<insert id="insertOrderDelivery" parameterType="com.sp.app.model.Order">
+		INSERT INTO orderDelivery(orderNum, recipientName, tel, zip, addr1, addr2, pickup, 
+			accessInfo, passcode, requestMemo) 
+		VALUES (#{orderNum}, #{recipientName}, #{tel}, #{zip}, #{addr1}, #{addr2}, 
+			#{pickup, jdbcType=VARCHAR}, #{accessInfo, jdbcType=VARCHAR}, 
+			#{passcode, jdbcType=VARCHAR}, #{requestMemo, jdbcType=VARCHAR})
+	</insert>
+	
+	<!-- 주문 내역 상세 리스트 -->
+	<select id="listOrderProduct" parameterType="java.util.List" resultType="com.sp.app.model.Order">
+		SELECT pd.productNum, pd.stockQuantity, p.productName, pd.unitPrice,
+			pd.discountRate, p.deliveryFee, p.mainImageFilename 
+    	FROM productDetail pd 
+    	JOIN product p ON pd.productNum = p.productNum
+	</select>
+	
+	<!-- 주문 상세 정보 -->
+	<select id="findByOrderDetail" parameterType="Long" resultType="com.sp.app.model.Order">
+		SELECT od.orderDetailNum, od.orderNum, od.qty, od.price, od.salePrice, 
+			od.productNum, od.productMoney, po.orderState,
+			TO_CHAR(po.orderDate, 'YYYY-MM-DD HH24:MI:SS') orderDate
+		FROM orderDetail od
+		JOIN productOrder po ON od.orderNum = po.orderNum
+		WHERE od.orderDetailNum = #{orderDetailNum}
+	</select>
+
+	<!-- 상품 정보 -->
+	<select id="findByProduct" parameterType="Long" resultType="com.sp.app.model.Order">
+		SELECT p.productNum, p.productName, pd.unitPrice, pd.discountRate, p.deliveryFee, p.mainImageFilename
+		FROM product p
+		JOIN productDetail pd ON p.productNum = pd.productNum
+		WHERE p.productNum = #{productNum}
+	</select>
+
+	<!-- 판매 개수 만큼 재고 감소 -->
+	<update id="updateProductStockDec" parameterType="com.sp.app.model.Order">
+		UPDATE productDetail SET stockQuantity = stockQuantity - #{qty}
+		WHERE productNum = #{productNum}
+	</update>
+</mapper>
