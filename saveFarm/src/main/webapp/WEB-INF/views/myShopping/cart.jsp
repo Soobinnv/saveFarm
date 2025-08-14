@@ -19,7 +19,7 @@
 </header>
 
 <main class="content">
-  <div class="container">
+  <div class="container-cart">
 	<form name="cartForm" method="post">
 	    <h1>내 장바구니</h1>
 	    <table>
@@ -220,7 +220,7 @@ function deleteCartItem(productNum) {
 }
 
 $(function(){
-	$('.btnMinus').click(function() {
+	$('.btn-minus').click(function() {
 		const $tr = $(this).closest('tr');
 		let qty = Number($tr.find('input[name=buyQtys]').val()) || 1;
 		let price = Number($tr.find('input[name=prices]').val()) || 0;
@@ -238,7 +238,7 @@ $(function(){
 		$tr.find('input[name=productMoneys]').val(total);
 	});
 
-	$('.btnPlus').click(function(){
+	$('.btn-plus').click(function(){
 		const $tr = $(this).closest('tr');
 		let totalStock = Number($tr.find('input[name=nums]').attr('data-stockQuantity'));
 		

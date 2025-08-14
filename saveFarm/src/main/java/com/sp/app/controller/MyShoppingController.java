@@ -79,6 +79,11 @@ public class MyShoppingController {
 			
 			service.deleteCart(map);
 			
+			// ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = service.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
+	        
 		} catch (Exception e) {
 			log.info("deleteCart : ", e);
 		}
@@ -101,6 +106,11 @@ public class MyShoppingController {
 			
 			service.deleteCart(map);
 			
+			// ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = service.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
+			
 		} catch (Exception e) {
 			log.info("deleteListCart : ", e);
 		}
@@ -119,6 +129,11 @@ public class MyShoppingController {
 			map.put("memberId", info.getMemberId());
 			
 			service.deleteCart(map);
+			
+			// ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = service.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
 			
 		} catch (Exception e) {
 			log.info("deleteCartAll : ", e);
