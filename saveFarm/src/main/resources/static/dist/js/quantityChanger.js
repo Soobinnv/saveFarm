@@ -1,18 +1,15 @@
 $(function() {
-	
 	// plus 버튼
-	let $plusBtns = $('.btn-plus');
-	// minus 버튼
-	let $minusBtns = $('.btn-minus');
-	
-	$plusBtns.on('click', function() {
+	$('body').on('click', 'button.btn-plus', function() {
 		// p 태그
 		let $quantity = $(this).closest('div').find('.quantity');
+		
 		// 수량
 		let quantity = Number($quantity.text());
+		console.log(quantity)
 		// 재고
 		let stock = $quantity.data('stock');
-		
+		console.log(stock === 10)
 		if(quantity < stock) {
 			$quantity.text(quantity + 1);
 			
@@ -21,7 +18,8 @@ $(function() {
 		}
 	});
 
-	$minusBtns.on('click', function() {
+	// minus 버튼
+	$('body').on('click', 'button.btn-minus', function() {
 		let $quantity = $(this).closest('div').find('.quantity');
 		let quantity = Number($quantity.text());
 		

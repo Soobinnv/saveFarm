@@ -14,7 +14,7 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
 	type="text/css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
 <style type="text/css"> 	
 body{
 	font-family: Gowun Dodum, sans-serif;
@@ -53,7 +53,7 @@ body{
 }
 .addline:hover{ background:#f7f7f7; }
 
-/* 기존 그린 버튼 계열 */
+/* 그린 버튼 */
 .btnGreen{ background:#039a63; color:#fff; border:none; }
 .btnGreen:hover{ background:#028453; }
 
@@ -77,7 +77,7 @@ body{
 .picked-chip .remove{ border:none; background:transparent; line-height:1; padding:0 .25rem; opacity:.6; }
 .picked-chip .remove:hover{ opacity:1; }
 
-/* 중복일 때 반짝 하이라이트 */
+
 .picked-chip.pulse{ animation:pulse-bg .4s ease-out; }
 @keyframes pulse-bg{ from{ box-shadow:0 0 0 0 rgba(3,154,99,.35);} to{ box-shadow:0 0 0 12px rgba(3,154,99,0);} }
 
@@ -95,39 +95,19 @@ body{
 
     <!-- 아이템 1 : 패키지 -->
     <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
-      <img src="${pageContext.request.contextPath}/dist/images/veggie-box-1.png" alt="집밥 세이브 패키지"
+      <img src="${pageContext.request.contextPath}/dist/images/veggie-box-${mode == 'homePackage' ? '1' : '2' }.png" alt="세이브 패키지"
            class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
       <div class="flex-grow-1">
-        <div class="fw-semibold">집밥 세이브 패키지</div>
-        <small class="text-muted">18,000 원</small>
-      </div>
-      <div class="qtybox">
-        <button class="btn qty-btn" type="button">−</button>
-        <input class="qty-input" type="number" value="1" min="1">
-        <button class="btn qty-btn" type="button">＋</button>
+        <div class="fw-semibold">${mode == 'homePackage' ? '집밥 세이브 패키지' : '셀러드 세이브 패키지' }</div>
+        <small class="text-muted">${mode == 'homePackage' ? '18,000 원' : '20,000 원' }</small>
       </div>
     </div>
 
     <!-- 패키지 추가 CTA -->
-    <a href="#" class="btn btnGreen w-100 rounded-pill py-2 mb-3">샐러드 세이브 패키지도 담기</a>
+    <a href="#" class="btn btnGreen w-100 rounded-pill py-2 mb-3">${mode == 'homePackage' ? '샐러드 세이브 패키지도 담기' : '집밥 세이브 패키지도 담기' }</a>
 
-    <!-- 아이템 2 : 단품 -->
-    
-	    <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
-	      <!-- 상품 이미지 영역 -->
-	      <img src="${pageContext.request.contextPath}/dist/images/mushroom.png" alt="브라운양송이버섯"
-	           class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
-	      <div class="flex-grow-1">
-	      	<!-- 이름영역 -->
-	        <div class="fw-semibold">무농약 개성만점 브라운양송이버섯 150g</div>
-	        <small class="text-muted">1,800 원</small>
-	      </div>
-	      <div class="qtybox">
-	        <button class="btn qty-btn" type="button">−</button>
-	        <input class="qty-input" type="number" value="1" min="1">
-	        <button class="btn qty-btn" type="button">＋</button>
-	      </div>
-	    </div>
+ 	<!-- 추가 상품 영역 -->
+   	<div id="extraItems" class="mt-3"></div>
 
     
     <button class="btn addline w-100 rounded-pill py-2 mb-3">
@@ -147,7 +127,7 @@ body{
 </div>
 
 
-<!-- 상품 선택 모달 -->
+<!-- 추가상품 선택 모달 -->
 <div class="modal fade" id="productSelectModal" tabindex="-1" aria-labelledby="productSelectTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- 필요에 따라 lg/xl -->
     <div class="modal-content rounded-4">
@@ -165,8 +145,23 @@ body{
         </div>
 
         <div class="row g-3" id="productLayout"></div>
-
-        <!-- 스켈레톤/로딩 -->
+        
+        <template id="tplExtraItem">
+		  <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
+		    <img class="thumb rounded-3 object-fit-cover" src="" alt="" style="width:110px;height:75px;">
+		    <div class="flex-grow-1">
+		      <div class="fw-semibold name"></div>
+		      <small class="text-muted price"></small>
+		    </div>
+		    <div class="qtybox d-flex align-items-center gap-2">
+			  <button class="btn qty-btn btn-minus" type="button">−</button>
+			  <p class="quantity m-0" data-stock="10" data-quantity="1">1</p>
+			  <button class="btn qty-btn btn-plus" type="button">＋</button>
+			</div>
+		  </div>
+		</template>
+		
+  		
         <div class="text-center py-4 d-none" data-role="loading">
           <div class="spinner-border" role="status" aria-hidden="true"></div>
           <div class="mt-2">불러오는 중…</div>
@@ -177,8 +172,8 @@ body{
 		    <span class="picked-empty text-muted">선택한 상품이 여기에 표시됩니다.</span>
 		  </div>
       
-        <button class="btn addline" data-bs-dismiss="modal">닫기</button>
-        <button class="btn btnGreen" type="button" id="confirmProducts">담기 완료</button>
+        <button type="button" class="btn addline" data-bs-dismiss="modal">닫기</button>
+        <button type="button" class="btn btnGreen" id="confirmProducts" onclick="">담기 완료</button>
       </div>
     </div>
   </div>

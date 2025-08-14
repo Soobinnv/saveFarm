@@ -22,7 +22,7 @@ public class packageController {
 	@GetMapping("homepackage")
 	public String homepackage(Model model) throws Exception{
 		
-		model.addAttribute("mode", "saladPackage");
+		model.addAttribute("mode", "homePackage");
 		
 		return "package/packageCart";
 	}

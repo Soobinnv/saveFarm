@@ -1,74 +1,119 @@
-(function(){
+// ================== 모달 오픈/정리 ==================
+(function () {
+  var modalEl = document.getElementById('productSelectModal');
+  var trigger = document.querySelector('.subcart .addline');
+
+  if (!modalEl || !trigger || typeof bootstrap === 'undefined') return;
+
+  var modal = new bootstrap.Modal(modalEl, {
+    backdrop: true,
+    keyboard: true
+  });
+  let instance = null;
+
+  // 모달 표시
+  trigger.addEventListener('click', function (e) {
+    e.preventDefault();
+    modal.show();
+  });
+  
+  // 모달 닫힐 때 정리
+  modalEl.addEventListener('hidden.bs.modal', function () {
+    if (instance && typeof instance.destroy === 'function') instance.destroy();
+    instance = null;
+    // 닫힐 때도 칩바 초기화:
+    // if (typeof window.clearPickedBar === 'function') window.clearPickedBar();
+  });
+})();
+
+
+
+(function () {
+  // 추가상품 컨테이너/템플릿
+  var wrap = document.getElementById('extraItems');    
+  var tpl  = document.getElementById('tplExtraItem');   
+
+  // hidden 값 가져오기
+  function getValue(card, name) {
+    var el = card.querySelector('input[name="' + name + '"]');
+    return el ? el.value : '';
+  }
+
+  function readHidden(btnEl) {
+    var card = (btnEl && (btnEl.closest('.card-product') || btnEl.closest('.card'))) || document;
+
+    var name  = getValue(card, 'productName');
+    var unit  = getValue(card, 'unit');
+    var price = getValue(card, 'unitPrice');
+    var stock = getValue(card, 'stockQuantity');
+    var thumb = getValue(card, 'thumbnail');
 	
-	  const modalEl = document.getElementById('productSelectModal');
-	  const trigger  = document.querySelector('.subcart .addline'); 
+	/*
+    if (!name) {
+      var nameEl = card.querySelector('.card-product__title a, .card-product__title, .fw-semibold');
+      name = (nameEl && nameEl.textContent || '').trim();
+    }
+	*/
 
-	  if (!modalEl || !trigger || typeof bootstrap === 'undefined') return;
+    var ctx    = window.contextPath || '';
+    var domImg = card.querySelector('.card-product__img img, img.card-img, img');
+    var imgSrc = thumb ? (ctx + '/uploads/product/' + thumb)
+      : (domImg ? domImg.getAttribute('src') : (ctx + '/dist/images/product/product1.png'));
 
-	  const modal = new bootstrap.Modal(modalEl, {
-	    backdrop: true,
-	    keyboard: true
-	  });
+    return { name: name, unit: unit, price: price, stock: stock, imgSrc: imgSrc };
+  }
 
-	 
-	  trigger.addEventListener('click', function(e){
-	    e.preventDefault();
-	    modal.show();
-	  });
+  
+  function findRendered(id) {
+    return wrap && wrap.querySelector('.subcart-item[data-id="' + id + '"]');
+  }
 
-	  
-	  let instance = null;
-	  modalEl.addEventListener('shown.bs.modal', function () {
-	    if (typeof initModalProductList === 'function') {
-	      instance = initModalProductList(modalEl); // 이전에 안내한 모달 스코프 초기화 함수
-	    }
-	  });
+  
+  function fmtKR(n) {
+    return Number(n || 0).toLocaleString('ko-KR') + ' 원';
+  }
 
-	 
-	  modalEl.addEventListener('hidden.bs.modal', function () {
-	    if (instance && typeof instance.destroy === 'function') instance.destroy();
-	    instance = null;
-	  });
-	})();
-window.addToCart = function(productNum, btnEl){
-    const bar = document.getElementById('pickedBar');
+  window.addToCart = function (productNum, btnEl) {
+    var bar = document.getElementById('pickedBar');
     if (!bar) return;
 
-    // 이미 존재하면 추가하지 않고 하이라이트만
-    
-    var exists = bar.querySelector('.picked-chip[data-id="' + productNum + '"]');
-    if (exists){
-      exists.classList.remove('pulse');
-      void exists.offsetWidth; 
-      exists.classList.add('pulse');
-      exists.scrollIntoView({ inline: 'end', block: 'nearest', behavior: 'smooth' });
+    var id = String(productNum);
+	
+	// 선택 중복시 처리
+    var exists = bar.querySelector('.picked-chip[data-id="' + id + '"]');
+    if (exists) {
+      exists.classList.remove('pulse'); void exists.offsetWidth; exists.classList.add('pulse');
+      try { exists.scrollIntoView({ inline: 'end', block: 'nearest', behavior: 'smooth' }); } catch (e) {}
       return;
     }
 
-	
-    const card = btnEl?.closest('.card-product') || btnEl?.closest('.card') || document;
-    const nameEl = card.querySelector('.card-product__title a, .card-product__title');
-    const imgEl  = card.querySelector('.card-product__img img.card-img, .card-product__img img, img.card-img');
+    var info = readHidden(btnEl);
 
-    const name = (nameEl?.textContent || '').trim();
-    const img  = imgEl?.getAttribute('src') || '';
+    // placeholder 제거
+    var empty = bar.querySelector('.picked-empty');
+    if (empty) empty.remove();
 
-    bar.querySelector('.picked-empty')?.remove();
-
-    const chip = document.createElement('div');
+    // 칩 생성 + data
+    var chip = document.createElement('div');
     chip.className = 'picked-chip';
-    chip.dataset.id = String(productNum);
-    chip.innerHTML = `
-      ${img ? `<img src="${img}" alt="">` : ''}
-      <span class="name">${name}</span>
-      <button type="button" class="remove" aria-label="삭제">&times;</button>
-    `;
+    chip.setAttribute('data-id', id);
+    chip.setAttribute('data-name', (info.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+    if (info.unit)  chip.setAttribute('data-unit', info.unit);
+    if (info.price) chip.setAttribute('data-price', info.price);
+    if (info.stock) chip.setAttribute('data-stock', info.stock);
+    if (info.imgSrc) chip.setAttribute('data-img', info.imgSrc);
+
+    var html = '';
+    if (info.imgSrc) html += '<img src="' + info.imgSrc + '" alt="">';
+    html += '<span class="name">' + chip.getAttribute('data-name') + (info.unit ? ' ' + info.unit : '') + '</span>';
+    html += '<button class="remove" aria-label="삭제">&times;</button>';
+    chip.innerHTML = html;
 
     // 삭제 버튼
-    chip.querySelector('.remove').addEventListener('click', ()=>{
+    chip.querySelector('.remove').addEventListener('click', function () {
       chip.remove();
-      if (!bar.querySelector('.picked-chip')){
-        const span = document.createElement('span');
+      if (!bar.querySelector('.picked-chip')) {
+        var span = document.createElement('span');
         span.className = 'picked-empty text-muted';
         span.textContent = '선택한 상품이 여기에 표시됩니다.';
         bar.appendChild(span);
@@ -79,3 +124,70 @@ window.addToCart = function(productNum, btnEl){
     bar.scrollLeft = bar.scrollWidth;
   };
 
+  // 모달푸터에 담겨있던 칩바 추가상품에 이동
+  function renderExtrasFromChips() {
+    if (!wrap || !tpl) return;
+    var bar = document.getElementById('pickedBar');
+    if (!bar) return;
+
+    var chips = bar.querySelectorAll('.picked-chip[data-id]');
+    chips.forEach(function (chip) {
+      var id = chip.getAttribute('data-id');
+      if (findRendered(id)) return; // 이미 있으면 스킵
+
+      var node = tpl.content.firstElementChild.cloneNode(true);
+
+      var img   = node.querySelector('.thumb');
+      var name  = node.querySelector('.name');
+      var price = node.querySelector('.price');
+      
+
+      var nm   = chip.getAttribute('data-name') || '';
+      var unit = chip.getAttribute('data-unit') || '';
+      var prc  = chip.getAttribute('data-price') || '0';
+      var src  = chip.getAttribute('data-img') || '';
+
+      if (src) img.setAttribute('src', src);
+      img.setAttribute('alt', nm);
+      name.textContent  = nm + (unit ? ' ' + unit : '');
+      price.textContent = fmtKR(prc);
+	  
+	  
+	  
+      wrap.appendChild(node);
+    });
+  }
+
+	// 칩바 초기화
+  window.clearPickedBar = function () {
+    var bar = document.getElementById('pickedBar');
+    if (!bar) return;
+
+    // 모든 칩 제거
+    var nodes = bar.querySelectorAll('.picked-chip');
+    for (var i = 0; i < nodes.length; i++) nodes[i].remove();
+
+    // 플레이스홀더 복원
+    if (!bar.querySelector('.picked-empty')) {
+      var span = document.createElement('span');
+      span.className = 'picked-empty text-muted';
+      span.textContent = '선택한 상품이 여기에 표시됩니다.';
+      bar.appendChild(span);
+    }
+
+    bar.scrollLeft = 0;
+  };
+ 
+
+  // 담기완료
+  var confirmBtn = document.getElementById('confirmProducts');
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', function () {
+      renderExtrasFromChips();
+      window.clearPickedBar(); //  초기화
+      var modalEl = document.getElementById('productSelectModal');
+      var inst = modalEl && bootstrap.Modal.getInstance(modalEl);
+      if (inst) inst.hide();
+    });
+  }
+})();
