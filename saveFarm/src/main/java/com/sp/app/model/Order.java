@@ -16,19 +16,17 @@ public class Order {
 	private int stockQuantity;
 	private int discountRate;
 	private int discountPrice;
-	private int savedMoney;
 	private int deliveryFee;
 	
 	private Long memberId;
 	private String loginId;
 	
-	private String orderName;
+	private String orderNum;
 	private long orderDetailNum;
 	private String orderDate;
-	private int usedSaved;
+	private int payment;
 	private int unitPrice;
 	private int totalMoney;
-	private int deliveryCharge;
 	private int salePrice;
 	private int qty;
 	private String unit;

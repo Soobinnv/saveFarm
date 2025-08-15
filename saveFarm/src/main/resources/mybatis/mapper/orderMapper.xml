@@ -36,7 +36,7 @@
 	</insert>
 	
 	<!-- 주문 상태 업데이트 -->
-	<update id="updateOrderState" parameterType="com.sp.app.model.Order">
+	<update id="updateOrderState"  parameterType="com.sp.app.model.Order">
 		UPDATE productOrder SET orderState = #{orderState}
 		WHERE orderNum = #{orderNum};
 	</update>

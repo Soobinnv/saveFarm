@@ -14,5 +14,6 @@ public interface OrderService {
 	public Order findByOrderDetail(long orderDetailNum);
 	public Order findByProduct(long productNum);
 	public Order findByOptionDetail(long detailNum);
-	public Order findByOrderState(long orderNum);
+	
+	public void updateOrderState(Order dto);
 }

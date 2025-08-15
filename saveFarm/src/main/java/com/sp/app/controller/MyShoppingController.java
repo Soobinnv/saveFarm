@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sp.app.model.Destination;
 import com.sp.app.model.Order;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.service.MyShoppingService;
@@ -141,6 +143,97 @@ public class MyShoppingController {
 		
 		return "redirect:/myShopping/cart";
 	}
+	
+	// 배송지
+	@GetMapping("deliveryAddress")
+	public String deliveryAddressForm(Model model, HttpSession session) {
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			Long memberId = info.getMemberId();
+			
+			List<Destination> list = service.listDestination(memberId);
+			
+			model.addAttribute("list", list);
+	
+		} catch (Exception e) {
+			log.info("deliveryAddress : ", e);
+		}
+		
+		return "myShopping/deliveryAddress";
+	}
+	
+	@PostMapping("deliveryAddress/write")
+	public String deliveryAddressCreated(Destination dto, HttpSession session) {
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+
+			dto.setMemberId(info.getMemberId());
+			
+			service.insertDestination(dto);
+			
+		} catch (Exception e) {
+			log.info("deliveryAddressCreated : ", e);
+		}
+		
+		return "redirect:/myShopping/deliveryAddress";
+	}
+
+	@ResponseBody
+	@PostMapping("deliveryAddress/save")
+	public Map<String, Object> deliveryAddressSave(Destination dto, HttpSession session) {
+		Map<String, Object> model = new HashMap<>();
+		String state = "true";
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+
+			dto.setMemberId(info.getMemberId());
+			
+			service.insertDestination(dto);
+			
+		} catch (Exception e) {
+			state = "false";
+			
+			log.info("deliveryAddressCreated : ", e);
+		}
+		
+		model.put("state", state);
+		
+		return model;
+	}
+	
+	@PostMapping("deliveryAddress/update")
+	public String deliveryAddressUpdate(Destination dto, HttpSession session) {
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			dto.setMemberId(info.getMemberId());
+			
+			service.updateDestination(dto);
+			
+		} catch (Exception e) {
+			log.info("deliveryAddressUpdate : ", e);
+		}
+		
+		return "redirect:/myShopping/deliveryAddress";
+	}
+
+	@GetMapping("deliveryAddress/delete")
+	public String deliveryAddressDelete(@RequestParam Map<String, Object> paramMap,
+			HttpSession session) {
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+
+			paramMap.put("memberId", info.getMemberId());
+			
+			service.deleteDestination(paramMap);
+			
+		} catch (Exception e) {
+			log.info("deliveryAddressDelete : ", e);
+		}
+		
+		return "redirect:/myShopping/deliveryAddress";
+	}
+
 }
 
 
