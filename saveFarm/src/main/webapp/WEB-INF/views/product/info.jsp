@@ -134,9 +134,9 @@
 					<hr>
 
 					<div class="d-grid gap-2">
-						<button onclick="sendOk('cart');" class="btn btn-success btn-lg"
+						<button onclick="sendOk('cart', this);" class="btn btn-success btn-lg"
 							type="button">장바구니 담기</button>
-						<button onclick="sendOk('buy');" class="btn btn-success btn-lg"
+						<button onclick="sendOk('buy', this);" class="btn btn-success btn-lg"
 							type="button">바로 구매</button>
 					</div>
 				</div>
@@ -157,47 +157,6 @@
 			<div class="tab-content pt-4" id="nav-tabContent">
 
 				<div id="productInfoLayout"></div>
-
-				<div class="tab-pane fade" id="nav-qna" role="tabpanel"
-					aria-labelledby="nav-qna-tab">
-
-					<h4>상품 문의</h4>
-					<div class="qna-list-wrapper mt-3">
-						<div class="qna-list-header">
-							<span class="qna-status">상태</span> <span
-								class="qna-title text-center">제목</span> <span class="qna-date">등록일</span>
-							<span class="qna-author">작성자</span>
-						</div>
-						<div class="accordion accordion-flush" id="qna-list-body">
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button collapsed" type="button"
-										data-bs-toggle="collapse" data-bs-target="#qna-answer-1">
-										<span class="qna-status answered">답변완료</span> <span
-											class="qna-title">재입고 문의드립니다.</span> <span class="qna-date">2025-08-07</span>
-										<span class="qna-author">김*빈</span>
-									</button>
-								</h2>
-								<div id="qna-answer-1" class="accordion-collapse collapse"
-									data-bs-parent="#qna-list-body">
-									<div class="accordion-body">안녕하세요, 고객님. 문의하신 상품은 다음 주
-										금요일(8/15) 오후에 재입고될 예정입니다. 감사합니다.</div>
-								</div>
-							</div>
-
-							<div class="accordion-item">
-								<h2 class="accordion-header">
-									<button class="accordion-button disabled" type="button">
-										<span class="qna-status">답변대기</span> <span class="qna-title">배송
-											얼마나 걸리나요?</span> <span class="qna-date">2025-08-08</span> <span
-											class="qna-author">이*정</span>
-									</button>
-								</h2>
-							</div>
-
-						</div>
-					</div>
-				</div>
 
 				<div class="tab-pane fade" id="nav-review" role="tabpanel"
 					aria-labelledby="nav-review-tab">
@@ -295,8 +254,10 @@
 	<div id="product-template">
 		<form name="buyForm">
 			<input type="hidden" name="productNums" id="product-productNum"
-				value="${productInfo.productNum}"> <input type="hidden"
-				name="buyQtys" id="qty" value=""> <input type="hidden"
+				value="${productInfo.productNum}"> 
+			<input type="hidden"
+				name="buyQtys" id="qty" value=""> 
+			<input type="hidden"
 				name="units" id="unit" value="${productInfo.unit}">
 		</form>
 		<input type="hidden" id="web-contextPath"
@@ -324,6 +285,6 @@
 	<script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
 	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/updateWish.js"></script>
+		src="${pageContext.request.contextPath}/dist/js/product.js"></script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 package com.sp.app.model;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +19,7 @@ public class Product {
 	private int deliveryFee;
 	private String mainImageFilename;
 	private int productClassification;
+	private MultipartFile mainImageFile;
 	
 	// 상품 상세
 	private int stockQuantity;
@@ -31,6 +36,7 @@ public class Product {
 	// 상품 이미지
 	private long productImageNum;
 	private String productImageFilename;
+	private List<MultipartFile> productImages;
 	
 	// 회원의 찜 여부
 	private int userWish;

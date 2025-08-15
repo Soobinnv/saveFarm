@@ -7,18 +7,24 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.common.PaginateUtil;
+import com.sp.app.common.StorageService;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
 import com.sp.app.service.ProductQnaService;
+import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.WishService;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +37,16 @@ public class MyPageApiController {
 
 	private final WishService wishService;
 	private final ProductQnaService qnaService;
+	private final ProductReviewService reviewService;
 	private final PaginateUtil paginateUtil;
+	private final StorageService storageService;
+	
+	private String productReviewUploadPath;
+	
+	@PostConstruct
+	public void init() {
+		productReviewUploadPath = this.storageService.getRealPath("/uploads/productReview");		
+	}	
 	
 	// 마이페이지 - 메인 데이터
 	@GetMapping
@@ -80,6 +95,69 @@ public class MyPageApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
+
+	// 내 활동 - 리뷰 등록
+	@PostMapping("/reviews/{orderDetailNum}")
+	public ResponseEntity<?> insertReview(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			ProductReview dto,
+			HttpSession session
+		) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			dto.setOrderDetailNum(orderDetailNum);
+			
+			reviewService.insertReview(dto, productReviewUploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("insertReview: ", e);
+			body.put("message", "리뷰 등록 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 리뷰 수정 form 데이터
+	@GetMapping("/reviews/{orderDetailNum}/edit")
+	public ResponseEntity<?> getEditReviewForm(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			HttpSession session
+		) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			ProductReview dto = null;
+			body.put("dto", dto);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getEditReviewForm: ", e);
+			body.put("message", "리뷰 수정 form을 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 리뷰 수정
+	@PutMapping("/reviews/{orderDetailNum}")
+	public ResponseEntity<?> updateReview(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			HttpSession session
+		) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			
+			
+			List<ProductReview> list = null;
+			body.put("list", list);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateReview: ", e);
+			body.put("message", "리뷰 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	
 	// 내 활동 - 1:1 문의 데이터
 	@GetMapping("/inquirys")
 	public ResponseEntity<?> getMyInquiryList(HttpSession session) {

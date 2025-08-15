@@ -189,6 +189,9 @@ const renderMyReviewListHtml = function(data) {
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
 		        <p class="mt-3 mb-0 text-muted">아직 작성한 리뷰가 없습니다.</p>
 		    </div>
+			<div class="mt-3 d-flex justify-content-center">
+				<button onclick="renderReviewForm();" class="btn btn-success btn-lg" type="button">리뷰 작성</button>
+			</div>
 		`;
 		return html;
 	}
@@ -251,6 +254,86 @@ const renderMyReviewListHtml = function(data) {
 	html += `</div>`;
 	
 	return html;
+}
+
+/**
+ * 마이 페이지 - 리뷰 작성 form 렌더링
+ * @param {object} orderDetailObject - 주문 상세 정보 객체
+ * @returns {void} #content에 HTML 렌더링
+ */
+const renderReviewForm = function(orderDetailObject) {	
+	// sample data
+	orderDetailObject = {
+		orderDetailNum:2,
+		productImageUrl: contextPath + "/uploads/product/apple.jpg",
+		productName:"햇살농장 유기농 사과 1박스(5kg)",
+		orderDate:"2025-08-16",
+		productNum:1
+	}
+	
+	const html = `
+	<div class="container-lg p-4 p-sm-5">
+		<div class="mb-5">
+			<h3 class="display-6 fw-bold text-dark">리뷰 작성</h3>
+		</div>
+
+		<h4 class="display-8 text-dark">이 상품 어떠셨나요?</h4>
+		<div class="reivew-form-product-info d-flex align-items-center mb-4">
+			<img src="${orderDetailObject.productImageUrl}" class="reivew-form-product-image me-3">
+			<div>
+				<p class="reivew-form-product-name mb-1">${orderDetailObject.productName}</p>
+				<p class="reivew-form-order-date text-muted">주문일자: ${orderDetailObject.orderDate}</p>
+			</div>
+		</div>
+		<form name="reviewForm" id="reviewForm" enctype="multipart/form-data">
+		  <div class="mb-3">
+		    <label for="starRating" class="form-label">별점</label>
+		    <div class="star-rating" id="starRating">
+		      <input type="radio" id="5-stars" name="star" value="5" required />
+		      <label for="5-stars" class="star">&#9733;</label>
+		      <input type="radio" id="4-stars" name="star" value="4" required />
+		      <label for="4-stars" class="star">&#9733;</label>
+		      <input type="radio" id="3-stars" name="star" value="3" required />
+		      <label for="3-stars" class="star">&#9733;</label>
+		      <input type="radio" id="2-stars" name="star" value="2" required />
+		      <label for="2-stars" class="star">&#9733;</label>
+		      <input type="radio" id="1-star" name="star" value="1" required />
+		      <label for="1-star" class="star">&#9733;</label>
+		    </div>
+		  </div>
+		  <div class="mb-3">
+		    <label for="review" class="form-label">리뷰 내용</label>
+		    <textarea class="form-control" id="review" name="review" rows="5" placeholder="솔직한 리뷰를 남겨주세요." maxlength="4000" required></textarea>
+		  </div>
+		  <div class="mb-3">
+			<label for="reviewImages" class="form-label">사진 첨부 (선택)</label>
+          	<input class="form-control" type="file" id="reviewImages" name="reviewImages" name="selectFile" multiple accept="image/*">
+          </div>
+		  <input type="hidden" name="productNum" value="${orderDetailObject.productNum}">
+		  <div class="mt-4 d-grid">
+		    <button type="button" class="btn btn-success btn-lg" onclick="insertReview(${orderDetailObject.orderDetailNum})">리뷰 등록</button>
+		  </div>
+		</form>
+	</div>
+	`
+	$('#content').html(html);
+	
+}
+
+/**
+ * 상품 리뷰 등록
+ * @param {string} orderDetailNum - 주문 상세 번호
+ */
+function insertReview(orderDetailNum) {
+	let url = contextPath + '/api/myPage/reviews/' + orderDetailNum;
+	const params = new FormData($('#reviewForm')[0]); 
+	
+	const fn = function(data) {
+		// 나의 리뷰 불러오기
+		loadContent('/api/myPage/reviews', renderMyReviewListHtml);
+	}
+	
+	ajaxRequest(url, 'post', params, false, fn, true);
 }
 
 /**

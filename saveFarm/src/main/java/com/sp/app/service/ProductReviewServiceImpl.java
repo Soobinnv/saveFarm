@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.sp.app.mapper.ProductReviewMapper;
 import com.sp.app.model.ProductReview;
 
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,19 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ProductReviewServiceImpl implements ProductReviewService {@Override
+public class ProductReviewServiceImpl implements ProductReviewService {
+	private final ProductReviewMapper mapper;
+	
+	@Override
 	public void insertReview(ProductReview dto, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.insertReview(dto);
+			
+		} catch (Exception e) {
+			log.info("insertReview : ", e);
+			
+			throw e;
+		}
 	}
 
 	@Override

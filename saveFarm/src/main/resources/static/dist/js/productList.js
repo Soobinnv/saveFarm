@@ -36,9 +36,14 @@ function loadProducts(kwd) {
 		                            </button>
 		                        </li>
 		                        <li>
-		                            <button type="button" onclick="addToCart(${item.productNum}, this)">
-		                                <iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
-		                            </button>
+									<form name="buyForm">
+										<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
+										<input type="hidden" name="buyQtys" id="qty" value="1"> 
+										<input type="hidden" name="units" id="unit" value="${item.unit}">
+				                        <button type="button" onclick="sendOk('cart', this);"">
+				                        	<iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
+				                        </button>
+									</form>
 		                        </li>
 		                        <li>
 									<button type="button" data-wish="${item.userWish}" onclick="updateWish(${item.productNum}, this);">
@@ -52,6 +57,7 @@ function loadProducts(kwd) {
 									<input type="hidden" name="productName" value="${item.productName}">
 									<input type="hidden" name="unitPrice" value="${item.unitPrice}">
 									<input type="hidden" name="stockQuantity" value="${item.stockQuantity}">
+									
 		                        </li>
 		                    </ul>
 		                </div>

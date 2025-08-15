@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	  });
 	});
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js"></script>
 <script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/myPage.js"></script>
 
