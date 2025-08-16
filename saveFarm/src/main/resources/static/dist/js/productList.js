@@ -19,9 +19,16 @@ function loadProducts(kwd) {
 	let url = contextPath + '/api/products';
 	let params = 'kwd=' + kwd;
 	let selector = '#productLayout';
+	let cartFunctionString = $('body').attr('data-page-id') === "product-list" 
+				? "sendOk('cart', this)" 
+				: `addToCart('__PRODUCTNUM__', this)`;
 	
 	const fn = function(data){
-		const html = data.list.map(item => `
+		const html = data.list.map(item => {
+			// placeholder를 상품 번호로 변경
+			const cartFunction = cartFunctionString.replace('__PRODUCTNUM__', item.productNum);
+			
+			return `
 		        <div class="col-md-6 col-lg-3">
 		            <div class="card text-center card-product">
 		                <div class="card-product__img">
@@ -40,7 +47,7 @@ function loadProducts(kwd) {
 										<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
 										<input type="hidden" name="buyQtys" id="qty" value="1"> 
 										<input type="hidden" name="units" id="unit" value="${item.unit}">
-				                        <button type="button" onclick="sendOk('cart', this);"">
+				                        <button type="button" onclick="${cartFunction};">
 				                        	<iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
 				                        </button>
 									</form>
@@ -77,7 +84,7 @@ function loadProducts(kwd) {
 		                </div>
 		            </div>
 		        </div>
-		`).join('');;
+		`}).join('');;
 		
 		$(selector).html(html);
 	}

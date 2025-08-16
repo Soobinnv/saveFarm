@@ -19,7 +19,7 @@
     const contextPath = "${pageContext.request.contextPath}";
 </script>
 </head>
-<body>
+<body data-page-id="product-list">
 
 <header>
 	<jsp:include page="/WEB-INF/views/layout/header.jsp" />
