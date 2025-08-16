@@ -41,7 +41,7 @@
 					</div>
 				</div>
 				<a href="contact.html" class="nav-item nav-link headerNavText">Contact Us</a>
-				<a href="javascript:dialogLogin();" class="nav-item nav-link headerNavText">Log In</a>
+				<a href="javascript:dialogLogin();" class="nav-item nav-link headerNavText loginHeader">Log In</a>
 			</div>
 		</div>
 		<div class="d-none d-lg-flex align-items-end">

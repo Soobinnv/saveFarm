@@ -205,26 +205,29 @@ const renderMyReviewListHtml = function(data) {
 	                         class="rounded me-3" 
 	                         alt="${item.productName}" 
 	                         style="width: 60px; height: 60px; object-fit: cover;"
-	                         onerror="this.onerror=null;this.src=' ';">
+	                         onerror="this.onerror=null;this.src='/uploads/product/apple.jpg';">
 	                    <div>
 	                        <small class="text-muted">작성일: ${new Date(item.reviewDate).toLocaleDateString()}</small>
 	                        <h5 class="card-title mb-0 fw-semibold">${item.productName}</h5>
 	                    </div>
 	                </div>
 	                <div class="dropdown">
-	                    <button class="btn btn-light btn-sm rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 32px; height: 32px;">
-	                        <iconify-icon icon="mdi:dots-vertical" class="align-middle"></iconify-icon>
+	                    <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+	                        <iconify-icon icon="basil:menu-outline" class="align-middle"></iconify-icon>
 	                    </button>
 	                    <ul class="dropdown-menu dropdown-menu-end">
-	                        <li><a class="dropdown-item" href="#">
+	                        <li><a class="dropdown-item review-dropdown-item" href="#">
 	                            <iconify-icon icon="mdi:pencil-outline" class="me-2"></iconify-icon>수정하기
 	                        </a></li>
-	                        <li><a class="dropdown-item text-danger" href="#">
+	                        <li><a class="dropdown-item review-dropdown-item text-danger" href="#">
 	                            <iconify-icon icon="mdi:trash-can-outline" class="me-2"></iconify-icon>삭제하기
 	                        </a></li>
 	                    </ul>
 	                </div>
 	            </div>	
+				<div class="mb-1">
+					<h5 class="card-title mb-0 fw-semibold">${item.reviewTitle}</h5>
+				</div>
 	            <div class="mb-3 d-flex align-items-center">
 	                <div class="me-2">
 	                    ${[...Array(5)].map((_, i) => `
@@ -234,7 +237,7 @@ const renderMyReviewListHtml = function(data) {
 	                <span class="fw-bold text-warning align-middle">${item.star.toFixed(1)}</span>
 	            </div>
 	
-	            <p class="card-text text-secondary mb-3">${item.content.replace(/\n/g, '<br>')}</p>
+	            <p class="card-text text-secondary mb-3">${item.review.replace(/\n/g, '<br>')}</p>
 	
 	            ${item.reviewImageList && item.reviewImageList.length > 0 ? `
 	            <div class="review-images d-flex overflow-auto mb-3 pb-2">
@@ -251,7 +254,11 @@ const renderMyReviewListHtml = function(data) {
 	        </div>
 	    </div>
 	`).join('');
-	html += `</div>`;
+	
+	html += `
+		<div class="myPagePaginate">
+			${data.paging}
+		</div>`
 	
 	return html;
 }
@@ -451,7 +458,7 @@ const renderMyQnaListHtml = function(data) {
 		}	
 	
 	html += `</div></div></div>
-		<div class="qnaPaginate">
+		<div class="myPagePaginate">
 			${data.paging}
 		</div>
 	`;
@@ -463,10 +470,21 @@ const renderMyQnaListHtml = function(data) {
  * 마이 페이지 - 내 활동 - 상품 문의 페이징 처리
  * @param {number} page - 현재 페이지
  */
-function listPage(page) {
+function qnaListPage(page) {
 	let parameter = {pageNo:page};
 	loadContent('/api/myPage/qnas', renderMyQnaListHtml, parameter)
 }
+
+/**
+ * 마이 페이지 - 내 활동 - 내 리뷰 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function reviewListPage(page) {
+	let parameter = {pageNo:page};
+	loadContent('/api/myPage/reviews', renderMyReviewListHtml, parameter)
+}
+
+
 
 /**
  * 마이 페이지 - 내 활동 - FAQ

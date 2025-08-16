@@ -19,6 +19,16 @@ public class ProductReview {
 	private String reviewDate;
 	private int reviewBlock;
 	private long productNum;
+	private String reviewTitle;
+	
+	private String productName;
+	
+	private long reviewerMemberId;
+	private String reviewerName;
+	private String reviewerProfilePhoto;
+	
+	// 상품 리뷰 좋아요
+	private int helpfulCount;
 	
 	// 상품 리뷰 이미지
 	private long productReviewImageNum;
@@ -29,8 +39,8 @@ public class ProductReview {
 	private long replyNum;
 	private String replyRegDate;
 	private String reply;
-	private long reviewerMemberId;
-	private String reviewerName;
-	private String reviewerprofilePhoto;
+	private long replyAuthorMemberId;
+	private String replyAuthorName;
+	private String replyAuthorProfilePhoto;
 	private int replyBlock;
 }

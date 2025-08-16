@@ -43,14 +43,68 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 
 	@Override
 	public List<ProductReview> getReviewList(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProductReview> list = null;
+		
+		try {
+			list = mapper.getReviewList(map);
+	
+			
+		} catch (Exception e) {
+			log.info("getReviewList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
 	}
 
 	@Override
 	public List<ProductReview> getMyReviewList(Map<String, Object> map) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProductReview> list = null;
+		
+		try {
+			list = mapper.getMyReviewList(map);
+	
+			
+		} catch (Exception e) {
+			log.info("getMyReviewList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+
+	@Override
+	public int getDataCount(Map<String, Object> map) {
+		int count = 0;
+		
+		try {
+			count = mapper.getDataCount(map);
+			
+		} catch (Exception e) {
+			log.info("getDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
+
+	@Override
+	public int getMyReviewDataCount(long memberId) {
+		int count = 0;
+		
+		try {
+			count = mapper.getMyReviewDataCount(memberId);
+			
+		} catch (Exception e) {
+			log.info("getMyReviewDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
 	}
 
 }

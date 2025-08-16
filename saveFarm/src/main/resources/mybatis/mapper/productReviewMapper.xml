@@ -7,4 +7,44 @@
 	    	VALUES (#{orderDetailNum}, #{review}, #{star}, SYSDATE, #{productNum}, 0)
 	</insert>
 	
+	<select id="getReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
+		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle,
+			productName, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto
+		FROM ProductReview
+		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON pr.orderNum = od.orderNum
+		LEFT OUTER JOIN product p ON pr.productNum = p.productNum
+		LEFT OUTER JOIN member2 m2 ON po.memberId = m2.memberId
+		WHERE reviewBlock = 0
+		ORDER BY reviewDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getMyReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
+		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle,
+			productName, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto
+		FROM ProductReview pr
+		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		LEFT OUTER JOIN product p ON pr.productNum = p.productNum
+		LEFT OUTER JOIN member2 m2 ON po.memberId = m2.memberId
+		WHERE reviewBlock = 0 AND po.memberId = #{memberId}
+		ORDER BY reviewDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getDataCount" parameterType="map" resultType="Integer">
+		SELECT COUNT(*)
+		FROM ProductReview
+		WHERE productNum = #{productNum} AND reviewBlock = 0
+	</select>
+
+	<select id="getMyReviewDataCount" parameterType="long" resultType="Integer">
+		SELECT COUNT(*)
+		FROM ProductReview pr
+		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId} AND reviewBlock = 0
+	</select>
+	
 </mapper>

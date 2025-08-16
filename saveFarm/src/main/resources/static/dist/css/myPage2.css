@@ -83,7 +83,7 @@ body {
 }
 
 /* 전체 페이징 영역 가운데 정렬 */
-.qnaPaginate {
+.myPagePaginate {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -91,8 +91,8 @@ body {
 }
 
 /* 페이지 번호(a, span) 공통 스타일 */
-.qnaPaginate a,
-.qnaPaginate span {
+.myPagePaginate a,
+.myPagePaginate span {
   display: inline-block;
   min-width: 42px; /* 최소 너비 */
   min-height: 42px; /* 최소 너비 */
@@ -109,14 +109,14 @@ body {
 }
 
 /* 현재 페이지(span) 스타일 */
-.qnaPaginate span {
+.myPagePaginate span {
   background-color: #039a63; /* 강조 색상 */
   color: #fff; /* 흰색 글자 */
   border-color: #039a63;
 }
 
 /* 다른 페이지(a)에 마우스 올렸을 때 스타일 */
-.qnaPaginate a:hover {
+.myPagePaginate a:hover {
   background-color: #f0f0f0; /* 호버 시 배경색 */
   cursor: pointer;
 }
@@ -183,4 +183,45 @@ body {
 .reivew-form-order-date {
     font-size: 0.9rem;
     margin: 0; /* p 태그의 기본 마진 제거 */
+}
+
+.review-dropdown-item:hover {
+    background-color: #f5f5f5 !important;
+    color: #020715 !important;
+}
+
+.review-dropdown-item iconify-icon {
+    font-size: 18px;
+    color: #6c757d; /* 아이콘 색상 */
+}
+
+.review-dropdown-item.text-danger {
+    color: #dc3545; /* 빨간색 텍스트 */
+}
+
+.review-dropdown-item.text-danger:hover {
+    background-color: #ffeaea;
+	color: #020715 !important;
+}
+
+.review-dropdown-item.text-danger iconify-icon {
+    color: #dc3545; /* 빨간색 아이콘 */
+}
+
+.dropdown button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.dropdown button:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown button iconify-icon {
+    font-size: 24px;
+    color: #555;
 }

@@ -134,6 +134,13 @@
   border: none !important;
 }
 
+/*** DESKTOP 환경에서 login 메뉴 가리기 ***/
+@media (min-width: 991.98px) {
+	.loginHeader {
+		display: none !important;
+	}
+}
+
 @media (max-width: 991.98px) {
     .navbar .navbar-collapse {
         margin-top: 10px;

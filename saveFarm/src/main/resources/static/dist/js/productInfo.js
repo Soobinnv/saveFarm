@@ -1,5 +1,7 @@
 const contextPath = document.getElementById('web-contextPath').value;
 
+// function sendOk(mode) -> product.js로 이동
+
 function sendQna() {
 	const questionDate = new Date();
 	

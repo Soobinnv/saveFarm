@@ -12,4 +12,6 @@ public interface ProductReviewService {
 	
 	public List<ProductReview> getReviewList(Map<String, Object> map);
 	public List<ProductReview> getMyReviewList(Map<String, Object> map);
+	public int getDataCount(Map<String, Object> map);
+	public int getMyReviewDataCount(long memberId);
 }
