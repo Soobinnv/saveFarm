@@ -131,6 +131,8 @@
     if (!bar) return;
 
     var chips = bar.querySelectorAll('.picked-chip[data-id]');
+    let chipPrice = 0 ;
+    let won = priceSeparation();
     chips.forEach(function (chip) {
       var id = chip.getAttribute('data-id');
       if (findRendered(id)) return; // 이미 있으면 스킵
@@ -152,11 +154,17 @@
       name.textContent  = nm + (unit ? ' ' + unit : '');
       price.textContent = fmtKR(prc);
 	  
-	  
+	  chipPrice += parseInt(prc.replace(/[^0-9]/g, ''), 10);
 	  
       wrap.appendChild(node);
     });
+
+    won += chipPrice;
+    priceUpdate(won);
+
   }
+
+  
 
 	// 칩바 초기화
   window.clearPickedBar = function () {
@@ -188,6 +196,7 @@
       var modalEl = document.getElementById('productSelectModal');
       var inst = modalEl && bootstrap.Modal.getInstance(modalEl);
       if (inst) inst.hide();
+
     });
   }
 })();

@@ -94,18 +94,19 @@ body{
     <h5 class="text-center mb-4 fw-bold">정기결제 바구니</h5>
 
     <!-- 아이템 1 : 패키지 -->
-    <div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
-      <img src="${pageContext.request.contextPath}/dist/images/veggie-box-${mode == 'homePackage' ? '1' : '2' }.png" alt="세이브 패키지"
-           class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
-      <div class="flex-grow-1">
-        <div class="fw-semibold">${mode == 'homePackage' ? '집밥 세이브 패키지' : '셀러드 세이브 패키지' }</div>
-        <small class="text-muted">${mode == 'homePackage' ? '18,000 원' : '20,000 원' }</small>
-      </div>
-    </div>
+	 <div class="packageArea">
+    	<div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
+			<img src="${pageContext.request.contextPath}/dist/images/veggie-box-${mode == 'homePackage' ? '1' : '2' }.png" alt="세이브 패키지"
+			class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
+			<div class="flex-grow-1">
+				<div class="fw-semibold">${mode == 'homePackage' ? '집밥 세이브 패키지' : '셀러드 세이브 패키지' }</div>
+				<small class="text-muted">${mode == 'homePackage' ? '18,000 원' : '20,000 원' }</small>
+			</div>
+		</div>
 
-    <!-- 패키지 추가 CTA -->
-    <a href="#" class="btn btnGreen w-100 rounded-pill py-2 mb-3">${mode == 'homePackage' ? '샐러드 세이브 패키지도 담기' : '집밥 세이브 패키지도 담기' }</a>
-
+		<!-- 패키지 추가 CTA -->
+		<a href="#" onclick="addPackage('${mode}');" class="btn btnGreen w-100 rounded-pill py-2 mb-3">${mode == 'homePackage' ? '샐러드 세이브 패키지도 담기' : '집밥 세이브 패키지도 담기' }</a>
+	</div>
  	<!-- 추가 상품 영역 -->
    	<div id="extraItems" class="mt-3"></div>
 
@@ -116,7 +117,7 @@ body{
 
     
     <div class="d-flex justify-content-end align-items-center mt-2">
-      <div class="fs-6"><span class="text-muted me-2">총합계 :</span><strong>19,800원</strong></div>
+      <div class="fs-6"><span class="text-muted me-2">총합계 :</span><strong class="totalPrice"></strong></div>
     </div>
   </div>
 
@@ -185,6 +186,57 @@ body{
     cp = cp.replace(/\/$/, '');           
     window.contextPath = cp;
   })();
+
+    // 가격 숫자만 분리 
+  function priceSeparation(){
+    let won =  $('.totalPrice').text();
+    let num = parseInt(won.replace(/[^0-9]/g, ''), 10);
+    return num;
+  }
+
+  // 가격+원
+  function priceUpdate(won){
+    $('.totalPrice').text(won+'원');
+  }
+
+  
+  // 로딩시 Package가격으로 total 설정
+  $(function(){
+     var price = ${price};
+    priceUpdate(price);
+  });
+
+
+  // 패키지 추가 버튼
+  function addPackage(mode){
+	let out = `
+		<div class="subcart-item d-flex align-items-center gap-3 rounded-4 p-3 mb-3">
+			<img src="${pageContext.request.contextPath}/dist/images/veggie-box-${mode == 'homePackage' ? '2' : '1' }.png" alt="세이브 패키지"
+				class="rounded-3 object-fit-cover" style="width:110px;height:75px;">
+			<div class="flex-grow-1">
+				<div class="fw-semibold">${mode == 'homePackage' ? '셀러드 세이브 패키지': '집밥 세이브 패키지' }</div>
+				<small class="text-muted">${mode == 'homePackage' ? '20,000 원' : '18,000 원' }</small>
+			</div>
+		</div>
+	`;
+	const packageArea = $('.packageArea');
+	packageArea.children('a.btn.btnGreen').hide();
+  let won = priceSeparation();
+  
+
+  // 총가격 부분 업데이트
+  if(mode == 'homePackage'){
+    won += 20000;
+  }else{
+    won += 18000;
+  }
+  priceUpdate(won);
+  
+  
+  packageArea.append(out);
+}
+
+
 </script>
 
 

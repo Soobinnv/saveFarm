@@ -23,6 +23,8 @@ public class packageController {
 	public String homepackage(Model model) throws Exception{
 		
 		model.addAttribute("mode", "homePackage");
+		model.addAttribute("price", 18000);
+		
 		
 		return "package/packageCart";
 	}
@@ -32,6 +34,7 @@ public class packageController {
 	public String salpackage(Model model) throws Exception{
 			
 		model.addAttribute("mode", "saladPackage");
+		model.addAttribute("price", 20000);
 		return "package/packageCart";
 	}
 	
