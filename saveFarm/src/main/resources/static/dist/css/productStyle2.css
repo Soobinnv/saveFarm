@@ -1,6 +1,14 @@
+body {
+	display: flex !important;
+    flex-direction: column !important;
+    min-height: 100vh !important;
+}
+
 main {
 	padding-top: 126px;
+	flex-grow: 1;
 }
+
 
 .head, .top-filter-head {
 	background: #039a63 !important;

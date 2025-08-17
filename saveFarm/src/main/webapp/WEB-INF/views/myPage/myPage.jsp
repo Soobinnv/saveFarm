@@ -18,8 +18,7 @@
 <header>
 	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
 </header>
-
-  <div class="container" id="container">
+<main class="container" id="container">
     <aside class="sidebar">
       <h2 onclick="loadContent('/api/myPage', renderMyPageMainHtml);">MY PAGE</h2>
       <ul>
@@ -39,11 +38,10 @@
       </ul>
     </aside>
 
-    <main class="content" id="content">
+    <div class="content" id="content">
 
-    </main>
-  </div>
-  
+    </div>
+</main>
 <footer>
 	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
 </footer>
