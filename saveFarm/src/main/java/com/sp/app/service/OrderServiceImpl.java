@@ -29,8 +29,8 @@ public class OrderServiceImpl implements OrderService{
 		
 		try {
 			Calendar cal = Calendar.getInstance();
-			String y = String.format("%04d", cal.get(Calendar.YEAR));
-			String m = String.format("%02d", cal.get(Calendar.MONTH) + 1);
+			String y =String.format("%04d", cal.get(Calendar.YEAR));
+			String m = String.format("%02d", (cal.get(Calendar.MONTH) + 1));
 			String d = String.format("%03d", cal.get(Calendar.DATE) * 7);
 			
 			String preNumber = y + m + d;
@@ -42,14 +42,14 @@ public class OrderServiceImpl implements OrderService{
 				savedLastNumber = Long.parseLong(maxOrderNumber.substring(9));
 			}
 			
-			long lastNumber = 1;
+			long lastNumber = 2;
 			if(! preNumber.equals(savedPreNumber)) {
 				count.set(0);
 				lastNumber = count.incrementAndGet();
 			} else {
 				lastNumber = count.incrementAndGet();
 				
-				if( savedLastNumber >= lastNumber ) {
+				if( savedLastNumber >= lastNumber )  {
 					count.set(savedLastNumber);
 					lastNumber = count.incrementAndGet();
 				}
@@ -57,6 +57,7 @@ public class OrderServiceImpl implements OrderService{
 			
 			result = preNumber + String.format("%09d", lastNumber);
 			
+			System.out.println(result);
 		} catch (Exception e) {
 			log.info("productOrderNumber : ", e);
 		}
