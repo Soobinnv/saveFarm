@@ -26,8 +26,8 @@ public interface MemberMapper {
 	public void updateMember2(Member dto) throws SQLException;
 	public void deleteProfilePhoto(Map<String, Object> map) throws SQLException;
 
-	public Member findById(Long member_id);
-	public Member findByLoginId(String login_id);
+	public Member findById(Long memberId);
+	public Member findByLoginId(String loginId);
 	
 	public void deleteMember1(Map<String, Object> map) throws SQLException;
 	public void deleteMember2(Map<String, Object> map) throws SQLException;

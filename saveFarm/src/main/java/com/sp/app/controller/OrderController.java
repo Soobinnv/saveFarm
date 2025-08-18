@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,26 +60,45 @@ public class OrderController {
 			productOrderNumber = orderService.productOrderNumber();
 			
 			List<Map<String, Long>> list = new ArrayList<Map<String, Long>>();
-			for(int i = 0; i < productNums.size(); i++) {
-				Map<String, Long> map = new HashMap<String, Long>();
-				map.put("productNum", productNums.get(i));
-				list.add(map);
+			for (int i = 0; i < productNums.size(); i++) {
+			    Map<String, Long> map = new HashMap<>();
+			    map.put("productNum", productNums.get(i));
+			    list.add(map);
 			}
 			
-			List<Order> listProduct = orderService.listOrderProduct(list);
-			
-			for(int i = 0; i < listProduct.size(); i++) {
-				Order dto = listProduct.get(i);
-				
-				dto.setQty(buyQtys.get(i));
-				dto.setProductMoney(buyQtys.get(i) * dto.getSalePrice());
+			System.out.println("------------------------------------");
+			System.out.println(list);
+			System.out.println("------------------------------------");
 
-				totalMoney += buyQtys.get(i) * dto.getSalePrice();
-				totalDiscountPrice += buyQtys.get(i) * dto.getDiscountPrice();
-				if(i == 0 || deliveryCharge > dto.getDeliveryFee()) {
-					deliveryCharge = dto.getDeliveryFee();
-				}
-			}
+			// DB에서 상품 정보 가져오기
+	        List<Order> listProduct = orderService.listOrderProduct(list);
+
+	        // Map 으로 매핑 (productNum -> Order)
+	        Map<Long, Order> orderMap = listProduct.stream()
+	                .collect(Collectors.toMap(Order::getProductNum, o -> o));
+
+	        // 원래 요청 순서(productNums, buyQtys)에 맞춰 재정렬
+	        List<Order> orderedList = new ArrayList<>();
+	        for (int i = 0; i < productNums.size(); i++) {
+	            Long productNum = productNums.get(i);
+	            Integer qty = buyQtys.get(i);
+
+	            Order dto = orderMap.get(productNum);
+	            if (dto != null && qty > 0) {
+	                dto.setQty(qty);
+	                dto.setProductMoney(qty * dto.getSalePrice());
+
+	                totalMoney += qty * dto.getUnitPrice();
+	                totalDiscountPrice += qty * dto.getDiscountPrice();
+	                if (orderedList.isEmpty() || deliveryCharge < dto.getDeliveryFee()) {
+	                    deliveryCharge = dto.getDeliveryFee();
+	                }
+
+	                orderedList.add(dto);
+	            }
+	        }
+			
+			totalPayment = totalMoney - totalDiscountPrice;
 			
 			productOrderName = listProduct.get(0).getProductName();
 			if(listProduct.size() > 1) {
@@ -86,10 +106,10 @@ public class OrderController {
 			}
 			
 			// 배송비
-			deliveryCharge = totalMoney >= 200000 ? 0 : deliveryCharge;
+			deliveryCharge = totalPayment >= 200000 ? 0 : deliveryCharge;
 			
 			// 결제할 금액(상품 총금액 + 배송비)
-			totalPayment = totalMoney + deliveryCharge;
+			totalPayment = totalPayment + deliveryCharge;
 			
 			// 배송지
 			List<Destination> listDestination = myShoppingService.listDestination(info.getMemberId());
@@ -99,7 +119,7 @@ public class OrderController {
 			model.addAttribute("orderUser", orderUser); // 주문 유저
 			model.addAttribute("productOrderName", productOrderName); // 주문 상품명
 			
-			model.addAttribute("listProduct", listProduct);
+			model.addAttribute("listProduct", orderedList);
 			model.addAttribute("totalMoney", totalMoney); // 총금액 (수량*할인가격 의 합)
 			model.addAttribute("totalPayment", totalPayment); // 결제할 금액
 			model.addAttribute("totalDiscountPrice", totalDiscountPrice); // 할인 총액

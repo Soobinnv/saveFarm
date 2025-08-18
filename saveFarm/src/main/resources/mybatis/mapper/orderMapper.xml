@@ -54,7 +54,15 @@
 	<select id="listOrderProduct" parameterType="java.util.List" resultType="com.sp.app.model.Order">
 		SELECT pd.productNum, pd.stockQuantity, p.productName, pd.unitPrice,
 			pd.discountRate, p.deliveryFee, p.mainImageFilename 
-    	FROM productDetail pd 
+    	FROM (
+    		SELECT productNum, stockQuantity, discountRate, unitPrice
+    		FROM productDetail
+    		WHERE productNum IN
+				<foreach collection="list" item="item" index="index"
+					open="(" separator="," close=")">
+					#{item.productNum}
+				</foreach>
+    	) pd
     	JOIN product p ON pd.productNum = p.productNum
 	</select>
 	

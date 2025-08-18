@@ -25,6 +25,7 @@ public class Order {
 	private long orderDetailNum;
 	private String orderDate;
 	private int payment;
+	private int totalPayment;
 	private int unitPrice;
 	private int totalMoney;
 	private int salePrice;
