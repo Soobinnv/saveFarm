@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.sp.app.common.MyUtil;
 import com.sp.app.mapper.ProductReviewMapper;
 import com.sp.app.model.ProductReview;
 
@@ -16,11 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductReviewServiceImpl implements ProductReviewService {
 	private final ProductReviewMapper mapper;
+	private final MyUtil myUtil;
 	
 	@Override
 	public void insertReview(ProductReview dto, String uploadPath) throws Exception {
 		try {
 			mapper.insertReview(dto);
+			
+			// 파일 등록
 			
 		} catch (Exception e) {
 			log.info("insertReview : ", e);
@@ -30,15 +34,31 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 	}
 
 	@Override
-	public void updateReview(ProductReview dto) throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void updateReview(ProductReview dto, String uploadPath) throws Exception {
+		try {
+			mapper.updateReview(dto);
+			
+			// 파일 수정
+			
+		} catch (Exception e) {
+			log.info("updateReview : ", e);
+			
+			throw e;
+		}
 	}
 
 	@Override
 	public void deleteReview(long num, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.deleteReview(num);
+			
+			// 파일 삭제
+			
+		} catch (Exception e) {
+			log.info("deleteReview : ", e);
+			
+			throw e;
+		}
 	}
 
 	@Override
@@ -48,9 +68,28 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		try {
 			list = mapper.getReviewList(map);
 	
-			
 		} catch (Exception e) {
 			log.info("getReviewList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+	
+	@Override
+	public List<ProductReview> getReviewListByProductNum(Map<String, Object> map) {
+		List<ProductReview> list = null;
+		
+		try {
+			list = mapper.getReviewListByProductNum(map);
+
+			for(ProductReview dto : list) {
+				dto.setReviewerName(myUtil.nameMasking(dto.getReviewerName()));
+			}
+			
+		} catch (Exception e) {
+			log.info("getReviewListByProductNum : ", e);
 			
 			throw e;
 		}

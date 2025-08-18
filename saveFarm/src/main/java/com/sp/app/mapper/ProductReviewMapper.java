@@ -15,6 +15,7 @@ public interface ProductReviewMapper {
 	public void deleteReview(long num) throws SQLException;
 	
 	public List<ProductReview> getReviewList(Map<String, Object> map);
+	public List<ProductReview> getReviewListByProductNum(Map<String, Object> map);
 	public List<ProductReview> getMyReviewList(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyReviewDataCount(long memberId);

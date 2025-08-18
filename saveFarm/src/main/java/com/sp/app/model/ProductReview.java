@@ -22,6 +22,8 @@ public class ProductReview {
 	private String reviewTitle;
 	
 	private String productName;
+	private String mainImageFilename;
+	private String unit;
 	
 	private long reviewerMemberId;
 	private String reviewerName;

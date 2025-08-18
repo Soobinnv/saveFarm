@@ -9,7 +9,7 @@
 
 	<select id="getWishList" resultType="com.sp.app.model.Wish" parameterType="Long">
     	SELECT w.memberId, w.productNum, wishDate,
-    		p.productName, pd.unitPrice, pd.discountRate, p.deliveryFee, p.mainImageFilename
+    		p.productName, pd.unit, pd.unitPrice, pd.discountRate, p.deliveryFee, p.mainImageFilename
     	FROM wish w
     	JOIN product p ON w.productNum = p.productNum
     	JOIN productDetail pd ON w.productNum = pd.productNum

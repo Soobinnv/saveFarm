@@ -1,10 +1,3 @@
-// input submit 방지
-document.addEventListener('keydown', function(event) {
-  if (event.keyCode === 13) {
-    event.preventDefault();
-  };
-});
-
 // 처음 접속 시 상품 리스트 로드
 $(function() {	
 	loadProducts("");
@@ -19,26 +12,25 @@ function loadProducts(kwd) {
 	let url = contextPath + '/api/products';
 	let params = 'kwd=' + kwd;
 	let selector = '#productLayout';
-	let cartFunctionString = $('body').attr('data-page-id') === "product-list" 
-				? "sendOk('cart', this)" 
-				: `addToCart('__PRODUCTNUM__', this)`;
 	
 	const fn = function(data){
 		const html = data.list.map(item => {
 			// placeholder를 상품 번호로 변경
-			const cartFunction = cartFunctionString.replace('__PRODUCTNUM__', item.productNum);
 			
 			return `
 		        <div class="col-md-6 col-lg-3">
-		            <div class="card text-center card-product">
+		            <div class="card text-center card-product" 
+						data-product-num="${item.productNum}"
+						data-wish="${item.userWish}"
+						>
 		                <div class="card-product__img">
-		                    <img onclick="location.href='${contextPath}/products/${item.productNum}'" class="card-img"
-		                        src="${contextPath}/uploads/product/${item.mainImageFilename}"
+		                    <img class="card-img product-main-image"
+								src="${contextPath}/uploads/product/${item.mainImageFilename}"
 		                        alt="${item.productName} 이미지"
 								onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';">
 		                    <ul class="card-product__imgOverlay">
 		                        <li>
-		                            <button type="button" onclick="location.href='${contextPath}/products/${item.productNum}'">
+		                            <button class="btn-product-info" type="button">
 		                                <iconify-icon icon="tabler:search" class="fs-4"></iconify-icon>
 		                            </button>
 		                        </li>
@@ -47,13 +39,13 @@ function loadProducts(kwd) {
 										<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
 										<input type="hidden" name="buyQtys" id="qty" value="1"> 
 										<input type="hidden" name="units" id="unit" value="${item.unit}">
-				                        <button type="button" onclick="${cartFunction};">
+				                        <button type="button" class="btn-cart">
 				                        	<iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
 				                        </button>
 									</form>
 		                        </li>
 		                        <li>
-									<button type="button" data-wish="${item.userWish}" onclick="updateWish(${item.productNum}, this);">
+									<button type="button" class="btn-wish-save">
 									${item.userWish == '1'
 			                            ?`<iconify-icon icon="mdi:heart" class="wishIcon fs-4"></iconify-icon>`
 			                            :`<iconify-icon icon="lucide:heart" class="wishIcon fs-4"></iconify-icon>` 
@@ -80,7 +72,6 @@ function loadProducts(kwd) {
 									: `<span class="final-price fs-5">${item.unitPrice}원</span>`
 								}
 							</div>
-							
 		                </div>
 		            </div>
 		        </div>
@@ -91,26 +82,3 @@ function loadProducts(kwd) {
 	
 	ajaxRequest(url, 'get', params, 'json', fn);
 }
-
-$(function() {
-	// 상품 검색
-	$('.searchIcon').on('click', function() {
-		let kwd = $('.searchInput').val().trim();
-		if(kwd === '') {
-			return false;
-		}
-		
-		loadProducts(kwd);
-	});
-	
-});
-
-$(function() {
-	// 상품 검색창 엔터키 입력
-	$('.searchInput').on('keydown', function(event) {
-		if (event.keyCode === 13) {
-			// 검색 버튼 클릭 트리거
-			$('.searchIcon').trigger('click');
-		};
-	});
-});

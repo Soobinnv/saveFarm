@@ -27,6 +27,85 @@ function loadContent(url, renderFn, params) {
 	ajaxRequest(url, 'get', params, 'json', fn);
 }
 
+// 이벤트 핸들러 등록
+$(function() {
+	// 장보기
+	$('#content').on('click', '.btn-product-list', function() {
+		location.href='${contextPath}/products';
+	});
+	
+	// 장바구니
+	$('#content').on('click', '.btn-cart', function() {
+		sendOk('cart');
+	});
+	
+	// 바로 구매
+	$('#content').on('click', '.btn-buy', function() {
+		sendOk('buy');
+	});
+	
+	// 리뷰 등록 / 수정
+	$('#content').on('click', '.btn-review-save', function() {
+		const orderDetailNum = $(this).data('orderDetailNum');
+		const mode = $(this).data('mode');
+
+		manageReview(orderDetailNum, mode);
+	});
+	
+	// 리뷰 등록 form
+	$('#content').on('click', '.btn-review-insert', function() {
+		const orderDetailNum = $(this).data('orderDetailNum');
+		
+		renderReviewForm(orderDetailNum);
+	});
+	
+	// 리뷰 수정 form
+	$('#content').on('click', '.btn-review-edit', function() {
+		const $reviewItem = $(this).closest('.review-item');
+		const reviewImageList = $reviewItem.data('reviewImageList');
+		
+		if(reviewImageList !== undefined && reviewImageList !== null) {
+			reviewImageList = JSON.parse(reviewImageList);
+		}
+		
+		const orderDetailObject = {
+			orderDetailNum: $reviewItem.data('orderDetailNum'),
+			mainImageFilename: $reviewItem.data('mainImageFilename'),
+			productName: $reviewItem.data('productName'),
+			orderDate: $reviewItem.data('orderDate'),
+			productNum: $reviewItem.data('productNum'),
+		}
+		
+		const reviewObject = {
+			orderDetailNum: $reviewItem.data('orderDetailNum'),
+			orderDate: $reviewItem.data('orderDate'),
+			productNum: $reviewItem.data('productNum'),
+			mainImageFilename: $reviewItem.data('mainImageFilename'),
+			productName: $reviewItem.data('productName'),
+			reviewDate: $reviewItem.data('reviewDate'),
+			unit: $reviewItem.data('unit'),
+			reviewTitle: $reviewItem.data('reviewtitle'),
+			star: $reviewItem.data('star'),
+			review: $reviewItem.data('review'),
+			reviewImageList: reviewImageList,
+			helpfulCount: $reviewItem.data('helpfulCount')
+		};
+		
+		renderReviewForm(orderDetailObject, reviewObject);
+	});
+	
+	// 리뷰 삭제
+	$('#content').on('click', '.btn-review-delete', function() {
+		const orderDetailNum = $(this).data('orderDetailNum');
+				
+		if(! confirm("리뷰를 삭제하시겠습니까?")) {
+			return false;
+		}
+		
+		manageReview(orderDetailNum, "delete");
+	});
+});
+
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data
@@ -121,7 +200,7 @@ const renderMyWishListHtml = function(data) {
 		        <p class="mt-3 mb-0 text-muted">찜한 상품이 없습니다.</p>
 		    </div>
 			<div class="text-center mt-3 p-5">
-				<button onclick="location.href='${contextPath}/products';" class="btn btn-success btn-lg" type="button">장보러가기</button>	
+				<button class="btn btn-success btn-lg btn-product-list" type="button">장보러가기</button>	
 			</div>
 		`;
 		return html;
@@ -139,7 +218,7 @@ const renderMyWishListHtml = function(data) {
                     <div class="col-12 col-sm text-center text-sm-start">
                         <p class="small text-muted mb-1">${item.wishDate}</p>
                         <h3 class="h5 fw-semibold text-dark mb-2">
-                            <a href="#" class="text-decoration-none text-dark">${item.productName}(4개입)</a>
+                            <a href="${contextPath}/products/${item.productNum}" class="text-decoration-none text-dark">${item.productName}&nbsp;${item.unit}</a>
                         </h3>
                         <div class="d-flex align-items-center justify-content-center justify-content-sm-start mb-1">
 							${item.discountRate != 0 
@@ -154,8 +233,8 @@ const renderMyWishListHtml = function(data) {
 
                     <div class="col-12 col-md-auto mt-3 mt-md-0">
                         <div class="d-grid gap-2 d-sm-block">
-							<button onclick="sendOk('cart');" class="btn btn-success btn-lg" type="button">장바구니 담기</button>
-							<button onclick="sendOk('buy');" class="btn btn-success btn-lg" type="button">바로 구매</button>
+							<button class="btn btn-success btn-lg btn-cart" type="button">장바구니 담기</button>
+							<button class="btn btn-success btn-lg btn-buy" type="button">바로 구매</button>
                         </div>
                     </div>
                 </div>
@@ -180,7 +259,10 @@ const renderMyReviewListHtml = function(data) {
 			<div class="mb-5">
 				<h3 class="display-6 fw-bold text-dark">나의 리뷰</h3>
 				<p class="text-muted">내가 작성한 상품 리뷰를 확인하고 관리할 수 있습니다.</p>
-			</div>			
+				<div class="mt-3 d-flex justify-content-center">
+					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-review-insert" type="button">리뷰 작성</button>
+				</div>			
+			</div>
 	`; 
 	
 	if(! data.list || data.list.length === 0) {
@@ -189,71 +271,85 @@ const renderMyReviewListHtml = function(data) {
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
 		        <p class="mt-3 mb-0 text-muted">아직 작성한 리뷰가 없습니다.</p>
 		    </div>
-			<div class="mt-3 d-flex justify-content-center">
-				<button onclick="renderReviewForm();" class="btn btn-success btn-lg" type="button">리뷰 작성</button>
-			</div>
 		`;
 		return html;
 	}
 	
-	html += data.list.map(item => `
-		<div class="card mb-4 shadow-sm">
+	html += data.list.map(item => {
+		const formattedDate = new Date(item.reviewDate).toLocaleDateString();
+		const reviewText = item.review.replace(/\n/g, '<br>');
+		
+		return `
+		<div class="card mb-4 shadow-sm review-item"
+			data-orderDetailNum = "${item.orderDetailNum}"
+			data-productNum = "${item.productNum}"
+			data-mainImageFilename = "${item.mainImageFilename}"
+			data-productName = "${item.productName}"
+			data-reviewDate = "${formattedDate}"
+			data-unit = "${item.unit}"
+			data-reviewTitle = "${item.reviewTitle}"
+			data-star = "${item.star}"
+			data-review = "${reviewText}"
+			data-reviewImageList = "${JSON.stringify(item.reviewImageList || [])}"
+			data-helpfulCount = "${item.helpfulCount}"
+			>
 	        <div class="card-body p-4">
 	            <div class="d-flex justify-content-between align-items-start mb-3">
 	                <div class="d-flex align-items-center">
-	                    <img src="${item.reviewImageFilename}" 
+	                    <img src="${contextPath}/uploads/product/${item.mainImageFilename}" 
 	                         class="rounded me-3" 
-	                         alt="${item.productName}" 
 	                         style="width: 60px; height: 60px; object-fit: cover;"
 	                         onerror="this.onerror=null;this.src='/uploads/product/apple.jpg';">
 	                    <div>
-	                        <small class="text-muted">작성일: ${new Date(item.reviewDate).toLocaleDateString()}</small>
-	                        <h5 class="card-title mb-0 fw-semibold">${item.productName}</h5>
+	                        <small class="text-muted">작성일: ${formattedDate}</small>
+	                        <p class="card-title mb-0">${item.productName}&nbsp;${item.unit}</p>
 	                    </div>
 	                </div>
 	                <div class="dropdown">
-	                    <button class="" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+	                    <button type="button" data-bs-toggle="dropdown" aria-expanded="false">
 	                        <iconify-icon icon="basil:menu-outline" class="align-middle"></iconify-icon>
 	                    </button>
 	                    <ul class="dropdown-menu dropdown-menu-end">
-	                        <li><a class="dropdown-item review-dropdown-item" href="#">
+	                        <li><a class="dropdown-item review-dropdown-item btn-review-edit" href="javascript:void(0)">
 	                            <iconify-icon icon="mdi:pencil-outline" class="me-2"></iconify-icon>수정하기
 	                        </a></li>
-	                        <li><a class="dropdown-item review-dropdown-item text-danger" href="#">
+	                        <li><a data-order-detail-num=${item.orderDetailNum} class="dropdown-item review-dropdown-item text-danger btn-review-delete" href="javascript:void(0)">
 	                            <iconify-icon icon="mdi:trash-can-outline" class="me-2"></iconify-icon>삭제하기
 	                        </a></li>
 	                    </ul>
 	                </div>
 	            </div>	
-				<div class="mb-1">
+				<div class="mb-3">
 					<h5 class="card-title mb-0 fw-semibold">${item.reviewTitle}</h5>
 				</div>
 	            <div class="mb-3 d-flex align-items-center">
 	                <div class="me-2">
 	                    ${[...Array(5)].map((_, i) => `
-	                        <iconify-icon icon="${i < item.star ? 'mdi:star' : 'mdi:star-outline'}" class="text-warning fs-5"></iconify-icon>
+	                        <iconify-icon icon="${i < item.star ? 'mdi:star' : 'mdi:star-outline'}" class="text-warning"></iconify-icon>
 	                    `).join('')}
 	                </div>
-	                <span class="fw-bold text-warning align-middle">${item.star.toFixed(1)}</span>
+	                <span class="fw-bold text-warning align-middle">${item.star}.0</span>
 	            </div>
 	
-	            <p class="card-text text-secondary mb-3">${item.review.replace(/\n/g, '<br>')}</p>
+	            <p class="card-text text-secondary mb-3">${reviewText}</p>
 	
 	            ${item.reviewImageList && item.reviewImageList.length > 0 ? `
 	            <div class="review-images d-flex overflow-auto mb-3 pb-2">
 	                ${item.reviewImageList.map(imgUrl => `
-	                    <img src="${imgUrl}" class="rounded me-2" alt="리뷰 이미지" style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;">
+	                    <img src="${imgUrl}" class="rounded me-2" alt="리뷰 이미지" 
+							style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;
+							onerror="this.onerror=null;this.src='/uploads/product/apple.jpg'";>
 	                `).join('')}
 	            </div>
 	            ` : ''}
 	
 	            <div class="d-flex justify-content-end align-items-center text-muted">
-	                <iconify-icon icon="mdi:thumb-up-outline" class="me-1"></iconify-icon>
+	                <iconify-icon icon="stash:thumb-up" class="me-1"></iconify-icon>
 	                <span>도움돼요 ${item.helpfulCount}</span>
 	            </div>
 	        </div>
 	    </div>
-	`).join('');
+	`}).join('');
 	
 	html += `
 		<div class="myPagePaginate">
@@ -264,19 +360,22 @@ const renderMyReviewListHtml = function(data) {
 }
 
 /**
- * 마이 페이지 - 리뷰 작성 form 렌더링
+ * 마이 페이지 - 리뷰 작성/수정 form 렌더링
  * @param {object} orderDetailObject - 주문 상세 정보 객체
  * @returns {void} #content에 HTML 렌더링
  */
-const renderReviewForm = function(orderDetailObject) {	
+const renderReviewForm = function(orderDetailObject = null, reviewObject = null) {	
 	// sample data
 	orderDetailObject = {
-		orderDetailNum:2,
-		productImageUrl: contextPath + "/uploads/product/apple.jpg",
+		orderDetailNum:4,
+		// 상품 메인 이미지
+		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
 		productName:"햇살농장 유기농 사과 1박스(5kg)",
 		orderDate:"2025-08-16",
 		productNum:1
 	}
+	
+	let mode = reviewObject === null ? "insert" : "update";
 	
 	const html = `
 	<div class="container-lg p-4 p-sm-5">
@@ -286,7 +385,7 @@ const renderReviewForm = function(orderDetailObject) {
 
 		<h4 class="display-8 text-dark">이 상품 어떠셨나요?</h4>
 		<div class="reivew-form-product-info d-flex align-items-center mb-4">
-			<img src="${orderDetailObject.productImageUrl}" class="reivew-form-product-image me-3">
+			<img src="${orderDetailObject.mainImageFilename}" class="reivew-form-product-image me-3">
 			<div>
 				<p class="reivew-form-product-name mb-1">${orderDetailObject.productName}</p>
 				<p class="reivew-form-order-date text-muted">주문일자: ${orderDetailObject.orderDate}</p>
@@ -309,8 +408,13 @@ const renderReviewForm = function(orderDetailObject) {
 		    </div>
 		  </div>
 		  <div class="mb-3">
+		    <label for="review" class="form-label">리뷰 제목</label>
+		    <input value="${mode === "update" ? `${reviewObject.reviewTitle}` : ''}" class="form-control" id="reviewTitle" name="reviewTitle" placeholder="리뷰의 제목을 작성해주세요." maxlength="1000" required>
+			</input>
+		  </div>
+		  <div class="mb-3">
 		    <label for="review" class="form-label">리뷰 내용</label>
-		    <textarea class="form-control" id="review" name="review" rows="5" placeholder="솔직한 리뷰를 남겨주세요." maxlength="4000" required></textarea>
+		    <textarea class="form-control" id="review" name="review" rows="5" placeholder="솔직한 리뷰를 남겨주세요." maxlength="4000" required>${mode === "update" ? `${reviewObject.review}` : ""}</textarea>
 		  </div>
 		  <div class="mb-3">
 			<label for="reviewImages" class="form-label">사진 첨부 (선택)</label>
@@ -318,30 +422,70 @@ const renderReviewForm = function(orderDetailObject) {
           </div>
 		  <input type="hidden" name="productNum" value="${orderDetailObject.productNum}">
 		  <div class="mt-4 d-grid">
-		    <button type="button" class="btn btn-success btn-lg" onclick="insertReview(${orderDetailObject.orderDetailNum})">리뷰 등록</button>
+		    <button data-order-detail-num="${orderDetailObject.orderDetailNum}" data-mode="${mode}" type="button" class="btn btn-success btn-lg btn-review-save">리뷰 ${mode === "update" ? "수정" : "등록"}</button>
 		  </div>
 		</form>
 	</div>
 	`
 	$('#content').html(html);
 	
+	// 별점 활성화
+	if (mode === "update") {
+		const star = reviewObject.star;
+		$(`#starRating input[value="${star}"]`).prop('checked', true);
+	}
 }
 
 /**
- * 상품 리뷰 등록
+ * 상품 리뷰 CUD
  * @param {string} orderDetailNum - 주문 상세 번호
  */
-function insertReview(orderDetailNum) {
+function manageReview(orderDetailNum, mode) {
 	let url = contextPath + '/api/myPage/reviews/' + orderDetailNum;
-	const params = new FormData($('#reviewForm')[0]); 
+	// const params = new FormData($('#reviewForm')[0]); 
+	// const method = mode === "insert" ? "POST" : "PUT";
+	let params = null;
+	
+	switch (mode) {
+		case 'insert':
+			method = 'POST';
+			params = new FormData($('#reviewForm')[0]);
+			break;
+		case 'update':
+			method = 'PUT';
+			params = new FormData($('#reviewForm')[0]);
+			break;
+		case 'delete':
+			method = 'DELETE';
+			break;
+		default:
+			console.error('manageReview - mode: ', mode);
+			return; 
+	}
 	
 	const fn = function(data) {
 		// 나의 리뷰 불러오기
 		loadContent('/api/myPage/reviews', renderMyReviewListHtml);
 	}
 	
-	ajaxRequest(url, 'post', params, false, fn, true);
+	ajaxRequest(url, method, params, false, fn, true);
 }
+
+/**
+ * 상품 리뷰 삭제
+ * @param {string} orderDetailNum - 주문 상세 번호
+ */
+function deleteReview(orderDetailNum, mode) {
+	let url = contextPath + '/api/myPage/reviews/' + orderDetailNum;
+	
+	const fn = function(data) {
+		// 나의 리뷰 불러오기
+		loadContent('/api/myPage/reviews', renderMyReviewListHtml);
+	}
+	
+	ajaxRequest(url, "DELETE", params, false, fn, false);
+}
+
 
 /**
  * 마이 페이지 - 내 활동 - 1:1 문의
@@ -483,8 +627,6 @@ function reviewListPage(page) {
 	let parameter = {pageNo:page};
 	loadContent('/api/myPage/reviews', renderMyReviewListHtml, parameter)
 }
-
-
 
 /**
  * 마이 페이지 - 내 활동 - FAQ

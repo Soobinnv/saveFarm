@@ -6,6 +6,7 @@ $(function() {
 	loadContent('/api/products/' + productNum, renderProductDetailHtml);
 });
 
+// 이벤트 핸들러 등록
 $(function() {
 	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의 tab 클릭
 	$('.nav-link').on('click', function() {
@@ -27,13 +28,19 @@ $(function() {
 	            loadContent('/api/products/' + productNum + '/reviews', renderProductReviewHtml);  
 	            break;
 	        case 'nav-refund-tab':
-	            loadContent('/api/products/' + productNum + '/refund-info', renderRefundHtml); 
+	            renderRefund(); 
 	            break;
 	        case 'nav-qna-tab':
 	        	loadContent('/api/products/' + productNum + '/qnas', renderProductQnaHtml); 
 	            break;
     	}
 	});
+	
+	// 문의 하기
+	$('#productInfoLayout').on('click', '.btn-product-qna', function() {
+		sendQna();
+	});
+	
 });
 
 /**
@@ -75,7 +82,8 @@ const renderProductDetailHtml = function(data) {
 			<div class="text-center mt-3 p-5 border rounded">
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
 		        <p class="mt-3 mb-0 text-muted">등록된 상품 정보가 없습니다.</p>
-		    </div>`;
+		    </div>
+		`;
 		return html;
 	}
 	
@@ -185,110 +193,83 @@ const renderProductDetailHtml = function(data) {
  */
 const renderProductReviewHtml = function(data) {
 	let html = 	`
-		<h4>상품 리뷰</h4>
-		<div class="review-list-wrapper mt-3">
-		<ul class="list-unstyled">`;
+		<div class="mb-4">
+			<h4 class="">상품 리뷰</h4>		
+		</div>
+	`;
 	
 	if(! data.list || data.list.length === 0) {
 		html += `
-			<li class="text-center p-5 border rounded">
-		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
-		        <p class="mt-3 mb-0 text-muted">등록된 리뷰가 없습니다.<br>상품을 구매하고 첫 번째 리뷰를 작성해보세요!</p>
-		    </li>`;
+		<div class="text-center mt-3 p-5 border rounded">
+		    <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		    <p class="mt-3 mb-0 text-muted">아직 작성한 리뷰가 없습니다.</p>
+		</div>
+		`;
 		
 		return html;
 	}
 			
-	html += data.list.map(item => `
-				<li class="review-item border rounded p-3 mb-3">
-					<div class="review-header">
-						<span class="badge bg-primary me-1">BEST</span> <span
-							class="badge bg-success me-1">MEMBERSHIP</span> <span
-							class="review-author fw-bold">김**</span>
+	html += data.list.map(item => {
+		const formattedDate = new Date(item.reviewDate).toLocaleDateString();
+		const reviewText = item.review.replace(/\n/g, '<br>');
+		
+		return `
+			<div class="card mb-4 shadow-sm review-item">
+		        <div class="card-body p-4">
+		            <div class="d-flex justify-content-between align-items-start mb-3">
+		                <div class="d-flex align-items-center">
+		                    <img src="${contextPath}/uploads/product/${item.mainImageFilename}" 
+		                         class="rounded me-3" 
+		                         style="width: 60px; height: 60px; object-fit: cover;"
+		                         onerror="this.onerror=null;this.src='/uploads/product/apple.jpg';">
+		                    <div>
+		                        <p class="card-title mb-0">${item.productName}&nbsp;${item.unit}</p>
+		                        <small class="text-muted">${item.reviewerName} · ${formattedDate}</small>
+		                    </div>
+		                </div>
+		            </div>	
+					<div class="mb-3">
+						<h5 class="card-title mb-0 fw-semibold">${item.reviewTitle}</h5>
 					</div>
-
-					<h5 class="mt-2">[비비고] 순살 삼치구이 60G</h5>
-
-					<div class="review-body mt-3">
-						<p>
-							제가 최근 접해본 '비비고 순살삼치구이 60G'입니다.<br> 비비고 순살삼치구이는 60g 용량으로,
-							한 끼 반찬으로 딱 좋은 양이에요.<br> 삼치는 영양가가 높고 맛도 좋아 많은 분들이 좋아하는
-							생선이죠.<br> 하지만 집에서 직접 요리하기엔 냄새도 나고 손질도 번거로운데, 이 제품은 그런 걱정
-							없이 간편하게 즐길 수 있어요.
-						</p>
-
-						<p>
-							첫 입을 먹었을 때 느낀 건 '와, 이게 정말 편의점 도시락 속 생선구이 맛이 아니구나!'였어요. 삼치 본연의
-							고소하고 담백한 맛이 잘 살아있으면서도, 적절한 간이 되어 있어 밥과 함께 먹기 좋았습니다.<br>
-							특히 순살이라 가시 걱정 없이 편하게 먹을 수 있다는 점이 큰 장점이에요.<br> 생선 특유의 비린내도
-							거의 없어서 생선을 좋아하지 않는 분들도 부담 없이 즐길 수 있을 것 같아요.
-						</p>
-
-						<p>
-							이 제품의 가장 큰 매력은 바로 간편한 조리 방법이에요!<br> 전자레인지에 1분 30초만 돌리면 끝!<br>
-							또는 프라이팬에 약간의 기름을 두르고 3~4분 정도 구워주면 됩니다.<br> 정말 간단하죠?
-							전자레인지로 데우면 빠르게 먹을 수 있고, 프라이팬으로 구우면 겉면이 조금 더 바삭해져서 식감이 좋아져요.
-							개인의 취향에 따라 선택할 수 있어 좋았습니다.
-						</p>
-
-						<p>
-							비비고 순살삼치구이 맛과 편의성 면에서 정말 만족스러운 제품이었어요.<br> 특히 조리 방법이 간편해서
-							요리에 서툰 분들이나 바쁜 직장인들에게 강력 추천합니다!<br> 냉동실에 몇 개 구비해두면 급하게
-							반찬이 필요할 때 정말 요긴하게 사용할 수 있을 것 같아요. 건강한 한 끼를 위해, 또는 도시락 반찬으로도 좋을
-							것 같네요.<br> 여러분도 한번 시도해보시는 건 어떨까요? 간편하면서도 맛있는 삼치구이로 든든한 한
-							끼 되세요!
-						</p>
-					</div>
-					<div class="review-images mt-3 d-flex overflow-auto">
-						<img
-							src="${contextPath}/dist/images/product/product1.png"
-							class="rounded me-2" alt="리뷰 이미지 1"
-							style="width: 100px; height: 100px; object-fit: cover;">
-						<img
-							src="${contextPath}/dist/images/product/product2.png"
-							class="rounded me-2" alt="리뷰 이미지 2"
-							style="width: 100px; height: 100px; object-fit: cover;">
-						<img
-							src="${contextPath}/dist/images/product/product1.png"
-							class="rounded me-2" alt="리뷰 이미지 3"
-							style="width: 100px; height: 100px; object-fit: cover;">
-						<img
-							src="${contextPath}/dist/images/product/product1.png"
-							class="rounded me-2" alt="리뷰 이미지 4"
-							style="width: 100px; height: 100px; object-fit: cover;">
-						<img
-							src="${contextPath}/dist/images/product/product1.png"
-							class="rounded me-2" alt="리뷰 이미지 5"
-							style="width: 100px; height: 100px; object-fit: cover;">
-						<img
-							src="${contextPath}/dist/images/product/product1.png"
-							class="rounded me-2" alt="리뷰 이미지 6"
-							style="width: 100px; height: 100px; object-fit: cover;">
-					</div>
-
-					<div
-						class="review-footer mt-3 d-flex justify-content-between align-items-center">
-						<span class="review-date text-muted">2024.07.08</span>
-						<button type="button" class="btn rounded-pill">
-							<iconify-icon icon="stash:thumb-up" class="fs-4 blackIcon"></iconify-icon>
-							<span>도움돼요 90</span>
-						</button>
-					</div>
-				</li>
-	`).join('');
+		            <div class="mb-3 d-flex align-items-center">
+		                <div class="me-2">
+		                    ${[...Array(5)].map((_, i) => `
+		                        <iconify-icon icon="${i < item.star ? 'mdi:star' : 'mdi:star-outline'}" class="text-warning"></iconify-icon>
+		                    `).join('')}
+		                </div>
+		                <span class="fw-bold text-warning align-middle">${item.star}.0</span>
+		            </div>
 	
-	html += `</ul></div>`;
+		            <p class="card-text text-secondary mb-3">${reviewText}</p>
+	
+		            ${item.reviewImageList && item.reviewImageList.length > 0 ? `
+		            <div class="review-images d-flex overflow-auto mb-3 pb-2">
+		                ${item.reviewImageList.map(imgUrl => `
+		                    <img src="${imgUrl}" class="rounded me-2" alt="리뷰 이미지" 
+								style="width: 90px; height: 90px; object-fit: cover; cursor: pointer;
+								onerror="this.onerror=null;this.src='/uploads/product/apple.jpg'";>
+		                `).join('')}
+		            </div>
+		            ` : ''}
+	
+		            <div class="d-flex justify-content-end align-items-center text-muted">
+		                <iconify-icon icon="stash:thumb-up" class="me-1"></iconify-icon>
+		                <span>도움돼요 ${item.helpfulCount}</span>
+		            </div>
+		        </div>
+		    </div>
+	`}).join('');
 		
 	return html;
 }
 
 /**
- * 상품 반품 / 환불 HTML 문자열 생성
+ * 상품 반품 / 환불 HTML 렌더링
  * 상품 반품 / 환불 안내
  * @param {object} data
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
-const renderRefundHtml = function(data) {	
+const renderRefund = function() {	
 	const html = `
 	<h4>반품 / 환불 안내</h4>
 	<div class="info-section mt-4 p-3 border rounded">
@@ -307,7 +288,8 @@ const renderRefundHtml = function(data) {
 			<i class="bi bi-x-circle"></i> 반품 / 환불 불가능 사유
 		</h4>
 		<ul>
-			<li>1. 수령 후 단순 변심, 기호 등에 의한 요청인 경우 <br>2. 수령 후 7일 이상
+			<li>
+				1. 수령 후 단순 변심, 기호 등에 의한 요청인 경우 <br>2. 수령 후 7일 이상
 				경과, 제품의 30%이상 섭취 한 경우 <br>3. 접수 내용에 사진이 첨부되지 않아 품질 문제를 확인하기
 				어려운 경우 <br>4. 고객의 책임 사유(지연 개봉, 부적절한 보관 방법 등)로 상품이 손실 또는 훼손
 				된 경우 <br>5. 수령 후 시간이 지나 상품 가치가 현저히 감소한 경우 <br>6. 연락처 및
@@ -324,7 +306,7 @@ const renderRefundHtml = function(data) {
 	</div>
 	`
 	
-	return html;
+	$('#productInfoLayout').html(html);
 }
 
 /**
@@ -405,7 +387,7 @@ const renderProductQnaHtml = function(data) {
 	html += `
 		</div></div>
 		<div class="text-center mt-3 p-5">
-			<button onclick="" class="btn btn-success btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#qnaFormModal">상품 문의</button>
+			<button class="btn btn-success btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#qnaFormModal">상품 문의</button>
 		</div>
 		<div class="modal fade" id="qnaFormModal" tabindex="-1" aria-labelledby="qnaFormModalLabel" aria-hidden="true">
 		  <div class="modal-dialog modal-dialog-centered">
@@ -432,7 +414,7 @@ const renderProductQnaHtml = function(data) {
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-		        <button type="button" onclick="sendQna();" form="productQnaForm" class="btn btn-success">문의 등록</button>
+		        <button type="button" form="productQnaForm" class="btn btn-success btn-product-qna">문의 등록</button>
 		      </div>
 		    </div>
 		  </div>

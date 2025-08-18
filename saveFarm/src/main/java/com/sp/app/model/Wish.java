@@ -14,6 +14,7 @@ public class Wish {
 	private Long productNum;
 
 	private String productName;
+	private String unit;
 	private int unitPrice;
 	private int discountRate;
 	private int discountedPrice;

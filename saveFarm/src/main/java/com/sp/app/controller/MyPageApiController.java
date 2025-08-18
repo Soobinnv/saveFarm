@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -146,6 +147,48 @@ public class MyPageApiController {
 		}
 	}
 	
+	// 내 활동 - 리뷰 수정
+	@PutMapping("/reviews/{orderDetailNum}")
+	public ResponseEntity<?> updateReview(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			ProductReview dto,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			dto.setOrderDetailNum(orderDetailNum);
+			
+			reviewService.updateReview(dto, productReviewUploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateReview: ", e);
+			body.put("message", "리뷰 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+
+	// 내 활동 - 리뷰 삭제
+	@DeleteMapping("/reviews/{orderDetailNum}")
+	public ResponseEntity<?> deleteReview(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			
+			reviewService.deleteReview(orderDetailNum, productReviewUploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("deleteReview: ", e);
+			body.put("message", "리뷰 삭제 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
 	// 내 활동 - 리뷰 수정 form 데이터
 	@GetMapping("/reviews/{orderDetailNum}/edit")
 	public ResponseEntity<?> getEditReviewForm(
@@ -165,27 +208,6 @@ public class MyPageApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
-	
-	// 내 활동 - 리뷰 수정
-	@PutMapping("/reviews/{orderDetailNum}")
-	public ResponseEntity<?> updateReview(
-			@PathVariable("orderDetailNum") long orderDetailNum,
-			HttpSession session
-		) {
-		Map<String, Object> body = new HashMap<>();
-		try {
-			
-			
-			List<ProductReview> list = null;
-			body.put("list", list);
-			return ResponseEntity.ok(body); // 200 OK
-		} catch (Exception e) {
-			log.error("updateReview: ", e);
-			body.put("message", "리뷰 수정 중 오류가 발생했습니다.");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
-		}
-	}
-	
 	
 	// 내 활동 - 1:1 문의 데이터
 	@GetMapping("/inquirys")

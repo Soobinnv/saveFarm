@@ -367,14 +367,8 @@
 					</div>
 				</div>
 			</div>
-			
-
 		</div>
 	</div>
-
-
-
-
 
 	<!-- ================ Subscribe section start ================= -->
 	<section class="subscribe-position">
@@ -414,6 +408,7 @@
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList2.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product.js"></script>
 </body>
 </html>

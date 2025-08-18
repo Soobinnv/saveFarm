@@ -20,6 +20,7 @@ import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.service.ProductQnaService;
+import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.ProductService;
 import com.sp.app.service.WishService;
 
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductApiController {
 
 	private final ProductService service;
+	private final ProductReviewService reviewService;
 	private final ProductQnaService qnaService;
 	private final WishService wishService;
 
@@ -80,7 +82,7 @@ public class ProductApiController {
 			return ResponseEntity.notFound().build(); // 404 Not Found
 		} catch (Exception e) {
 			log.error("getProductInfo: ", e);
-			body.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+			body.put("message", "상품의 상세 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -102,7 +104,7 @@ public class ProductApiController {
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProductQna: ", e);
-			body.put("message", "문의 정보를 불러오는 중 오류가 발생했습니다.");
+			body.put("message", "상품의 문의 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -112,28 +114,34 @@ public class ProductApiController {
 	public ResponseEntity<?> getProductReview(@PathVariable(name = "productNum") long productNum) {
 		Map<String, Object> body = new HashMap<>();
 		try {
-			List<ProductReview> list = null;
+			Map<String, Object> map = new HashMap<>();
+			
+			map.put("offset", 0);
+			map.put("size", 20);
+			map.put("productNum", productNum);
+			
+			List<ProductReview> list = reviewService.getReviewListByProductNum(map);
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProductReview: ", e);
-			body.put("message", "리뷰 정보를 불러오는 중 오류가 발생했습니다.");
+			body.put("message", "상품의 리뷰 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
 
-	// 상품 환불/반품 데이터
-	@GetMapping("/{productNum}/refund-info")
-	public ResponseEntity<?> getProductRefundInfo(@PathVariable(name = "productNum") long productNum) {
-		Map<String, Object> body = new HashMap<>();
-		try {
-			return ResponseEntity.ok(body); // 200 OK
-		} catch (Exception e) {
-			log.error("getProductRefundInfo: ", e);
-			body.put("message", "환불/반품 정보를 불러오는 중 오류가 발생했습니다.");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
-		}
-	}
+//	// 상품 환불/반품 데이터
+//	@GetMapping("/{productNum}/refund-info")
+//	public ResponseEntity<?> getProductRefundInfo(@PathVariable(name = "productNum") long productNum) {
+//		Map<String, Object> body = new HashMap<>();
+//		try {
+//			return ResponseEntity.ok(body); // 200 OK
+//		} catch (Exception e) {
+//			log.error("getProductRefundInfo: ", e);
+//			body.put("message", "상품의 환불/반품 정보를 불러오는 중 오류가 발생했습니다.");
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+//		}
+//	}
 
 	// 찜 등록
 	@PostMapping("{productNum}/wish")
