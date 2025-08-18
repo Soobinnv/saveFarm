@@ -39,7 +39,7 @@ function loadProducts(kwd) {
 										<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
 										<input type="hidden" name="buyQtys" id="qty" value="1"> 
 										<input type="hidden" name="units" id="unit" value="${item.unit}">
-				                        <button type="button" class="btn-cart">
+				                        <button type="button" class="btn-cart" onclick="addToCart(${item.productNum}, this);">
 				                        	<iconify-icon icon="mdi:cart" class="fs-4"></iconify-icon>
 				                        </button>
 									</form>

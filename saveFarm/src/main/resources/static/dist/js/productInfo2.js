@@ -8,7 +8,7 @@ $(function() {
 
 // 이벤트 핸들러 등록
 $(function() {
-	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의 tab 클릭
+	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의
 	$('.nav-link').on('click', function() {
 		// 다른 비활성화 tab - css 적용
 		$('.nav-link').removeClass('active');
@@ -48,10 +48,9 @@ $(function() {
  * @param {string} url - URL (contextPath 제외)
  * @param {Function} renderFn - AJAX 응답 데이터를 인자로 받아 HTML 문자열을 반환하는 callback 함수
  */
-function loadContent(url, renderFn) {
+function loadContent(url, renderFn, params = '') {
 	// 요청 경로 생성
 	url = contextPath + url;
-	let params = '';
 	// 렌더링할 HTML 요소 선택자
 	let selector = '#productInfoLayout';
 	
@@ -298,9 +297,9 @@ const renderRefund = function() {
 			</li>
 		</ul>
 		<div class="d-flex gap-5 mt-5 mb-4 justify-content-center align-items-center">
-			<button class="btn btn-success btn-lg" type="button">반품 문의
+			<button class="btn-return btn btn-success btn-lg" type="button">반품 문의
 				</button>
-			<button class="btn btn-success btn-lg" type="button">환불 문의
+			<button class="btn-refund btn btn-success btn-lg" type="button">환불 문의
 				</button>
 		</div>
 	</div>

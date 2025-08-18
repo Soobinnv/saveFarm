@@ -116,7 +116,7 @@
 					<div class="mb-3">
 						<label for="quantity-input" class="form-label">수량</label>
 
-						<div class="d-flex align-items-center">
+						<div class="d-flex align-items-center" id="extraItems">
 							<button class="btn btn-minus" type="button">
 								<iconify-icon icon="ic:baseline-minus" class="fs-4 blackIcon"></iconify-icon>
 							</button>

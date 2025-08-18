@@ -1,6 +1,6 @@
 $(function() {
 	// plus 버튼
-	$('body').on('click', 'button.btn-plus', function() {
+	$('#extraItems').on('click', 'button.btn-plus', function() {
 		// p 태그
 		let $quantity = $(this).closest('div').find('.quantity');
 		
@@ -17,7 +17,7 @@ $(function() {
 	});
 
 	// minus 버튼
-	$('body').on('click', 'button.btn-minus', function() {
+	$('#extraItems').on('click', 'button.btn-minus', function() {
 		let $quantity = $(this).closest('div').find('.quantity');
 		let quantity = Number($quantity.text());
 		
