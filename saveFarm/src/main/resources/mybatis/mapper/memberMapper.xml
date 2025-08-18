@@ -20,4 +20,14 @@
 		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId 
 	</select>
 
+	<select id="findById" parameterType="Long" resultType="com.sp.app.model.Member">
+		SELECT m1.memberId, m1.loginId, password, snsProvider, snsId,
+			userLevel, enabled, createdAt, updateAt, lastLogin,
+			name, TO_CHAR(birth, 'YYYY-MM-DD') birth, email, tel, 
+			profilePhoto, zip, addr1, addr2, receiveEmail
+		FROM member1 m1
+		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
+		WHERE m1.memberId = #{memberId}
+	</select>
+
 </mapper>
