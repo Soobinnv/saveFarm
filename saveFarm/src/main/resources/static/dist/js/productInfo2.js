@@ -2,12 +2,6 @@ const productNum = $('#product-productNum').val();
 const urlParams = new URLSearchParams(window.location.search);
 const classifyCode = urlParams.get('classifyCode');
 
-// 처음 페이지 로딩 시
-$(function() {
-	// 상품 상세 출력
-	loadContent('/api/products/' + productNum, renderProductDetailHtml, {classifyCode:classifyCode});
-});
-
 // 이벤트 핸들러 등록
 $(function() {
 	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의
@@ -114,7 +108,8 @@ const renderProductDetailHtml = function(data) {
 			<div class="text-center mt-3 p-5 border rounded">
 		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
 		        <p class="mt-3 mb-0 text-muted">추천 상품 목록이 없습니다.</p>
-		    </div>`;
+		    </div>
+		`;
 		return html;
 	}
 		

@@ -166,14 +166,43 @@
 				<div id="productInfoLayout">
 					<h4>상품 상세 정보</h4>
 					<br>
-					<p>${data.productInfo.productDesc}</p>
-					
+					<p>${productInfo.productDesc}</p>
+
 					<c:choose>
-						<c:when test="">
-						
+						<c:when test="${not empty productImageList}">
+							<c:forEach items="${productImageList}" var="dto">
+								<div class="recommendation-section">
+									<h4>📢 이 상품은 어때요?</h4>
+									<div class="recommendation-list">
+									
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">[유기농] 달콤한 방울토마토 500g</p>
+												<div class="item-price">
+													<span class="discount-rate">15%</span> <span
+														class="final-price">5,950원</span> <span
+														class="original-price">7,000원</span>
+												</div>
+											</div>
+
+										</div>
+										
+									</div>
+								</div>
+							</c:forEach>
 						</c:when>
 						<c:otherwise>
-						
+							<br>
+							<h4>📢 이 상품은 어때요?</h4>
+							<div class="text-center mt-3 p-5 border rounded">
+								<iconify-icon icon="mdi:comment-off-outline"
+									class="fs-1 text-muted"></iconify-icon>
+								<p class="mt-3 mb-0 text-muted">추천 상품 목록이 없습니다.</p>
+							</div>
 						</c:otherwise>
 					</c:choose>
 				</div>
