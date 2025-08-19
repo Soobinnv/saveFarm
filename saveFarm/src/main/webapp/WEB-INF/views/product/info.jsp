@@ -50,9 +50,10 @@
 									src="${contextPath}/uploads/product/${productInfo.mainImageFilename}"
 									alt="Main product image">
 								<c:if test="${not empty productInfo.endDate}">
-									<span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
+									<span
+										class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
 										<iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
-											마감: ${productInfo.endDate}
+										마감: ${productInfo.endDate}
 									</span>
 								</c:if>
 							</div>
@@ -140,10 +141,10 @@
 					<hr>
 
 					<div class="d-grid gap-2">
-						<button onclick="sendOk('cart', this);" class="btn btn-success btn-lg"
-							type="button">장바구니 담기</button>
-						<button onclick="sendOk('buy', this);" class="btn btn-success btn-lg"
-							type="button">바로 구매</button>
+						<button onclick="sendOk('cart', this);"
+							class="btn btn-success btn-lg" type="button">장바구니 담기</button>
+						<button onclick="sendOk('buy', this);"
+							class="btn btn-success btn-lg" type="button">바로 구매</button>
 					</div>
 				</div>
 			</div>
@@ -162,96 +163,21 @@
 			</nav>
 			<div class="tab-content pt-4" id="nav-tabContent">
 
-				<div id="productInfoLayout"></div>
-
-				<div class="tab-pane fade" id="nav-review" role="tabpanel"
-					aria-labelledby="nav-review-tab">
-					<h4>상품 리뷰</h4>
-					<div class="review-list-wrapper mt-3">
-						<ul class="list-unstyled">
-
-							<li class="review-item border rounded p-3 mb-3">
-								<div class="review-header">
-									<span class="badge bg-primary me-1">BEST</span> <span
-										class="badge bg-success me-1">MEMBERSHIP</span> <span
-										class="review-author fw-bold">김**</span>
-								</div>
-
-								<h5 class="mt-2">[비비고] 순살 삼치구이 60G</h5>
-
-								<div class="review-body mt-3">
-									<p>
-										제가 최근 접해본 '비비고 순살삼치구이 60G'입니다.<br> 비비고 순살삼치구이는 60g 용량으로,
-										한 끼 반찬으로 딱 좋은 양이에요.<br> 삼치는 영양가가 높고 맛도 좋아 많은 분들이 좋아하는
-										생선이죠.<br> 하지만 집에서 직접 요리하기엔 냄새도 나고 손질도 번거로운데, 이 제품은 그런 걱정
-										없이 간편하게 즐길 수 있어요.
-									</p>
-
-									<p>
-										첫 입을 먹었을 때 느낀 건 '와, 이게 정말 편의점 도시락 속 생선구이 맛이 아니구나!'였어요. 삼치 본연의
-										고소하고 담백한 맛이 잘 살아있으면서도, 적절한 간이 되어 있어 밥과 함께 먹기 좋았습니다.<br>
-										특히 순살이라 가시 걱정 없이 편하게 먹을 수 있다는 점이 큰 장점이에요.<br> 생선 특유의 비린내도
-										거의 없어서 생선을 좋아하지 않는 분들도 부담 없이 즐길 수 있을 것 같아요.
-									</p>
-
-									<p>
-										이 제품의 가장 큰 매력은 바로 간편한 조리 방법이에요!<br> 전자레인지에 1분 30초만 돌리면 끝!<br>
-										또는 프라이팬에 약간의 기름을 두르고 3~4분 정도 구워주면 됩니다.<br> 정말 간단하죠?
-										전자레인지로 데우면 빠르게 먹을 수 있고, 프라이팬으로 구우면 겉면이 조금 더 바삭해져서 식감이 좋아져요.
-										개인의 취향에 따라 선택할 수 있어 좋았습니다.
-									</p>
-
-									<p>
-										비비고 순살삼치구이 맛과 편의성 면에서 정말 만족스러운 제품이었어요.<br> 특히 조리 방법이 간편해서
-										요리에 서툰 분들이나 바쁜 직장인들에게 강력 추천합니다!<br> 냉동실에 몇 개 구비해두면 급하게
-										반찬이 필요할 때 정말 요긴하게 사용할 수 있을 것 같아요. 건강한 한 끼를 위해, 또는 도시락 반찬으로도 좋을
-										것 같네요.<br> 여러분도 한번 시도해보시는 건 어떨까요? 간편하면서도 맛있는 삼치구이로 든든한 한
-										끼 되세요!
-									</p>
-								</div>
-
-								<div class="review-images mt-3 d-flex overflow-auto">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										class="rounded me-2" alt="리뷰 이미지 1"
-										style="width: 100px; height: 100px; object-fit: cover;">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product2.png"
-										class="rounded me-2" alt="리뷰 이미지 2"
-										style="width: 100px; height: 100px; object-fit: cover;">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										class="rounded me-2" alt="리뷰 이미지 3"
-										style="width: 100px; height: 100px; object-fit: cover;">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										class="rounded me-2" alt="리뷰 이미지 4"
-										style="width: 100px; height: 100px; object-fit: cover;">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										class="rounded me-2" alt="리뷰 이미지 5"
-										style="width: 100px; height: 100px; object-fit: cover;">
-									<img
-										src="${pageContext.request.contextPath}/dist/images/product/product1.png"
-										class="rounded me-2" alt="리뷰 이미지 6"
-										style="width: 100px; height: 100px; object-fit: cover;">
-								</div>
-
-								<div
-									class="review-footer mt-3 d-flex justify-content-between align-items-center">
-									<span class="review-date text-muted">2024.07.08</span>
-									<button type="button" class="btn rounded-pill">
-										<iconify-icon icon="stash:thumb-up" class="fs-4 blackIcon"></iconify-icon>
-										<span>도움돼요 90</span>
-									</button>
-								</div>
-							</li>
-
-						</ul>
-					</div>
+				<div id="productInfoLayout">
+					<h4>상품 상세 정보</h4>
+					<br>
+					<p>${data.productInfo.productDesc}</p>
 					
-					
+					<c:choose>
+						<c:when test="">
+						
+						</c:when>
+						<c:otherwise>
+						
+						</c:otherwise>
+					</c:choose>
 				</div>
+
 			</div>
 
 		</div>
@@ -260,10 +186,8 @@
 	<div id="product-template">
 		<form name="buyForm">
 			<input type="hidden" name="productNums" id="product-productNum"
-				value="${productInfo.productNum}"> 
-			<input type="hidden"
-				name="buyQtys" id="qty" value=""> 
-			<input type="hidden"
+				value="${productInfo.productNum}"> <input type="hidden"
+				name="buyQtys" id="qty" value=""> <input type="hidden"
 				name="units" id="unit" value="${productInfo.unit}">
 		</form>
 		<input type="hidden" id="web-contextPath"
@@ -275,9 +199,8 @@
 			value="${productInfo.discountedPrice}"> <input type="hidden"
 			id="product-totalStock" value="${productInfo.stockQuantity}">
 		<input type="hidden" id="product-thumbnail"
-			value="${productInfo.mainImageFilename}">
-		<input type="hidden" id="user-name"
-			value="${sessionScope.member.name}">
+			value="${productInfo.mainImageFilename}"> <input
+			type="hidden" id="user-name" value="${sessionScope.member.name}">
 	</div>
 
 	<footer>

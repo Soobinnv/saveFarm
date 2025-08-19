@@ -92,7 +92,7 @@ const renderProductListHtml = function(data) {
 	                </div>
 	            </div>
 	        </div>
-	`}).join('');;
+	`}).join('');
 	
 	return html;
 }
