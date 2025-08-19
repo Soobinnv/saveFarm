@@ -56,10 +56,41 @@ public class MyPageApiController {
 	}	
 	
 	// 마이페이지 - 메인 데이터
-	@GetMapping
-	public ResponseEntity<?> getMyPageMain(HttpSession session) {
+	@GetMapping("/paymentList")
+	public ResponseEntity<?> getMyPaymentList(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int current_page) {
 		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
+		
 		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			// 페이징
+			int size = 10;
+			int total_page = 0;
+			int dataCount = 0;
+			
+			dataCount = reviewService.getMyReviewDataCount(info.getMemberId());
+			total_page = paginateUtil.pageCount(dataCount, size);
+			current_page = Math.min(current_page, total_page);
+			
+			// 리스트에 출력할 데이터를 가져오기
+			int offset = (current_page - 1) * size;
+			if(offset < 0) offset = 0;
+			
+			map.put("offset", offset);
+			map.put("size", size);
+			map.put("memberId", info.getMemberId());
+			
+			List<ProductReview> list = reviewService.getMyReviewList(map);
+			
+			// AJAX 용 페이징
+			String paging = paginateUtil.pagingMethod(current_page, total_page, "reviewListPage");
+			
+			body.put("list", list);
+			body.put("pageNo", current_page);
+			body.put("replyCount", dataCount);
+			body.put("total_page", total_page);
+			body.put("paging", paging);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
@@ -68,6 +99,12 @@ public class MyPageApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
+	
+	
+	
+	
+	
+	
 	
 	// 내 활동 - 찜 데이터
 	@GetMapping("/wish")

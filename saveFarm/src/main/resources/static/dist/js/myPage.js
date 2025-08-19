@@ -3,7 +3,7 @@ const contextPath = $('body').data('context-path');
 // 처음 페이지 로딩 시
 $(function() {
 	// 마이페이지 메인 불러오기
-	loadContent('/api/myPage', renderMyPageMainHtml);
+	loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
 });
 
 /**
@@ -169,10 +169,10 @@ const renderMyPageMainHtml = function(data) {
         </div>
   `;
 
-  if (!data.order || data.order.length === 0) {
+  if (!data.list || data.list.length === 0) {
     html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
   } else {
-    data.order.forEach((order) => {
+    data.list.forEach((order) => {
       const orderDate = order.orderDate.substring(0, 10);
 
       // 주문 상단 정보
@@ -198,7 +198,7 @@ const renderMyPageMainHtml = function(data) {
 
             <div class="d-flex gap-3">
               <img class="order-img"
-                   src="${contextPath}/uploads/products/${detail.thumbnail}"
+                   src="${contextPath}/uploads/products/${detail.mainImageFilename}"
                    alt="${detail.productName}">
               <div class="flex-grow-1">
                 <div class="order-meta">${orderDate} 구매</div>

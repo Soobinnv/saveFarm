@@ -23,7 +23,7 @@
       <h2 onclick="loadContent('/api/myPage', renderMyPageMainHtml);">MY PAGE</h2>
       <ul>
         <li>주문내역 조회</li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage', renderMyPageMainHtml);" clicked>주문/배송 조회</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/paymentList', renderMyPageMainHtml);" clicked>주문/배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">정기배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">취소/교환/반품 조회</a></li>
         <li>내 활동</li>
