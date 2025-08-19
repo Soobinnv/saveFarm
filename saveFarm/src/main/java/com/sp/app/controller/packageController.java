@@ -42,22 +42,13 @@ public class packageController {
 	}
 	
 	@PostMapping("payForm")
-	public String  paySubmit(String htmlBlock, int totalPrice, PackageCartList dto, Model model) throws Exception{
+	public String  paySubmit() throws Exception{
 		
-		model.addAttribute("htmlBlock",htmlBlock);
-		model.addAttribute("totalPrice",totalPrice);
-		model.addAttribute("dto",dto);
+		
 		
 		return "package/subconfirm";
 	}
 	
-	@GetMapping("subconfirm")
-	public String payForm() throws Exception{
-		
-		
-		
-		
-		return "package/fincalc";
-	}
+	
 	
 }

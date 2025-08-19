@@ -28,13 +28,17 @@
 	</insert>
 	
 	<insert id="insertsubPackage" parameterType="com.sp.app.model.Package">
-	INSERT INTO subPackage(subPackageNum,subNum,packageNum,packagePrice, count)
-	VALUES(subPackage_seq.NEXTVAL,#{suvNum},#{packageNum},
-		(
-			SELECT price * #{count}
-			FROM package
-			WHERE packageNum = #{packageNum}
-		) 
+	INSERT INTO subPackage(subPackageNum,subNum,homePackageNum,packagePrice,saladPackageNum)
+	VALUES(
+		subPackage_seq.NEXTVAL,#{subNum},#{homePackageNum},#{packagePrice},#{saladPackagNum}
+	)
+	
+	</insert>
+	
+	<insert id="inssertsubDestination" parameterType="com.sp.app.model.Package">
+	INSERT INTO subDestination(desNum,memberId,receiver,tel,zip,addr)
+	VALUES(
+		subDestination_seq.NEXTVAL,#{memberId},#{receiver},#{tel},#{zip},#{addr}
 	)
 	</insert>
 	
