@@ -9,6 +9,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hShop</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
+<style>
+	/* 전체 배경 초록색 */
+	body {
+		background: linear-gradient(135deg, #1abc9c, #16a085);
+		color: #fff;
+		font-family: 'Noto Sans KR', sans-serif;
+	}
+
+	/* 박스 스타일 */
+	.content-box {
+		background-color: rgba(255, 255, 255, 0.95);
+		border-radius: 15px;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+		padding: 40px;
+		color: #333;
+	}
+
+	h3 {
+		color: #16a085;
+		font-weight: bold;
+	}
+
+	.btn-main {
+		background-color: #16a085;
+		color: #fff;
+		border: none;
+		border-radius: 10px;
+		font-size: 18px;
+		padding: 12px;
+		transition: 0.3s;
+	}
+	.btn-main:hover {
+		background-color: #13856b;
+		transform: scale(1.03);
+	}
+</style>
 </head>
 <body>
 
@@ -17,30 +53,18 @@
 </header>
 
 <main>
-	<div class="section bg-light">
-		<div class="container">
-
-			<div class="row justify-content-center" data-aos="fade-up" data-aos-delay="200">
-				<div class="col-md-6">
-					<div class="bg-white box-shadow mt-5 mb-5 p-5">
-						<h3 class="text-center pt-3">${title}</h3>
-						<hr class="mt-4">
-						
-						<div class="my-5">
-							<div class="text-center">
-								<p class="text-center">${message}</p>
-							</div>
-						</div>
-	                    
-						<div>
-							<button type="button" class="btn-accent btn-lg w-100" onclick="location.href='${pageContext.request.contextPath}/';">
-								메인화면 <i class="bi bi-check2"></i>
-							</button>	                    
-						</div>
-					</div>
-				</div>
+	<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+		<div class="col-md-6">
+			<div class="content-box text-center">
+				<h3>${title}</h3>
+				<hr class="mt-4 mb-4" style="border-color:#16a085;">
+				
+				<p class="mb-5">${message}</p>
+                
+				<button type="button" class="btn-main w-100" onclick="location.href='${pageContext.request.contextPath}/';">
+					메인화면 <i class="bi bi-check2"></i>
+				</button>
 			</div>
-
 		</div>
 	</div>
 </main>

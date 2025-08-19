@@ -17,6 +17,7 @@ public class Order {
 	private int discountRate;
 	private int discountPrice;
 	private int deliveryFee;
+	private int deliveryCharge;
 	
 	private Long memberId;
 	private String loginId;

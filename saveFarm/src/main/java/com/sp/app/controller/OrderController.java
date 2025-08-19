@@ -171,6 +171,11 @@ public class OrderController {
 			reAttr.addFlashAttribute("title", "상품 결제 완료");
 			reAttr.addFlashAttribute("message", sb.toString());
 			
+			// ★ 장바구니 개수 다시 조회 후 세션에 저장
+	        int cartSize = myShoppingService.getCartSize(info.getMemberId());
+	        info.setCartSize(cartSize); // 세션 객체에 값 업데이트
+	        session.setAttribute("member", info);
+			
 			return "redirect:/order/complete";
 			
 		} catch (Exception e) {

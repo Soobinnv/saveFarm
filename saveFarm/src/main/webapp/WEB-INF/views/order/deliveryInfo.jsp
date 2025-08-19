@@ -3,6 +3,8 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 
+
+
 <!-- 배송지 등록 대화상자 -->
 <div class="modal fade" id="deliveryDialogModal" tabindex="-1" 
 		data-bs-backdrop="static" data-bs-keyboard="false"

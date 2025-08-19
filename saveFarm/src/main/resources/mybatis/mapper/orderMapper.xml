@@ -12,7 +12,7 @@
 	
 	<!-- 주문 등록 -->
 	<!-- orderState = 1 : 결제완료 -->
-	<insert id="inserOrder" parameterType="com.sp.app.model.Order">
+	<insert id="insertOrder" parameterType="com.sp.app.model.Order">
 		INSERT INTO productOrder(orderNum, memberId, orderDate, totalMoney, 
 			deliveryCharge, payment, cancelAmount, orderState)
 		VALUES (#{orderNum}, #{memberId}, SYSDATE, #{totalMoney}, 
@@ -31,7 +31,7 @@
 	<insert id="insertOrderDetail" parameterType="com.sp.app.model.Order">
 		INSERT INTO orderDetail(orderDetailNum, orderNum, qty, price, salePrice, 
 			productNum, productMoney) 
-		VALUES (orderDetail_seq.NEXTVAL, #{orderNum}, #{qty}, #{price}, #{salePrice}, 
+		VALUES (orderDetail_seq.NEXTVAL, #{orderNum}, #{qty}, #{unitPrice}, #{salePrice}, 
 			#{productNum}, #{productMoney})
 	</insert>
 	
