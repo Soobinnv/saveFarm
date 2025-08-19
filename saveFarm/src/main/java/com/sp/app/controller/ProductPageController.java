@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sp.app.model.Product;
 import com.sp.app.model.SessionInfo;
@@ -39,14 +40,22 @@ public class ProductPageController {
 	@GetMapping("/{productNum}")
 	public String productInfo(
 			@PathVariable("productNum") long productNum,
+			@RequestParam(name = "classifyCode", required = false) int classifyCode,
 			HttpSession session, 
 			Model model
 		) throws Exception {
 		
 		try {
-			SessionInfo info = (SessionInfo)session.getAttribute("member");
-			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
+			Product productInfo = null;
+			
+			if(classifyCode == 100) {
+				productInfo = Objects.requireNonNull(service.getProductInfo(productNum));				
+			} else if(classifyCode == 200) {
+				productInfo = Objects.requireNonNull(service.getRescuedProductInfo(productNum));	
+			}
 
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
 			if(info != null) {
 				// 회원의 찜 여부
 				Map<String, Object> map = new HashMap<>();

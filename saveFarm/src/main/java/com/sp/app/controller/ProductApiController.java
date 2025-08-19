@@ -39,7 +39,7 @@ public class ProductApiController {
 	private final ProductQnaService qnaService;
 	private final WishService wishService;
 
-	// 상품 리스트 데이터
+	// 전체 상품 리스트 데이터
 	@GetMapping
 	public ResponseEntity<?> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd, HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
@@ -47,30 +47,43 @@ public class ProductApiController {
 			Map<String, Object> map = new HashMap<>();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
 			
-			
 			if(info != null) {
 				map.put("memberId", info.getMemberId());				
 			}
 			
 			map.put("kwd", kwd);
 			
-			List<Product> list = service.getProductList(map);
-			body.put("list", list);
+			Map<String, List<Product>> resultMap = service.getAllProductList(map);
+			
+			body.put("productList", resultMap.get("productList"));
+			body.put("rescuedProductList", resultMap.get("rescuedProductList"));
+			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProductList: ", e);
-			body.put("message", "상품 목록을 불러오는 중 오류가 발생했습니다.");
+			body.put("message", "전체 상품 목록을 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
 
 	// 상품 상세 데이터
 	@GetMapping("/{productNum}")
-	public ResponseEntity<?> getProductInfo(@PathVariable(name = "productNum") long productNum) {
+	public ResponseEntity<?> getProductInfo(
+			@PathVariable(name = "productNum") long productNum,
+			@RequestParam(name = "classifyCode", required = false) int classifyCode
+		) {
 		Map<String, Object> body = new HashMap<>();
 		try {
-			Product productInfo = Objects.requireNonNull(service.getProductInfo(productNum));
-
+			Product productInfo = null;
+			
+			System.out.println(classifyCode);
+			
+			if(classifyCode == 100) {
+				productInfo = Objects.requireNonNull(service.getProductInfo(productNum));				
+			} else if(classifyCode == 200) {
+				productInfo = Objects.requireNonNull(service.getRescuedProductInfo(productNum));	
+			}
+			
 			// 추천 리스트 (수정 필요)
 			List<Product> list = null;
 
@@ -129,19 +142,6 @@ public class ProductApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
-
-//	// 상품 환불/반품 데이터
-//	@GetMapping("/{productNum}/refund-info")
-//	public ResponseEntity<?> getProductRefundInfo(@PathVariable(name = "productNum") long productNum) {
-//		Map<String, Object> body = new HashMap<>();
-//		try {
-//			return ResponseEntity.ok(body); // 200 OK
-//		} catch (Exception e) {
-//			log.error("getProductRefundInfo: ", e);
-//			body.put("message", "상품의 환불/반품 정보를 불러오는 중 오류가 발생했습니다.");
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
-//		}
-//	}
 
 	// 찜 등록
 	@PostMapping("{productNum}/wish")

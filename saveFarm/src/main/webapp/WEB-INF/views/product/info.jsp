@@ -49,6 +49,12 @@
 								<img class="d-block w-100 carousel-img-fixed"
 									src="${contextPath}/uploads/product/${productInfo.mainImageFilename}"
 									alt="Main product image">
+								<c:if test="${not empty productInfo.endDate}">
+									<span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
+										<iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
+											마감: ${productInfo.endDate}
+									</span>
+								</c:if>
 							</div>
 
 							<c:if test="${not empty productImageList}">

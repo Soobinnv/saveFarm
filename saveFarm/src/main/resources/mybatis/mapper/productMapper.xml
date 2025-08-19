@@ -4,7 +4,7 @@
 <mapper namespace="com.sp.app.mapper.ProductMapper">
 	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND memberId = #{memberId, jdbcType=BIGINT}
@@ -13,16 +13,27 @@
 
 	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, ENDDATE, FARMNUM
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, ENDDATE, farmName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
+        LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
 		WHERE PRODUCTCLASSIFICATION = 200
+	</select>
+
+	<select id="getAllProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish, TO_CHAR(ENDDATE, 'YYYY-MM-DD') endDate
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND w.memberId = #{memberId, jdbcType=BIGINT}
 	</select>
 
 	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 100
@@ -30,10 +41,12 @@
 
 	<select id="getRescuedProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, UNITPRICE, DISCOUNTRATE, ENDDATE, FARMNUM
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, TO_CHAR(ENDDATE, 'YYYY-MM-DD') endDate, farmName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
+        LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
 		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200
 	</select>
 
@@ -76,9 +89,7 @@
 
     <insert id="insertProductImage" parameterType="java.util.List">
         INSERT INTO productImage (PRODUCTIMAGENUM, PRODUCTIMAGEFILENAME, PRODUCTNUM)
-        <foreach collection="list" item="image" separator=" UNION ALL ">
-            SELECT PRODUCTIMAGE_SEQ.NEXTVAL, #{image.productImageFileName}, #{image.productNum} FROM DUAL
-        </foreach>
+	        VALUES (productImage_seq.nextVAL, #{PRODUCTIMAGEFILENAME}, #{PRODUCTNUM});
     </insert>
 
 

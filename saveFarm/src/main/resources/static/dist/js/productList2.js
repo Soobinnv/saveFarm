@@ -1,28 +1,32 @@
 // 이벤트 핸들러 등록
 $(function() {
 	// 상품 이미지 링크
-	$('#productLayout').on('click', '.product-main-image', function() {
+	$('#container').on('click', '.product-main-image', function() {
 		const productNum = $(this).closest('.card').data('product-num');
-		
-		location.href= `${contextPath}/products/${productNum}`;
+		const classifyCode = Number($(this).closest('.card').data('classify-code'));
+				
+		location.href= `${contextPath}/products/${productNum}?classifyCode=` + classifyCode;
 	});
 	
 	// 상품 상세
-	$('#productLayout').on('click', '.btn-product-info', function() {
+	$('#container').on('click', '.btn-product-info', function() {
 		const productNum = $(this).closest('.card').data('product-num');
+		const classifyCode = $(this).closest('.card').data('classify-code');
 		
-		location.href= `${contextPath}/products/${productNum}`;
+		console.log(classifyCode);
+		
+		location.href= `${contextPath}/products/${productNum}?classifyCode=` + classifyCode;
 	});
 	
 	// 찜 등록 / 수정
-	$('#productLayout').on('click', '.btn-wish-save', function() {
+	$('#container').on('click', '.btn-wish-save', function() {
 		const productNum = $(this).closest('.card').data('product-num');
 		
 		updateWish(productNum, this);
 	});
 	
 	// 장바구니
-	$('#productLayout').on('click', '.btn-cart', function() {
+	$('#container').on('click', '.btn-cart', function() {
 		sendOk('cart', this);
 	});
 	

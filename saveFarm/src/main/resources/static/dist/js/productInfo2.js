@@ -1,9 +1,11 @@
 const productNum = $('#product-productNum').val();
+const urlParams = new URLSearchParams(window.location.search);
+const classifyCode = urlParams.get('classifyCode');
 
 // 처음 페이지 로딩 시
 $(function() {
 	// 상품 상세 출력
-	loadContent('/api/products/' + productNum, renderProductDetailHtml);
+	loadContent('/api/products/' + productNum, renderProductDetailHtml, {classifyCode:classifyCode});
 });
 
 // 이벤트 핸들러 등록
@@ -22,7 +24,7 @@ $(function() {
 		// tab 컨텐츠 AJAX 요청 및 렌더링
 		switch (navId) {
 	    	case 'nav-detail-tab':
-	            loadContent('/api/products/' + productNum, renderProductDetailHtml); 
+	            loadContent('/api/products/' + productNum, renderProductDetailHtml, {classifyCode:classifyCode}); 
 	            break;
 	        case 'nav-review-tab':
 	            loadContent('/api/products/' + productNum + '/reviews', renderProductReviewHtml);  
@@ -40,6 +42,17 @@ $(function() {
 	$('#productInfoLayout').on('click', '.btn-product-qna', function() {
 		sendQna();
 	});
+	
+	// 환불 하기
+	$('#productInfoLayout').on('click', '.btn-refund', function() {
+		location.href=`${contextPath}/myPage`;
+	});
+	
+	// 반품 하기
+	$('#productInfoLayout').on('click', '.btn-return', function() {
+		location.href=`${contextPath}/myPage`;
+	});
+	
 	
 });
 
