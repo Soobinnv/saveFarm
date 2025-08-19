@@ -73,8 +73,11 @@
     return Number(n || 0).toLocaleString('ko-KR') + ' 원';
   }
 
-  window.addToCart = function (productNum, btnEl) {
-    var bar = document.getElementById('pickedBar');
+  $(document).on('click', '.btn-cart', function() {
+   const btnEl = this;
+   const productNum = this.closest('.card-product').getAttribute('data-product-num');
+
+   var bar = document.getElementById('pickedBar');
     if (!bar) return;
 
     var id = String(productNum);
@@ -124,7 +127,8 @@
 
     bar.appendChild(chip);
     bar.scrollLeft = bar.scrollWidth;
-  };
+
+  });
 
   // 모달푸터에 담겨있던 칩바 추가상품에 이동
   function renderExtrasFromChips() {
