@@ -32,6 +32,7 @@ public class Product {
 	// 긴급 구출 상품 정보
 	private String endDate;
 	private long supplyNum;
+	private String farmName;
 	
 	// 상품 이미지
 	private long productImageNum;

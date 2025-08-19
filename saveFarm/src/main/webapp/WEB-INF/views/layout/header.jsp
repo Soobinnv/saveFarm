@@ -57,7 +57,7 @@
 						<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
 									icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
 						</a>
-						<a href="${pageContext.request.contextPath}/myPage" class="mx-3"> <iconify-icon
+						<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
 									icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
 						</a>
 					</c:otherwise>

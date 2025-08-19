@@ -119,7 +119,28 @@
 							<strong>배송 예상:</strong> 1~2 영업일 이내 출고
 						</p>
 					</div>
-
+					<c:if test="${not empty productInfo.farmName}">
+						<div class="mb-3 farm-info">
+							<h5>
+								<i class="bi bi-truck"></i> 농가 정보
+							</h5>
+							<div class="card bg-light mt-3">
+								<div class="card-body">
+									<div class="d-flex justify-content-between align-items-center">
+										<div>
+											<h5 class="card-title mb-1">
+												<i class="bi bi-house-heart-fill me-2"></i>${productInfo.farmName}
+											</h5>
+											<small class="text-muted">정직한 농부의 신선한 작물</small>
+										</div>
+										<a href="#" class="btn btn-sm btn-outline-success"> 농가
+											둘러보기 <i class="bi bi-arrow-right-short"></i>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</c:if>
 					<div class="mb-3">
 						<label for="quantity-input" class="form-label">수량</label>
 
@@ -174,7 +195,7 @@
 								<div class="recommendation-section">
 									<h4>📢 이 상품은 어때요?</h4>
 									<div class="recommendation-list">
-									
+
 										<div class="recommendation-item">
 											<img
 												src="${pageContext.request.contextPath}/dist/images/product/product1.png"
@@ -190,7 +211,7 @@
 											</div>
 
 										</div>
-										
+
 									</div>
 								</div>
 							</c:forEach>
