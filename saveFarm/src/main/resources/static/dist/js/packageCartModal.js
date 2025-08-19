@@ -98,6 +98,7 @@
     chip.className = 'picked-chip';
     chip.setAttribute('data-id', id);
     chip.setAttribute('data-name', (info.name || '').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+	
     if (info.unit)  chip.setAttribute('data-unit', info.unit);
     if (info.price) chip.setAttribute('data-price', info.price);
     if (info.stock) chip.setAttribute('data-stock', info.stock);
@@ -108,6 +109,7 @@
     html += '<span class="name">' + chip.getAttribute('data-name') + (info.unit ? ' ' + info.unit : '') + '</span>';
     html += '<button class="remove" aria-label="삭제">&times;</button>';
     chip.innerHTML = html;
+	
 
     // 삭제 버튼
     chip.querySelector('.remove').addEventListener('click', function () {
@@ -154,12 +156,13 @@
       name.textContent  = nm + (unit ? ' ' + unit : '');
       price.textContent = fmtKR(prc);
 	  
-	  chipPrice += parseInt(prc.replace(/[^0-9]/g, ''), 10);
+	  chipPrice = parseInt(prc.replace(/[^0-9]/g, ''), 10);
+	  node.setAttribute('data-price', chipPrice);
 	  
       wrap.appendChild(node);
+   	 won += chipPrice;
     });
 
-    won += chipPrice;
     priceUpdate(won);
 
   }

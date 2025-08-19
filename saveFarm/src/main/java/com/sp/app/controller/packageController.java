@@ -3,7 +3,10 @@ package com.sp.app.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.sp.app.model.PackageCartList;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,25 @@ public class packageController {
 		model.addAttribute("mode", "saladPackage");
 		model.addAttribute("price", 20000);
 		return "package/packageCart";
+	}
+	
+	@PostMapping("payForm")
+	public String  paySubmit(String htmlBlock, int totalPrice, PackageCartList dto, Model model) throws Exception{
+		
+		model.addAttribute("htmlBlock",htmlBlock);
+		model.addAttribute("totalPrice",totalPrice);
+		model.addAttribute("dto",dto);
+		
+		return "package/subconfirm";
+	}
+	
+	@GetMapping("subconfirm")
+	public String payForm() throws Exception{
+		
+		
+		
+		
+		return "package/fincalc";
 	}
 	
 }
