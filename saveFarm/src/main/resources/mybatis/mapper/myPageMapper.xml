@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.MyPageMapper">
+	<select id="countPayment" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
+		FROM productOrder po
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		WHERE po.member_id = #{member_id} AND userDelete = 0
+	</select>
+	
+	<!-- 유저의 전체 구매 리스트 -->
+	<select id="listPayment" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.memberId, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState
+			dc.deliveryCompanyName, 
+			d.invoiceNumber,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName, p.mainImageFilename,
+			NVL(r.reviewWrite, 0) reviewWrite
+		FROM productOrder po
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN product p ON od.productNum = p.productNum
+		JOIN delivery d ON po.orderNum = d.orderNum
+		JOIN deliveryCompany dc ON d.deliveryCompanyNum = dc.deliveryCompanyNum
+		LEFT OUTER JOIN (
+			SELECT num, 1 reviewWrite
+			FROM productReview
+			WHERE memberId = #{memberId}
+		) r ON od.orderDetailNum = r.num
+		WHERE po.memberId = #{memberId} AND userDelete = 0
+		ORDER BY orderDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<!-- 구매 상세 정보 -->
+	<select id="findByOrderDetail" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			dc.deliveryName, d.invoiceNumber,
+			pd.payMethod, pd.cardName, pd.applyDate, 
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName
+		FROM productOrder po
+		JOIN payDetail pd ON po.orderNum = pd.orderNum
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN delivery d ON po.orderNum = d.orderNum
+		JOIN deliveryCompany dc ON d.deliveryCompanyNum = dc.deliveryCompanyNum
+		JOIN product p ON od.productNum = p.productNum
+		WHERE po.memberId = #{memberId} AND od.orderDetailNum = #{orderDetailNum}
+	</select>
+
+	<!-- 구매번호에 대한 구매 리스트 -->
+	<select id="listPurchase" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			dc.deliveryName, d.invoiceNumber,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName, p.mainImageFilename
+		FROM productOrder po
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN delivery d ON po.orderNum = d.orderNum
+		JOIN deliveryCompany dc ON d.deliveryCompanyNum = dc.deliveryCompanyNum
+		JOIN product p ON od.productNum = p.productNum
+		WHERE po.orderNum = #{orderNum}
+	</select>
+	
+	<!-- 구매 상품의 배송지 정보 -->
+	<select id="findByOrderDelivery" parameterType="map" resultType="com.sp.app.model.Order">
+		SELECT orderNum, recipientName, tel, zip, addr1, addr2, pickup, accessInfo, passcode, requestMemo
+		FROM orderDelivery
+		WHERE orderNum = #{orderNum}
+	</select>
+	
+	<!-- 주문상세상태 변경 -->
+	<update id="updateOrderState" parameterType="map">
+		UPDATE productOrder SET orderState = #{orderState}
+		WHERE orderNum = #{orderNum}
+	</update>
+	
+	<!-- 유저의 주문 내역을 삭제 상태로 변경 -->
+	<update id="updateOrderHistory" parameterType="Long">
+		UPDATE orderDetail SET userDelete = 1
+		WHERE orderDetailNum = #{orderDetailNum}
+	</update>
+	
+	<!-- 주문상세 상태 정보 등록 -->
+	<insert id="insertDetailStateInfo" parameterType="map">
+		INSERT INTO detailState(stateNum, orderNum, memberId, detailState, 
+			stateMemo, detailStateDate)
+		VALUES(detailState_seq.NEXTVAL, #{orderNum}, #{memberId}, #{detailState},
+			#{stateMemo,jdbcType=VARCHAR}, SYSDATE)
+	</insert>
+
+</mapper>
+	

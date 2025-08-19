@@ -139,59 +139,101 @@ $(function() {
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data
+ * @param {Array<object>} data.list - 내가 주문한 상품 객체 배열
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
-const renderMyPageMainHtml = function(data) {	
-	const html = `
-	  <div class="welcome-box">
-	    <div class="welcome-left">
-	      <img src="${contextPath}/dist/images/person.png" class="profile-avatar" alt="프로필 사진">
-	      <div>
-	        <strong>회원님 반갑습니다.</strong><br />
-	        가입하신 회원은 <span style="color: red;">WELCOME</span> 입니다.
-	      </div>
-	    </div>
-	    <div class="welcome-right">
-	      <div>쿠폰<br><strong>1</strong></div>
-	      <div style="margin-top: 10px;">구매후기<br><strong>0</strong></div>
-	    </div>
-	  </div>
+const renderMyPageMainHtml = function(data) {
+  let html = `
+    <div class="welcome-box">
+      <div class="welcome-left">
+        <img src="${contextPath}/dist/images/person.png" class="profile-avatar" alt="프로필 사진">
+        <div>
+          <strong>${data.memberName ?? "회원"}님 반갑습니다.</strong><br />
+          가입하신 회원은 <span style="color: red;">${data.grade ?? "WELCOME"}</span> 입니다.
+        </div>
+      </div>
+      <div class="welcome-right">
+        <div>쿠폰<br><strong>${data.couponCount ?? 0}</strong></div>
+        <div style="margin-top: 10px;">구매후기<br><strong>${data.reviewCount ?? 0}</strong></div>
+      </div>
+    </div>
 
-	  <section class="tab-section">
-		  <div class="tab-menu">
-		    <button class="active" data-tab="tab1">일반택배</button>
-		    <button data-tab="tab2">정기배송 구독</button>
-		    <button data-tab="tab3">취소/교환/반품</button>
-		  </div>
-		
-		  <div class="tab-content" id="tab1">
-		    <div class="order-steps">
-		      <div><i class="fas fa-clipboard-list"></i>주문접수</div>
-		      <div><i class="fas fa-credit-card"></i>결제완료</div>
-		      <div><i class="fas fa-box"></i>상품준비중</div>
-		      <div><i class="fas fa-truck"></i>배송중</div>
-		      <div><i class="fas fa-gift"></i>배송완료</div>
-		    </div>
-		    <p style="text-align:center; color:#aaa; margin-top: 20px;">내역이 없습니다.</p>
-		  </div>
-		
-		  <div class="tab-content" id="tab2" style="display:none;">
-		    <p>정기배송 구독 내역이 없습니다.</p>
-		  </div>
-		
-		  <div class="tab-content" id="tab3" style="display:none;">
-		    <p>취소/교환/반품 내역이 없습니다.</p>
-		  </div>
-	  </section>
+    <section class="tab-section">
+      <div class="tab-content" id="tab1">
+        <div class="order-steps">
+          <div><i class="fas fa-clipboard-list"></i>주문접수</div>
+          <div><i class="fas fa-credit-card"></i>결제완료</div>
+          <div><i class="fas fa-box"></i>상품준비중</div>
+          <div><i class="fas fa-truck"></i>배송중</div>
+          <div><i class="fas fa-gift"></i>배송완료</div>
+        </div>
+  `;
 
-	  <section class="like-section">
-	    <h3>MY LIKE ITEMS</h3>
-	    <p>MY LIKE ITEMS가 없습니다.</p>
-	  </section>
-	`
-	
-	return html;
-}
+  if (!data.order || data.order.length === 0) {
+    html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
+  } else {
+    data.order.forEach((order) => {
+      const orderDate = order.orderDate.substring(0, 10);
+
+      // 주문 상단 정보
+      html += `
+        <div class="order-day-header mt-3">
+          <div>${orderDate}</div>
+          <a href="javascript:void(0)" class="text-decoration-none fw-semibold text-black-50">주문 상세</a>
+        </div>
+      `;
+
+      // 주문 상세 목록
+      order.details.forEach((detail) => {
+        html += `
+          <div class="order-card">
+            <div class="order-topline">
+              <div class="text-black-50 fw-semibold">${order.orderState ?? "주문상태"}</div>
+              <div class="order-menu">
+                <a href="javascript:void(0)" class="order-details"
+                   data-orderNum="${order.orderNum}" data-orderDetailNum="${detail.orderDetailNum}">주문 상세</a>
+                <a href="${contextPath}/products/${detail.productNum}">상품 보기</a>
+              </div>
+            </div>
+
+            <div class="d-flex gap-3">
+              <img class="order-img"
+                   src="${contextPath}/uploads/products/${detail.thumbnail}"
+                   alt="${detail.productName}">
+              <div class="flex-grow-1">
+                <div class="order-meta">${orderDate} 구매</div>
+                <div class="order-name">${detail.productName}</div>
+                <div class="order-meta">
+                  <span class="order-label">수량</span>
+                  ${detail.qty}개
+                </div>
+                <div class="order-price">${detail.productMoney.toLocaleString()}원</div>
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <div class="badge-hint">후기 작성 (최대 1,500원 적립)</div>
+              <div class="order-actions">
+                <button type="button" class="btn-ghost"
+                        data-orderDetailNum="${detail.orderDetailNum}">배송 조회</button>
+                <button type="button" class="btn-ghost"
+                        onclick="location.href='${contextPath}/products/${detail.productNum}'">재구매</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    });
+  }
+
+  html += `
+      </div>
+    </section>
+  `;
+
+  return html;
+};
+
 
 /**
  * 마이 페이지 - 내 활동 - 찜
