@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.RefundMapper">
+	<insert id="insertRefund" parameterType="com.sp.app.model.Refund">
+		<selectKey keyProperty="refundNum" resultType="long" order="BEFORE">
+            SELECT refund_seq.NEXTVAL FROM dual
+        </selectKey>
+		INSERT INTO refund(refundNum, refundAmount, refundDate, refundMethod, orderDetailNum, status)
+			VALUES (#{refundNum}, #{refundAmount}, SYSDATE, #{refundMethod}, #{orderDetailNum}, #{status})
+	</insert>
+	
+	<update id="updateRefund" parameterType="com.sp.app.model.Refund">
+		UPDATE refund SET refundAmount = #{refundAmount}, refundMethod = #{refundMethod}, status = #{status}
+			WHERE refundNum = #{refundNum}
+	</update>
+	
+	<delete id="deleteRefund" parameterType="long">
+		DELETE FROM refundImage 
+			WHERE refundNum = #{refundNum}
+		DELETE FROM refund WHERE refundNum = #{refundNum}
+	</delete>
+	
+	<sql id="where-list">
+		<if test="status != null">
+			<choose>
+				<when test="status == 0">
+					AND status = 0
+				</when>
+				<when test="status == 1">
+					AND status = 1
+				</when>
+				<when test="status == 2">
+					AND status = 2
+				</when>
+			</choose>
+		</if>
+	</sql>
+	
+	<select id="getDataCount" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN member m ON od.memberId = m.memberId
+		<where>
+			<include refid="where-list"/>
+		</where>
+	</select>
+
+	<select id="getRefundList" parameterType="map" resultType="com.sp.app.model.Refund">
+		SELECT refundNum, refundAmount, TO_CHAR(refundDate, 'YYYY-MM-DD') refundDate,
+			   refundMethod, r.orderDetailNum, status, od.memberId
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN member m ON od.memberId = m.memberId
+		<where>
+			<include refid="where-list"/>
+		</where>
+		ORDER BY refundNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getMyRefundDataCount" parameterType="long" resultType="int">
+		SELECT COUNT(*)
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId}
+	</select>
+
+	<select id="getMyRefundList" parameterType="map" resultType="com.sp.app.model.Refund">
+		SELECT refundNum, refundAmount, TO_CHAR(refundDate, 'YYYY-MM-DD') refundDate,
+			   refundMethod, r.orderDetailNum, status, od.memberId
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId}
+		ORDER BY refundNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+</mapper>

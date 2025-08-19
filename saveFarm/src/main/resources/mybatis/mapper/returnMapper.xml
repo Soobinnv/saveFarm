@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.ReturnMapper">
+    <insert id="insertReturn" parameterType="com.sp.app.model.Return">
+        <selectKey keyProperty="returnNum" resultType="long" order="BEFORE">
+            SELECT return_seq.NEXTVAL FROM dual
+        </selectKey>
+        INSERT INTO return(returnNum, reqDate, reason, quantity, orderDetailNum, status)
+        	VALUES(#{returnNum}, SYSDATE, #{reason}, #{quantity}, #{orderDetailNum}, #{status})
+    </insert>
+
+    <update id="updateReturn" parameterType="com.sp.app.model.Return">
+        UPDATE return
+        <set>
+            <if test="status != null">status = #{status},</if>
+            <if test="status == 2 and returnDate == null">returnDate = SYSDATE,</if>
+        </set>
+        WHERE returnNum = #{returnNum}
+    </update>
+
+    <delete id="deleteReturn" parameterType="long">
+        DELETE FROM returnImage 
+			WHERE returnNum = #{returnNum}
+        DELETE FROM return WHERE returnNum = #{returnNum}
+    </delete>
+    
+    <sql id="where-list">
+		<if test="status != null">
+			<choose>
+				<when test="status == 0">
+					AND status = 0
+				</when>
+				<when test="status == 1">
+					AND status = 1
+				</when>
+				<when test="status == 2">
+					AND status = 2
+				</when>
+			</choose>
+		</if>
+	</sql>
+	
+	<select id="getDataCount" parameterType="map" resultType="int">
+		SELECT COUNT(*)
+		FROM return r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN member m ON od.memberId = m.memberId
+		<where>
+			<include refid="where-list"/>
+		</where>
+	</select>
+	
+	<select id="getMyReturnDataCount" parameterType="long" resultType="int">
+		SELECT COUNT(*)
+		FROM return r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId}
+	</select>
+	
+	<select id="getReturnList" parameterType="map" resultType="com.sp.app.model.Return">
+		SELECT RETURNNUM, REQDATE, REASON, QUANTITY, RETURNDATE, r.ORDERDETAILNUM, STATUS,
+			od.memberId
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN member m ON od.memberId = m.memberId
+		<where>
+			<include refid="where-list"/>
+		</where>
+		ORDER BY refundNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getMyReturnList" parameterType="map" resultType="com.sp.app.model.Return">
+		SELECT RETURNNUM, REQDATE, REASON, QUANTITY, RETURNDATE, r.ORDERDETAILNUM, STATUS,
+			od.memberId
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId}
+		ORDER BY refundNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+</mapper>

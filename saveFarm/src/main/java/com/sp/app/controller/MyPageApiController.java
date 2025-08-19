@@ -19,10 +19,14 @@ import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
+import com.sp.app.model.Refund;
+import com.sp.app.model.Return;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
 import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
+import com.sp.app.service.RefundService;
+import com.sp.app.service.ReturnService;
 import com.sp.app.service.WishService;
 
 import jakarta.annotation.PostConstruct;
@@ -41,6 +45,8 @@ public class MyPageApiController {
 	private final ProductReviewService reviewService;
 	private final PaginateUtil paginateUtil;
 	private final StorageService storageService;
+	private final ReturnService returnService;
+	private final RefundService refundService;
 	
 	private String productReviewUploadPath;
 	
@@ -147,6 +153,50 @@ public class MyPageApiController {
 		}
 	}
 	
+	// 반품 신청
+	@PostMapping("/return/{orderDetailNum}")
+	public ResponseEntity<?> insertReturn(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			Return dto,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			dto.setOrderDetailNum(orderDetailNum);
+			
+			returnService.insertReturn(dto, productReviewUploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("insertReview: ", e);
+			body.put("message", "반품 신청 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 환불 신청
+	@PostMapping("/refund/{orderDetailNum}")
+	public ResponseEntity<?> insertRefund(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			Refund dto,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			dto.setOrderDetailNum(orderDetailNum);
+			
+			refundService.insertRefund(dto, productReviewUploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("insertReview: ", e);
+			body.put("message", "환불 신청 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
 	// 내 활동 - 리뷰 수정
 	@PutMapping("/reviews/{orderDetailNum}")
 	public ResponseEntity<?> updateReview(
@@ -189,35 +239,13 @@ public class MyPageApiController {
 		}
 	}
 	
-	// 내 활동 - 리뷰 수정 form 데이터
-	@GetMapping("/reviews/{orderDetailNum}/edit")
-	public ResponseEntity<?> getEditReviewForm(
-			@PathVariable("orderDetailNum") long orderDetailNum,
-			HttpSession session
-		) {
-		Map<String, Object> body = new HashMap<>();
-		try {
-			
-			
-			ProductReview dto = null;
-			body.put("dto", dto);
-			return ResponseEntity.ok(body); // 200 OK
-		} catch (Exception e) {
-			log.error("getEditReviewForm: ", e);
-			body.put("message", "리뷰 수정 form을 불러오는 중 오류가 발생했습니다.");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
-		}
-	}
-	
 	// 내 활동 - 1:1 문의 데이터
 	@GetMapping("/inquirys")
 	public ResponseEntity<?> getMyInquiryList(HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
-		try {
-			
-			
+		try {	
 			List<ProductQna> list = null;
-			
+		
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
