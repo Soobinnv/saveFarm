@@ -36,12 +36,12 @@ $(function() {
 	
 	// 장바구니
 	$('#content').on('click', '.btn-cart', function() {
-		sendOk('cart');
+		sendOk('cart', this);
 	});
 	
 	// 바로 구매
 	$('#content').on('click', '.btn-buy', function() {
-		sendOk('buy');
+		sendOk('buy', this);
 	});
 	
 	// 리뷰 등록 / 수정
@@ -52,11 +52,50 @@ $(function() {
 		manageReview(orderDetailNum, mode);
 	});
 	
-	// 리뷰 등록 form
-	$('#content').on('click', '.btn-review-insert', function() {
+	// 리뷰 등록 / 수정 form
+	$('#content').on('click', '.btn-review', function() {
+		renderReviewForm();
+	});
+	
+	// 반품 신청 form
+	$('#content').on('click', '.btn-return', function() {
+		renderReturnForm();
+	});
+	
+	// 반품 신청
+	$('#content').on('click', '.btn-return-insert', function() {
+		const $form = $(this).closest('#returnForm');
 		const orderDetailNum = $(this).data('orderDetailNum');
 		
-		renderReviewForm(orderDetailNum);
+		let url = contextPath + '/api/myPage/return/' + orderDetailNum;
+		let params = new FormData($form[0]);
+		
+		const fn = function(data) {
+			loadContent('/api/myPage', renderMyPageMainHtml);
+		}
+		
+		ajaxRequest(url, 'post', params, false, fn, true);
+		
+	});
+	
+	// 환불 신청 form
+	$('#content').on('click', '.btn-refund', function() {		
+		renderRefundForm();
+	});
+	
+	// 환불 신청
+	$('#content').on('click', '.btn-refund-insert', function() {
+		const $form = $(this).closest('#refundForm');
+		const orderDetailNum = $(this).data('orderDetailNum');
+		
+		let url = contextPath + '/api/myPage/refund/' + orderDetailNum;
+		let params = new FormData($form[0]);
+
+		const fn = function(data) {
+			loadContent('/api/myPage', renderMyPageMainHtml);
+		}
+
+		ajaxRequest(url, 'post', params, false, fn, true);
 	});
 	
 	// 리뷰 수정 form
@@ -77,18 +116,9 @@ $(function() {
 		}
 		
 		const reviewObject = {
-			orderDetailNum: $reviewItem.data('orderDetailNum'),
-			orderDate: $reviewItem.data('orderDate'),
-			productNum: $reviewItem.data('productNum'),
-			mainImageFilename: $reviewItem.data('mainImageFilename'),
-			productName: $reviewItem.data('productName'),
-			reviewDate: $reviewItem.data('reviewDate'),
-			unit: $reviewItem.data('unit'),
 			reviewTitle: $reviewItem.data('reviewtitle'),
 			star: $reviewItem.data('star'),
-			review: $reviewItem.data('review'),
-			reviewImageList: reviewImageList,
-			helpfulCount: $reviewItem.data('helpfulCount')
+			review: $reviewItem.data('review')
 		};
 		
 		renderReviewForm(orderDetailObject, reviewObject);
@@ -233,8 +263,13 @@ const renderMyWishListHtml = function(data) {
 
                     <div class="col-12 col-md-auto mt-3 mt-md-0">
                         <div class="d-grid gap-2 d-sm-block">
-							<button class="btn btn-success btn-lg btn-cart" type="button">장바구니 담기</button>
-							<button class="btn btn-success btn-lg btn-buy" type="button">바로 구매</button>
+						<form name="buyForm">
+							<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
+							<input type="hidden" name="buyQtys" id="qty" value="1"> 
+							<input type="hidden" name="units" id="unit" value="${item.unit}">
+								<button class="btn btn-success btn-lg btn-cart" type="button">장바구니 담기</button>
+								<button class="btn btn-success btn-lg btn-buy" type="button">바로 구매</button>
+							</form>
                         </div>
                     </div>
                 </div>
@@ -260,7 +295,9 @@ const renderMyReviewListHtml = function(data) {
 				<h3 class="display-6 fw-bold text-dark">나의 리뷰</h3>
 				<p class="text-muted">내가 작성한 상품 리뷰를 확인하고 관리할 수 있습니다.</p>
 				<div class="mt-3 d-flex justify-content-center">
-					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-review-insert" type="button">리뷰 작성</button>
+					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-review" type="button">리뷰 작성</button>
+					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-return" type="button">반품 신청</button>
+					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-refund" type="button">환불 신청</button>
 				</div>			
 			</div>
 	`; 
@@ -367,7 +404,7 @@ const renderMyReviewListHtml = function(data) {
 const renderReviewForm = function(orderDetailObject = null, reviewObject = null) {	
 	// sample data
 	orderDetailObject = {
-		orderDetailNum:4,
+		orderDetailNum:2,
 		// 상품 메인 이미지
 		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
 		productName:"햇살농장 유기농 사과 1박스(5kg)",
@@ -434,6 +471,142 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
 		const star = reviewObject.star;
 		$(`#starRating input[value="${star}"]`).prop('checked', true);
 	}
+}
+
+/**
+ * 마이 페이지 - 반품 form 렌더링
+ * @param {object} orderDetailObject - 주문 상세 정보 객체
+ * @returns {void} #content에 HTML 렌더링
+ */
+const renderReturnForm = function(orderDetailObject = null) {	
+	// sample data
+	orderDetailObject = {
+		orderDetailNum:4,
+		// 상품 메인 이미지
+		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
+		productName:"햇살농장 유기농 사과 1박스(5kg)",
+		orderDate:"2025-08-16",
+		productNum:1
+	}
+	
+	const html = `
+	<div class="container mt-5">
+	    <div class="card">
+	        <div class="card-header">
+	            <h3 class="mb-0">반품 신청 📦</h3>
+	        </div>
+	        <div class="card-body">
+	            <div class="row mb-4 align-items-center">
+	                <div class="col-md-2">
+	                    <img src="${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
+	                </div>
+	                <div class="col-md-10">
+	                    <h5 class="card-title">${orderDetailObject.productName}</h5>
+	                    <p class="card-text text-muted">주문일자: ${orderDetailObject.orderDate}</p>
+	                </div>
+	            </div>
+
+	            <form id="returnForm">
+	                <div class="mb-3">
+	                    <label for="returnReason" class="form-label fw-bold">반품 사유</label>
+	                    <textarea class="form-control" id="reason" name="reason" rows="4" placeholder="상세한 반품 사유를 입력해주세요." required></textarea>
+	                </div>
+	                
+	                <div class="mb-3">
+	                    <label for="quantity" class="form-label fw-bold">반품 수량</label>
+	                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+	                </div>
+	                
+	                <div class="mb-4">
+	                    <label for="returnPhotos" class="form-label fw-bold">사진 첨부</label>
+	                    <input class="form-control" type="file" id="returnPhotos" name="returnPhotos" multiple>
+	                    <div class="form-text">상품의 상태를 확인할 수 있는 사진을 첨부해주세요.</div>
+	                </div>
+	                
+	                <div class="d-grid gap-2">
+	                    <button data-order-detail-num="${orderDetailObject.orderDetailNum}" type="button" class="btn-return-insert btn btn-success btn-lg">반품 신청하기</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+	
+	`;
+	
+	$('#content').html(html);
+	
+}
+
+/**
+ * 마이 페이지 - 환불 form 렌더링
+ * @param {object} orderDetailObject - 주문 상세 정보 객체
+ * @returns {void} #content에 HTML 렌더링
+ */
+const renderRefundForm = function(orderDetailObject = null) {	
+	// sample data
+	orderDetailObject = {
+		orderDetailNum:3,
+		// 상품 메인 이미지
+		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
+		productName:"햇살농장 유기농 사과 1박스(5kg)",
+		orderDate:"2025-08-16",
+		productNum:1
+	}
+	
+	const html = `
+	<div class="container mt-5">
+	    <div class="card">
+	        <div class="card-header">
+	            <h3 class="mb-0">환불 신청 💳</h3>
+	        </div>
+	        <div class="card-body">
+	            <div class="row mb-4 align-items-center">
+	                <div class="col-md-2">
+	                    <img src="${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
+	                </div>
+	                <div class="col-md-10">
+	                    <h5 class="card-title">${orderDetailObject.productName}</h5>
+	                    <p class="card-text text-muted">주문일자: ${orderDetailObject.orderDate}</p>
+	                </div>
+	            </div>
+
+	            <form id="refundForm">
+	                <div class="mb-3">
+	                    <label for="refundMethod" class="form-label fw-bold">환불 수단</label>
+	                    <select class="form-select" id="refundMethod" name="refundMethod" required>
+	                        <option selected disabled value="">환불받을 결제수단을 선택하세요.</option>
+	                        <option value="credit_card">카드 환불</option>
+	                        <option value="bank_transfer">계좌 이체</option>
+	                    </select>
+	                </div>
+
+	                <div id="bankInfo" class="border p-3 rounded mb-4" style="display: none;">
+	                    <h6 class="mb-3">환불 계좌 정보 입력</h6>
+	                    <div class="mb-3">
+	                        <label for="bankName" class="form-label">은행명</label>
+	                        <input type="text" class="form-control" id="bankName" name="bankName" placeholder="예: 국민은행">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="accountNumber" class="form-label">계좌번호</label>
+	                        <input type="text" class="form-control" id="accountNumber" name="accountNumber" placeholder="'-' 없이 숫자만 입력">
+	                    </div>
+	                    <div>
+	                        <label for="accountHolder" class="form-label">예금주명</label>
+	                        <input type="text" class="form-control" id="accountHolder" name="accountHolder">
+	                    </div>
+	                </div>
+	                
+	                <div class="d-grid gap-2">
+	                    <button data-order-detail-num="${orderDetailObject.orderDetailNum}" type="button" class="btn-refund-insert btn btn-success btn-lg text-white">환불 신청하기</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+	
+	`;
+	
+	$('#content').html(html);
 }
 
 /**
