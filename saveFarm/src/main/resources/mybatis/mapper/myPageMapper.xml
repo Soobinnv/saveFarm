@@ -6,13 +6,35 @@
 		SELECT NVL(COUNT(*), 0)
 		FROM productOrder po
 		JOIN orderDetail od ON po.orderNum = od.orderNum
-		WHERE po.member_id = #{member_id} AND userDelete = 0
+		WHERE po.memberId = #{memberId} AND userDelete = 0
 	</select>
 	
 	<!-- 유저의 전체 구매 리스트 -->
 	<select id="listPayment" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.memberId, po.orderDate, po.totalMoney, po.payment,
-			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState
+			po.deliveryCharge, po.orderStateDate, po.orderState, 
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName, p.mainImageFilename,
+			NVL(r.reviewWrite, 0) reviewWrite
+		FROM productOrder po
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN product p ON od.productNum = p.productNum
+		LEFT OUTER JOIN (
+		    SELECT pr.orderDetailNum, 1 AS reviewWrite
+		    FROM productReview pr
+		    JOIN orderDetail od2 ON pr.orderDetailNum = od2.orderDetailNum
+		    JOIN productOrder po2 ON od2.orderNum = po2.orderNum
+		    WHERE po2.memberId = #{memberId}
+		) r ON od.orderDetailNum = r.orderDetailNum
+		WHERE po.memberId = #{memberId} AND userDelete = 0
+		ORDER BY orderDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	<!-- 발송된 유저의 전체 구매 리스트 -->
+	<select id="listPaymentDelivery" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.memberId, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, 
 			dc.deliveryCompanyName, 
 			d.invoiceNumber,
 			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
@@ -24,10 +46,12 @@
 		JOIN delivery d ON po.orderNum = d.orderNum
 		JOIN deliveryCompany dc ON d.deliveryCompanyNum = dc.deliveryCompanyNum
 		LEFT OUTER JOIN (
-			SELECT num, 1 reviewWrite
-			FROM productReview
-			WHERE memberId = #{memberId}
-		) r ON od.orderDetailNum = r.num
+		    SELECT pr.orderDetailNum, 1 AS reviewWrite
+		    FROM productReview pr
+		    JOIN orderDetail od2 ON pr.orderDetailNum = od2.orderDetailNum
+		    JOIN productOrder po2 ON od2.orderNum = po2.orderNum
+		    WHERE po2.memberId = #{memberId}
+		) r ON od.orderDetailNum = r.orderDetailNum
 		WHERE po.memberId = #{memberId} AND userDelete = 0
 		ORDER BY orderDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
@@ -35,6 +59,20 @@
 	
 	<!-- 구매 상세 정보 -->
 	<select id="findByOrderDetail" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			pd.payMethod, pd.cardName, pd.applyDate, 
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName
+		FROM productOrder po
+		JOIN payDetail pd ON po.orderNum = pd.orderNum
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN product p ON od.productNum = p.productNum
+		WHERE po.memberId = #{memberId} AND od.orderDetailNum = #{orderDetailNum}
+	</select>
+
+	<!-- 배송된 구매 상세 정보 -->
+	<select id="findByOrderDetailDelivery" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
 			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
 			dc.deliveryName, d.invoiceNumber,
@@ -52,6 +90,18 @@
 
 	<!-- 구매번호에 대한 구매 리스트 -->
 	<select id="listPurchase" parameterType="map" resultType="com.sp.app.model.Payment">
+		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			p.productName, p.mainImageFilename
+		FROM productOrder po
+		JOIN orderDetail od ON po.orderNum = od.orderNum
+		JOIN product p ON od.productNum = p.productNum
+		WHERE po.orderNum = #{orderNum}
+	</select>
+
+	<!-- 구매번호에 대한 배송된 구매 리스트 -->
+	<select id="listPurchaseDelivery" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
 			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
 			dc.deliveryName, d.invoiceNumber,

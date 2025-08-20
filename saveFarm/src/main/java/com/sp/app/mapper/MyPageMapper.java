@@ -13,9 +13,12 @@ import com.sp.app.model.Payment;
 public interface MyPageMapper {
 	public int countPayment(Map<String, Object> map);
 	public List<Payment> listPayment(Map<String, Object> map);
+	public List<Payment> listPaymentDelivery(Map<String, Object> map);
 	public List<Payment> listPurchase(Map<String, Object> map);
+	public List<Payment> listPurchaseDelivery(Map<String, Object> map);
 
 	public Payment findByOrderDetail(Map<String, Object> map);
+	public Payment findByOrderDetailDelivery(Map<String, Object> map);
 	public Order findByOrderDelivery(Map<String, Object> map);
 	public void updateOrderState(Map<String, Object> map) throws SQLException;
 	public void updateOrderHistory(long orderDetailNum) throws SQLException;

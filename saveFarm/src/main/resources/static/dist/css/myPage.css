@@ -60,7 +60,7 @@
       background-color: #f7f7f7;
       padding: 20px;
       border-radius: 8px;
-      margin-bottom: 30px;
+      margin-bottom: 5px;
     }
     .welcome-left {
       display: flex;
@@ -84,7 +84,7 @@
       flex: 1;
       text-align: center;
     }
-    .tab-section {
+    .order-section {
       margin-bottom: 30px;
     }
     
@@ -96,52 +96,35 @@
 	  margin-bottom: 20px;
 	}
 
-	.tab-menu button {
-	  padding: 10px 20px;
-	  font-weight: bold;
-	  cursor: pointer;
-	  background-color: #f5f5f5;
-	  border: 1px solid #ddd;
-	  border-bottom: none;
-	  border-radius: 6px 6px 0 0;
-	  margin-right: 5px;
-	  transition: background 0.3s, color 0.3s;
-	}
-
-	.tab-menu button:hover {
-	  background-color: #039a63;
-	  color: #fff;
-	}
-
-	.tab-menu button.active {
-	  background-color: #039a63;
-	  color: #fff;
-	  border-color: #039a63;
-	}
-
 	/* 탭 내용 영역 */
-	.tab-content {
+	.order-content {
 	  padding: 20px;
 	  border: 1px solid #ddd;
 	  border-radius: 0 6px 6px 6px;
 	  background-color: #fff;
 	  min-height: 150px;
 	}
-    .order-steps {
+    .orderList-title {
       display: flex;
-      justify-content: space-around;
-      text-align: center;
+      flex-direction: column; /* 세로 배치 */
+  	  align-items: flex-start; /* 왼쪽 정렬 */
+      gap: 10px; /* 각 단계 간격 */
+      padding-left: 10px;
     }
-    .order-steps div {
-      flex: 1;
-      font-size: 12px;
-      color: #777;
+    .orderList-title div {
+      display: flex;
+      align-items: center;
+      gap: 8px; /* 아이콘과 글자 사이 간격 */
+  	  font-size: 40px;
+      color: #222;
+      font-weight: 1000;
+      margin-bottom: 20px;
     }
-    .order-steps i {
-      font-size: 24px;
+    .orderList-title i {
+      font-size: 40px;
       margin-bottom: 6px;
       display: block;
-      color: #999;
+      color: #222;
     }
     .like-section {
       border-top: 2px solid #039a63;

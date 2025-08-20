@@ -137,7 +137,7 @@ $(function() {
 
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
- * @param {object} data
+ * @param {object} data - 내가 주문한 상품 데이터
  * @param {Array<object>} data.list - 내가 주문한 상품 객체 배열
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
@@ -147,83 +147,72 @@ const renderMyPageMainHtml = function(data) {
       <div class="welcome-left">
         <img src="${contextPath}/dist/images/person.png" class="profile-avatar" alt="프로필 사진">
         <div>
-          <strong>${data.memberName ?? "회원"}님 반갑습니다.</strong><br />
+          <strong>${data.list.memberId ?? "회원"}님 반갑습니다.</strong><br />
           가입하신 회원은 <span style="color: red;">${data.grade ?? "WELCOME"}</span> 입니다.
         </div>
       </div>
       <div class="welcome-right">
-        <div>쿠폰<br><strong>${data.couponCount ?? 0}</strong></div>
+        <div>주문내역<br><strong>${data.list.length ?? 0}</strong></div>
         <div style="margin-top: 10px;">구매후기<br><strong>${data.reviewCount ?? 0}</strong></div>
       </div>
     </div>
 
-    <section class="tab-section">
-      <div class="tab-content" id="tab1">
-        <div class="order-steps">
-          <div><i class="fas fa-clipboard-list"></i>주문접수</div>
-          <div><i class="fas fa-credit-card"></i>결제완료</div>
-          <div><i class="fas fa-box"></i>상품준비중</div>
-          <div><i class="fas fa-truck"></i>배송중</div>
-          <div><i class="fas fa-gift"></i>배송완료</div>
-        </div>
+    <section class="order-section">
+      <div class="orderList-title">
+        <div><i class="fas fa-clipboard-list"></i>주문내역</div>
+      </div>
+      <div class="order-content" id="orderList">
   `;
 
-  if (!data.list || data.list.length === 0) {
-    html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
-  } else {
-    data.list.forEach((order) => {
-      const orderDate = order.orderDate.substring(0, 10);
+  	if (!data.list || data.list.length === 0) {
+	    html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
+	  	return html;
+	} 
+	
+	html += data.list.map(item => {
+	  const orderDate = item.orderDate.substring(0, 10);
 
-      // 주문 상단 정보
-      html += `
-        <div class="order-day-header mt-3">
-          <div>${orderDate}</div>
-          <a href="javascript:void(0)" class="text-decoration-none fw-semibold text-black-50">주문 상세</a>
-        </div>
-      `;
+	  return `
+	    <div class="order-day-header mt-3">
+	      <div>${orderDate}</div>
+	      <a href="javascript:void(0)" class="text-decoration-none fw-semibold text-black-50">주문 상세</a>
+	    </div>
 
-      // 주문 상세 목록
-      order.details.forEach((detail) => {
-        html += `
-          <div class="order-card">
-            <div class="order-topline">
-              <div class="text-black-50 fw-semibold">${order.orderState ?? "주문상태"}</div>
-              <div class="order-menu">
-                <a href="javascript:void(0)" class="order-details"
-                   data-orderNum="${order.orderNum}" data-orderDetailNum="${detail.orderDetailNum}">주문 상세</a>
-                <a href="${contextPath}/products/${detail.productNum}">상품 보기</a>
-              </div>
-            </div>
+	    <div class="order-card">
+	      <div class="order-topline">
+	        <div class="text-black-50 fw-semibold">${item.orderState ?? "주문상태"}</div>
+	        <div class="order-menu">
+	          <a href="javascript:void(0)" class="order-details"
+	             data-orderNum="${item.orderNum}" data-orderDetailNum="${item.orderDetailNum}">주문 상세</a>
+	          <a href="${contextPath}/products/${item.productNum}">상품 보기</a>
+	        </div>
+	      </div>
 
-            <div class="d-flex gap-3">
-              <img class="order-img"
-                   src="${contextPath}/uploads/products/${detail.mainImageFilename}"
-                   alt="${detail.productName}">
-              <div class="flex-grow-1">
-                <div class="order-meta">${orderDate} 구매</div>
-                <div class="order-name">${detail.productName}</div>
-                <div class="order-meta">
-                  <span class="order-label">수량</span>
-                  ${detail.qty}개
-                </div>
-                <div class="order-price">${detail.productMoney.toLocaleString()}원</div>
-              </div>
-            </div>
+	      <div class="d-flex gap-3">
+	        <img src="${contextPath}/uploads/product/${item.mainImageFilename}" alt="상품 이미지" class="order-img">
+	        <div class="flex-grow-1">
+	          <div class="order-meta">${orderDate} 구매</div>
+	          <div class="order-name">${item.productName}</div>
+	          <div class="order-meta">
+	            <span class="order-label">수량</span>
+	            ${item.qty}개
+	          </div>
+	          <div class="order-price">${Number(item.productMoney).toLocaleString()}원</div>
+	        </div>
+	      </div>
 
-            <div class="mt-3">
-              <div class="badge-hint">후기 작성 (최대 1,500원 적립)</div>
-              <div class="order-actions">
-                <button type="button" class="btn-ghost"
-                        data-orderDetailNum="${detail.orderDetailNum}">배송 조회</button>
-                <button type="button" class="btn-ghost"
-                        onclick="location.href='${contextPath}/products/${detail.productNum}'">재구매</button>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-    });
-  }
+	      <div class="mt-3">
+	        <div class="order-actions">
+	          <button type="button" class="btn-ghost"
+	                  data-orderDetailNum="${item.orderDetailNum}">배송 조회</button>
+	          <button type="button" class="btn-ghost"
+	                  onclick="location.href='${contextPath}/products/${item.productNum}'">재구매</button>
+	        </div>
+	      </div>
+	    </div>
+	  `;
+	}).join('');
+
 
   html += `
       </div>

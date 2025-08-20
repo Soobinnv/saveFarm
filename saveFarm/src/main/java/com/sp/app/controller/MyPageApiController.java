@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
+import com.sp.app.model.Order;
+import com.sp.app.model.Payment;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
 import com.sp.app.model.Refund;
 import com.sp.app.model.Return;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
+import com.sp.app.service.MyPageService;
 import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.RefundService;
@@ -39,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/api/myPage")
 public class MyPageApiController {
-
+	private final MyPageService mypageService;
 	private final WishService wishService;
 	private final ProductQnaService qnaService;
 	private final ProductReviewService reviewService;
@@ -55,55 +58,55 @@ public class MyPageApiController {
 		productReviewUploadPath = this.storageService.getRealPath("/uploads/productReview");		
 	}	
 	
-	// 마이페이지 - 메인 데이터
+	// 마이페이지 - 메인 데이터(결제내역)
 	@GetMapping("/paymentList")
-	public ResponseEntity<?> getMyPaymentList(HttpSession session, @RequestParam(name = "page", defaultValue = "1") int current_page) {
+	public ResponseEntity<?> paymentList(@RequestParam(name = "pageNo", defaultValue = "1") int current_page,
+			Order dto,
+			HttpSession session) {
 		Map<String, Object> body = new HashMap<>();
-		Map<String, Object> map = new HashMap<>();
 		
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			
-			// 페이징
+			// 페이징 처리
 			int size = 10;
 			int total_page = 0;
 			int dataCount = 0;
 			
-			dataCount = reviewService.getMyReviewDataCount(info.getMemberId());
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("memberId", info.getMemberId());
+			
+			dataCount = mypageService.countPayment(map);
 			total_page = paginateUtil.pageCount(dataCount, size);
 			current_page = Math.min(current_page, total_page);
 			
-			// 리스트에 출력할 데이터를 가져오기
+			// 리스트 출력 데이터 가져오기
 			int offset = (current_page - 1) * size;
 			if(offset < 0) offset = 0;
 			
 			map.put("offset", offset);
 			map.put("size", size);
-			map.put("memberId", info.getMemberId());
 			
-			List<ProductReview> list = reviewService.getMyReviewList(map);
+			List<Payment> list = mypageService.listPayment(map);
 			
-			// AJAX 용 페이징
-			String paging = paginateUtil.pagingMethod(current_page, total_page, "reviewListPage");
+			// AJAX 용 페이징 처리
+			String paging = paginateUtil.paging(current_page, total_page, "paymentListPage");
 			
 			body.put("list", list);
 			body.put("pageNo", current_page);
-			body.put("replyCount", dataCount);
+			body.put("dataCount", dataCount);
+			body.put("size", size);
 			body.put("total_page", total_page);
-			body.put("paging", paging);
+			body.put("paging", paging);		
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getMyPageMain: ", e);
+			log.error("paymentList: ", e);
 			body.put("message", "마이페이지 - 메인을 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+	
 		}
 	}
-	
-	
-	
-	
-	
 	
 	
 	// 내 활동 - 찜 데이터
