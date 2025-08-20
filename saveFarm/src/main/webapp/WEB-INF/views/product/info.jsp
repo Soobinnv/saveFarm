@@ -264,6 +264,8 @@
 	<script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
 	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/productInfo3.js"></script>
+	<script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/product.js"></script>
 </body>
 </html>

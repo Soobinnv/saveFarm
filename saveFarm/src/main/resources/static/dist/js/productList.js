@@ -1,8 +1,3 @@
-// 처음 접속 시 상품 리스트 로드
-$(function() {	
-	loadProducts("/api/products");
-});
-
 /**
  * 지정된 URL로 AJAX 요청, 응답 데이터로 HTML 렌더링
  * @param {string} kwd - 검색어
@@ -82,7 +77,7 @@ const renderProductListHtml = function(data) {
 	                </div>
 	                <div class="card-body">
 	                    <h4 class="card-product__title mt-1">
-	                        <a href="${contextPath}/products/${item.productNum}">${item.productName}&nbsp;${item.unit}</a>
+	                        <a href="${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}">${item.productName}&nbsp;${item.unit}</a>
 	                    </h4>
 						<div class="d-flex align-items-center justify-content-center mt-2">
 							${item.discountRate != 0 

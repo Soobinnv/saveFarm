@@ -1,3 +1,8 @@
+// 처음 접속 시 상품 리스트 로드
+$(function() {	
+	loadProducts("/api/products");
+});
+
 // 이벤트 핸들러 등록
 $(function() {
 	// 상품 이미지 링크

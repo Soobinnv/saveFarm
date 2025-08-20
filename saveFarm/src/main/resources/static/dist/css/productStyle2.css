@@ -111,17 +111,12 @@ main {
     font-weight: bold;
     background-color: #f4f4f4;
     border-bottom: 1px solid #ededed;
+    padding-right: 32px !important;
 }
 
 .qna-list .qna-item:last-child {
     border-bottom: none;
 }
-
-/* 각 항목의 너비 비율 설정 */
-.qna-title  { flex: 5; text-align: left; } /* 제목은 5만큼의 너비 */
-.qna-date   { flex: 2; text-align: center; } /* 등록일은 2만큼 */
-.qna-author { flex: 2; text-align: center; } /* 작성자는 2만큼 */
-.qna-status { flex: 1; text-align: center; } /* 상태는 1만큼 */
 
 /* 로딩 또는 빈 메시지 스타일 */
 .qna-item-loading {
@@ -221,9 +216,9 @@ main {
 
 /* 각 열의 너비 비율 설정 */
 .qna-status { flex: 1 !important; text-align: center; }
-.qna-title  { flex: 6 !important;   text-align: left; padding-left: 20px; }
-.qna-date   { flex: 2 !important;   text-align: center; }
-.qna-author { flex: 2 !important;   text-align: center; }
+.qna-title  { flex: 4 !important;   text-align: left; padding-left: 20px; }
+.qna-date   { flex: 1.5 !important;   text-align: center; }
+.qna-author { flex: 1 !important;   text-align: center; }
 
 .qna-status.answered {
     color: #50c878;
@@ -332,3 +327,4 @@ main {
     object-fit: cover; 
     width: 100%;
   }
+

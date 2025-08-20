@@ -7,7 +7,7 @@
 	        SELECT productQna_seq.NEXTVAL FROM DUAL
 	    </selectKey>
 	    INSERT INTO productQna(qnaNum, secret, question, title, block, memberId, productNum, qnaDate)
-	    VALUES(#{qnaNum}, #{secret}, #{question}, #{title}, 0, #{memberId}, #{productNum}, SYSDATE)
+	    	VALUES(#{qnaNum}, #{secret}, #{question}, #{title}, 0, #{memberId}, #{productNum}, SYSDATE)
 	</insert>
 	
 	<update id="updateQna" parameterType="com.sp.app.model.ProductQna">
@@ -28,7 +28,6 @@
 		LEFT OUTER JOIN member2 am ON q.answerId = am.memberId
 		WHERE block = 0 AND productNum = #{productNum}
 		ORDER BY qnaDate DESC
-		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
 	<select id="getMyQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">
@@ -42,7 +41,7 @@
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
-	<select id="getDataCount" parameterType="map" resultType="Integer">
+	<select id="getDataCount" parameterType="long" resultType="Integer">
 		SELECT COUNT(*)
 		FROM productQna
 		WHERE productNum = #{productNum} AND block = 0

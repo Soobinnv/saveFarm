@@ -79,6 +79,11 @@ public class ProductApiController {
 			
 			Product productInfo = service.getProductWithDetails(productNum, classifyCode, memberId);
 			
+			if(productInfo == null) {
+				body.put("message", "현제 상품의 상세 정보가 없습니다.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
+			}
+			
 			// 추천 리스트 (수정 필요)
 			List<Product> list = null;
 
@@ -95,16 +100,13 @@ public class ProductApiController {
 
 	// 상품 문의 데이터
 	@GetMapping("/{productNum}/qnas")
-	public ResponseEntity<?> getProductQna(@PathVariable(name = "productNum") long productNum) {
+	public ResponseEntity<?> getProductQna(
+			@PathVariable(name = "productNum") long productNum
+		) {
 		Map<String, Object> body = new HashMap<>();
-		try {
-			Map<String, Object> map = new HashMap<>();
+		try {			
+			List<ProductQna> list = qnaService.getQnaList(productNum); 
 			
-			map.put("offset", 0);
-			map.put("size", 20);
-			map.put("productNum", productNum);
-			
-			List<ProductQna> list = qnaService.getQnaList(map); 
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {

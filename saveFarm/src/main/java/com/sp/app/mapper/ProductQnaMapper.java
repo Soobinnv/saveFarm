@@ -13,8 +13,8 @@ public interface ProductQnaMapper {
 	public void updateQna(ProductQna dto) throws Exception;
 	public void deleteQna(long qnaNum) throws Exception;
 	
-	public List<ProductQna> getQnaList(Map<String, Object> map);
+	public List<ProductQna> getQnaList(long productNum);
 	public List<ProductQna> getMyQnaList(Map<String, Object> map);
-	public int getDataCount(Map<String, Object> map);
+	public int getDataCount(long productNum);
 	public int getMyQnaDataCount(long memberId);
 }

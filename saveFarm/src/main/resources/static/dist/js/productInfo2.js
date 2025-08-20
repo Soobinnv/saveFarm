@@ -316,6 +316,8 @@ const renderRefund = function() {
 	$('#productInfoLayout').html(html);
 }
 
+
+
 /**
  * 상품 문의 HTML 문자열 생성
  * 상품 문의 목록
@@ -430,3 +432,4 @@ const renderProductQnaHtml = function(data) {
 	
 	return html;
 }
+

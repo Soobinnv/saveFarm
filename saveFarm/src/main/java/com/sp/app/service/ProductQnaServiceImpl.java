@@ -58,11 +58,11 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 	}
 	
 	@Override
-	public List<ProductQna> getQnaList(Map<String, Object> map) {
+	public List<ProductQna> getQnaList(long productNum) {
 		List<ProductQna> list = null;
 		
 		try {
-			list = mapper.getQnaList(map);
+			list = mapper.getQnaList(productNum);
 			
 			for(ProductQna dto : list) {
 				dto.setName(myUtil.nameMasking(dto.getName()));
@@ -95,11 +95,11 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 	}
 
 	@Override
-	public int getDataCount(Map<String, Object> map) {
+	public int getDataCount(long productNum) {
 		int count = 0;
 		
 		try {
-			count = mapper.getDataCount(map);
+			count = mapper.getDataCount(productNum);
 			
 		} catch (Exception e) {
 			log.info("getDataCount : ", e);
