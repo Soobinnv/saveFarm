@@ -26,13 +26,23 @@
             }
         } else {
             if ($(this).scrollTop() > 45) {
-                $('.fixed-top').addClass('bg-white shadow').css('top', -45);
+                $('.fixed-top').addClass('bg-white shadow').css('top', -80);
             } else {
                 $('.fixed-top').removeClass('bg-white shadow').css('top', 0);
             }
         }
     });
     
+	$(window).resize(function() {
+	    // 뷰포트 크기가 992px 미만일 때 헤더 스타일을 초기화
+	    if ($(window).width() < 992) {
+	        $('.fixed-top').css('top', '0px');
+	    } else {
+	    // 뷰포트 크기가 992px 이상일 때 헤더 스타일을 초기화
+	        $('.fixed-top').css('top', '0px');
+	    }
+	});
+	
     
     // Back to top button
     $(window).scroll(function () {

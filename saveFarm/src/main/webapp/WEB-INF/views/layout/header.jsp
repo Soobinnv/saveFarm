@@ -1,7 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
-
+<div class="top-bar row gx-0 align-items-center d-none d-lg-flex">
+	<div class="col-lg-6 px-5 text-start">
+		<small><i class="fa fa-map-marker-alt me-2"></i>TEST</small>
+	</div>
+</div>
 <!-- Navbar Start -->
 <div class="container-fluid fixed-top px-0 wow fadeIn"
 	data-wow-delay="0.1s">
