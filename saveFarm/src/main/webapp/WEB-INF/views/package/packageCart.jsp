@@ -127,6 +127,7 @@ body{
 	  <button type="button" class="step-pill" data-step="2">Step2 결제정보입력</button>
 	  <button type="button" class="step-pill" data-step="3">Step3 정기배송지 입력</button>
 	</div>
+	
 	<div class="step-panel d-none step1" data-step="1">
 	  <div class="subcart mx-auto shadow-sm rounded-4 p-4 p-md-5 cart-area">
 	    <h5 class="text-center mb-4 fw-bold">정기결제 바구니</h5>
@@ -164,8 +165,6 @@ body{
    		style="max-width:680px; width:100%;" data-goto="2">
   		결제정보 입력하기
 	</a>
-		<input type="hidden" name="htmlBlock" id="htmlBlock">
-		<input type="hidden" name="totalPrice" id="totalPrice">
 	</div>
 </div>
 
@@ -260,7 +259,7 @@ body{
 	</a>
 
   </div>
-
+<form>
   <div class="step-panel d-none" data-step="3">
   <div class="subcart mx-auto shadow-sm rounded-4 p-4 p-md-5">
     <h6 class="text-center mb-4 fw-bold">정기 배송지 입력</h6>
@@ -285,12 +284,28 @@ body{
       <div class="fs-6"><span class="text-muted me-2">총합계 :</span><strong class="totalPrice"></strong></div>
     </div>
   </div>
+ 
+  <input type="hidden" name="payDate" id="payDate">
+  <input type="hidden" name="payMethod" id="payMethod">
+  <input type="hidden" name="totalPay" id="totalPay">
+  <input type="hidden" name="homePackageNum" id="homePakcageNum">
+  <input type="hidden" name="packagePrice" id="packagePrice">
+  <input type="hidden" name="saladPackageNum" id="saladPackageNum">
+  <input type="hidden" name="receiver" id="receiver">
+  <input type="hidden" name="tel" id="tel">
+  <input type="hidden" name="zip" id="zip">
+  <input type="hidden" name="addr" id="addr">
+  <input type="hidden" name="productNums" id="productNums">
+  <input type="hidden" name="itemPrices" id="itemPrices">
+  <input type="hidden" name="counts" id="counts">
+  
+  
   <button type="button" class="btn btnGreen btn-lg d-block mx-auto rounded-pill py-3 mt-4"
-        style="max-width:680px; width:100%;" onclick="sendOk()">
+        style="max-width:680px; width:100%;" onclick="sendOk();">
   정기구독 결제
 </button>
 </div>
-
+</form>
 <script type="text/javascript">
 (function () {
     var cp = '<c:url value="/"/>';        
@@ -316,6 +331,7 @@ body{
   $(function(){
      var price = ${price};
     priceUpdate(price);
+    document.getElementById('packagePrice').value = ${price};
   });
 
 
@@ -335,7 +351,7 @@ body{
 	const packageArea = $('.packageArea');
 	packageArea.children('a.btn.btnGreen').hide();
   let won = priceSeparation();
-  
+  let packagePrice = document.getElementById('packagePrice').value();
 
   // 총가격 부분 업데이트
   if(mode == 'homePackage'){
@@ -344,18 +360,20 @@ body{
     won += 18000;
   }
   priceUpdate(won);
-  
+  document.getElementById('packagePrice').value = won;
   
   packageArea.append(out);
 }
   
   $(document).on('click', '.remove-btn', function(){
 	  let $item = $(this).closest('.subcart-item');
-	  
+	  let packagePrice = document.getElementById('packagePrice').value();
+
 	  if ($item.closest('.packageArea').length) {
 	    // 패키지 추가 버튼 재 활성화
 	   const packageArea = $('.packageArea');
 	 	packageArea.children('a.btn.btnGreen').show();
+    document.getElementById('packagePrice').value =  ${mode == 'homePackage'} ? packagePrice - 20000 : packagePrice - 18000;
 	  }
 	   let priceText = $item.find('.text-muted').text();
 	   let unitPrice = parseInt($item.data('price'), 10);
@@ -441,16 +459,12 @@ body{
   });
 
   // 옵션 선택
-  $(document).on('click', '[data-role="paySelect"] .pay-option', function () {
-    const $btn  = $(this);
-    const val   = $btn.data('value');
-    const text  = $btn.text().trim();
-    const $wrap = $btn.closest('[data-role="paySelect"]');
-
-    $wrap.find('input[name="payMethod"]').val(val);
-    $wrap.find('.selected-text').text(text);
-    $wrap.find('.pay-menu').addClass('d-none');
-    $wrap.find('.pay-trigger').attr('aria-expanded', 'false');
+  $(document).on('click','[data-role="paySelect"] .pay-option',function(){
+    const val = $(this).data('value');
+    $('.pay-select .selected-text').text($(this).text().trim());
+    $('#payMethod').val(val); // ← hidden 채움
+    $(this).closest('.pay-menu').addClass('d-none')
+      .prev('.pay-trigger').attr('aria-expanded','false');
   });
 
   // 바깥 클릭 시 닫기
@@ -461,8 +475,65 @@ body{
   });
   
 })();
-</script>
+
+//최종 제출
+function sendOk(){
+  const f = document.querySelector('form'); 
+
   
+  const payDate   = document.querySelector('input[name="billingDate"]')?.value || '';
+  const payMethod = document.getElementById('payMethod').value || '';
+  document.getElementById('payDate').value   = payDate;
+  document.getElementById('payMethod').value = payMethod;
+
+  /* 2) 총 결제금액(숫자만) */
+  const totalTxt = document.querySelector('.step1 .totalPrice')?.textContent || '0';
+  const totalPay = parseInt(totalTxt.replace(/[^\d]/g,''),10) || 0;
+  document.getElementById('totalPay').value = totalPay;
+
+  document.getElementById('homePakcageNum').value = 1; 
+  document.getElementById('saladPackageNum').value = 1;
+ 
+
+  /* 4) 추가상품 리스트 */
+  const productNums = [];
+  const itemPrices  = [];
+  const counts      = [];
+
+  document.querySelectorAll('#extraItems .extra-item').forEach(item=>{
+    const pn   = item.getAttribute('data-productnum') || '';
+    const up   = parseInt(item.getAttribute('data-price')||'0',10) || 0; 
+    const qty  = parseInt(item.querySelector('.quantity')?.textContent||'1',10) || 1;
+
+    if(pn){
+      productNums.push(pn);
+      itemPrices.push(up);
+      counts.push(qty);
+    }
+  });
+
+  document.getElementById('productNums').value = productNums;
+  document.getElementById('itemPrices').value  = itemPrices;
+  document.getElementById('counts').value      = counts;
+
+  /*배송지 */
+  const receiver = document.querySelector('input[name="receiverName"]')?.value.trim() || '';
+  const tel      = document.querySelector('input[name="receiverPhone"]')?.value.trim() || '';
+  const addr1    = document.querySelector('input[name="addr1"]')?.value.trim() || '';
+  const addr2    = document.querySelector('input[name="addr2"]')?.value.trim() || '';
+  document.getElementById('receiver').value = receiver;
+  document.getElementById('tel').value      = tel;
+  document.getElementById('addr').value     = addr1;
+  document.getElementById('zip').value      = addr2;
+
+  /* 6) 제출 */
+  f.action = '${pageContext.request.contextPath}/package/payForm';
+  f.method = 'post';
+  f.submit();
+}
+
+</script>
+
 
 
 
