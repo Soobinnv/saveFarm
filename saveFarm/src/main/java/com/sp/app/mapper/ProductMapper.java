@@ -1,6 +1,7 @@
 package com.sp.app.mapper;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,8 @@ public interface ProductMapper {
 	public Product getProductInfo(long productNum);	
 	public Product getRescuedProductInfo(long productNum);	
 	public List<Product> getProductImageList(long productNum);	
+	
+	public List<Product> getRescuedProductNumsClosingSoon(LocalDateTime twentyFourHoursLater);
 	
 	public void insertProduct(Product dto) throws SQLException;
 	public void insertProductDetail(Product dto) throws SQLException;

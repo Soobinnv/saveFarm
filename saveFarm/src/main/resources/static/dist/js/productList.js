@@ -18,7 +18,10 @@ function loadProducts(url, params = '') {
 		
 		// 구출 상품
 		const rescuedProductHtml = renderRescuedProductListHtml(data);
-		$('#rescuedProductLayout').html(rescuedProductHtml);		
+		$('#rescuedProductLayout').html(rescuedProductHtml);	
+		
+		// 구출 상품 타이머 실행
+		startTimers();	
 	}
 	
 	ajaxRequest(url, 'get', params, 'json', fn);
@@ -114,12 +117,27 @@ const renderRescuedProductListHtml = function(data) {
 					data-classify-code="${item.productClassification}"
 					>
 			        <div class="card-product__img">
-						${item.endDate ? `
-						<span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
-							<iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
-								마감: ${item.endDate}
-						</span>
-						` : ''}
+
+					${(() => {
+					    if (!item.endDate) return '';
+
+					    if (item.isUrgent === 1) {
+					        return `
+					        <span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6 deadline-timer" 
+					              data-deadline="${item.endDate}">
+					            <iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
+					            <span class="time-left">마감 임박 !</span>
+					        </span>`;
+					    } 
+					    else {
+					        return `
+					        <span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
+					            <iconify-icon icon="mdi:clock-outline" class="me-1"></iconify-icon>
+					            마감: ${item.endDate}
+					        </span>`;
+					    }
+					})()}
+					
 			            <img class="card-img product-main-image"
 							src="${contextPath}/uploads/product/${item.mainImageFilename}"
 			                alt="${item.productName} 이미지"

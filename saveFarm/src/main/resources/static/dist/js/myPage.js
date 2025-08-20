@@ -1,5 +1,11 @@
 const contextPath = $('body').data('context-path');
 
+// 처음 페이지 로딩 시
+$(function() {
+	// 마이페이지 메인 불러오기
+	loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
+});
+
 /**
  * 지정된 URL로 AJAX 요청, 응답 데이터로 HTML 렌더링
  * @param {string} url - URL (contextPath 제외)
@@ -69,7 +75,6 @@ $(function() {
 		}
 		
 		ajaxRequest(url, 'post', params, false, fn, true);
-		
 	});
 	
 	// 환불 신청 form

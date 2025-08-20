@@ -3,7 +3,6 @@ package com.sp.app.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,29 +69,23 @@ public class ProductApiController {
 	@GetMapping("/{productNum}")
 	public ResponseEntity<?> getProductInfo(
 			@PathVariable(name = "productNum") long productNum,
-			@RequestParam(name = "classifyCode", required = false) int classifyCode
+			@RequestParam(name = "classifyCode", required = false) int classifyCode,
+			HttpSession session
 		) {
 		Map<String, Object> body = new HashMap<>();
 		try {
-			Product productInfo = null;
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			long memberId = (info != null) ? info.getMemberId() : -1;
 			
-			System.out.println(classifyCode);
-			
-			if(classifyCode == 100) {
-				productInfo = Objects.requireNonNull(service.getProductInfo(productNum));				
-			} else if(classifyCode == 200) {
-				productInfo = Objects.requireNonNull(service.getRescuedProductInfo(productNum));	
-			}
+			Product productInfo = service.getProductWithDetails(productNum, classifyCode, memberId);
 			
 			// 추천 리스트 (수정 필요)
 			List<Product> list = null;
 
 			body.put("productInfo", productInfo);
 			body.put("list", list);
-			return ResponseEntity.ok(body); // 200 OK
 
-		} catch (NullPointerException e) {
-			return ResponseEntity.notFound().build(); // 404 Not Found
+			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProductInfo: ", e);
 			body.put("message", "상품의 상세 정보를 불러오는 중 오류가 발생했습니다.");
@@ -106,7 +99,6 @@ public class ProductApiController {
 		Map<String, Object> body = new HashMap<>();
 		try {
 			Map<String, Object> map = new HashMap<>();
-			
 			
 			map.put("offset", 0);
 			map.put("size", 20);

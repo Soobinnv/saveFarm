@@ -174,7 +174,7 @@
 					<button class="nav-link active" id="nav-detail-tab" type="button">상품
 						상세</button>
 					<button class="nav-link" id="nav-review-tab" type="button">
-						상품 리뷰&nbsp;<span>(5231)</span>
+						상품 리뷰&nbsp;<span>(${productInfo.reviewCount})</span>
 					</button>
 					<button class="nav-link" id="nav-refund-tab" type="button">반품
 						/ 환불</button>

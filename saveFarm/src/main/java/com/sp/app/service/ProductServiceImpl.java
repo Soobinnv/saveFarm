@@ -18,6 +18,43 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 	private final ProductMapper mapper;
+	private final ProductReviewService reviewService;
+	private final WishService wishService;
+	
+	@Override
+	public Product getProductWithDetails(long productNum, int classifyCode, long memberId) throws Exception {
+		Product productInfo = null;
+		
+		try {
+			if(classifyCode == 100) {
+				productInfo = getProductInfo(productNum);				
+			} else if(classifyCode == 200) {
+				productInfo = getRescuedProductInfo(productNum);	
+			}
+			
+		    if (productInfo == null) {
+		        return null;
+		    }
+			
+			Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("productNum", productInfo.getProductNum());
+			
+			int reviewCount = reviewService.getDataCount(paramMap);
+			
+			productInfo.setReviewCount(reviewCount);
+			
+			if(memberId != -1) {
+				// 회원의 찜 여부
+				paramMap.put("memberId", memberId);
+				productInfo.setUserWish(wishService.findByWishId(paramMap) == null ? 0 : 1);
+			}
+			
+		} catch (Exception e) {
+			log.info("getProductWithDetails : ", e);
+		}
+		
+		return productInfo;
+	}
 	
 	@Override
 	public Map<String, List<Product>> getAllProductList(Map<String, Object> map) {
@@ -201,6 +238,5 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
 
 }

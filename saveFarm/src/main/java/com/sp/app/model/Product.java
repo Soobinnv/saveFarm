@@ -21,6 +21,9 @@ public class Product {
 	private int productClassification;
 	private MultipartFile mainImageFile;
 	
+	// 상품 리뷰 수
+	private int reviewCount;
+	
 	// 상품 상세
 	private int stockQuantity;
 	private String unit;
@@ -34,6 +37,9 @@ public class Product {
 	private long supplyNum;
 	private String farmName;
 	
+	// 마감 임박 여부
+	private int isUrgent;
+	
 	// 상품 이미지
 	private long productImageNum;
 	private String productImageFilename;
@@ -41,4 +47,5 @@ public class Product {
 	
 	// 회원의 찜 여부
 	private int userWish;
+	
 }

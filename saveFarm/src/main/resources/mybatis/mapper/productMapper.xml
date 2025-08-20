@@ -13,7 +13,7 @@
 
 	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, ENDDATE, farmName
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
@@ -21,14 +21,22 @@
         LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
 		WHERE PRODUCTCLASSIFICATION = 200
 	</select>
+	
+	<select id="getRescuedProductNumsClosingSoon" parameterType="java.time.LocalDateTime" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM
+		FROM product p
+		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		WHERE PRODUCTCLASSIFICATION = 200 AND endDate BETWEEN SYSDATE AND #{twentyFourHoursLater}
+	</select>
 
 	<select id="getAllProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish, TO_CHAR(ENDDATE, 'YYYY-MM-DD') endDate
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish, endDate, isUrgent
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
 		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND w.memberId = #{memberId, jdbcType=BIGINT}
+		WHERE ENDDATE IS NULL OR ENDDATE >= SYSDATE
 	</select>
 
 	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
@@ -41,13 +49,13 @@
 
 	<select id="getRescuedProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, TO_CHAR(ENDDATE, 'YYYY-MM-DD') endDate, farmName
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
 		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
         LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
-		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200
+		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200 AND ENDDATE >= SYSDATE
 	</select>
 
 	<select id="getProductImageList" parameterType="Long" resultType="com.sp.app.model.Product">
@@ -81,9 +89,9 @@
 
     <insert id="insertRescuedProduct" parameterType="com.sp.app.model.Product">
         INSERT INTO rescuedProductInfo (
-            PRODUCTNUM, ENDDATE, SUPPLYNUM
+            PRODUCTNUM, ENDDATE, SUPPLYNUM, ISURGENT
         ) VALUES (
-            #{productNum}, #{endDate}, #{supplyNum}
+            #{productNum}, #{endDate}, #{supplyNum}, 0
         )
     </insert>
 
@@ -120,6 +128,7 @@
         <set>
             <if test="endDate != null and endDate != ''">ENDDATE = #{endDate},</if>
             <if test="supplyNum != null and supplyNum != ''">SUPPLYNUM = #{supplyNum},</if>
+            <if test="isUrgent != null and isUrgent != ''">ISURGENT = #{isUrgent},</if>
         </set>
         WHERE PRODUCTNUM = #{productNum}
     </update>
