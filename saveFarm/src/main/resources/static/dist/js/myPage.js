@@ -174,7 +174,7 @@ const renderMyPageMainHtml = function(data) {
 
 	  return `
 	    <div class="order-day-header mt-3">
-	      <div>${orderDate}</div>
+	      <div>주문번호 : ${item.orderNum}</div>
 	      <a href="javascript:void(0)" class="text-decoration-none fw-semibold text-black-50">주문 상세</a>
 	    </div>
 

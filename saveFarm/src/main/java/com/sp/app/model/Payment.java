@@ -13,7 +13,7 @@ public class Payment {
 	
 	private long productNum;
 	private String productName;
-	private String thumbnail;
+	private String mainImageFilename;
 	private int price;
 	private int discountRate;
 	private int savedMoney;
