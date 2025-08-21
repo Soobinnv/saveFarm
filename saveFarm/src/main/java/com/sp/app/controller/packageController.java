@@ -68,6 +68,7 @@ public class packageController {
 			reAttr.addFlashAttribute("message", sb.toString());
 			
 			return "redirect:/package/complete";
+			
 		} catch (Exception e) {
 			log.info("packageSubmit :",e);
 		}

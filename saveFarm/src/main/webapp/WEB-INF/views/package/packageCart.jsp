@@ -259,7 +259,7 @@ body{
 	</a>
 
   </div>
-<form>
+<form name="payForm">
   <div class="step-panel d-none" data-step="3">
   <div class="subcart mx-auto shadow-sm rounded-4 p-4 p-md-5">
     <h6 class="text-center mb-4 fw-bold">정기 배송지 입력</h6>
@@ -288,7 +288,7 @@ body{
   <input type="hidden" name="payDate" id="payDate">
   <input type="hidden" name="payMethod" id="payMethod">
   <input type="hidden" name="totalPay" id="totalPay">
-  <input type="hidden" name="homePackageNum" id="homePakcageNum">
+  <input type="hidden" name="homePackageNum" id="homePackageNum">
   <input type="hidden" name="packagePrice" id="packagePrice">
   <input type="hidden" name="saladPackageNum" id="saladPackageNum">
   <input type="hidden" name="receiver" id="receiver">
@@ -332,6 +332,14 @@ body{
      var price = ${price};
     priceUpdate(price);
     document.getElementById('packagePrice').value = ${price};
+    $('#homePackageNum').val(0);      
+    $('#saladPackageNum').val(0);
+
+    if ('${mode}' === 'homePackage') {
+      $('#homePackageNum').val(1);   
+    } else {
+      $('#saladPackageNum').val(7);  
+    }
   });
 
 
@@ -351,13 +359,15 @@ body{
 	const packageArea = $('.packageArea');
 	packageArea.children('a.btn.btnGreen').hide();
   let won = priceSeparation();
-  let packagePrice = document.getElementById('packagePrice').value();
+  
 
   // 총가격 부분 업데이트
   if(mode == 'homePackage'){
-    won += 20000;
+    won += 20000; 
+    document.getElementById('saladPackageNum').value = 7;
   }else{
     won += 18000;
+    document.getElementById('homePackageNum').value = 1;
   }
   priceUpdate(won);
   document.getElementById('packagePrice').value = won;
@@ -367,21 +377,28 @@ body{
   
   $(document).on('click', '.remove-btn', function(){
 	  let $item = $(this).closest('.subcart-item');
-	  let packagePrice = document.getElementById('packagePrice').value();
+	  let packagePrice = document.getElementById('packagePrice').value;
+    let won = priceSeparation(); 
 
 	  if ($item.closest('.packageArea').length) {
 	    // 패키지 추가 버튼 재 활성화
-	   const packageArea = $('.packageArea');
-	 	packageArea.children('a.btn.btnGreen').show();
-    document.getElementById('packagePrice').value =  ${mode == 'homePackage'} ? packagePrice - 20000 : packagePrice - 18000;
-	  }
-	   let priceText = $item.find('.text-muted').text();
-	   let unitPrice = parseInt($item.data('price'), 10);
-	   let quantity = parseInt($item.find('.quantity').text() || "1", 10);
+	    const packageArea = $('.packageArea');
+	 	  packageArea.children('a.btn.btnGreen').show();
+      document.getElementById('packagePrice').value =  ${mode == 'homePackage'} ? packagePrice - 20000 : packagePrice - 18000;
+      ${mode == 'homePackage'} ? document.getElementById('saladPackageNum').value = 0 : document.getElementById('homePackageNum').value = 0; 
+ 
+      won -= ${mode == 'homePackage'} ? 20000 : 18000;
+
+	  }else{
+      let priceText = $item.find('.text-muted').text();
+      let unitPrice = parseInt($item.data('price'), 10);
+      let quantity = parseInt($item.find('.quantity').text() || "1", 10);
+      
+      won -=  unitPrice * quantity;
+    }
 
 	   
-	   let won = priceSeparation(); 
-	   won -=  unitPrice * quantity;
+	    
 	   priceUpdate(won);
 
 
@@ -459,13 +476,20 @@ body{
   });
 
   // 옵션 선택
-  $(document).on('click','[data-role="paySelect"] .pay-option',function(){
-    const val = $(this).data('value');
-    $('.pay-select .selected-text').text($(this).text().trim());
-    $('#payMethod').val(val); // ← hidden 채움
-    $(this).closest('.pay-menu').addClass('d-none')
-      .prev('.pay-trigger').attr('aria-expanded','false');
-  });
+  $(document).on('click','[data-role="paySelect"] .pay-option', function(){
+  const $wrap = $(this).closest('[data-role="paySelect"]');
+  const text  = $(this).text().trim();          
+  const value = $(this).data('value');         
+
+  $wrap.find('.selected-text').text(text);
+  $('#payMethod').val(value);                   
+  let payMethod = $('#payMethod').val();
+  $wrap.find('.pay-menu').addClass('d-none');
+  $wrap.find('.pay-trigger').attr('aria-expanded','false');
+  
+  console.log('payMethod = '+payMethod);
+  
+});
 
   // 바깥 클릭 시 닫기
   $(document).on('click', function (e) {
@@ -476,23 +500,33 @@ body{
   
 })();
 
+function loadSelectProducts(url, params = '') {
+	url = contextPath + url;
+	
+	const fn = function(data){
+		// 상품
+		const productHtml = renderProductListHtml(data);
+		$('#productLayout').html(productHtml);
+	}
+	
+	ajaxRequest(url, 'get', params, 'json', fn);
+}
+
 //최종 제출
 function sendOk(){
-  const f = document.querySelector('form'); 
+  const f = document.payForm;
 
   
   const payDate   = document.querySelector('input[name="billingDate"]')?.value || '';
   const payMethod = document.getElementById('payMethod').value || '';
   document.getElementById('payDate').value   = payDate;
   document.getElementById('payMethod').value = payMethod;
-
+  
+ 
   /* 2) 총 결제금액(숫자만) */
   const totalTxt = document.querySelector('.step1 .totalPrice')?.textContent || '0';
   const totalPay = parseInt(totalTxt.replace(/[^\d]/g,''),10) || 0;
   document.getElementById('totalPay').value = totalPay;
-
-  document.getElementById('homePakcageNum').value = 1; 
-  document.getElementById('saladPackageNum').value = 1;
  
 
   /* 4) 추가상품 리스트 */
@@ -501,9 +535,9 @@ function sendOk(){
   const counts      = [];
 
   document.querySelectorAll('#extraItems .extra-item').forEach(item=>{
-    const pn   = item.getAttribute('data-productnum') || '';
-    const up   = parseInt(item.getAttribute('data-price')||'0',10) || 0; 
+    const pn   = item.getAttribute('data-id') || '';
     const qty  = parseInt(item.querySelector('.quantity')?.textContent||'1',10) || 1;
+    const up   = (parseInt(item.getAttribute('data-price')||'0',10)) * qty ; 
 
     if(pn){
       productNums.push(pn);
@@ -526,6 +560,7 @@ function sendOk(){
   document.getElementById('addr').value     = addr1;
   document.getElementById('zip').value      = addr2;
 
+  
   /* 6) 제출 */
   f.action = '${pageContext.request.contextPath}/package/payForm';
   f.method = 'post';

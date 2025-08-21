@@ -3,11 +3,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.mapper.PackageMapper">
 	
-	<select id="findByMaxsubNumber" resultType="String">
+	<select id="findByMaxsubNumber" parameterType="String" resultType="String">
 		SELECT subNum
-		FROM subStatus
-		ORDER BY payDate DESC
-		FETCH FIRST 1 ROWS ONLY
+  		FROM subStatus
+ 		WHERE subNum LIKE #{prefix} || '%'
+  		ORDER BY subNum DESC
+  		FETCH FIRST 1 ROWS ONLY
 	</select>
 	
 	<select id="findByPackage" parameterType="Long" resultType="com.sp.app.model.PackageOrder">
@@ -16,26 +17,24 @@
 	
 	<insert id="insertsubStatus" parameterType="com.sp.app.model.PackageOrder">
 		INSERT INTO subStatus(subNum,subMonth,payDate,payMethod,totalPay,memberId)
-		VALUES(subStatus_seq.NEXTVAL,#{subMonth},TO_DATE(#{payDate,jdbcType=VARCHAR}, 'YYYY-MM-DD'),#{payMethod},#{totalPay},#{memberId})
+		VALUES(#{subNum},#{subMonth},TO_DATE(#{payDate,jdbcType=VARCHAR}, 'YYYY-MM-DD'),#{payMethod,jdbcType=VARCHAR},#{totalPay},#{memberId})
 	</insert>
 	
 	<insert id="insertsubItem" parameterType="com.sp.app.model.PackageOrder">
-		<foreach collection="productNums" item="item" index="idx" separator=",">
 			INSERT INTO subItem (itemNum, itemPrice, count, subNum, productNum)
 		    VALUES (
 		        subItem_seq.NEXTVAL,
-		        #{item.itemPrice},
-		        #{item.count},
+		        #{itemPrice},
+		        #{count},
 		        #{subNum},
-		        #{item.productNum}
+		        #{productNum}
 		    )
-		</foreach>  
 	</insert>
 	
 	<insert id="insertsubPackage" parameterType="com.sp.app.model.PackageOrder">
 	INSERT INTO subPackage(subPackageNum,subNum,homePackageNum,packagePrice,saladPackageNum)
 	VALUES(
-		subPackage_seq.NEXTVAL,#{subNum},#{homePackageNum},#{packagePrice},#{saladPackagNum}
+		subPackage_seq.NEXTVAL,#{subNum},#{homePackageNum, jdbcType=BIGINT},#{packagePrice},#{saladPackageNum,jdbcType=BIGINT}
 	)
 	
 	</insert>

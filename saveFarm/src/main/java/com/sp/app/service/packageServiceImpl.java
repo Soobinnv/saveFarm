@@ -35,7 +35,7 @@ public class packageServiceImpl implements packageService {
 			String preNumber = y + m + d;
 			String savedPreNumber = "0";
 			long savedLastNumber = 0;
-			String maxOrderNumber = mapper.findByMaxsubNumber();
+			String maxOrderNumber = mapper.findByMaxsubNumber(preNumber);
 			if (maxOrderNumber != null && maxOrderNumber.length() > 9) {
 				savedPreNumber = maxOrderNumber.substring(0, 9);
 				savedLastNumber = Long.parseLong(maxOrderNumber.substring(9));
@@ -67,9 +67,19 @@ public class packageServiceImpl implements packageService {
 	@Override
 	public void insertPackageOrder(PackageOrder dto) throws Exception {
 		try {
-			
 			// 구독현황 저장
 			mapper.insertsubStatus(dto);
+			
+			Long salaldNum =dto.getSaladPackageNum();
+			Long homeNum=dto.getHomePackageNum();
+			
+			if(salaldNum == 0) {
+				dto.setSaladPackageNum(null);
+			}else if(homeNum == 0) {
+				dto.setHomePackageNum(null);
+			}
+			
+			
 			
 			// 구독 패키지 저장
 			mapper.insertsubPackage(dto);

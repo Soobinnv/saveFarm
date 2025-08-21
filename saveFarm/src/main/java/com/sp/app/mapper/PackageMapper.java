@@ -8,7 +8,7 @@ import com.sp.app.model.PackageOrder;
 
 @Mapper
 public interface PackageMapper {
-	public String findByMaxsubNumber();
+	public String findByMaxsubNumber(String preNumber);
 	
 	public void insertsubStatus(PackageOrder dto) throws SQLException;
 	public void insertsubPackage(PackageOrder dto) throws SQLException;

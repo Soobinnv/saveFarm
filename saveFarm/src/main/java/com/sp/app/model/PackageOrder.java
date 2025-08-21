@@ -36,8 +36,8 @@ public class PackageOrder {
 	private int totalPay;
 	private long memberId;
 	
-	private long homePackageNum;
-	private long saladPackagNum;
+	private Long homePackageNum;
+	private Long saladPackageNum;
 	
 	private int qty;
 	
