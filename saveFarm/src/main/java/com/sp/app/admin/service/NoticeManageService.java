@@ -13,8 +13,10 @@ public interface NoticeManageService {
 	public void deleteNotice(long noticeNum, String uploadPath) throws Exception;
 	
 	public int noticeCount(Map<String, Object> map);
+	public int noticeCount2(Map<String, Object> map);
 	public List<NoticeManage> listNoticeTop(int classify);
 	public List<NoticeManage> listNotice(Map<String, Object> map);
+	public List<NoticeManage> listNotice2(Map<String, Object> map);
 	
 	public void updateHitCount(long noticeNum) throws SQLException;
 	public NoticeManage findById(long noticeNum);

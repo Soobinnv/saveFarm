@@ -8,16 +8,20 @@ import java.util.Objects;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sp.app.admin.model.CategoryInfo;
 import com.sp.app.admin.model.FarmManage;
+import com.sp.app.admin.model.NoticeManage;
 import com.sp.app.admin.service.FarmManageService;
 import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -153,14 +157,6 @@ public class FarmManageController {
 
 		model.put("state", state);
 		return model;
-	}
-	
-	@GetMapping("guideLineslist") 
-	public String headleGuideLineslist(Model model) throws Exception {
-		
-		
-		
-		return "admin/farm/guideLineslist";
 	}
 	
 	@GetMapping("apply")

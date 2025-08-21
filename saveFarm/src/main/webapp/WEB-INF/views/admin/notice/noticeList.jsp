@@ -86,18 +86,6 @@
 										${dataCount}개 (${page}/${totalPage}페이지)
 									</div>
              		  			</div> 
-             		  			<c:if test="${classify > 1}">
-	             		  			<ul class="nav nav-tabs" id="myTab" role="tablist">
-										<li class="nav-item" role="presentation">
-											<button class="nav-link active" id="tab-2" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="2" aria-selected="true" value='2'>전체</button>
-										</li>
-										<c:forEach var="dto" items="${guide}">
-											<li class="nav-item" role="presentation">
-												<button class="nav-link" id="tab-${dto.classify}" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="${dto.classify}" aria-selected="false" value="${dto.classify}">${dto.categoryName}</button>
-											</li>
-										</c:forEach>
-									</ul>
-								</c:if>                   
                       			<table class="table datatables" id="dataTable-1">
                       				<thead>
 		                        		<tr>
@@ -105,9 +93,7 @@
 											<th>제목</th>
 											<th>작성자</th>
 											<th>작성일</th>
-											<c:if test="${classify < 2 }">
-												<th>조회수</th>
-											</c:if>
+											<th>조회수</th>
 											<th>첨부</th>
 											<th>표시</th>
 			                       		</tr>
@@ -123,13 +109,11 @@
 					                            <td>
 					                         	   <fmt:formatDate value="${dto.updateDate}" pattern="yyyy-MM-dd HH:mm"/>
 					                            </td>
-					                            <c:if test="${classify < 2 }">
-					                            	<td>${dto.hitCount}</td>
-					                            </c:if>	
+				                            	<td>${dto.hitCount}</td>
 					                            <td>
-												<c:if test="${dto.fileCount != 0}">
-					                            	<a href="${pageContext.request.contextPath}/admin/notice/zipdownload/${dto.noticeNum}" class="text-reset"><i class="fe fe-download" style="font-size:18px;"></i></a>
-												</c:if>
+													<c:if test="${dto.fileCount != 0}">
+						                            	<a href="${pageContext.request.contextPath}/admin/notice/zipdownload/${dto.noticeNum}" class="text-reset"><i class="fe fe-download" style="font-size:18px;"></i></a>
+													</c:if>
 					                            </td>
 					                            <td>${dto.showNotice == 1 ? '표시' : '숨김'}</td>
 				                          	</tr>
@@ -163,7 +147,7 @@
 								
 								        <!-- 오른쪽 버튼 영역 -->
 								        <div class="col-sm-12 col-md-3 d-flex justify-content-end align-items-start">
-								            <button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/notice/write/${itemId}';">${classify < 2 ? '공지등록' : '가이드라인 등록'}</button>
+								            <button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/notice/write/${itemId}';">'공지등록</button>
 								        </div>
 								    </div>
 								</form>

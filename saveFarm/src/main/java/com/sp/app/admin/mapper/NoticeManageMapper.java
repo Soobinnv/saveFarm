@@ -18,8 +18,10 @@ public interface NoticeManageMapper {
 	public void deleteNotice(long noticeNum) throws SQLException;
 	
 	public int noticeCount(Map<String, Object> map);
+	public int noticeCount2(Map<String, Object> map);
 	public List<NoticeManage> listNoticeTop(int classify);
 	public List<NoticeManage> listNotice(Map<String, Object> map);
+	public List<NoticeManage> listNotice2(Map<String, Object> map);
 	
 	public NoticeManage findById(Long memberId);
 	public void updateHitCount(long noticeNum) throws SQLException;

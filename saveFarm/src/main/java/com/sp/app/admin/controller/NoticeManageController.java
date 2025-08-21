@@ -39,12 +39,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/admin/notice/*")
 public class NoticeManageController {
+
 	private final NoticeManageService service;
 	private final PaginateUtil paginateUtil;
 	private final StorageService storageService;
 	private final MyUtil myUtil;
 	
-private String uploadPath;
+	private String uploadPath;
 	
 	@PostConstruct
 	public void init() {
@@ -65,13 +66,7 @@ private String uploadPath;
 			int totalPage = 0;
 			int dataCount = 0;
 			
-			int classify = 0;
-			if (itemId == 200) { // 100 회원 200 농가
-				classify = 1; // 0 회원 1 농가
-			} else if(itemId == 300) {
-				classify = 2; // 0 회원 1 농가 2 가이드라인
-			}
-			
+			int classify = itemId == 200 ? 1 : 0;
 			
 			kwd = myUtil.decodeUrl(kwd);
 
@@ -111,10 +106,8 @@ private String uploadPath;
 			
 			
 			String paging = paginateUtil.adminPagingUrl(currentPage, totalPage, listUrl);
-			String title = (itemId == 200) ? "농가 공지사항" : (itemId == 300 ? "농가 가이드라인" : "회원 공지사항");
-			List<CategoryInfo> guide = service.listAllCategories();
+			String title = (itemId == 200) ? "농가 공지사항" : "회원 공지사항";
 
-			model.addAttribute("guide", guide);
 			model.addAttribute("title", title);
 			model.addAttribute("itemId", itemId);
 			model.addAttribute("classify", classify);
@@ -153,17 +146,22 @@ private String uploadPath;
 			NoticeManage dto, HttpSession session) throws Exception {
 
 		try {
-//			SessionInfo info = (SessionInfo) session.getAttribute("member");
-//			dto.setMemberId(info.getMemberId());
-			dto.setMemberId(1); // 종합후 삭제필요
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			dto.setMemberId(info.getMemberId());
+			
 			dto.setCategoryCount(service.categoryCount());
 			service.insertNotice(dto, uploadPath);
+			
 			
 		} catch (Exception e) {
 			log.info("writeSubmit : ", e);
 		}
-
-		return "redirect:/admin/notice/noticeList/" + itemId;
+		
+		if(itemId != 300) {
+			return "redirect:/admin/notice/noticeList/" + itemId;
+		} else {
+			return "redirect:/admin/notice/guideLineslist";
+		}
 	}
 	
 	@GetMapping("update/{itemId}")
@@ -195,8 +193,11 @@ private String uploadPath;
 		} catch (Exception e) {
 			log.info("updateForm : ", e);
 		}
-		
-		return "redirect:/admin/notice/noticeList?page=" + page;
+		if(itemId != 300) {
+			return "redirect:/admin/notice/noticeList?page=" + page;
+		} else {
+			return "redirect:/admin/notice/guideLineslist?page=" + page;
+		}
 	}
 
 	@PostMapping("update/{itemId}")
@@ -208,9 +209,9 @@ private String uploadPath;
 			HttpSession session) throws Exception {
 
 		try {
-//			SessionInfo info = (SessionInfo) session.getAttribute("member");
-//			dto.setMemberId(info.getMemberId());
-			dto.setMemberId(1); // 종합후 삭제필요
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			dto.setMemberId(info.getMemberId());
+			
 			service.updateNotice(dto, uploadPath);
 			
 		} catch (Exception e) {
@@ -222,7 +223,12 @@ private String uploadPath;
             query += "&schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
         }
 		
-		return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+        if(itemId != 300) {
+			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+		} else {
+			return "redirect:/admin/notice/guideLineslist?" + query;
+		}
+	
 	}
 	
 	@GetMapping("delete/{itemId}")
@@ -245,8 +251,11 @@ private String uploadPath;
 		} catch (Exception e) {
 			log.info("delete : ", e);
 		}
-
-		return "redirect:/admin/notice/noticeList/ "+ itemId +"?" + query;
+		if(itemId != 300) {
+			return "redirect:/admin/notice/noticeList/ "+ itemId +"?" + query;
+		} else {
+			return "redirect:/admin/notice/guideLineslist?" + query;
+		}
 	}
 	
 	@GetMapping("article/{itemId}")
@@ -299,8 +308,11 @@ private String uploadPath;
 		} catch (Exception e) {
 			log.info("article : ", e);
 		}
-		
-		return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+		if(itemId != 300) {
+			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+		} else {
+			return "redirect:/admin/notice/guideLineslist?" + query;
+		}
 	}
 	
 	
@@ -387,4 +399,86 @@ private String uploadPath;
 		return model;
 	}
 	
+	@GetMapping("guideLineslist/{itemId}")
+	public String handleguideLineslist(
+			@PathVariable("itemId") int itemId
+			,Model model) throws Exception {
+		model.addAttribute("itemId", itemId);
+		
+		return "admin/notice/guideLineslist";
+	}
+	
+	@GetMapping("guide/{itemId}")
+	public String handleGuideList(
+			@PathVariable("itemId") int itemId,
+			@RequestParam(name = "page", defaultValue = "1") int currentPage,
+			@RequestParam(name = "schType", defaultValue = "inquiryNum") String schType,
+			@RequestParam(name = "kwd",defaultValue = "") String kwd,
+			Model model,
+			HttpServletRequest req) throws Exception {
+		
+		try {
+			int size = 5;
+			int totalPage = 0;
+			int dataCount = 0;
+			
+			kwd = myUtil.decodeUrl(kwd);
+
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("classify", itemId);
+			map.put("schType", schType);
+			map.put("kwd", kwd);
+			
+			dataCount = service.noticeCount2(map);
+
+			if (dataCount != 0) {
+				totalPage = paginateUtil.pageCount(dataCount, size);
+			}
+			currentPage = Math.min(currentPage, totalPage);
+			
+			
+			int offset = (currentPage - 1) * size;
+			if(offset < 0) offset = 0;
+			
+			map.put("offset", offset);
+			map.put("size", size);
+
+			List<NoticeManage> list = service.listNotice2(map);
+			
+			String cp = req.getContextPath();
+			String listUrl = cp + "/admin/notice/guide/" + itemId;
+			
+			String query = "";
+			if (kwd.length() != 0) {
+				query = "schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
+				listUrl += "?" + query;
+			}
+			
+			
+			String paging = paginateUtil.adminPagingUrl(currentPage, totalPage, listUrl);
+			
+			List<CategoryInfo> guide = service.listAllCategories();
+			
+			model.addAttribute("itemId", itemId);
+			model.addAttribute("classify", itemId);
+			model.addAttribute("guide", guide);
+			
+			model.addAttribute("list", list);
+			model.addAttribute("dataCount", dataCount);
+			model.addAttribute("query", query);
+			
+			model.addAttribute("schType", schType);
+			model.addAttribute("kwd", kwd);
+			
+			model.addAttribute("page", currentPage);
+			model.addAttribute("size", size);
+			model.addAttribute("totalPage", totalPage);
+			model.addAttribute("paging", paging);
+			
+		} catch (Exception e) {
+			log.info("handleNoticeList : ", e);
+		}
+		
+		return "admin/notice/guide";
+	}
 }

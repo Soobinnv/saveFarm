@@ -98,7 +98,20 @@ public class NoticeManageServiceImpl implements NoticeManageService {
 		}
 		return result;
 	}
-
+	
+	@Override
+	public int noticeCount2(Map<String, Object> map) {
+		int result = 0;
+		try {
+			result = mapper.noticeCount2(map);
+		} catch (Exception e) {
+			log.info("noticeCount : ", e);
+			throw e;
+		}
+		return result;
+	}
+	
+	
 	@Override
 	public List<NoticeManage> listNoticeTop(int classify) {
 		List<NoticeManage> list = null;
@@ -118,6 +131,18 @@ public class NoticeManageServiceImpl implements NoticeManageService {
 		try {
 			
 			list = mapper.listNotice(map);
+			
+		} catch (Exception e) {
+			log.info("listNoticeTop : ", e);
+		}
+		
+		return list;
+	}
+	public List<NoticeManage> listNotice2(Map<String, Object> map) {
+		List<NoticeManage> list = null;
+		try {
+			
+			list = mapper.listNotice2(map);
 			
 		} catch (Exception e) {
 			log.info("listNoticeTop : ", e);
@@ -267,6 +292,8 @@ public class NoticeManageServiceImpl implements NoticeManageService {
 		}
 		return result;
 	}
+
+	
 
 	
 }
