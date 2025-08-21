@@ -8,10 +8,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sp.app.common.StorageService;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.SessionInfo;
+import com.sp.app.model.packageReview;
+import com.sp.app.service.PackageReviewService;
 import com.sp.app.service.packageService;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,16 @@ import lombok.extern.slf4j.Slf4j;
 public class packageController {	
 	
 	private final packageService packageService;
+	private final PackageReviewService packageReviewService;
+	private final StorageService storageService;
+	
+	
+	private String uploadPath;
+	
+	@PostConstruct
+	public void init() {
+		uploadPath = this.storageService.getRealPath("/uploads/PackageReview");
+	}	
 	
 	@GetMapping("main")
 	public String mainForm() {
@@ -87,6 +101,20 @@ public class packageController {
 		return "order/complete";
 	}
 	
+	@GetMapping("reviewWriteForm")
+	public String reviewWriteForm() throws Exception{
+		
+		return "package/reviewwrite";
+	}
 	
+	@PostMapping("reviewSubmit")
+	public String reviewSubmit(packageReview dto) throws Exception{
+		
+		
+		packageReviewService.insertPackageReview(dto, uploadPath);
+		
+		
+		return "redirect:/";
+	}
 	
 }
