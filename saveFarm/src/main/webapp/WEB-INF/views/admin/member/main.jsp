@@ -46,7 +46,7 @@
 <jsp:include page="/WEB-INF/views/admin/layout/headerResources.jsp"/>
 </head>
 <body class="vertical light">
-<div class="wrapper">
+<div class="wrapper"> 
 <header>
 	<jsp:include page="/WEB-INF/views/admin/layout/header.jsp"/>
 </header>
