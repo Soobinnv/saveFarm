@@ -61,7 +61,7 @@ function sendOk(mode, btnEL) {
  * @param {object} btnEL - 찜 버튼 요소
  */
 function updateWish(productNum, btnEL) {
-	let url = contextPath + '/api/products/' + productNum + '/wishes';
+	let url = contextPath + '/api/products/' + productNum + '/wish';
 	let params = "";
 	
 	// 찜 여부 0: false  / 1: true 

@@ -326,8 +326,5 @@ main {
     height: 530px; 
     object-fit: cover; 
     width: 100%;
-}
+  }
 
-.btn-review-like .likeIcon {
-    color: #007bff; 
-}
