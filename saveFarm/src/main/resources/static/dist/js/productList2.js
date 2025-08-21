@@ -1,6 +1,7 @@
-// 처음 접속 시 상품 리스트 로드
+// 처음 접속 시 일반 상품, 구출 상품 리스트 로드
 $(function() {	
-	loadProducts("/api/products");
+	loadProducts("/api/products/normal");
+	loadProducts("/api/products/rescued");
 });
 
 // 이벤트 핸들러 등록
@@ -17,8 +18,6 @@ $(function() {
 	$('#container').on('click', '.btn-product-info', function() {
 		const productNum = $(this).closest('.card').data('product-num');
 		const classifyCode = $(this).closest('.card').data('classify-code');
-		
-		console.log(classifyCode);
 		
 		location.href= `${contextPath}/products/${productNum}?classifyCode=` + classifyCode;
 	});
@@ -45,7 +44,7 @@ $(function() {
 			return false;
 		}
 		
-		loadProducts(kwd);
+		loadProducts("/api/products/normal", {kwd:kwd});
 	});
 	
 });
@@ -59,38 +58,3 @@ $(function() {
 		};
 	});
 });
-
-
-// 마감 임박 구출 상품 타이머
-const startTimers = function() {
-    $('.deadline-timer').each(function() {
-        const $timerEL = $(this);
-        
-        const deadline = $timerEL.data('deadline');
-        const deadlineTime = new Date(deadline).getTime();
-        
-        const $timeLeftEL = $timerEL.find('.time-left');
-
-		// 1초마다 무한 반복
-        const intervalId = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = deadlineTime - now;
-
-            // 시간이 남았을 경우
-            if (distance > 0) {
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                $timeLeftEL.text(
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} 남음`
-                );
-
-            } else {
-				// 타이머 종료
-                clearInterval(intervalId);
-                $timeLeftEL.text('마감');
-            }
-        }, 1000);
-    });
-};

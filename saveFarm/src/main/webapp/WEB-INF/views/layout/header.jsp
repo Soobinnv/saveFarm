@@ -55,9 +55,18 @@
 						<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
 									icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
 						</a>
-						<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
-									icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
-						</a>
+						<c:choose>
+							<c:when test="${sessionScope.member.userLevel == 99}">
+								<a href="${pageContext.request.contextPath}/admin" class="mx-3"> <iconify-icon
+											icon="uil:setting" class="fs-4 loginPerson"></iconify-icon>
+								</a>
+							</c:when>
+							<c:otherwise>
+								<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
+											icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
+								</a>
+							</c:otherwise>
+						</c:choose>
 					</c:otherwise>
 				</c:choose>
 				</li>

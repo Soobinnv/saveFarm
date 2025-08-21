@@ -9,6 +9,7 @@
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND memberId = #{memberId, jdbcType=BIGINT}
 		WHERE PRODUCTCLASSIFICATION = 100
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 
 	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
@@ -21,22 +22,12 @@
         LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
 		WHERE PRODUCTCLASSIFICATION = 200
 	</select>
-	
+
 	<select id="getRescuedProductNumsClosingSoon" parameterType="java.time.LocalDateTime" resultType="com.sp.app.model.Product">
 		SELECT p.PRODUCTNUM
 		FROM product p
-		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM 
 		WHERE PRODUCTCLASSIFICATION = 200 AND endDate BETWEEN SYSDATE AND #{twentyFourHoursLater}
-	</select>
-
-	<select id="getAllProductList" parameterType="map" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish, endDate, isUrgent
-		FROM product p
-		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
-		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
-		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND w.memberId = #{memberId, jdbcType=BIGINT}
-		WHERE ENDDATE IS NULL OR ENDDATE >= SYSDATE
 	</select>
 
 	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
@@ -143,4 +134,10 @@
         DELETE FROM productImage
         WHERE PRODUCTNUM = #{productNum}
     </delete>
+    
+    <select id="getDataCount" parameterType="Integer" resultType="Integer">
+		SELECT COUNT(*)
+		FROM product
+		WHERE productClassification = #{productClassification, jdbcType = INTEGER}
+	</select>
 </mapper>

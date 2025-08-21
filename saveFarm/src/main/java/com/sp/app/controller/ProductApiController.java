@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sp.app.common.PaginateUtil;
 import com.sp.app.model.Product;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
@@ -37,11 +38,64 @@ public class ProductApiController {
 	private final ProductReviewService reviewService;
 	private final ProductQnaService qnaService;
 	private final WishService wishService;
+	private final PaginateUtil paginateUtil;
 
-	// 전체 상품 리스트 데이터
-	@GetMapping
-	public ResponseEntity<?> getProductList(@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd, HttpSession session) {
+	// 상품 리스트 데이터
+	@GetMapping("/normal")
+	public ResponseEntity<?> getProductList(
+			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd,
+			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
+			HttpSession session
+		) {
 		Map<String, Object> body = new HashMap<>();
+		try {
+			Map<String, Object> map = new HashMap<>();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			if(info != null) {
+				map.put("memberId", info.getMemberId());				
+			}
+			
+			// 페이징 처리
+			int size = 8;
+			int total_page = 0;
+			int dataCount = 0;
+			
+			dataCount = service.getDataCount(100);
+			total_page = paginateUtil.pageCount(dataCount, size);
+			current_page = Math.min(current_page, total_page);
+			
+			int offset = (current_page - 1) * size;
+			if(offset < 0) offset = 0;
+			
+			map.put("offset", offset);
+			map.put("size", size);
+			
+			map.put("kwd", kwd);
+						
+			List<Product> productList = service.getProductList(map);
+			
+			body.put("productList", productList);
+			body.put("dataCount", dataCount);
+			body.put("pageNo", current_page);
+			body.put("total_page", total_page);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductList: ", e);
+			body.put("message", "일반 상품 목록을 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 구출 상품 리스트 데이터
+	@GetMapping("/rescued")
+	public ResponseEntity<?> getRescuedProductList(
+			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
 		try {
 			Map<String, Object> map = new HashMap<>();
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
@@ -52,15 +106,14 @@ public class ProductApiController {
 			
 			map.put("kwd", kwd);
 			
-			Map<String, List<Product>> resultMap = service.getAllProductList(map);
+			List<Product> rescuedProductList = service.getRescuedProductList(map);
 			
-			body.put("productList", resultMap.get("productList"));
-			body.put("rescuedProductList", resultMap.get("rescuedProductList"));
-			
+			body.put("rescuedProductList", rescuedProductList);
+;			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getProductList: ", e);
-			body.put("message", "전체 상품 목록을 불러오는 중 오류가 발생했습니다.");
+			log.error("getRescuedProductList: ", e);
+			body.put("message", "구출 상품 목록을 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -73,6 +126,7 @@ public class ProductApiController {
 			HttpSession session
 		) {
 		Map<String, Object> body = new HashMap<>();
+		
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			long memberId = (info != null) ? info.getMemberId() : -1;

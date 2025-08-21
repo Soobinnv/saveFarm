@@ -57,63 +57,47 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
-	public Map<String, List<Product>> getAllProductList(Map<String, Object> map) {
-		Map<String, List<Product>> resultMap = new HashMap<>();
-		List<Product> productList = new ArrayList<>();
-		List<Product> rescuedProductList = new ArrayList<>();
-		
-		try {
-			// 전체 상품 리스트
-			List<Product> allProductList = mapper.getAllProductList(map);
-			
-			int discountedPrice = 0;
-			for(Product dto : allProductList) {
-				// 할인가격 계산
-				if(dto.getDiscountRate() > 0) {
-					discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
-					dto.setDiscountedPrice(discountedPrice);				
-				}
-				
-				// 리스트 분리
-				if(dto.getProductClassification() == 100) {
-					// 일반 상품
-					productList.add(dto);
-				} else if(dto.getProductClassification() == 200) {
-					// 구출 상품
-					rescuedProductList.add(dto);
-				}
-				
-				resultMap.put("productList", productList);
-				resultMap.put("rescuedProductList", rescuedProductList);					
-			}
-			
-		} catch (Exception e) {
-			log.info("getAllProductList : ", e);
-		}
-		
-		return resultMap;
-	}
-	
-	@Override
 	public List<Product> getProductList(Map<String, Object> map) {
-		List<Product> list = null;
+		List<Product> list = new ArrayList<>();						
 		
 		try {
-			list = mapper.getProductList(map);
-			
-			int discountedPrice = 0;
+			list = mapper.getProductList(map); 
 			for(Product dto : list) {
-				if(dto.getDiscountRate() > 0) {
-					discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
-					dto.setDiscountedPrice(discountedPrice);				
-				}				
+				applyDiscount(dto);																					
 			}
-			
 		} catch (Exception e) {
 			log.info("getProductList : ", e);
 		}
 		
 		return list;
+	}
+	
+	@Override
+	public List<Product> getRescuedProductList(Map<String, Object> map) {
+		List<Product> list = null;
+		
+		try {
+			list = mapper.getRescuedProductList(map);
+			for(Product dto : list) {
+				applyDiscount(dto);																					
+			}				
+		} catch (Exception e) {
+			log.info("getRescuedProductList : ", e);
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * 상품 할인가격 계산 및 적용
+	 * @param product 상품 DTO
+	 */
+	private void applyDiscount(Product product) {
+		if (product.getDiscountRate() > 0) {
+			int discountedPrice = (int)(product.getUnitPrice() * (1 - (product.getDiscountRate() / 100.0)));
+			
+			product.setDiscountedPrice(discountedPrice);
+		}						
 	}
 
 	@Override
@@ -123,39 +107,12 @@ public class ProductServiceImpl implements ProductService {
 		try {
 			dto = mapper.getProductInfo(productNum);
 			
-			int discountedPrice = 0;
-			if(dto.getDiscountRate() > 0) {
-				discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
-				dto.setDiscountedPrice(discountedPrice);				
-			}
-			
+			applyDiscount(dto);
 		} catch (Exception e) {
 			log.info("getProductInfo : ", e);
 		}
 		
 		return dto;
-	}
-
-	@Override
-	public List<Product> getRescuedProductList(Map<String, Object> map) {
-		List<Product> list = null;
-		
-		try {
-			list = mapper.getRescuedProductList(map);
-			
-			int discountedPrice = 0;
-			for(Product dto : list) {
-				if(dto.getDiscountRate() > 0) {
-					discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
-					dto.setDiscountedPrice(discountedPrice);				
-				}				
-			}
-			
-		} catch (Exception e) {
-			log.info("getRescuedProductList : ", e);
-		}
-		
-		return list;
 	}
 
 	@Override
@@ -165,12 +122,7 @@ public class ProductServiceImpl implements ProductService {
 		try {
 			dto = mapper.getRescuedProductInfo(productNum);
 			
-			int discountedPrice = 0;
-			if(dto.getDiscountRate() > 0) {
-				discountedPrice = (int)(dto.getUnitPrice() * (1 - (dto.getDiscountRate() / 100.0)));
-				dto.setDiscountedPrice(discountedPrice);				
-			}
-			
+			applyDiscount(dto);
 		} catch (Exception e) {
 			log.info("getRescuedProductInfo : ", e);
 		}
@@ -238,5 +190,21 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+	@Override
+	public int getDataCount(Integer productClassification) {
+		int result = 0;
+		
+		try {
+			result = mapper.getDataCount(productClassification);
+		} catch (Exception e) {
+			log.info("getDataCount : ", e);
+		}
+		
+		return result;
+	}
+
+
+
 
 }

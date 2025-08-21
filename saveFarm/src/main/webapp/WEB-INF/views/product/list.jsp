@@ -55,7 +55,7 @@
 			<section class="lattest-product-area pb-40 category-list m-3">
 					<div class="container">
 						<div class="section-intro pb-60px">
-							<p>Popular Item in the market</p>
+							<p>위험에 빠진 상품을 구출해주세요!</p>
 							<h2>
 								<span class="section-intro__style">구출 상품</span>
 							</h2>
@@ -66,13 +66,14 @@
 			<section class="lattest-product-area pb-40 category-list m-3">
 					<div class="container">
 						<div class="section-intro pb-60px">
-							<p>Popular Item in the market</p>
+							<p>자연의 맛 그대로, 개성만점 못난이들</p>
 							<h2>
 								<span class="section-intro__style">상품</span>
 							</h2>
 						</div>
 					</div>
-				<div class="row" id="productLayout"></div>
+				<div class="row content-list" id="productLayout"></div>
+				<div class="sentinel" data-loading="false"></div>
 			</section>
 		</div>
 	</div>
@@ -87,6 +88,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList2.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/infiniteScroll.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productTimer.js"></script>
 </body>
 </html>
