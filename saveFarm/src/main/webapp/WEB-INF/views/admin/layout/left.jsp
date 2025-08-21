@@ -80,18 +80,13 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/notice/noticeList/300">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/notice/guideLineslist/2">
 							<span class="ml-1 item-text">농가 유통 가이드라인</span>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/applyFormUpdate">
 							<span class="ml-1 item-text">농가 신청함</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/apply">
-							<span class="ml-1 item-text">농가 제품승인</span>
 						</a>
 					</li>
 					<li class="nav-item">
@@ -150,27 +145,27 @@
 				</a>
 				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-order">
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/100">
 							<span class="ml-1 item-text">주문완료</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/200">
 							<span class="ml-1 item-text">배송</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/100">
 							<span class="ml-1 item-text">배송 후 교환</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/200">
 							<span class="ml-1 item-text">구매확정</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/300">
 							<span class="ml-1 item-text">주문리스트</span>
 						</a>
 					</li>

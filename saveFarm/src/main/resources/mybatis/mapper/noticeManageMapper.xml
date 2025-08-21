@@ -49,6 +49,17 @@
 		</choose>
 	</sql>
 	
+	<sql id="classify-list">
+		<choose>
+			<when test="classify == 2">
+				classify > 2
+			</when>
+			<when test="classify &gt; 2">
+				classify = #{classify}
+			</when>
+		</choose>
+	</sql>
+	
 	<select id="noticeCount" parameterType="map" resultType="Integer">
 		SELECT NVL(COUNT(n.noticeNum), 0)
 		FROM notice n
@@ -58,8 +69,22 @@
 				AND <include refid="where-list"/>
 			</if>
 			<if test="classify != null">
-				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
+				AND classify = #{classify}
             </if>
+		</where>
+	</select>
+	
+	<select id="noticeCount2" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(n.noticeNum), 0)
+		FROM notice n
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		<where>
+			<if test="kwd != null and kwd != ''  ">
+				AND <include refid="where-list"/>
+			</if>
+            <if test="classify != null">
+            	AND <include refid="classify-list"/>
+            </if>	
 		</where>
 	</select>
 	
@@ -101,6 +126,29 @@
 			<if test="classify != null">
 				AND classify = #{classify}
 			</if>
+		</where>
+		ORDER BY n.updateDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="listNotice2" parameterType="map" resultMap="NoticeManageResultMap">
+		SELECT n.noticeNum, n.notice, n.memberId, n.subject, n.content, n.hitCount, n.regDate, n.updateId, n.updateDate, n.showNotice, 
+			   c.classify, n.categoryNum, c.categoryName, m.name AS updateName, fileCount
+		FROM notice n
+		LEFT OUTER JOIN member2 m ON n.memberId = m.memberId
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		LEFT OUTER JOIN (
+			SELECT noticeNum, COUNT(*) fileCount
+			FROM notiFile
+			GROUP BY noticeNum
+		) f ON n.noticeNum = f.noticeNum
+		<where>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+			<if test="classify != null">
+            	AND <include refid="classify-list"/>
+            </if>	
 		</where>
 		ORDER BY n.updateDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
