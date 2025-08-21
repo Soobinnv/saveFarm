@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.NoticeManageMapper">
+	
+	<resultMap id="NoticeManageResultMap" type="com.sp.app.admin.model.NoticeManage">
+	    <id property="noticeNum" column="noticeNum"/>
+	    <result property="notice" column="notice"/>
+	    <result property="memberId" column="memberId"/>
+	    <result property="subject" column="subject"/>
+	    <result property="content" column="content" jdbcType="CLOB" javaType="java.lang.String"/> <!-- CLOB 매핑 명시 -->
+	    <result property="hitCount" column="hitCount"/>
+	    <result property="regDate" column="regDate"/>
+	    <result property="updateId" column="updateId"/>
+	    <result property="updateDate" column="updateDate"/>
+	    <result property="showNotice" column="showNotice"/>
+	    <result property="categoryNum" column="categoryNum"/>
+	    <result property="categoryName" column="categoryName"/>
+	    <result property="classify" column="classify"/>
+	    <result property="updateName" column="updateName"/>
+	    <result property="loginId" column="loginId"/>
+	    <result property="loginUpdate" column="loginUpdate"/>
+	    <result property="name" column="name"/> <!-- DTO에 name 필드도 있으므로 추가 -->
+	    <!-- listFile, selectFile, fileNum, saveFilename, originalFilename, fileSize, gap 등 파일 관련 필드는 필요에 따라 별도 resultMap 또는 조인 매핑 -->
+	</resultMap>
+	
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'all' ">
+				<![CDATA[
+					(
+						INSTR(subject, #{kwd}) > 0
+						OR DBMS_LOB.INSTR(REGEXP_REPLACE(content, '<[^>]+>', ''), #{kwd}) > 0
+					)
+				]]>
+			</when>
+			<when test="schType == 'reg_date' ">
+				( INSTR(TO_CHAR(regDate, 'YYYYMMDD'), #{kwd}) &gt; 0
+					OR TO_CHAR(regDate, 'YYYY-MM-DD') = #{kwd} )
+			</when>
+			<when test="schType == 'content'">
+				<![CDATA[
+					DBMS_LOB.INSTR(REGEXP_REPLACE(content, '<[^>]+>', ''), #{kwd}) > 0
+				]]>
+			</when>
+			<otherwise>
+			    INSTR(${schType}, #{kwd}) &gt; 0
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="noticeCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(n.noticeNum), 0)
+		FROM notice n
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		<where>
+			<if test="kwd != null and kwd != ''  ">
+				AND <include refid="where-list"/>
+			</if>
+			<if test="classify != null">
+				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
+            </if>
+		</where>
+	</select>
+	
+	<update id="updateHitCount" parameterType="Long">
+		UPDATE notice SET hitCount = hitCount + 1
+		WHERE noticeNum = #{noticeNum}
+	</update>
+	
+	
+	<select id="listNoticeTop" parameterType="long" resultMap="NoticeManageResultMap">
+		SELECT n.noticeNum, n.notice, n.memberId, n.subject, n.content, n.hitCount, TO_CHAR(regDate, 'YYYY-MM-DD') regDate, TO_CHAR(n.updateDate, 'YYYY-MM-DD') updateDate, c.categoryNum, c.categoryName
+		FROM notice n
+		LEFT OUTER JOIN member2 m ON n.memberId = m.memberId
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		<where>
+			<if test="classify != null">
+				c.classify = #{classify}
+			</if>
+			AND notice = 1 AND showNotice = 1
+		</where>
+		ORDER BY updateDate DESC
+	</select>
+	
+	<select id="listNotice" parameterType="map" resultMap="NoticeManageResultMap">
+		SELECT n.noticeNum, n.notice, n.memberId, n.subject, n.content, n.hitCount, n.regDate, n.updateId, n.updateDate, n.showNotice, 
+			   c.classify, n.categoryNum, c.categoryName, m.name AS updateName, fileCount
+		FROM notice n
+		LEFT OUTER JOIN member2 m ON n.memberId = m.memberId
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		LEFT OUTER JOIN (
+			SELECT noticeNum, COUNT(*) fileCount
+			FROM notiFile
+			GROUP BY noticeNum
+		) f ON n.noticeNum = f.noticeNum
+		<where>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+			<if test="classify != null">
+				AND classify = #{classify}
+			</if>
+		</where>
+		ORDER BY n.updateDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<!-- 
+	<select id="listNotice" parameterType="map" resultMap="NoticeManageResultMap">
+		SELECT n.noticeNum, n.notice, n.memberId, n.subject, n.content, n.hitCount, n.regDate, n.updateId, n.updateDate, n.showNotice, 
+			   nf.saveFilename, nf.originalFilename, nf.fileSize, c.classify, n.categoryNum, c.categoryName, m.name
+		FROM notice n
+		LEFT OUTER JOIN member2 m ON n.memberId = m.memberId
+		LEFT OUTER JOIN notiFile nf ON n.noticeNum = nf.noticeNum
+		LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		
+		<where>
+			<if test="showNotice != null">
+				showNotice = #{showNotice}
+			</if>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+			<if test="classify != null">
+				AND c.classify = #{classify}
+			</if>
+		</where>
+		ORDER BY n.updateDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	 -->
+	<insert id="insertNotice" parameterType="com.sp.app.admin.model.NoticeManage">
+		<selectKey keyProperty="noticeNum" resultType="long" order="BEFORE">
+            SELECT notice_seq.NEXTVAL FROM dual
+        </selectKey>
+		INSERT INTO notice(noticeNum, notice, memberId, subject, content, hitCount, regDate, updateId, updateDate, showNotice, categoryNum)
+					VALUES(#{noticeNum}, 0, #{memberId}, #{subject}, #{content, jdbcType=CLOB}, 0, SYSDATE, #{memberId}, SYSDATE, 1, #{categoryNum})
+	</insert>
+	
+	<update id="updateNotice" parameterType="com.sp.app.admin.model.NoticeManage">
+		UPDATE notice SET subject = #{subject}, content = #{content, jdbcType=CLOB}, 
+			notice = #{notice}, showNotice = #{showNotice}, 
+			updateId = #{memberId}, updateDate = SYSDATE
+		WHERE noticeNum = #{noticeNum}
+	</update>
+	
+	<delete id="deleteNotice" parameterType="long">
+		DELETE FROM notice
+		WHERE noticeNum = #{noticeNum}
+	</delete>
+	
+	
+	<select id="listNoticeFile" parameterType="long">
+		SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
+		FROM notiFile
+		WHERE noticeNum = #{noticeNum}
+	</select>
+	
+	<insert id="insertNoticeFile" parameterType="com.sp.app.admin.model.NoticeManage">
+		INSERT INTO notiFile(fileNum, noticeNum, saveFilename, originalFilename, fileSize)
+		VALUES (notiFile_seq.NEXTVAL, #{noticeNum}, #{saveFilename}, #{originalFilename}, #{fileSize})
+	</insert>
+	
+	<delete id="deleteNoticeFile">
+		DELETE FROM notiFile
+		WHERE ${field} = #{fileNum}
+	</delete>
+	
+	
+	
+	<select id="findById" parameterType="Long" resultMap="NoticeManageResultMap">
+		SELECT noticeNum, n.memberId, 
+			NVL(m1.loginId, m1.snsId) loginId,
+			subject, content, regDate,
+			hitCount, notice, showNotice,
+			updateId, updateDate, m4.name AS updateName,
+			NVL(m3.loginId, m3.snsId) loginUpdate,
+			n.categoryNum, c.categoryName, c.classify
+		FROM notice n
+		JOIN member1 m1 ON n.memberId = m1.memberId
+		LEFT OUTER JOIN member2 m2 ON n.memberId = m2.memberId
+		LEFT OUTER JOIN member1 m3 ON n.updateId = m3.memberId
+		LEFT OUTER JOIN member2 m4 ON n.updateId = m4.memberId
+        LEFT OUTER JOIN category c ON n.categoryNum = c.categoryNum
+		WHERE noticeNum = #{noticeNum}
+	</select>
+	
+	
+	<select id="findByFileId" parameterType="Long" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
+		FROM notiFile
+	    WHERE fileNum = #{fileNum}
+	</select>
+	
+	
+	<!-- 이전글 -->
+	<select id="findByPrev" parameterType="map" resultMap="NoticeManageResultMap">
+		SELECT noticeNum, subject
+		FROM notice n
+		JOIN member2 m ON n.memberId = m.memberId
+		<where>
+			<if test="showNotice != null">
+				showNotice = #{showNotice}
+			</if>		
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (updateDate &gt; #{updateDate})
+			<if test="classify != null">
+				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
+			</if>
+		</where>
+		ORDER BY updateDate ASC
+		FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 다음글 -->
+    <select id="findByNext" parameterType="map" resultMap="NoticeManageResultMap">
+		SELECT noticeNum, subject
+		FROM notice n
+		JOIN member2 m ON n.memberId = m.memberId
+		<where>
+			<if test="showNotice != null">
+				showNotice = #{showNotice}
+			</if>		
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (updateDate &lt; #{updateDate})
+			<if test="classify != null">
+				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
+			</if>
+		</where>
+		ORDER BY updateDate DESC
+		FETCH FIRST 1 ROWS ONLY
+    </select>
+	
+	<select id="listAllCategories" resultType="com.sp.app.admin.model.CategoryInfo">
+        SELECT classify, categoryName, categoryNum
+        FROM category
+        WHERE classify > 1
+        ORDER BY classify, categoryNum
+    </select>
+    
+    <select id="categoryCount" parameterType="long" resultType="Integer">
+    	SELECT NVL(COUNT(*)-2, 0)
+		FROM category
+    </select>
+	
+</mapper>

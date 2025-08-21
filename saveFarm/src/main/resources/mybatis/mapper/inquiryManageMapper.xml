@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.InquiryManageMapper">
+	
+<sql id="itemId-list">
+		<choose>
+			<when test="itemId == 100">
+				i.memberId IS NOT NULL AND i.farmNum IS NULL
+			</when>
+			<when test="itemId == 200">
+				i.farmNum IS NOT NULL AND i.memberId IS NULL
+			</when>
+		</choose>
+	</sql>
+	
+		
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'inquiryNum'">
+				i.inquiryNum = #{kwd}
+			</when>
+			<when test="schType == 'subject'">
+				i.subject = #{kwd}
+			</when>
+			<when test="schType == 'regDate'">
+				TO_CHAR(i.regDate,'YYYY-MM-DD') = #{kwd}
+			</when>
+			<otherwise>
+				INSTR(${schType}, #{kwd}) &gt;= 1
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="inquiryCount" parameterType="map" resultType="Integer">
+		SELECT count(*)
+		FROM inquiry i
+		LEFT OUTER JOIN member1 m1 ON i.answerId = m1.memberId 
+		<where>
+			<include refid="itemId-list"/>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	
+	<select id="listInquiry" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
+		SELECT i.inquiryNum, i.subject, i.content, i.regDate, i.answerId, i.answer, i.answerDate, i.farmNum, i.memberId, m2.name, m1.userLevel, f.farmName
+		FROM inquiry i
+		LEFT OUTER JOIN member1 m1 ON i.answerId = m1.memberId
+		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
+		LEFT OUTER JOIN farm f ON i.farmNum = f.farmNum
+		<where>
+			<include refid="itemId-list"/>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+		</where>
+		ORDER BY i.regDate DESC, i.inquiryNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+</mapper>

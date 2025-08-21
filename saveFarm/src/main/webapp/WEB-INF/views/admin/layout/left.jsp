@@ -1,84 +1,283 @@
-<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 
-<nav class="vertical-nav nav-expand-lg">
-	<div class="mobile-menu-closed">
-		<i class="menu-closed-icon bi bi-x"></i>
-	</div>
-	
-	<ul class="nav-menu">
-		<li>
-			<a class="menu-link" href="<c:url value='/admin' />" title="홈">
-				<i class="menu-icon bi bi-h-square"></i>
-				<span class="menu-label">홈</span>
-			</a>
-		</li>
-		<li>
-			<a class="menu-link" href="<c:url value='/admin' />" title="회원관리">
-				<i class="menu-icon bi bi-person-square"></i>
-				<span class="menu-label">회원관리</span>
-			</a>
-		</li>
-		<li class="has-sub-menu" aria-expanded="false">
-			<label class="menu-link" title="강좌관리">
-				<i class="menu-icon bi bi-book-half"></i>
-				<span class="menu-label">강좌관리</span>
-			</label>
-			<ul>
-				<li><a class="sub-menu-link" href="#">카테고리</a></li>
-				<li><a class="sub-menu-link" href="#">강좌</a></li>
-				<li><a class="sub-menu-link" href="#">강사</a></li>
-			</ul>
-		</li>
-		<li class="has-sub-menu" aria-expanded="false">
-			<label class="menu-link" title="고객센터">
-				<i class="menu-icon bi bi-question-square"></i>
-				<span class="menu-label">고객센터</span>
-			</label>
-			<ul>
-				<li><a class="sub-menu-link" href="<c:url value='/admin' />">자주하는 질문</a></li>
-				<li><a class="sub-menu-link" href="<c:url value='/admin' />">공지사항</a></li>
-				<li><a class="sub-menu-link" href="<c:url value='/admin' />">1:1문의</a></li>
-				<li><a class="sub-menu-link" href="<c:url value='/admin' />">이벤트</a></li>
-				<li><a class="sub-menu-link" href="<c:url value='/admin' />">신고</a></li>
-			</ul>
-		</li>
-		<li>
-			<a class="menu-link" href="<c:url value='/admin' />" title="블로그">
-				<i class="menu-icon bi bi-chat-square-text"></i>
-				<span class="menu-label">블로그</span>
-			</a>
-		</li>
-		<li class="has-sub-menu" aria-expanded="false">
-			<label class="menu-link" title="서비스">
-				<i class="menu-icon bi bi-wallet"></i>
-				<span class="menu-label">서비스</span>
-			</label>
-			<ul>
-				<li><a class="sub-menu-link" href="#">맛집정보관리</a></li>
-				<li><a class="sub-menu-link" href="#">레시피관리</a></li>
-				<li><a class="sub-menu-link" href="#">관광정보관리</a></li>
-			</ul>
-		</li>
-		<li>
-			<a href="#" class="menu-link" title="GroupWare">
-				<i class="menu-icon bi bi-c-square"></i>
-				<span class="menu-label">GroupWare</span>
-			</a>
-		</li>
-		<li>
-			<a href="<c:url value='/' />" class="menu-link" title="Logout">
-				<i class="menu-icon bi bi-unlock"></i>
-				<span class="menu-label">Logout</span>
-			</a>
-		</li>
-	</ul>
-	
-	<div class="nav-menu-footer" aria-expanded="true">
-		<div class="collapsed-menu">
-			<i class="collapse-menu-icon bi bi-arrow-bar-left"></i>
-			<span class="menu-label">Collapsed Menu</span>
-		</div>
-	</div>
-</nav>
+<aside class="sidebar-left border-right bg-white shadow"
+  id="leftSidebar" data-simplebar>
+  
+  <a href="#leftSidebar"
+    class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3"
+    aria-label="Toggle sidebar">
+    <i class="fe fe-x"><span class="sr-only">Toggle sidebar</span></i>
+  </a>
+
+  <nav class="vertnav navbar navbar-light">
+    <!-- nav bar -->
+    <div class="w-100 mb-4 d-flex">
+      <a class="navbar-brand mx-auto mt-2 flex-fill text-center" href="javascript:void(0)">
+      </a>
+    </div>
+		
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="${pageContext.request.contextPath}/admin/"
+					aria-expanded="false"
+					class="nav-link">
+					<i class="fe fe-hard-drive fe-16"></i>
+					<span class="ml-3 item-text">대시보드</span>
+				</a>
+			
+			</li>
+		</ul>
+		
+		
+		
+		<p class="text-muted nav-heading mt-4 mb-1">
+			<span>Components</span>
+		</p>
+
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-member"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-users fe-16"></i>
+					<span class="ml-3 item-text">회원관리</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-member">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/member/">
+							<span class="ml-1 item-text">회원 리스트</span>
+						</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/inquiry/inquiryList/100">
+							<span class="ml-1 item-text">회원 문의</span>
+						</a>
+					</li>
+				
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/notice/noticeList/100">
+							<span class="ml-1 item-text">회원 공지사항</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-farm"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-gift fe-16"></i>
+					<span class="ml-3 item-text">농가관리</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-farm">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/">
+							<span class="ml-1 item-text">농가 리스트</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/notice/noticeList/300">
+							<span class="ml-1 item-text">농가 유통 가이드라인</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/applyFormUpdate">
+							<span class="ml-1 item-text">농가 신청함</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/apply">
+							<span class="ml-1 item-text">농가 제품승인</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/inquiry/inquiryList/200">
+							<span class="ml-1 item-text">농가 문의</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/notice/noticeList/200">
+							<span class="ml-1 item-text">농가 공지사항</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-product"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-shopping-bag fe-16"></i>
+					<span class="ml-3 item-text">상품관리</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-product">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/list">
+							<span class="ml-1 item-text">상품리스트</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/farmProductList">
+							<span class="ml-1 item-text">농가상품등록</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/inquiry">
+							<span class="ml-1 item-text">상풍문의</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/review">
+							<span class="ml-1 item-text">상품리뷰</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-order"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-shopping-cart fe-16"></i>
+					<span class="ml-3 item-text">주문관리</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-order">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+							<span class="ml-1 item-text">주문완료</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+							<span class="ml-1 item-text">배송</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList">
+							<span class="ml-1 item-text">배송 후 교환</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList">
+							<span class="ml-1 item-text">구매확정</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList">
+							<span class="ml-1 item-text">주문리스트</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-sub"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-shopping-cart fe-16"></i>
+					<span class="ml-3 item-text">구독패키지</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-sub">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/package">
+							<span class="ml-1 item-text">구독패키지목록</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/memberList">
+							<span class="ml-1 item-text">회원 구독리스트</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/review">
+							<span class="ml-1 item-text">구독상품 리뷰</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="#ui-elements-withdraw"
+					data-toggle="collapse" aria-expanded="false"
+					class="dropdown-toggle nav-link">
+					<i class="fe fe-box fe-16"></i>
+					<span class="ml-3 item-text">주문취소</span>
+				</a>
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-withdraw">
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="">
+							<span class="ml-1 item-text">배송 전 환불</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="">
+							<span class="ml-1 item-text">배송 후 반품</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="">
+							<span class="ml-1 item-text">판매취소</span>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link pl-3" href="">
+							<span class="ml-1 item-text">취소리스트</span>
+						</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+		
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="${pageContext.request.contextPath}/admin/other/FAQ" aria-expanded="false" class="nav-link">
+					<i class="fe fe-message-square fe-16"></i>
+					<span class="ml-3 item-text">자주하는 질문</span>
+				</a>
+			
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="${pageContext.request.contextPath}/admin/other/Report" aria-expanded="false" class="nav-link">
+					<i class="fe fe-alert-circle fe-16"></i>
+					<span class="ml-3 item-text">신고</span>
+				</a>
+			</li>
+		</ul>
+		<ul class="navbar-nav flex-fill w-100 mb-2">
+			<li class="nav-item dropdown">
+				<a href="" aria-expanded="false" class="nav-link">
+					<i class="fe fe-database fe-16"></i>
+					<span class="ml-3 item-text">운영관리</span>
+				</a>
+			
+			</li>
+		</ul>		
+	</nav>
+</aside>
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButtons = document.querySelectorAll('.collapseSidebar'); // 모든 버튼 선택
+    const sidebar = document.querySelector('#leftSidebar');
+
+    toggleButtons.forEach((btn) => {
+      btn.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed');
+      });
+    });
+  });
+
+</script>
+
+

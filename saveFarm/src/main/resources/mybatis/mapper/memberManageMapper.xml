@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.MemberManageMapper">
+	
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'loginId'">
+				( INSTR(m1.loginId, #{kwd}) &gt;= 1 OR INSTR(m1.snsId, #{kwd}) &gt;= 1 )
+			</when>
+			<when test="schType == 'name'">
+				m2.name = #{kwd}
+			</when>
+			<when test="schType == 'tel'">
+				m2.tel = #{kwd}
+			</when>
+			<otherwise>
+				INSTR(${schType}, #{kwd}) &gt;= 1
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="dataCount" parameterType="map" resultType="Integer">
+		SELECT count(*)
+		FROM member1 m1
+		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+			<if test="enabled != '' ">
+				AND enabled = #{enabled}
+			</if>
+            AND m1.userLevel &lt;= 51
+		</where>
+	</select>
+	
+	<select id="listMember" parameterType="map" resultType="com.sp.app.admin.model.MemberManage">
+		SELECT m1.memberId, m1.loginId, password, snsProvider, snsId, userLevel, enabled, createdAt, updateAt, 
+			   lastLogin, failureCnt, name, TO_CHAR(birth, 'YYYY-MM-DD') birth, profilePhoto, tel, zip, addr1, addr2, email, ipAddr
+		FROM member1 m1
+		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+			<if test="enabled != '' ">
+				AND enabled = #{enabled}
+			</if>
+            AND m1.userLevel &lt;= 51
+		</where>
+		ORDER BY m1.memberId DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<delete id="deleteMember" parameterType="long">
+		DELETE FROM member1
+		WHERE memberId = #{memberId}
+	</delete>
+	
+	<update id="updateMember1" parameterType="map">
+		UPDATE member1 SET userLevel = #{userLevel}, enabled = #{enabled}
+		WHERE memberId = #{memberId}
+    </update>
+    <update id="updateMember2" parameterType="map">
+		UPDATE member2 SET name = #{name}, birth = TO_DATE(#{birth}, 'YYYY-MM-DD')
+		WHERE memberId = #{memberId}
+    </update>
+    <update id="updateMemberEnabled" parameterType="map">
+		UPDATE member1 SET enabled = #{enabled}
+		WHERE memberId = #{memberId}
+    </update>
+	
+	<select id="findById" parameterType="long" resultType="com.sp.app.admin.model.MemberManage">
+		SELECT m1.memberId, m1.loginId, password, snsProvider, snsId, userLevel, enabled, TO_CHAR(createdAt, 'YYYY-MM-DD') createdAt, TO_CHAR(updateAt, 'YYYY-MM-DD') updateAt, lastLogin, failureCnt, name, TO_CHAR(birth, 'YYYY-MM-DD') birth, profilePhoto, tel, zip, addr1, addr2, email, ipAddr 
+		FROM member1 m1
+		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
+		WHERE m1.memberId = #{memberId}
+	</select>
+	
+	<select id="findByStatus" parameterType="Long" resultType="com.sp.app.admin.model.MemberManage">
+		SELECT num, ms.memberId, statusCode, memo, registerId, m2.name registerName, regDate
+		FROM memberStatus ms
+		LEFT OUTER JOIN member2 m2 ON ms.registerId = m2.memberId		
+		WHERE ms.memberId = #{memberId}
+		ORDER BY num DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+	
+	<insert id="insertMemberStatus" parameterType="com.sp.app.admin.model.MemberManage">
+		INSERT INTO memberStatus(num, memberId, statusCode, memo, registerId, regDate)
+		VALUES (memberStatus_seq.NEXTVAL, #{memberId}, #{statusCode}, #{memo}, #{registerId}, SYSDATE)
+	</insert>
+	
+	<select id="listMemberStatus" parameterType="Long" resultType="com.sp.app.admin.model.MemberManage">
+		SELECT num, ms.memberId, statusCode, memo, registerId, m2.name registerName, regDate
+		FROM memberStatus ms
+		LEFT OUTER JOIN member2 m2 ON ms.registerId = m2.memberId		
+		WHERE ms.memberId = #{memberId}
+		ORDER BY num DESC
+	</select>
+	
+</mapper>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.FarmManageMapper">
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'farmerId'">
+				INSTR(farmerId, #{kwd}) &gt;= 1
+			</when>
+			<when test="schType == 'farmName'">
+				farmName = #{kwd}
+			</when>
+			<when test="schType == 'farmTel'">
+				farmTel = #{kwd}
+			</when>
+			<otherwise>
+				INSTR(${schType}, #{kwd}) &gt;= 1
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="dataCount" parameterType="map" resultType="Integer">
+		SELECT count(*)
+		FROM farm
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	
+	<select id="listFarm" parameterType="map" resultType="com.sp.app.admin.model.FarmManage">
+		SELECT FARMNUM, FARMNAME, BUSINESSNUMBER, FARMMANAGER, FARMTEL, FARMZIP, FARMADDRESS1, FARMADDRESS2, TO_CHAR(FARMREGDATE,'YYYY-MM-DD') farmRegDate, FARMERNAME, FARMERTEL, FARMERID, FARMERPWD, STATUS, FARMACCOUNT 
+		FROM farm
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				<include refid="where-list"/>
+			</if>
+		</where>
+		ORDER BY farmNum DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="com.sp.app.admin.model.FarmManage">
+		SELECT * 
+		FROM farm
+		WHERE farmNum = #{farmNum}
+	</select>
+	
+	<update id="updateFarm" parameterType="com.sp.app.admin.model.FarmManage">
+		UPDATE farm SET farmName = #{farmName, jdbcType=VARCHAR}, farmerName = #{farmerName, jdbcType=VARCHAR}, farmAccount = #{farmAccount, jdbcType=VARCHAR}
+		WHERE farmNum = #{farmNum}
+    </update>
+	<update id="updateFarmStatus" parameterType="com.sp.app.admin.model.FarmManage">
+		UPDATE farm SET status = #{status}
+		WHERE farmNum = #{farmNum}
+    </update>
+</mapper>

@@ -299,4 +299,165 @@ public class PaginateUtil {
 
 		return link.toString();
 	}
+	
+	// 페이징 HTML 생성 - Ajax용
+	public String adminPaging(int currentPage, int totalPage, String functionName) {
+	    StringBuilder sb = new StringBuilder();
+	    int numPerBlock = 10; // 한 블록에 표시할 페이지 수
+	    int currentPageSetup;
+	    int page;
+	    int prevPage, nextPage;
+	    if (currentPage < 1 || totalPage < currentPage) {
+	        return "";
+	    }
+
+	    currentPageSetup = (currentPage / numPerBlock) * numPerBlock;
+	    if (currentPage % numPerBlock == 0) {
+	        currentPageSetup -= numPerBlock;
+	    }
+
+	    sb.append("<div class=\"dataTables_paginate paging_simple_numbers\" id=\"dataTable-1_paginate\">");
+	    sb.append("<ul class=\"pagination\">");
+
+	    // 이전 블록	
+	    prevPage = currentPage - 1;
+	    if (currentPage > 1) {
+	        sb.append(createPageItem(functionName, 1, "fe fe-chevrons-left", "first", false)); // 처음
+	        sb.append(createPageItem(functionName, prevPage, "fe fe-chevron-left", "previous", false)); // 이전
+	    } else {
+	        sb.append(createPageItem(functionName, 1, "fe fe-chevrons-left", "first", true)); // 처음 비활성
+	        sb.append(createPageItem(functionName, 1, "fe fe-chevron-left", "previous", true)); // 이전 비활성
+	    }
+
+	    // 페이지 번호
+	    page = currentPageSetup + 1;
+	    while (page <= totalPage && page <= currentPageSetup + numPerBlock) {
+	        boolean isCurrent = (page == currentPage);
+	        sb.append(createPageItem(functionName, page, "", "", isCurrent));
+	        page++;
+	    }
+
+	    // 다음 블록
+	    nextPage = currentPage + 1;
+	    if (currentPage < totalPage) {
+	        sb.append(createPageItem(functionName, nextPage, "fe fe-chevron-right", "next", false)); // 이후
+	        sb.append(createPageItem(functionName, totalPage, "fe fe-chevrons-right", "next", false)); // 마지막
+	    } else {
+	        sb.append(createPageItem(functionName, totalPage, "fe fe-chevron-right", "next", true));
+	        sb.append(createPageItem(functionName, totalPage, "fe fe-chevrons-right", "next", true));
+	    }
+
+	    sb.append("</ul>");
+	    sb.append("</div>");
+
+	    return sb.toString();
+	}
+	
+	// 페이지 아이템 생성 - Ajax용
+	private String createPageItem(String functionName, int page, String iconClass, String ariaLabel, boolean isDisabledOrCurrent) {
+	    StringBuilder sb = new StringBuilder();
+	    String liClass = "paginate_button page-item";
+
+	    // disabled 처리
+	    if (isDisabledOrCurrent) liClass += " disabled";
+
+	    sb.append("<li class=\"" + liClass + "\"");
+
+	    if (ariaLabel != null && !ariaLabel.isEmpty()) {
+	        sb.append(" id=\"dataTable-1_" + ariaLabel + "\"");
+	    }
+	    sb.append(">");
+
+	    if (isDisabledOrCurrent) {
+	        // 클릭 불가
+	        sb.append("<a href=\"#\" class=\"page-link\">");
+	        if (!iconClass.isEmpty()) {
+	            sb.append("<i class=\"" + iconClass + "\"></i>");
+	        } else {
+	            sb.append(page);
+	        }
+	        sb.append("</a>");
+	    } else {
+	        // 클릭 가능 (JS 호출)
+	        sb.append("<a href=\"#\" class=\"page-link\" onclick=\"" + functionName + "(" + page + "); return false;\">");
+	        if (!iconClass.isEmpty()) {
+	            sb.append("<i class=\"" + iconClass + "\"></i>");
+	        } else {
+	            sb.append(page);
+	        }
+	        sb.append("</a>");
+	    }
+
+	    sb.append("</li>");
+	    return sb.toString();
+	}
+
+
+	public String adminPagingUrl(int currentPage, int totalPage, String listUrl) {
+	    StringBuilder sb = new StringBuilder();
+	    int numPerBlock = 10; // 한 블록에 표시할 페이지 수
+	    int currentPageSetup;
+
+	    if (currentPage < 1 || totalPage < currentPage) return "";
+
+	    currentPageSetup = (currentPage / numPerBlock) * numPerBlock;
+	    if (currentPage % numPerBlock == 0) currentPageSetup -= numPerBlock;
+
+	    sb.append("<div class=\"dataTables_paginate paging_simple_numbers\" id=\"dataTable-1_paginate\">");
+	    sb.append("<ul class=\"pagination\">");
+
+	    // 이전 블록
+	    int prevPage = currentPage - 1;
+	    if (currentPage > 1) {
+	        sb.append(createPageItemUrl(listUrl, 1, "fe-chevrons-left", false)); // 처음
+	        sb.append(createPageItemUrl(listUrl, prevPage, "fe-chevron-left", false)); // 이전
+	    } else {
+	        sb.append(createPageItemUrl(listUrl, 1, "fe-chevrons-left", true));
+	        sb.append(createPageItemUrl(listUrl, 1, "fe-chevron-left", true));
+	    }
+
+	    // 페이지 번호
+	    int page = currentPageSetup + 1;
+	    while (page <= totalPage && page <= currentPageSetup + numPerBlock) {
+	        boolean isCurrent = (page == currentPage);
+	        sb.append(createPageItemUrl(listUrl, page, "", isCurrent));
+	        page++;
+	    }
+
+	    // 다음 블록
+	    int nextPage = currentPage + 1;
+	    if (currentPage < totalPage) {
+	        sb.append(createPageItemUrl(listUrl, nextPage, "fe-chevron-right", false)); // 다음
+	        sb.append(createPageItemUrl(listUrl, totalPage, "fe-chevrons-right", false)); // 마지막
+	    } else {
+	        sb.append(createPageItemUrl(listUrl, totalPage, "fe-chevron-right", true));
+	        sb.append(createPageItemUrl(listUrl, totalPage, "fe-chevrons-right", true));
+	    }
+
+	    sb.append("</ul>");
+	    sb.append("</div>");
+
+	    return sb.toString();
+	}
+	
+	private String createPageItemUrl(String url, int page, String iconClass, boolean isDisabledOrCurrent) {
+	    StringBuilder sb = new StringBuilder();
+	    String liClass = "paginate_button page-item";
+	    if (isDisabledOrCurrent) liClass += " disabled";
+
+	    sb.append("<li class=\"fe " + liClass + "\">");
+
+	    sb.append("<a href=\"" + (isDisabledOrCurrent ? "#" : url + "?page=" + page) + "\" class=\"page-link\">");
+
+	    if (iconClass != null && !iconClass.isEmpty()) {
+	        sb.append("<i class=\"fe " + iconClass + "\"></i>");
+	    } else {
+	        sb.append(page);
+	    }
+
+	    sb.append("</a>");
+	    sb.append("</li>");
+	    return sb.toString();
+	}
+
 }
