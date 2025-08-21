@@ -11,4 +11,5 @@
 		INSERT subImage(imageNum, imagefilename, subNum)
 		VALUES(subImage_seq.NEXTVAL, #{imagefilename}, #{sub})
 	</insert>
+	
 </mapper>
