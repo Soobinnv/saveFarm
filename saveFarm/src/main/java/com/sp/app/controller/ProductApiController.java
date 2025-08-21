@@ -118,10 +118,18 @@ public class ProductApiController {
     
 	// 상품 리뷰 데이터
 	@GetMapping("/{productNum}/reviews")
-	public ResponseEntity<?> getProductReview(@PathVariable(name = "productNum") long productNum) {
+	public ResponseEntity<?> getProductReview(
+			@PathVariable(name = "productNum") long productNum,
+			HttpSession session
+		) {
 		Map<String, Object> body = new HashMap<>();
 		try {
 			Map<String, Object> map = new HashMap<>();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			if(info != null) {
+				map.put("memberId", info.getMemberId());
+			}
 			
 			map.put("offset", 0);
 			map.put("size", 20);
@@ -136,9 +144,9 @@ public class ProductApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
-
+	
 	// 찜 등록
-	@PostMapping("{productNum}/wish")
+	@PostMapping("{productNum}/wishes")
 	public ResponseEntity<?> insertWish(
 			@PathVariable(name = "productNum") Long productNum,
 			HttpSession session) {
@@ -163,7 +171,7 @@ public class ProductApiController {
 	}
 
 	// 찜하기 취소
-	@DeleteMapping("{productNum}/wish")
+	@DeleteMapping("{productNum}/wishes")
 	public ResponseEntity<?> deleteWish(
 			@PathVariable(name = "productNum") Long productNum,
 			HttpSession session) {
@@ -205,7 +213,7 @@ public class ProductApiController {
 
 			qnaService.insertQna(dto);
 
-			// DB에서 가져온 시퀀스 값인 dto.qnaNum 클라이언트로 전송
+			// DB에서 가져온 시퀀스 값인 dto.qnaNum 클라이언트로 전송 // - 스크롤 구현 후 수정 필요
 			body.put("qnaNum", dto.getQnaNum()); 
 
 			return ResponseEntity.ok(body); // 200 OK

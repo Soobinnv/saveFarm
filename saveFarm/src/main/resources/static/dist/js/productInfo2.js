@@ -2,8 +2,11 @@ const productNum = $('#product-productNum').val();
 const urlParams = new URLSearchParams(window.location.search);
 const classifyCode = urlParams.get('classifyCode');
 
-// 이벤트 핸들러 등록
 $(function() {
+	// 마감 임박 타이머 호출
+	startTimers();
+	
+	// 이벤트 핸들러 등록
 	// 상품 상세 / 상품 리뷰 / 상품 반풀, 환불 / 상품 문의
 	$('.nav-link').on('click', function() {
 		// 다른 비활성화 tab - css 적용
@@ -47,7 +50,12 @@ $(function() {
 		location.href=`${contextPath}/myPage`;
 	});
 	
-	
+	// 리뷰 추천 등록/취소
+	$('#productInfoLayout').on('click', '.btn-review-like', function() {
+		const orderDetailNum = $(this).closest('.card').data('order-detail-num');
+		
+		updateReviewLike(orderDetailNum, this);
+	});
 });
 
 /**
@@ -221,7 +229,7 @@ const renderProductReviewHtml = function(data) {
 		const reviewText = item.review.replace(/\n/g, '<br>');
 		
 		return `
-			<div class="card mb-4 shadow-sm review-item">
+			<div class="card mb-4 shadow-sm review-item" data-order-detail-num="${item.orderDetailNum}">
 		        <div class="card-body p-4">
 		            <div class="d-flex justify-content-between align-items-start mb-3">
 		                <div class="d-flex align-items-center">
@@ -259,9 +267,15 @@ const renderProductReviewHtml = function(data) {
 		            </div>
 		            ` : ''}
 	
-		            <div class="d-flex justify-content-end align-items-center text-muted">
-		                <iconify-icon icon="stash:thumb-up" class="me-1"></iconify-icon>
-		                <span>도움돼요 ${item.helpfulCount}</span>
+		            <div data-like="" class="d-flex justify-content-end align-items-center text-muted">
+		                <label class="btn-review-like">
+							<iconify-icon icon=
+								${item.userLike == '1'
+								? "teenyicons:thumb-up-solid" 
+								: "teenyicons:thumb-up-outline"}
+								class="me-1 likeIcon"></iconify-icon>
+			                도움돼요<span class="ms-1">${item.helpfulCount}</span>
+						</label>
 		            </div>
 		        </div>
 		    </div>

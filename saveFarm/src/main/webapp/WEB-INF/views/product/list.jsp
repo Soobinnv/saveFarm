@@ -87,5 +87,6 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList2.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productTimer.js"></script>
 </body>
 </html>

@@ -15,4 +15,8 @@ public interface ProductReviewService {
 	public List<ProductReview> getMyReviewList(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyReviewDataCount(long memberId);
+
+	public void insertReviewLike(Map<String, Object> map) throws Exception;
+	public int getReviewLikeCount(long orderDetailNum);
+	public void deleteReviewLike(Map<String, Object> map) throws Exception;
 }

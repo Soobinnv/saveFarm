@@ -20,22 +20,35 @@
 	<select id="getReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
 		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, po.orderDate,
 			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto,
-			pd.unit
+			pd.unit, COUNT(prl.orderDetailNum) helpfulCount
 		FROM ProductReview pr
 		JOIN orderDetail od ON po.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
 		LEFT OUTER JOIN product p ON pr.productNum = p.productNum
 		LEFT OUTER JOIN productDetail pd ON pd.productNum = p.productNum
 		LEFT OUTER JOIN member2 m2 ON po.memberId = m2.memberId
+		LEFT OUTER JOIN productReviewLike prl ON pr.orderDetailNum = prl.orderDetailNum
 		WHERE reviewBlock = 0
+		GROUP BY
+    		pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, 
+    		po.orderDate, productName, p.mainImageFilename, po.memberId, name, profilePhoto, pd.unit
 		ORDER BY reviewDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
 	<select id="getReviewListByProductNum" resultType="com.sp.app.model.ProductReview" parameterType="map">
 		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, po.orderDate,
-			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto,
-			pd.unit
+			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto, pd.unit, 
+			(
+				SELECT COUNT(*)
+	     		FROM productReviewLike prl
+	     		WHERE prl.orderDetailNum = pr.orderDetailNum
+	     	) AS helpfulCount,
+    		(
+    			SELECT COUNT(*)
+	     		FROM productReviewLike prl
+	     		WHERE prl.orderDetailNum = pr.orderDetailNum AND prl.memberId = #{memberId, jdbcType=VARCHAR}
+	     	) AS userLike
 		FROM ProductReview pr
 		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
@@ -49,8 +62,12 @@
 	
 	<select id="getMyReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
 		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, po.orderDate,
-			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto,
-			pd.unit
+			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto, pd.unit, 
+			(
+				SELECT COUNT(*)
+	     		FROM productReviewLike prl
+	     		WHERE prl.orderDetailNum = pr.orderDetailNum
+	     	) AS helpfulCount
 		FROM ProductReview pr
 		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
@@ -75,5 +92,24 @@
 		JOIN productOrder po ON po.orderNum = od.orderNum
 		WHERE po.memberId = #{memberId} AND reviewBlock = 0
 	</select>
+	
+	<insert id="insertReviewLike" parameterType="map">
+		INSERT INTO productReviewLike(memberId, orderDetailNum)
+			VALUES (#{memberId}, #{orderDetailNum})
+	</insert>
+
+	<select id="getReviewLikeCount" resultType="int" parameterType="long">
+    	SELECT COUNT(*) helpfulCount
+		FROM productReviewLike
+		WHERE orderDetailNum = #{orderDetailNum}
+	</select>
+	    
+	<delete id="deleteReviewLike" parameterType="map">
+		DELETE FROM productReviewLike
+		WHERE memberId = #{memberId} 
+		<if test="orderDetailNum != null">
+			AND orderDetailNum = #{orderDetailNum}		
+		</if>
+	</delete>
 	
 </mapper>

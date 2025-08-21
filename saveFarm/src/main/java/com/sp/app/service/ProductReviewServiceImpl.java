@@ -146,4 +146,42 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		return count;
 	}
 
+	@Override
+	public void insertReviewLike(Map<String, Object> map) throws Exception {
+		try {
+			mapper.insertReviewLike(map);
+			
+		} catch (Exception e) {
+			log.info("insertReviewLike : ", e);
+			throw e;
+		}
+		
+	}
+
+	@Override
+	public int getReviewLikeCount(long orderDetailNum) {
+		int count = 0;
+		
+		try {
+			count = mapper.getReviewLikeCount(orderDetailNum);
+			
+		} catch (Exception e) {
+			log.info("getReviewLikeCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
+
+	@Override
+	public void deleteReviewLike(Map<String, Object> map) throws Exception {
+		try {
+			mapper.deleteReviewLike(map);
+		} catch (Exception e) {
+			log.info("deleteReviewLike : ", e);
+			throw e;
+		}
+	}
+
 }

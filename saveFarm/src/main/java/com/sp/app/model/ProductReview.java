@@ -29,7 +29,7 @@ public class ProductReview {
 	private String reviewerName;
 	private String reviewerProfilePhoto;
 	
-	// 상품 리뷰 좋아요
+	// 상품 리뷰 추천 수
 	private int helpfulCount;
 	
 	// 상품 리뷰 이미지
@@ -45,4 +45,7 @@ public class ProductReview {
 	private String replyAuthorName;
 	private String replyAuthorProfilePhoto;
 	private int replyBlock;
+	
+	// 현재 사용자의 리뷰 추천 여부
+	private int userLike; // 0: false, 1: true
 }

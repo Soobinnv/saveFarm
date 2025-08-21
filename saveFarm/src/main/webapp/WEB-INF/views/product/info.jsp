@@ -50,11 +50,21 @@
 									src="${contextPath}/uploads/product/${productInfo.mainImageFilename}"
 									alt="Main product image">
 								<c:if test="${not empty productInfo.endDate}">
-									<span
-										class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
-										<iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
-										마감: ${productInfo.endDate}
-									</span>
+								    <c:choose>
+								        <c:when test="${productInfo.isUrgent == 1}">
+								            <span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6 deadline-timer" 
+								                  data-deadline="${productInfo.endDate}">
+								                <iconify-icon icon="mdi:clock-alert-outline" class="me-1"></iconify-icon>
+								                <span class="time-left">마감 임박 !</span>
+								            </span>
+								        </c:when>
+								        <c:otherwise>
+								            <span class="badge bg-danger position-absolute top-0 end-0 m-2 fs-6">
+								                <iconify-icon icon="mdi:clock-outline" class="me-1"></iconify-icon>
+								                마감: ${productInfo.endDate}
+								            </span>
+								        </c:otherwise>
+								    </c:choose>
 								</c:if>
 							</div>
 
@@ -267,5 +277,6 @@
 		src="${pageContext.request.contextPath}/dist/js/productInfo3.js"></script>
 	<script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/product.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productTimer.js"></script>
 </body>
 </html>
