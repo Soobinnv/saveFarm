@@ -11,7 +11,7 @@
     backdrop: true,
     keyboard: true
   });
-  let instance = null;
+  let instance = null; 
 
   // 모달 표시
   trigger.addEventListener('click', function (e) {
