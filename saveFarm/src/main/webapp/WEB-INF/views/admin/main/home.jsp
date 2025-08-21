@@ -9,30 +9,29 @@
 <title>Spring</title>
 <jsp:include page="/WEB-INF/views/admin/layout/headerResources.jsp"/>
 </head>
-<body>
-
+<body class="vertical light">
+<div class="wrapper">
 <header>
 	<jsp:include page="/WEB-INF/views/admin/layout/header.jsp"/>
 </header>
 
-<main class="main-container">
-	<jsp:include page="/WEB-INF/views/admin/layout/left.jsp"/>
-
-	<div class="right-panel">
-		<div class="section" data-aos="fade-up" data-aos-delay="200">
-			<div class="section-body">
-				괸라자 메인 화면 입니다.
-			</div>
+<jsp:include page="/WEB-INF/views/admin/layout/left.jsp"/>
+<main role="main" class="main-content">
+		<div class="container-fluid">
+			<div class="row justify-content-center">
+				<div class="col-12">
+					메인화면입니다
+	
+				</div>
+			</div>				
 		</div>
-		
-	</div>
-</main>
+	</main>
 
 <footer>
 	<jsp:include page="/WEB-INF/views/admin/layout/footer.jsp"/>
 </footer>
 
 <jsp:include page="/WEB-INF/views/admin/layout/footerResources.jsp"/>
-
+</div>
 </body>
 </html>
