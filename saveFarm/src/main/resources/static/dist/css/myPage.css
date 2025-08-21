@@ -48,6 +48,10 @@
 	  color: #039a63;        /* hover 시 초록색 */
 	}
 	
+	.sidebar li a.clicked {
+      color: #039a63;  /* 선택된 메뉴 글자 초록색 */
+      font-weight: bold; /* 강조 옵션 */
+	}
      
     .content {
       flex: 1;

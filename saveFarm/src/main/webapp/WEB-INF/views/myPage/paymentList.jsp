@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/myPage.css" type="text/css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/myPage2.css" type="text/css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/payment.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/board.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/paginate.css" type="text/css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/tabs.css" type="text/css">
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 
 </head>

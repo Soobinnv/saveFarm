@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,7 @@ import com.sp.app.service.ReturnService;
 import com.sp.app.service.WishService;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +108,40 @@ public class MyPageApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 	
 		}
+	}
+	
+	// 구매 상세 보기 : AJAX - Text
+	@GetMapping("/detailView")
+	public ResponseEntity<?> detailView(@RequestParam Map<String, Object> paramMap,
+			HttpServletResponse resp,
+			HttpSession session) throws Exception {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			paramMap.put("memberId", info.getMemberId());
+			
+			// 구매 상세 정보
+			Payment dto = mypageService.findByOrderDetail(paramMap);
+			
+			// 퍼처스 리스트(함께 구매한 상품 리스트)
+			List<Payment> listBuy = mypageService.listPurchase(paramMap);
+			
+			// 배송지 정보
+			Order orderDelivery = mypageService.findByOrderDelivery(paramMap);
+			
+			body.put("dto", dto);
+			body.put("listBuy", listBuy);
+			body.put("orderDelivery", orderDelivery);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("detailView: ", e);
+			body.put("message", "주문내역 - 상세정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+		
 	}
 	
 	

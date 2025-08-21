@@ -135,6 +135,52 @@ $(function() {
 	});
 });
 
+// 사이드바 클릭 이벤트 등록
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebarLinks = document.querySelectorAll(".sidebar li a");
+
+    // 클릭 이벤트 등록
+    sidebarLinks.forEach(link => {
+        link.addEventListener("click", function() {
+            // 모든 링크에서 clicked 제거
+            sidebarLinks.forEach(l => l.classList.remove("clicked"));
+            // 클릭한 링크에 clicked 추가
+            this.classList.add("clicked");
+        });
+    });
+
+    // 기본 선택 메뉴: 주문/배송 조회
+    const defaultLink = document.querySelector(".sidebar li a[onclick*='/api/myPage/paymentList']");
+    if (defaultLink) {
+        defaultLink.classList.add("clicked");
+        // 기본 콘텐츠 로드
+        const onclickAttr = defaultLink.getAttribute("onclick");
+        // onclick 문자열에서 URL 추출 후 실행
+        const urlMatch = onclickAttr.match(/loadContent\(['"](.+?)'/);
+        if (urlMatch && urlMatch[1]) {
+            loadContent(urlMatch[1], renderMyPageMainHtml);
+        }
+    }
+});
+
+// 주문 상세 정보
+$(document).on('click', '.order-details', function() {
+    let orderNum = $(this).attr('data-orderNum');
+    let orderDetailNum = $(this).attr('data-orderDetailNum');
+    
+	let params = 'orderNum=' + orderNum + '&orderDetailNum=' + orderDetailNum;
+	let url = contextPath + '/api/myPage/detailView';
+	
+    const fn = function(data) {
+       $('.order-detail-view').html(data);
+    };
+	
+	ajaxRequest(url, 'get', params, 'text', fn);
+    
+	$('#orderDetailViewDialogModal').modal('show');
+});
+
+
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data - 내가 주문한 상품 데이터
@@ -210,6 +256,18 @@ const renderMyPageMainHtml = function(data) {
 	        </div>
 	      </div>
 	    </div>
+		
+		<div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body order-detail-view"></div>
+				</div>
+			</div>
+		</div>
 	  `;
 	}).join('');
 
