@@ -3,14 +3,7 @@
 // 이벤트 핸들러 등록
 $(function() {
 	// 상품 리스트 / 농가 상품 등록 / 상품 문의 / 상품 리뷰
-	$('#ui-elements-product').on('click', '.nav-link',function() {
-		
-		// 다른 비활성화 tab - css 적용
-		$('.nav-link').removeClass('activeTab');
-		
-		// 활성화 tab - css 적용
-		$(this).addClass('activeTab');
-		
+	$('#ui-elements-product').on('click', '.nav-link', function() {
 		// 선택한 tab id
 		let navId = $(this).attr('id');
 		
@@ -32,4 +25,27 @@ $(function() {
 				break;
     	}
 	});
+	
+	$('main').on('click', 'button.nav-link', function() {
+		let navId = $(this).attr('id');
+		
+		let params = '';
+		
+		// tab 컨텐츠 AJAX 요청 및 렌더링
+		switch (navId) {
+			case 'tab-product-all':
+		        loadContent('/api/admin/products', renderProductListHTML, params, 'productListPage');				
+		        break;
+		    case 'tab-product-normal':
+				params = {classifyCode:100};
+				loadContent('/api/admin/products', renderProductListHTML, params, 'productListPage');
+				break;
+		    case 'tab-product-rescued':				
+				params = {classifyCode:200};
+				loadContent('/api/admin/products', renderProductListHTML, params, 'productListPage');
+				break;
+		}
+		
+	});
+	
 });

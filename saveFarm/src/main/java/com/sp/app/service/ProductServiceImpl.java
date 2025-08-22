@@ -57,6 +57,31 @@ public class ProductServiceImpl implements ProductService {
 	}
 	
 	@Override
+	public List<Product> getProducts(Map<String, Object> map) {
+		List<Product> list = new ArrayList<>();						
+		
+		try {
+			Integer classifyCode = (Integer)map.get("classifyCode");
+
+			switch (classifyCode) {
+				case null: 
+					list = getAllProductList(map); break;
+				case 100: 
+					list = getProductList(map); break;
+				case 200: 
+					list = getRescuedProductList(map); break;
+				default:
+					return null;
+			}
+			
+		} catch (Exception e) {
+			log.info("getProducts : ", e);
+		}
+		
+		return list;
+	}
+	
+	@Override
 	public List<Product> getProductList(Map<String, Object> map) {
 		List<Product> list = new ArrayList<>();						
 		

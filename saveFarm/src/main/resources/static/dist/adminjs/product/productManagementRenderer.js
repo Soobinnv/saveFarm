@@ -16,7 +16,6 @@
 const renderProductListHTML = function(item) {
 	const schType = item.schType || "all";
 	const kwd = item.kwd || "";
-	const classify = item.classify || 0;
 
 	// tbody에 렌더링할 HTML
     const tbodyHTML = renderProductRows(item.list);
@@ -38,20 +37,19 @@ const renderProductListHTML = function(item) {
 					  	data-totalPage="${item.total_page}"
 					  	data-schType="${schType}"
 					  	data-kwd="${kwd}"
-                        data-classify="${classify}"
 					  	>
 					  	총 ${item.dataCount}개 (${item.page}/${item.total_page}페이지)
 					  </div>
 	     		  </div>
 	              <ul class="nav nav-tabs" id="myTab" role="tablist">
 						<li class="nav-item" role="presentation">
-							<button class="nav-link ${classify == 0 ? 'active' : ''}" id="tab-3" data-bs-toggle="tab" data-bs-target="#tab-pane" type="button" role="tab" aria-controls="300" aria-selected="${classify == 0}">전체상품</button>
+							<button class="nav-link" id="tab-product-all" type="button" role="tab">전체상품</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link ${classify == 100 ? 'active' : ''}" id="tab-1" data-bs-toggle="tab" data-bs-target="#tab-pane" type="button" role="tab" aria-controls="100" aria-selected="${classify == 100}">일반상품</button>
+							<button class="nav-link" id="tab-product-normal" type="button" role="tab">일반상품</button>
 						</li>
 						<li class="nav-item" role="presentation">
-							<button class="nav-link ${classify == 200 ? 'active' : ''}" id="tab-2" data-bs-toggle="tab" data-bs-target="#tab-pane" type="button" role="tab" aria-controls="200" aria-selected="${classify == 200}">구출상품</button>
+							<button class="nav-link" id="tab-product-rescued" type="button" role="tab">구출상품</button>
 						</li>
 					</ul>
 	              <table class="table datatables" id="dataTable-1">
@@ -76,8 +74,8 @@ const renderProductListHTML = function(item) {
                   </div>
                   <div class="row d-flex justify-content-end"">
                     <div class="col-sm-12 col-md-2 d-flex justify-content-end">
-                        <button type="button" class="btn mb-2 mr-1 btn-outline-primary" onclick="location.href='/product/register'">상품등록</button>
-                        <button type="button" class="btn mb-2 btn-outline-primary" id="delete-product-btn">상품삭제</button>
+                        <button type="button" class="btn mb-2 mr-1 btn-outline-primary" id="btn-product-insert">상품등록</button>
+                        <button type="button" class="btn mb-2 btn-outline-primary" id="btn-product-delete">상품삭제</button>
                     </div>
 				  </div
 	            </div>
@@ -129,8 +127,8 @@ const renderProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="/product/stock?productNum=${item.productNum}">재고</a>
-                <a class="dropdown-item" href="/product/edit?productNum=${item.productNum}">상품정보변경</a>
+                <a class="dropdown-item" href="javascript:void(0);">재고</a>
+                <a class="dropdown-item" href="javascript:void(0);">상품정보변경</a>
               </div>
             </td>
           </tr>
@@ -233,8 +231,8 @@ const renderFarmProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#">승인</a>
-                <a class="dropdown-item" href="#">반려</a>
+                <a class="dropdown-item" href="javascript:void(0);">승인</a>
+                <a class="dropdown-item" href="javascript:void(0);">반려</a>
               </div>
             </td>
           </tr>
@@ -325,19 +323,18 @@ const renderProductQnaRows = function(list) {
 	}
 
 	return list.map(item => {
-	    // 'answerdate'의 존재 여부로 답변 상태를 결정
 	    const statusText = item.answerdate ? '답변완료' : '답변대기';
 
-	    const answerer = item.answerName || ''; // 답변자가 없으면 빈칸
-	    const answerDate = item.answerdate || ''; // 답변일자가 없으면 빈칸
+	    const answerer = item.answerName || ''; 
+	    const answerDate = item.answerdate || ''; 
 
 	    return `
 	      <tr data-qna-num="${item.qnaNum}">
 	        <td>${item.qnaNum}</td>
 	        <td>${item.productNum}</td>
-	        <td>${item.productName}</td> <!-- 쿼리에 productName 추가 필요 -->
+	        <td>${item.productName}</td>
 	        <td>
-	            <a href="/qna/detail?qnaNum=${item.qnaNum}" class="text-secondary">${item.title}</a>
+	            <a href="javascript:void(0);" class="text-secondary">${item.title}</a>
 	        </td>
 	        <td>${item.name}</td>
 	        <td>${item.qnaDate}</td>
@@ -365,7 +362,6 @@ const renderProductReviewListHTML = function(item) {
 	const schType = item.schType || "all";
 	const kwd = item.kwd || "";
 
-	// tbody에 렌더링할 HTML (개별 행 생성 함수 호출)
     const tbodyHTML = renderProductReviewRows(item.list);
 
 	const html = `
@@ -433,11 +429,9 @@ const renderProductReviewRows = function(list) {
 	}
 
 	return list.map(item => {
-	    // reviewBlock 값에 따라 상태 텍스트 결정 (0: 보임, 1: 숨김)
 	    const statusText = item.reviewBlock === 0 ? '보임' : '숨김';
 
-	    // 리뷰 내용이 길 경우를 대비해 일부만 보여주도록 처리 (예: 20자)
-	    const shortContent = item.review.length > 20
+	    const content = item.review.length > 20
 	        ? item.review.substring(0, 20) + '...'
 	        : item.review;
 
@@ -447,7 +441,7 @@ const renderProductReviewRows = function(list) {
 	        <td>${item.productNum}</td>
 	        <td>${item.productName}</td>
 	        <td>
-	            <a href="/review/detail?reviewNum=${item.orderDetailNum}" class="text-secondary">${shortContent}</a>
+	            <a href="javascript:void(0);" class="text-secondary">${content}</a>
 	        </td>
 	        <td>${item.reviewerName}</td>
 	        <td>${item.reviewDate}</td>
@@ -458,8 +452,8 @@ const renderProductReviewRows = function(list) {
 	            <span class="text-muted sr-only">선택</span>
 	          </button>
 	          <div class="dropdown-menu dropdown-menu-right">
-	            <a class="dropdown-item" href="#">리뷰 상태변경</a>
-	            <a class="dropdown-item" href="#">리뷰 삭제</a>
+	            <a class="dropdown-item" href="content">리뷰 상태변경</a>
+	            <a class="dropdown-item" href="content">리뷰 삭제</a>
 	          </div>
 	        </td>
 	      </tr>

@@ -8,6 +8,8 @@ import com.sp.app.model.Product;
 public interface ProductService {
 	public Product getProductWithDetails(long productNum, int classifyCode, long memberId) throws Exception;	
 
+	public List<Product> getProducts(Map<String, Object> map);	
+	
 	public List<Product> getProductList(Map<String, Object> map);	
 	public List<Product> getRescuedProductList(Map<String, Object> map);	
 	public List<Product> getAllProductList(Map<String, Object> map);

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.common.PaginateUtil;
+import com.sp.app.farm.model.Supply;
+import com.sp.app.farm.service.SupplyService;
 import com.sp.app.model.Product;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
@@ -27,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductManageController {
 	
 	private final ProductService productService;
-	// private final SupplyService supplyService;
+	private final SupplyService supplyService;
 	private final ProductQnaService productQnaService;
 	private final ProductReviewService productReviewService;
 	private final PaginateUtil paginateUtil;
@@ -35,6 +37,7 @@ public class ProductManageController {
 	// 상품 데이터
 	@GetMapping("/api/admin/products")
 	public ResponseEntity<?> getProducts(
+			@RequestParam(name = "classifyCode", required = false) Integer classifyCode,
 			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
 			@RequestParam(name = "schType", required = false, defaultValue = "all") String schType,
 			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd
@@ -59,8 +62,9 @@ public class ProductManageController {
 			map.put("size", size);
 			
 			map.put("kwd", kwd);
+			map.put("classifyCode", classifyCode);
 			
-			List<Product> list = productService.getAllProductList(map); 
+			List<Product> list = productService.getProducts(map); 
 			
 			body.put("list", list);
 			
@@ -93,7 +97,7 @@ public class ProductManageController {
 			int total_page = 0; 
 			int dataCount = 0;
 			
-			// dataCount = supplyService.getAllDataCount();
+			dataCount = supplyService.listSupplyCount(map);
 			total_page = paginateUtil.pageCount(dataCount, size);
 			current_page = Math.min(current_page, total_page);
 			
@@ -105,9 +109,9 @@ public class ProductManageController {
 			
 			map.put("kwd", kwd);
 			
-			// List<Product> list = supplyService.getAllProductList(map); 
+			List<Supply> list = supplyService.listManageSupply(map); 
 			
-			// body.put("list", list);
+			body.put("list", list);
 			
 			body.put("dataCount", dataCount);
 			body.put("size", size);
