@@ -93,7 +93,7 @@
 						<button data-wish="${productInfo.userWish}"
 							onclick="updateWish(${productInfo.productNum}, this);"
 							class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
-							<iconify-icon class="fs-4"
+							<iconify-icon class="fs-4 wishIcon"
 								icon="${productInfo.userWish == '1' ? 'mdi:heart' : 'lucide:heart'}"></iconify-icon>
 						</button>
 					</div>
@@ -267,16 +267,12 @@
 		<jsp:include page="/WEB-INF/views/layout/footer.jsp" />
 	</footer>
 	<jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/productInfo.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/productInfo2.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/productInfo3.js"></script>
-	<script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/product.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productTimer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productInfoService.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productInfoRenderer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productTimer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productInfo.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productInfoScroll.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productAction.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/quantityChanger.js"></script>
 </body>
 </html>

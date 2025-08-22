@@ -1,3 +1,5 @@
+// 찜하기, 장바구니 담기 등 공통 사용자 활동 //
+
 function sendOk(mode, btnEL) {
 	let totalQty = 0;
 	let currentPage = "info";
@@ -54,26 +56,28 @@ function sendOk(mode, btnEL) {
 	f.submit();	
 }
 
-
 /**
  * 상품 찜 등록 / 취소
  * @param {string} productNum - 상품 번호
  * @param {object} btnEL - 찜 버튼 요소
  */
 function updateWish(productNum, btnEL) {
-	let url = contextPath + '/api/products/' + productNum + '/wish';
+	let url = contextPath + '/api/products/' + productNum + '/wishes';
 	let params = "";
 	
 	// 찜 여부 0: false  / 1: true 
-	let method = $(btnEL).data('wish') === 0 ? 'post' : 'delete';
+	let method = $(btnEL).attr('data-wish') === '0' ? 'post' : 'delete';
+	
+	console.log($(btnEL).attr('data-wish'));
+	console.log(method);
 	
 	const fn = function(data) {
 		if(method === 'post') {
 			$(btnEL).find('.wishIcon').attr('icon', 'mdi:heart');
-			$(btnEL).data('wish', 1);
+			$(btnEL).attr('data-wish', '1');
 		} else if(method === 'delete') {
 			$(btnEL).find('.wishIcon').attr('icon', 'lucide:heart');		
-			$(btnEL).data('wish', 0);			
+			$(btnEL).attr('data-wish', '0');			
 		}
 	}
 	
