@@ -85,10 +85,11 @@
 </footer>
 
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp" />
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList2.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productListService.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productListRenderer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productTimer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productList.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productAction.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/infiniteScroll.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productTimer.js"></script>
 </body>
 </html>

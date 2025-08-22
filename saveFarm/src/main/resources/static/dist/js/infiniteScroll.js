@@ -1,7 +1,9 @@
+// 무한 스크롤 //
+
 const listNode = document.querySelector('.content-list');
 const sentinelNode = document.querySelector('.sentinel');
 
-function scroll(data) {
+function updateInfiniteScroll(data) {
 	
 	let dataCount = Number(data.dataCount) || 0;
 	let pageNo = Number(data.pageNo) || 0;
