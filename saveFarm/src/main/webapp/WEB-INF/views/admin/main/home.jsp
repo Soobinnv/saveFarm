@@ -25,13 +25,12 @@
 				</div>
 			</div>				
 		</div>
-	</main>
-
+</main>
 <footer>
 	<jsp:include page="/WEB-INF/views/admin/layout/footer.jsp"/>
 </footer>
-
 <jsp:include page="/WEB-INF/views/admin/layout/footerResources.jsp"/>
+<jsp:include page="/WEB-INF/views/admin/product/productManagementResources.jsp"/>
 </div>
 </body>
 </html>

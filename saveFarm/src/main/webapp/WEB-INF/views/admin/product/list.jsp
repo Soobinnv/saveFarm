@@ -8,60 +8,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="">
 <meta name="author" content="">
-
-
-<style>
-  #leftSidebar.collapsed {
-    width: 0 !important;
-    overflow: hidden;
-  }
-
-#sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 240px;
-  height: 100vh;
-  background-color: #343a40;
-  transition: transform 0.3s ease-in-out;
-  z-index: 1030;
-}
-
-/* 숨겨졌을 때 */
-.sidebar-collapsed #sidebar {
-  transform: translateX(-100%);
-}
-
-#leftSidebar {
-    width: 250px;
-    transition: width 0.3s ease;
-  }
-
-  #leftSidebar.collapsed {
-    width: 0 !important;
-    overflow: hidden;
-  }
-  
-
-.nav-tabs .nav-link {
-  background-color: transparent; 
-  color: inherit;  
-  border: none;           
-}  
-
-#dataTable-1 th, 
-#dataTable-1 td {
-  text-align: center;
-}
-
-#dataTable-1 th:nth-child(2),
-#dataTable-1 td:nth-child(2) {
-  width: 400px;  /* 원하는 너비로 조절 */
-  white-space: nowrap; /* 줄바꿈 방지 (필요하면) */
-}
-  
-</style>
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/admincss/adminProductManagement.css" type="text/css">
 <title>세이브팜</title>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <jsp:include page="/WEB-INF/views/admin/layout/headerResources.jsp"/>

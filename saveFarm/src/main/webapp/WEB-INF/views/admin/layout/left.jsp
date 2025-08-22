@@ -113,22 +113,22 @@
 				</a>
 				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-product">
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/list">
+						<a id="productList" class="nav-link pl-3" href="javascript:void(0);">
 							<span class="ml-1 item-text">상품리스트</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/farmProductList">
+						<a id="supplyManagement" class="nav-link pl-3" href="javascript:void(0);">
 							<span class="ml-1 item-text">농가상품등록</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/inquiry">
+						<a id="productQna" class="nav-link pl-3" href="javascript:void(0);">
 							<span class="ml-1 item-text">상풍문의</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/product/review">
+						<a id="productReview" class="nav-link pl-3" href="javascript:void(0);">
 							<span class="ml-1 item-text">상품리뷰</span>
 						</a>
 					</li>
