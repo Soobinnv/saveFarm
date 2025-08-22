@@ -16,8 +16,8 @@
 	</select>
 	
 	<insert id="insertsubStatus" parameterType="com.sp.app.model.PackageOrder">
-		INSERT INTO subStatus(subNum,subMonth,payDate,payMethod,totalPay,memberId)
-		VALUES(#{subNum},#{subMonth},TO_DATE(#{payDate,jdbcType=VARCHAR}, 'YYYY-MM-DD'),#{payMethod,jdbcType=VARCHAR},#{totalPay},#{memberId})
+		INSERT INTO subStatus(subNum,subMonth,payDate,payMethod,totalPay,memberId,isExtend)
+		VALUES(#{subNum},#{subMonth},TO_DATE(#{payDate,jdbcType=VARCHAR}, 'YYYY-MM-DD'),#{payMethod,jdbcType=VARCHAR},#{totalPay},#{memberId},1)
 	</insert>
 	
 	<insert id="insertsubItem" parameterType="com.sp.app.model.PackageOrder">
@@ -50,6 +50,20 @@
 		UPDATE productDetail SET stockQuantity = stockQuantity - #{qty}
 		WHERE productNum = #{productNum}
 	</update>
+	
+	
+	<select id="findByPayData" resultType="com.sp.app.model.PackageOrder">
+		SELECT
+	      subNum,
+	      subMonth,
+	      totalPay,
+	      memberId,
+	      payMethod
+  		FROM subStatus 
+  		WHERE s.isExtend = 1
+    		AND TO_CHAR(s.payDate, 'DD') = TO_CHAR(SYSDATE, 'DD')                
+   			AND TO_CHAR(s.payDate, 'YYYYMM') = TO_CHAR(ADD_MONTHS(SYSDATE, -1), 'YYYYMM'); 
+	</select>
 	
 	
 </mapper>

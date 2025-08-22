@@ -14,6 +14,7 @@ public class PackageOrder {
 	private String packageName;
 	private int price;
 	private String content;
+	private int isExtend;
 	
 	private long itemNum;
 	private String subNum;
