@@ -101,10 +101,10 @@
                             <td>
                             	<a href="" class="text-secondary">202508051000000008</a>
                             </td>
-                            <td>결제대기</td>
-                            <td>김자바</td>
-                            <td>2025-08-15 10:10</td>
-                            <td>91000</td>
+                            <td>결제대기${dto.orderState}</td>
+                            <td>김자바${dto.name}</td>
+                            <td>2025-08-15 10:10${dto.orderDate}</td>
+                            <td>91000${dto.totalMoney}</td>
                             <td>10</td>
                             <td>0</td>
                             <td>0</td>
@@ -112,57 +112,31 @@
                           </tr>
                         </tbody>
                       </table>
-                         <div class="row justify-content-center">
-	                      	<div class="dataTables_paginate paging_simple_numbers" id="dataTable-1_paginate">
-					  			<ul class="pagination">
-					  				<li class="paginate_button page-item previous disabled" id="dataTable-1_previous">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="0" tabindex="0" class="page-link fe fe-chevron-left"></a>
-					  	  			</li>
-					  				<li class="paginate_button page-item active">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="1" tabindex="0" class="page-link">1</a>
-					  				</li>
-					  				<li class="paginate_button page-item ">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="2" tabindex="0" class="page-link">2</a>
-					  				</li>
-					  				<li class="paginate_button page-item ">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="3" tabindex="0" class="page-link">3</a>
-					  				</li>
-					  				<li class="paginate_button page-item ">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="4" tabindex="0" class="page-link">4</a>
-					  				</li>
-					  				<li class="paginate_button page-item next" id="dataTable-1_next">
-					  					<a href="#" aria-controls="dataTable-1" data-dt-idx="5" tabindex="0" class="page-link fe fe-chevron-right"></a>
-					  				</li>
-					  			</ul>
-					  	 	</div>
-	                     </div>
-	                     <div class="row">
-							<div class="col-sm-12 col-md-3 d-flex align-items-start"></div>
-							<div class="col-sm-12 col-md-6 d-flex justify-content-center ">
-								<div class="dataTables_paginate paging_simple_numbers" id="dataTable-1_paginate">
-									<ul class="pagination">
-										<li class="paginate_button page-item mr-2">
-											<button type="reset" class="fe fe-rotate-ccw btn mb-2 btn-outline-primary"></button>
-										</li>
-										<li class="paginate_button page-item previous disabled" id="dataTable-1_previous">
-											<select class="form-control">
-												<option>주문번호</option>
-												<option>주문자</option>
-												<option>주문일자</option>
-											</select>
-										</li>
-										<li class="paginate_button page-item active mr-2">
-											<input type="text" class="form-control " id="search1" value="" placeholder="Search">
-										</li>
-										<li class="paginate_button page-item ">
-											<button type="button" class="btn mb-2 btn-outline-primary">검색</button>
-										</li>
-										
-									</ul>
-								</div>
-							</div>
-							
+						<div class="row justify-content-center">
+							${paging}
 						</div>
+						 
+						<form action="${pageContext.request.contextPath}/admin/order/orderList/${itemId}" method="get">
+							<div class="row align-items-start">
+							    <div class="col-sm-12 col-md-3"></div>
+							
+							    <div class="col-sm-12 col-md-6 d-flex justify-content-center flex-column text-center"> 
+							        <!-- 검색 폼 -->
+									<div class="d-flex justify-content-center align-items-center mb-3"> 
+									    <button type="reset" class="fe fe-rotate-ccw btn  btn-outline-primary me-2 mr-1"></button>
+									    <select class="form-control me-2 col-2" name="schType"> 
+									        <option value="orderNum" ${schType == 'orderNum' ? 'selected' : ''}>주문번호</option>
+											<option value="orderState" ${schType == 'orderState' ? 'selected' : ''}>주문구분</option>
+											<option value="reg_date" ${schType == 'reg_date' ? 'selected' : ''}>주문자</option>
+											<option value="subject" ${schType == 'subject' ? 'selected' : ''}>주문일자</option>
+										</select>
+										<input type="text" class="form-control me-2 mr-1 col-3" name="kwd" id="search1" value="${kwd}" placeholder="Search"> 
+								        <button type="submit" class="btn  btn-outline-primary">검색</button>
+								    </div>
+								</div>
+							
+							</div>
+						</form>
                     </div>
                   </div>
                 </div> <!-- simple table -->

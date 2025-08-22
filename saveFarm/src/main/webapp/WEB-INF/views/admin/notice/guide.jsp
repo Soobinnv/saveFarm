@@ -76,13 +76,12 @@
 								                <button type="submit" class="btn  btn-outline-primary">검색</button>
 								            </div>
 								        </div>
-								
+										
 								        <!-- 오른쪽 버튼 영역 -->
 								        <div class="col-sm-12 col-md-3 d-flex justify-content-end align-items-start">
 								            <button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/notice/write/${itemId}';">가이드라인 등록</button>
 								        </div>
 								    </div>
 								</form>
-							
                     </div>
                   </div>

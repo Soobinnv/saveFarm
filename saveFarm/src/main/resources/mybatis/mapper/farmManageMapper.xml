@@ -5,7 +5,12 @@
 	<sql id="where-list">
 		<choose>
 			<when test="schType == 'farmerId'">
-				INSTR(farmerId, #{kwd}) &gt;= 1
+				<![CDATA[
+					(
+						INSTR(subject, #{kwd}) > 0
+						OR DBMS_LOB.INSTR(REGEXP_REPLACE(content, '<[^>]+>', ''), #{kwd}) > 0
+					)
+				]]>
 			</when>
 			<when test="schType == 'farmName'">
 				farmName = #{kwd}

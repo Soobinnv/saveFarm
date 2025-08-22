@@ -27,11 +27,4 @@ public class OtherManageController {
 		
 		return "admin/other/Report";
 	}
-//	
-//	@GetMapping("Report")
-//	public String handle(Model model) {
-//		
-//		
-//		return "admin/other/Report";
-//	}
 }

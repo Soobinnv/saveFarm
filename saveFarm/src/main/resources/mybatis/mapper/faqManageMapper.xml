@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.FaqManageMapper">
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'all'">
+				(
+					INSTR(f.subject, #{kwd}) > 0
+					OR INSTR(f.content, #{kwd}) > 0
+				)
+			</when>
+			<when test="schType == 'subject'">
+				INSTR(f.subject, #{kwd}) > 0
+			</when>
+			<when test="schType == 'subject'">
+				INSTR(f.name, #{kwd}) > 0
+			</when>
+		</choose>
+	</sql>
+	<sql id="FAQ-list">
+		<choose>
+			<when test="schTypeFAQ == 'memberFAQ'">
+				classify = 1
+			</when>
+			<when test="schTypeFAQ == 'farmFAQ'">
+				classify = 2
+			</when>
+		</choose>
+	</sql>
+	
+	<select id="categoryFAQList" resultType="com.sp.app.admin.model.FaqManage">
+		SELECT categoryNum, categoryName, classify
+		FROM categoryFAQ
+		<where>
+			<if test="schTypeFAQ != null">
+				AND <include refid="FAQ-list"/>
+			</if>
+		</where>
+	</select>
+	
+	<select id="dataCount" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
+	SELECT
+	    NVL(COUNT(*),0) AS dataCount,
+	    SUM(DECODE(classify, 1, 1, 0)) AS memberCount,
+	    SUM(DECODE(classify, 2, 1, 0)) AS farmCount
+	FROM FAQ f
+	LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+	<where>
+		<if test="schTypeFAQ != null">
+			AND <include refid="FAQ-list"/>
+		</if>
+		<if test="kwd != null and kwd != ''">
+			AND <include refid="where-list"/>
+		</if>
+	</where>
+</select>
+</mapper>
