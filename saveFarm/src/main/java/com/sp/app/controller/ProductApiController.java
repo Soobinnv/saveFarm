@@ -42,7 +42,7 @@ public class ProductApiController {
 
 	// 상품 리스트 데이터
 	@GetMapping("/normal")
-	public ResponseEntity<?> getProductList(
+	public ResponseEntity<?> getProducts(
 			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd,
 			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
 			HttpSession session
@@ -82,7 +82,7 @@ public class ProductApiController {
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getProductList: ", e);
+			log.error("getProducts: ", e);
 			body.put("message", "일반 상품 목록을 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
@@ -90,7 +90,7 @@ public class ProductApiController {
 	
 	// 구출 상품 리스트 데이터
 	@GetMapping("/rescued")
-	public ResponseEntity<?> getRescuedProductList(
+	public ResponseEntity<?> getRescuedProducts(
 			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd,
 			HttpSession session
 			) {
@@ -112,7 +112,7 @@ public class ProductApiController {
 ;			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getRescuedProductList: ", e);
+			log.error("getRescuedProducts: ", e);
 			body.put("message", "구출 상품 목록을 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
@@ -154,7 +154,7 @@ public class ProductApiController {
 
 	// 상품 문의 데이터
 	@GetMapping("/{productNum}/qnas")
-	public ResponseEntity<?> getProductQna(
+	public ResponseEntity<?> getProductQnas(
 			@PathVariable(name = "productNum") long productNum
 		) {
 		Map<String, Object> body = new HashMap<>();
@@ -164,7 +164,7 @@ public class ProductApiController {
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getProductQna: ", e);
+			log.error("getProductQnas: ", e);
 			body.put("message", "상품의 문의 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
@@ -172,7 +172,7 @@ public class ProductApiController {
     
 	// 상품 리뷰 데이터
 	@GetMapping("/{productNum}/reviews")
-	public ResponseEntity<?> getProductReview(
+	public ResponseEntity<?> getProductReviews(
 			@PathVariable(name = "productNum") long productNum,
 			HttpSession session
 		) {
@@ -193,7 +193,7 @@ public class ProductApiController {
 			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("getProductReview: ", e);
+			log.error("getProductReviews: ", e);
 			body.put("message", "상품의 리뷰 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
@@ -251,7 +251,7 @@ public class ProductApiController {
 	
 	// 상품 문의 등록
 	@PostMapping("{productNum}/qnas")
-	public ResponseEntity<?> insertProductQna(
+	public ResponseEntity<?> insertProductQnas(
 			@PathVariable(name = "productNum") Long productNum,
 			ProductQna dto,
 			HttpSession session) {
@@ -272,7 +272,7 @@ public class ProductApiController {
 
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("insertProductQna: ", e);
+			log.error("insertProductQnas: ", e);
 			body.put("message", "상품 문의 등록 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}

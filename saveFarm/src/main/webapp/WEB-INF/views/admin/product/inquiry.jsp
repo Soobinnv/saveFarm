@@ -172,11 +172,11 @@
 						</div> 
                     </div>
                   </div>
-                </div> <!-- simple table -->
-              </div> <!-- end section -->
-            </div> <!-- .col-12 -->
-          </div> <!-- .row -->
-        </div> <!-- .container-fluid -->
+                </div> 
+              </div> 
+            </div> 
+          </div>
+        </div> 
       </main>
 <footer>
 	<jsp:include page="/WEB-INF/views/admin/layout/footer.jsp"/>

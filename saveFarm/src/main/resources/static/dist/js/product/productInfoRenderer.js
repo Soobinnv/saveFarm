@@ -204,7 +204,6 @@ const renderProductReviewHtml = function(data) {
  * 상품 반품 / 환불 HTML 렌더링
  * 상품 반품 / 환불 안내
  * @param {object} data
- * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderRefund = function() {	
 	const html = `
