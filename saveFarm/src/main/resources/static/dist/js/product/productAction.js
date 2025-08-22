@@ -66,15 +66,18 @@ function updateWish(productNum, btnEL) {
 	let params = "";
 	
 	// 찜 여부 0: false  / 1: true 
-	let method = $(btnEL).attr('data-wish') === 0 ? 'post' : 'delete';
+	let method = $(btnEL).attr('data-wish') === '0' ? 'post' : 'delete';
+	
+	console.log($(btnEL).attr('data-wish'));
+	console.log(method);
 	
 	const fn = function(data) {
 		if(method === 'post') {
 			$(btnEL).find('.wishIcon').attr('icon', 'mdi:heart');
-			$(btnEL).attr('data-wish', 1);
+			$(btnEL).attr('data-wish', '1');
 		} else if(method === 'delete') {
 			$(btnEL).find('.wishIcon').attr('icon', 'lucide:heart');		
-			$(btnEL).attr('data-wish', 0);			
+			$(btnEL).attr('data-wish', '0');			
 		}
 	}
 	

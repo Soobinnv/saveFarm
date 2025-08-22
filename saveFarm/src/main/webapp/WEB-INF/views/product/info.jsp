@@ -93,7 +93,7 @@
 						<button data-wish="${productInfo.userWish}"
 							onclick="updateWish(${productInfo.productNum}, this);"
 							class="wishBtn p-2 position-absolute bottom-0 end-0 m-3 border-0 bg-transparent text-white z-3">
-							<iconify-icon class="fs-4"
+							<iconify-icon class="fs-4 wishIcon"
 								icon="${productInfo.userWish == '1' ? 'mdi:heart' : 'lucide:heart'}"></iconify-icon>
 						</button>
 					</div>

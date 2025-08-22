@@ -38,18 +38,17 @@ const renderProductListHtml = function(data) {
 								</form>
 	                        </li>
 	                        <li>
-								<button type="button" class="btn-wish-save">
-								${item.userWish == '1'
-		                            ?`<iconify-icon icon="mdi:heart" class="wishIcon fs-4"></iconify-icon>`
-		                            :`<iconify-icon icon="lucide:heart" class="wishIcon fs-4"></iconify-icon>` 
-		                        }
+								<button data-wish="${item.userWish}" type="button" class="btn-wish-save">
+									${item.userWish == '1'
+			                            ?`<iconify-icon icon="mdi:heart" class="wishIcon fs-4"></iconify-icon>`
+			                            :`<iconify-icon icon="lucide:heart" class="wishIcon fs-4"></iconify-icon>` 
+			                        }
 								</button>
 								<input type="hidden" name="thumbnail" value="${item.mainImageFilename}">
 								<input type="hidden" name="unit" value="${item.unit}">
 								<input type="hidden" name="productName" value="${item.productName}">
 								<input type="hidden" name="unitPrice" value="${item.unitPrice}">
 								<input type="hidden" name="stockQuantity" value="${item.stockQuantity}">
-								
 	                        </li>
 	                    </ul>
 	                </div>
