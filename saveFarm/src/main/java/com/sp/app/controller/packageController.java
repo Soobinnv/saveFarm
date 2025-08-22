@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sp.app.common.PaginateUtil;
@@ -76,7 +77,8 @@ public class packageController {
 
 			dto.setMemberId(info.getMemberId());
 			dto.setSubNum(packageService.subPackageNumber());
-
+			dto.setSubMonth(1);
+			
 			packageService.insertPackageOrder(dto);
 
 			StringBuilder sb = new StringBuilder();
@@ -126,7 +128,8 @@ public class packageController {
 
 		return "package/reviewList";
 	}
-
+	
+	@ResponseBody
 	@GetMapping("list")
 	public Map<String, ?> list(@RequestParam(name = "pageNo", defaultValue = "1") int current_page, HttpSession session)
 			throws Exception {

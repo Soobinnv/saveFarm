@@ -44,6 +44,9 @@
 </style>
 </head>
 <body>
+<header>
+	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
+</header>
 <c:set var="CP" value="${pageContext.request.contextPath}" />
 
 <div class="wrap">
@@ -61,107 +64,91 @@
 </div>
 
 <script>
-  const CP = '<c:out value="${pageContext.request.contextPath}"/>';
-  const PLACEHOLDER = CP + '/resources/img/no-image.png';
-  const UPLOAD_DIR = CP + '/uploads/review/';
+  // ★ 컨트롤러에 맞춘 고정 경로
+  var LIST_URL     = '/package/list';             // GET JSON
+  var WRITE_URL    = '/package/reviewWriteForm';  // 작성 버튼
+  var DETAIL_URL   = function(subNum){ return '#'; }; // TODO: 상세 URL 생기면 교체
 
-  function createCard(item){
-    const card = document.createElement('div');
-    card.className = 'card';
+  // 정적 리소스 (앱이 루트(/)에 배포돼 있다고 가정)
+  var PLACEHOLDER  = '/resources/img/no-image.png';
+  var UPLOAD_DIR   = '/uploads/PackageReview/';   // 끝에 / 필수
 
-    const img = document.createElement('img');
-    img.className = 'thumb';
-    img.alt = item.subject || '';
-    img.src = item.imageFilename ? (UPLOAD_DIR + item.imageFilename) : PLACEHOLDER;
-    card.appendChild(img);
-
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-    meta.textContent = (item.regDate || '') + (item.subNum ? ' · 구독번호 ' + item.subNum : '');
-    card.appendChild(meta);
-
-    const title = document.createElement('div');
-    title.className = 'title';
-    title.textContent = item.subject || '';
-    card.appendChild(title);
-
-    const excerpt = document.createElement('div');
-    excerpt.className = 'excerpt';
-    excerpt.textContent = item.content || '';
-    card.appendChild(excerpt);
-
-    const foot = document.createElement('div');
-    foot.className = 'foot';
-
-    const stars = document.createElement('div');
-    stars.className = 'stars';
-    const s = Number(item.star) || 0;
-    // ✨ 템플릿 리터럴 제거
-    stars.innerHTML = Array.from({length:5}, (_,i) =>
-      '<span class="' + (i < s ? 'on' : '') + '">★</span>'
-    ).join('');
-    foot.appendChild(stars);
-
-    const a = document.createElement('a');
-    a.className = 'btn-view';
-    a.href = CP + '/sub/review/detail?subNum=' + encodeURIComponent(item.subNum);
-    a.textContent = '자세히';
-    foot.appendChild(a);
-
-    card.appendChild(foot);
-    return card;
+  // 간단 이스케이프
+  function esc(s){
+    return String(s==null?'':s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+      .replace(/'/g,'&#39;');
   }
 
   function renderList(data){
-    const grid = document.getElementById('grid');
-    grid.innerHTML = '';
-    const list = Array.isArray(data.list) ? data.list : [];
+    var grid = document.getElementById('grid');
+    var list = Array.isArray(data.list) ? data.list : [];
+    var html = '';
+
     if(list.length === 0){
-      grid.innerHTML = '<div class="empty" style="grid-column:1/-1">아직 등록된 후기가 없습니다.</div>';
-    }else{
-      list.forEach(item => grid.appendChild(createCard(item)));
-    }
+      html = '<div class="empty" style="grid-column:1/-1">아직 등록된 후기가 없습니다.</div>';
+    } else {
+      for(var i=0;i<list.length;i++){
+        var it = list[i];
+        var imgSrc = it.imageFilename ? (UPLOAD_DIR + it.imageFilename) : PLACEHOLDER;
 
-    const paging = document.getElementById('paging');
-    if(data.paging){
-      paging.innerHTML = data.paging; // 서버에서 만든 HTML 그대로 사용
-    }else{
-      const page  = data.pageNo || 1;
-      const total = data.total_page || 1;
-      const prev  = Math.max(1, page-1);
-      const next  = Math.min(total, page+1);
+        // 별점
+        var s = Number(it.star) || 0, stars = '';
+        for(var k=0;k<5;k++){ stars += '<span class="' + (k < s ? 'on' : '') + '">★</span>'; }
 
-      let html = '';
-      // ✨ 템플릿 리터럴 제거
-      html += '<a class="' + (page===1 ? 'disabled' : '') +
-              '" href="javascript:listReview(' + prev + ')">이전</a>';
-
-      const start = Math.max(1, page-2), end = Math.min(total, start+4);
-      for(let p=start; p<=end; p++){
-        if(p===page){
-          html += '<span class="active">' + p + '</span>';
-        }else{
-          html += '<a href="javascript:listReview(' + p + ')">' + p + '</a>';
-        }
+        html += ''
+          + '<div class="card">'
+          +   '<img class="thumb" src="' + imgSrc + '" alt="' + esc(it.subject) + '">'
+          +   '<div class="meta">' + esc(it.regDate||'') + (it.subNum ? ' · 구독번호 ' + esc(it.subNum) : '') + '</div>'
+          +   '<div class="title">' + esc(it.subject) + '</div>'
+          +   '<div class="excerpt">' + esc(it.content) + '</div>'
+          +   '<div class="foot">'
+          +     '<div class="stars">' + stars + '</div>'
+          +     '<a class="btn-view" href="' + DETAIL_URL(it.subNum) + '">자세히</a>'
+          +   '</div>'
+          + '</div>';
       }
-
-      html += '<a class="' + (page===total ? 'disabled' : '') +
-              '" href="javascript:listReview(' + next + ')">다음</a>';
-
-      paging.innerHTML = html;
     }
+    grid.innerHTML = html;
+
+    // 페이징
+    var pagingEl = document.getElementById('paging');
+    if(data.paging){
+      pagingEl.innerHTML = data.paging; // 서버에서 만든 HTML 그대로 사용 (listReview 호출)
+    }else{
+      var page  = data.pageNo || 1;
+      var total = data.total_page || 1;
+      var prev  = Math.max(1, page-1);
+      var next  = Math.min(total, page+1);
+
+      var phtml = '';
+      phtml += '<a class="' + (page===1?'disabled':'') + '" href="javascript:listReview(' + prev + ')">이전</a>';
+      var start = Math.max(1, page-2), end = Math.min(total, start+4);
+      for(var p=start; p<=end; p++){
+        if(p===page) phtml += '<span class="active">' + p + '</span>';
+        else         phtml += '<a href="javascript:listReview(' + p + ')">' + p + '</a>';
+      }
+      phtml += '<a class="' + (page===total?'disabled':'') + '" href="javascript:listReview(' + next + ')">다음</a>';
+      pagingEl.innerHTML = phtml;
+    }
+
+    // 하단 작성 버튼(있다면 갱신)
+    var writeBtn = document.querySelector('.btn-write');
+    if(writeBtn){ writeBtn.setAttribute('href', WRITE_URL); }
   }
 
-  async function fetchList(pageNo=1){
-    const url = CP + '/package/list?pageNo=' + encodeURIComponent(pageNo);
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  async function fetchList(pageNo){
+    var res = await fetch(LIST_URL + '?pageNo=' + encodeURIComponent(pageNo||1), {
+      headers: { 'Accept': 'application/json' }
+    });
     if(!res.ok) throw new Error('네트워크 오류');
     return await res.json();
   }
 
   async function listReview(pageNo){
     try{
-      const data = await fetchList(pageNo || 1);
+      var data = await fetchList(pageNo||1);
       renderList(data);
       window.scrollTo({top:0, behavior:'smooth'});
     }catch(e){
@@ -170,10 +157,14 @@
     }
   }
   window.listReview = listReview;
-  document.addEventListener('DOMContentLoaded', () => listReview(1));
+  document.addEventListener('DOMContentLoaded', function(){ listReview(1); });
 </script>
 
 
+
+<footer>
+	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
+</footer>
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
 </body>
 </html>

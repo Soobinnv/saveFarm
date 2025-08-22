@@ -123,12 +123,12 @@
     <div class="title">구독리뷰</div>
 
     <div class="meta-row">
-      <div>구독 주문 번호 : <b>202508147000000008</b></div>
+      <div>구독 주문 번호 : <b>202508147000000007</b></div>
       <div><b>${loginInfo.userName}</b> 님의 <b>${nth}</b>회차 구독 리뷰</div>
     </div>
     <div class="hr"></div>
 
-    <form id="reviewForm"
+    <form name="reviewForm"
           action="${pageContext.request.contextPath}/package/reviewSubmit"
           method="post" enctype="multipart/form-data" autocomplete="off">
 
@@ -174,7 +174,7 @@
       </div>
 
       <!-- 숨김값 (필요 시) -->
-      <input type="hidden" name="subNum" value="202508147000000008">
+      <input type="hidden" name="subNum" value="202508147000000007">
       
      
 
@@ -225,9 +225,10 @@
       reader.readAsDataURL(f);
     });
   });
-
+	
+  const f = document.reviewForm;
   // 간단 유효성 검사
-  form.addEventListener('submit', (e) => {
+  f.addEventListener('submit', (e) => {
   const ratingChecked = document.querySelector('input[name="star"]:checked');
   if (!ratingChecked) {
     alert('별점을 선택해주세요.');

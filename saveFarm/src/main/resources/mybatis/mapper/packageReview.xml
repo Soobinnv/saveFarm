@@ -8,8 +8,8 @@
 	</insert>
 	
 	<insert id="insertsubImage" parameterType="com.sp.app.model.packageReview">
-		INSERT subImage(imageNum, imagefilename, subNum)
-		VALUES(subImage_seq.NEXTVAL, #{imagefilename}, #{sub})
+		INSERT INTO subImage(imageNum, imageFilename, subNum)
+		VALUES(subImage_seq.NEXTVAL, #{imageFilename}, #{subNum})
 	</insert>
 	
 	<select id="countReview" resultType="Integer">
