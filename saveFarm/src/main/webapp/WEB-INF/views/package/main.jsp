@@ -92,7 +92,7 @@ body{
     </div>
 
     <div class="text-center mt-4">
-        <a href="#" class="btn btnGreen rounded-pill px-4 py-2 fw-bold">구독 후기 구경하기</a>
+        <a href="${pageContext.request.contextPath}/package/reviewList" class="btn btnGreen rounded-pill px-4 py-2 fw-bold">구독 후기 구경하기</a>
     </div>
 </div>
 

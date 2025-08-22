@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class packageReview {
+	private int count;
 	private long subNum;
 	private Long memberId;
 	private int star;
@@ -22,6 +23,8 @@ public class packageReview {
 	private String imageFilename;
 	private List<MultipartFile> selectFile;
 	private int subMonth;
+	
+	private String name;
 	
 	private String[] listFilename;
 }

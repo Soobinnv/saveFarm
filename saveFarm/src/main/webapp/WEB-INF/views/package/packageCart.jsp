@@ -576,7 +576,7 @@ function sendOk(){
 <footer>
 	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
 </footer>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/productList.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/product/productListRenderer.js"></script>
 <jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/packageCartModal.js"></script>
 

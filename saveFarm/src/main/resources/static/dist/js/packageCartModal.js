@@ -1,6 +1,6 @@
 // ================== 모달 오픈/정리 ==================
 (function () {
-  loadSelectProducts("/api/products");
+  loadSelectProducts("/api/products/normal");
 
   var modalEl = document.getElementById('productSelectModal');
   var trigger = document.querySelector('.subcart .addline');

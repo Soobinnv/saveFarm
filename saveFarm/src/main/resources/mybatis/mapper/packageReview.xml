@@ -12,4 +12,32 @@
 		VALUES(subImage_seq.NEXTVAL, #{imagefilename}, #{sub})
 	</insert>
 	
+	<select id="countReview" resultType="Integer">
+		SELECT NVL(COUNT(*), 0) count
+		FROM subReview
+	</select>
+	
+	
+	<select id="listReview" parameterType="map" resultType="com.sp.app.model.packageReview">
+		SELECT sr.subNum, subject, content, TO_CHAR(sr.regDate, 'YYYY-MM-DD'), star , f.imageFilename, m2.name, ss.subMonth
+		FROM subReview sr
+		JOIN subStatus ss ON sr.subNum = ss.subNum
+		LEFT OUTER JOIN member2 m2 ON  ss.memberId = m2.memberId
+		LEFT OUTER JOIN (
+			SELECT subNum, LISTAGG(imageFilename, ',') WITHIN GROUP(ORDER BY imageNum) imageFilename 
+            FROM subImage
+            GROUP BY subNum	
+		) f ON f.subNum = sr.subNum
+		ORDER BY sr.regDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	
+	<select id="listsubImage" parameterType="long" resultType="com.sp.app.model.packageReview">
+		SELECT imageNum, subNum, imageFilename
+		FROm subImage
+		WHERE subNum = #{subNum}
+	</select>
+	
+	
 </mapper>

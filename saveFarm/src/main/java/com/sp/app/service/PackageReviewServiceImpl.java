@@ -1,5 +1,7 @@
 package com.sp.app.service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class PackageReviewServiceImpl implements PackageReviewService{
 
 	@Override
 	public void insertPackageReview(packageReview dto, String uploadPath) throws Exception {
-		try {
+		try { 
 			mapper.insertsubReview(dto);
 			
 			if(! dto.getSelectFile().isEmpty()) {
@@ -55,6 +57,41 @@ public class PackageReviewServiceImpl implements PackageReviewService{
 				throw e;
 			}
 		}
+	}
+
+	@Override
+	public List<packageReview> listReview(Map<String, Object> map) {
+		List<packageReview> list = null;
+		
+		try {
+			list = mapper.listReview(map);
+			
+			for(packageReview dto : list) {
+				if(dto.getImageFilename() != null) {
+					dto.setListFilename(dto.getImageFilename().split(","));
+				}
+				dto.setName(myUtil.nameMasking(dto.getName()));
+				
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			
+		} catch (Exception e) {
+			log.info("packageReviewList : ",e );
+		}
+		
+		return list;
+	}
+
+	@Override
+	public int countReview() {
+		int count =0;
+		try {
+			count = mapper.countReview();
+		} catch (Exception e) {
+			log.info("countReview : " ,e);
+		}
+		
+		return count;
 	}
 
 }
