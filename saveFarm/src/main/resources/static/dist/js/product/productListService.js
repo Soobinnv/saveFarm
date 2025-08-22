@@ -1,5 +1,7 @@
 // AJAX 등 서버 API 호출 //
 
+const contextPath = document.getElementById('web-contextPath').value;
+
 // 처음 접속 시 일반 상품, 구출 상품 리스트 호출
 $(function() {	
 	loadProducts("/api/products/rescued");

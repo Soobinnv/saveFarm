@@ -15,9 +15,6 @@
 	href="${pageContext.request.contextPath}/dist/css/productStyle.css"
 	type="text/css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/style.css" type="text/css">
-<script>
-    const contextPath = "${pageContext.request.contextPath}";
-</script>
 </head>
 <body data-page-id="product-list">
 
@@ -78,7 +75,7 @@
 		</div>
 	</div>
 
-
+<input type="hidden" id="web-contextPath" value="${pageContext.request.contextPath}">
 </main>
 <footer>
 	<jsp:include page="/WEB-INF/views/layout/footer.jsp" />

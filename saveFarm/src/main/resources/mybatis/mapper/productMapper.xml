@@ -2,17 +2,13 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.mapper.ProductMapper">
-	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
-		FROM product p
-		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
-		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND memberId = #{memberId, jdbcType=BIGINT}
-		WHERE PRODUCTCLASSIFICATION = 100
-		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
-	</select>
-
-	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
+	<sql id="stockCondition">
+	    <if test="pageType != 'admin'">
+	        AND STOCKQUANTITY > 0
+	    </if>
+	</sql>
+	
+	<sql id="productSelect">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
 			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
 		FROM product p
@@ -20,7 +16,31 @@
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
 		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
         LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
+	</sql>
+	
+	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN wish w ON p.PRODUCTNUM = w.PRODUCTNUM AND memberId = #{memberId, jdbcType=BIGINT}
+		WHERE PRODUCTCLASSIFICATION = 100
+		<include refid="stockCondition"/>
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		<include refid="productSelect"/>	
 		WHERE PRODUCTCLASSIFICATION = 200
+		<include refid="stockCondition"/>
+		<if test="offset != null and size != null">
+			OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+		</if>
+	</select>
+
+	<select id="getAllProductList" parameterType="map" resultType="com.sp.app.model.Product">
+		<include refid="productSelect"/>
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 
 	<select id="getRescuedProductNumsClosingSoon" parameterType="java.time.LocalDateTime" resultType="com.sp.app.model.Product">
@@ -135,9 +155,14 @@
         WHERE PRODUCTNUM = #{productNum}
     </delete>
     
-    <select id="getDataCount" parameterType="Integer" resultType="Integer">
+    <select id="getDataCount" parameterType="int" resultType="Integer">
 		SELECT COUNT(*)
 		FROM product
-		WHERE productClassification = #{productClassification, jdbcType = INTEGER}
+		WHERE productClassification = #{productClassification}
 	</select>
+	
+    <select id="getAllDataCount" resultType="Integer">
+		SELECT COUNT(*) FROM product
+	</select>
+	
 </mapper>

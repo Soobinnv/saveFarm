@@ -7,7 +7,7 @@ const webContextPath = document.getElementById('web-contextPath').value;
  * @param {string} url - URL (contextPath 제외)
  * @param {Function} renderFn - AJAX 응답 데이터를 인자로 받아 HTML 문자열을 반환하는 callback 함수
  */
-function loadContent(url, renderFn, params = '') {
+function loadContent(url, renderFn, params = '', methodName) {
 	// 요청 경로 생성
 	url = webContextPath + url;
 	// 렌더링할 HTML 요소 선택자
@@ -17,6 +17,8 @@ function loadContent(url, renderFn, params = '') {
 		const html = renderFn(data);
 		
 		$(selector).html(html);
+		
+		pagingManagement(methodName);
 	}
 	
 	ajaxRequest(url, 'get', params, 'json', fn);

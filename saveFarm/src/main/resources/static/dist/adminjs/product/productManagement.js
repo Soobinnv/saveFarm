@@ -14,19 +14,21 @@ $(function() {
 		// 선택한 tab id
 		let navId = $(this).attr('id');
 		
+		let params = '';
+		
 		// tab 컨텐츠 AJAX 요청 및 렌더링
 		switch (navId) {
 	    	case 'productList':
-	            loadContent('/api/admin/products', renderProductListHTML); 
+	            loadContent('/api/admin/products', renderProductListHTML, params, 'productListPage'); 
 	            break;
 	        case 'supplyManagement':
-	            loadContent('/api/admin/supplies', renderFarmProductListHTML);  
+	            loadContent('/api/admin/supplies', renderFarmProductListHTML, params, 'supplyListPage');  
 	            break;
 	        case 'productQna':				
-				loadContent('/api/admin/inquiries', renderProductQnaListHTML);  
+				loadContent('/api/admin/inquiries', renderProductQnaListHTML, params, 'inquiryListPage');  
 				break;
 	        case 'productReview':
-	        	loadContent('/api/admin/reviews', renderProductReviewListHTML);  
+	        	loadContent('/api/admin/reviews', renderProductReviewListHTML, params, 'qnaListPage');  
 				break;
     	}
 	});

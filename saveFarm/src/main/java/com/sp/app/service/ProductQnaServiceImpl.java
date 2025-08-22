@@ -93,9 +93,27 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 		
 		return list;
 	}
+	
+	@Override
+	public List<ProductQna> getAllQnaList(Map<String, Object> map) {
+		List<ProductQna> list = null;
+		
+		try {
+			list = mapper.getAllQnaList(map);
+			
+		} catch (Exception e) {
+			log.info("getAllQnaList : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+	
+	
 
 	@Override
-	public int getDataCount(long productNum) {
+	public int getDataCount(Long productNum) {
 		int count = 0;
 		
 		try {
@@ -103,6 +121,22 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 			
 		} catch (Exception e) {
 			log.info("getDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
+	
+	@Override
+	public int getAllDataCount() {
+		int count = 0;
+		
+		try {
+			count = mapper.getAllDataCount();
+			
+		} catch (Exception e) {
+			log.info("getAllDataCount : ", e);
 			
 			throw e;
 		}

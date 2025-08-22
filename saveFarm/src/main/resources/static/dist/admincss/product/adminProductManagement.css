@@ -1,0 +1,80 @@
+ #leftSidebar.collapsed {
+   width: 0 !important;
+   overflow: hidden;
+ }
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background-color: #343a40;
+  transition: transform 0.3s ease-in-out;
+  z-index: 1030;
+}
+
+/* 숨겨졌을 때 */
+.sidebar-collapsed #sidebar {
+  transform: translateX(-100%);
+}
+
+#leftSidebar {
+    width: 250px;
+    transition: width 0.3s ease;
+}
+
+#leftSidebar.collapsed {
+  width: 0 !important;
+  overflow: hidden;
+}
+  
+
+.nav-tabs .nav-link {
+  background-color: transparent; 
+  color: inherit;  
+  border: none;           
+}  
+
+.paginate {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px; /* 버튼 사이의 간격 */
+    font-family: 'Arial', sans-serif;
+}
+
+.paginate a,
+.paginate span {
+    display: inline-block;
+    padding: 10px 15px;
+    min-width: 40px; /* 최소 너비 고정 */
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px; /* 부드러운 모서리 */
+    transition: all 0.3s ease; /* 부드러운 전환 효과 */
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 약간의 그림자 효과 */
+}
+
+/* 기본 페이지 버튼 (a 태그) */
+.paginate a {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #dee2e6;
+}
+
+/* 마우스를 올렸을 때의 효과 */
+.paginate a:hover {
+    background-color: #e9ecef;
+    color: #495057;
+    transform: translateY(-2px); /* 살짝 위로 이동 */
+}
+
+/* 현재 활성화된 페이지 (span 태그) */
+.paginate span {
+    background-color: #1B68FF; /* 메인 색상 */
+    color: #ffffff; /* 흰색 글자 */
+    border: 1px solid #1B68FF;
+    cursor: default; /* 클릭할 수 없음을 표시 */
+}

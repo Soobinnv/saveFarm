@@ -10,13 +10,15 @@ public interface ProductService {
 
 	public List<Product> getProductList(Map<String, Object> map);	
 	public List<Product> getRescuedProductList(Map<String, Object> map);	
+	public List<Product> getAllProductList(Map<String, Object> map);
 	
 	public Product getProductInfo(long productNum);	
 	public Product getRescuedProductInfo(long productNum);	
 	
 	public List<Product> getProductImageList(long productNum);	
 	
-	public int getDataCount(Integer productClassification);
+	public int getDataCount(int productClassification);
+	public int getAllDataCount();
 	
 	public void insertProduct(Product dto, String uploadPath) throws Exception;
 	public void insertProductDetail(Product dto) throws Exception;

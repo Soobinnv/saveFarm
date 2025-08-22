@@ -13,10 +13,12 @@ public interface ProductReviewService {
 	public List<ProductReview> getReviewList(Map<String, Object> map);
 	public List<ProductReview> getReviewListByProductNum(Map<String, Object> map);
 	public List<ProductReview> getMyReviewList(Map<String, Object> map);
+	
 	public int getDataCount(Map<String, Object> map);
+	public int getAllDataCount();
 	public int getMyReviewDataCount(long memberId);
+	public int getReviewLikeCount(long orderDetailNum);
 
 	public void insertReviewLike(Map<String, Object> map) throws Exception;
-	public int getReviewLikeCount(long orderDetailNum);
 	public void deleteReviewLike(Map<String, Object> map) throws Exception;
 }

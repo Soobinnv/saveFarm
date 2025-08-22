@@ -22,13 +22,12 @@
 			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto,
 			pd.unit, COUNT(prl.orderDetailNum) helpfulCount
 		FROM ProductReview pr
-		JOIN orderDetail od ON po.orderDetailNum = od.orderDetailNum
+		JOIN orderDetail od ON pr.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
 		LEFT OUTER JOIN product p ON pr.productNum = p.productNum
 		LEFT OUTER JOIN productDetail pd ON pd.productNum = p.productNum
 		LEFT OUTER JOIN member2 m2 ON po.memberId = m2.memberId
 		LEFT OUTER JOIN productReviewLike prl ON pr.orderDetailNum = prl.orderDetailNum
-		WHERE reviewBlock = 0
 		GROUP BY
     		pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, 
     		po.orderDate, productName, p.mainImageFilename, po.memberId, name, profilePhoto, pd.unit
@@ -83,6 +82,10 @@
 		SELECT COUNT(*)
 		FROM ProductReview
 		WHERE productNum = #{productNum} AND reviewBlock = 0
+	</select>
+
+	<select id="getAllDataCount" resultType="Integer">
+		SELECT COUNT(*) FROM ProductReview
 	</select>
 
 	<select id="getMyReviewDataCount" parameterType="long" resultType="Integer">

@@ -129,6 +129,22 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		
 		return count;
 	}
+	
+	@Override
+	public int getAllDataCount() {
+		int count = 0;
+		
+		try {
+			count = mapper.getAllDataCount();
+			
+		} catch (Exception e) {
+			log.info("getAllDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
 
 	@Override
 	public int getMyReviewDataCount(long memberId) {

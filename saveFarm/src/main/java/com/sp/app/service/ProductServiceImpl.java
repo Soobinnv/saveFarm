@@ -88,6 +88,24 @@ public class ProductServiceImpl implements ProductService {
 		return list;
 	}
 	
+	@Override
+	public List<Product> getAllProductList(Map<String, Object> map) {
+		List<Product> list = null;
+		
+		try {
+			list = mapper.getAllProductList(map);
+			for(Product dto : list) {
+				applyDiscount(dto);																					
+			}				
+		} catch (Exception e) {
+			log.info("getAllProductList : ", e);
+		}
+		
+		return list;
+	}
+	
+	
+	
 	/**
 	 * 상품 할인가격 계산 및 적용
 	 * @param product 상품 DTO
@@ -192,13 +210,26 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public int getDataCount(Integer productClassification) {
+	public int getDataCount(int productClassification) {
 		int result = 0;
 		
 		try {
 			result = mapper.getDataCount(productClassification);
 		} catch (Exception e) {
 			log.info("getDataCount : ", e);
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public int getAllDataCount() {
+		int result = 0;
+		
+		try {
+			result = mapper.getAllDataCount();
+		} catch (Exception e) {
+			log.info("getAllDataCount : ", e);
 		}
 		
 		return result;

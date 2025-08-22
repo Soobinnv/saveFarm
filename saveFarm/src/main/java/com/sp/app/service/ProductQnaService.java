@@ -12,6 +12,9 @@ public interface ProductQnaService {
 	
 	public List<ProductQna> getQnaList(long productNum);
 	public List<ProductQna> getMyQnaList(Map<String, Object> map);
-	public int getDataCount(long productNum);
+	public List<ProductQna> getAllQnaList(Map<String, Object> map);
+	
+	public int getDataCount(Long productNum);
 	public int getMyQnaDataCount(long memberId);
+	public int getAllDataCount();
 }
