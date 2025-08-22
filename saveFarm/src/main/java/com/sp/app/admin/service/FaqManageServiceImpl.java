@@ -44,12 +44,12 @@ public class FaqManageServiceImpl implements FaqManageService{
 	}
 
 	@Override
-	public List<FaqManage> categoryList(Map<String, Object> map) {
+	public List<FaqManage> faqList(Map<String, Object> map) {
 		List<FaqManage> list = null;
 		try {
-			list = mapper.categoryList(map);
+			list = mapper.faqList(map);
 		} catch (Exception e) {
-			log.info("categoryList 문제: ", e);
+			log.info("faqList 문제: ", e);
 		}
 		return list;
 	}

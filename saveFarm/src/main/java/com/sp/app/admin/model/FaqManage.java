@@ -22,6 +22,8 @@ public class FaqManage {
 	private long categoryNum;
 	private String categoryName;
 	private int classify;
+
+	private String name;
 	
 	private int dataCount;   // COUNT(*) AS dataCount 와 매핑
     private int memberCount; // COUNT(DECODE(classify, 1, 1)) AS memberCount 와 매핑

@@ -45,7 +45,7 @@ public class FAQManageController {
         HttpServletRequest req) throws Exception {
 
         try {
-            int size = 5;
+            int size = 10;
             int totalPage = 0;
             
             kwd = myUtil.decodeUrl(kwd);
@@ -69,9 +69,9 @@ public class FAQManageController {
             map.put("offset", offset);
             map.put("size", size);
 
-            List<FaqManage> list = service.categoryList(map);
+            List<FaqManage> list = service.faqList(map);
             String cp = req.getContextPath();
-            String listUrl = cp + "/admin/FAQ/FAQ/";
+            String listUrl = cp + "/admin/FAQ/FAQ";
 
             String query = "";
             if (kwd.length() != 0) {

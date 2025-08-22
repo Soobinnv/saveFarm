@@ -14,18 +14,19 @@
 		</div>		                   
 			<ul class="nav nav-tabs" id="myTab" role="tablist">
 			    <li class="nav-item" role="presentation">
-					<button class="nav-link ${! empty schTypeFAQ ? 'active' : ''}" id="tab-all" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="all" aria-selected="true">전체</button>
+					<button class="nav-link ${! empty schTypeFAQ ? 'active' : ''}" id="tab-all" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="all" aria-selected="true" onclick="loadCategory('');">전체</button>
 				</li>
 			
 			    <c:forEach var="dto" items="${listFAQ}" varStatus="status">
 			        <c:if test="${dto.classify == 1 or dto.classify == 2}"> 
 			        	<li class="nav-item" role="presentation">
-			                <button class="nav-link " id="tab-${status.count}" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="${dto.categoryNum}" aria-selected="false" data-catagoryNum="${dto.categoryNum}">${dto.categoryName}</button>
+			                <button class="nav-link " id="tab-${status.count}" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="${dto.categoryNum}" aria-selected="false" data-catagoryNum="${dto.categoryNum}" onclick="this.getAttribute('data-catagoryNum')" >${dto.categoryName}</button>
 			            </li>
 			        </c:if>
 				</c:forEach>
 			</ul>	
 			<!-- table -->
+				<div id="faqListContent">
                       <table class="table datatables" id="dataTable-1">
                         <thead>
                           <tr>
@@ -37,9 +38,9 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <%-- <c:forEach var="dto" items="${asdad }" varStatus="status"></c:forEach> --%>
+                          <c:forEach var="dto" items="${list}" varStatus="status">
 	                          <tr>
-	                            <td><%-- ${dataCount - ( page - 1 ) * size - status.index } --%></td>
+	                            <td>${dataCount - ( page - 1 ) * size - status.index }</td>
 	                            <td>
 	                            	<a href="" class="text-secondary">회원가입이 안되는경우${dto.subject}</a>
 	                            </td>
@@ -49,13 +50,13 @@
 	                            	${dto.classify}
 	                            </td>
 	                          </tr>
-	                          
+	                       </c:forEach> 
                         </tbody>
                       </table>
 	                      <div class="row justify-content-center">
 							${paging}
 						</div>
-						 
+					</div>	 
 			<form action="${pageContext.request.contextPath}/admin/other/FAQ" method="get">
 				<div class="row">
 				    <div class="col-sm-12 col-md-3"></div>

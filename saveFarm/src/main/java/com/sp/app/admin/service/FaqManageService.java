@@ -9,7 +9,7 @@ import com.sp.app.admin.model.FaqManage;
 public interface FaqManageService {
 	public FaqManage dataCount(Map<String, Object> map);
 	public List<FaqManage> categoryFAQList();
-	public List<FaqManage> categoryList(Map<String, Object> map);
+	public List<FaqManage> faqList(Map<String, Object> map);
 	
 	public FaqManage findById(long faqNum);
 	

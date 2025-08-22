@@ -93,6 +93,22 @@ function listCategory(page) {
 	ajaxRequest(url, 'get', params, 'text', fn);
 }
 
+function loadCategory(categoryNum) {
+    let url = '${pageContext.request.contextPath}/admin/FAQ/FAQ';
+    let params = $('form[name=faqSearchForm]').serialize();
+
+    if (categoryNum) {
+        params += '&categoryNum=' + categoryNum;
+    }
+
+    const fn = function(data) {
+        // FAQ 목록 영역만 갱신
+        $('#faqTableArea').html($(data).find('#faqTableArea').html());
+    };
+
+    ajaxRequest(url, 'get', params, 'text', fn);
+}
+
 function resetList() {
 	// 초기화
 	const $tab = $('button[role="tab"].active');
