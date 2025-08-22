@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.farm.mapper.VarietyMapper">
+
+<insert id="insertVariety" parameterType="com.sp.app.farm.model.Variety">
+	 INSERT INTO variety 
+		 (
+      		varietyNum, varietyName
+	    ) 
+    VALUES 
+	    (
+	      #{varietyNum}, #{varietyName}
+	    )
+</insert>
+
+<update id="updateVariety" parameterType="com.sp.app.farm.model.Variety">
+	UPDATE variety 
+	SET varietyName = #{varietyName}
+	FROM varietyNum = #{varietyNum}
+</update>
+
+<delete id="deleteVariety" parameterType="map">
+	DELETE FROM variety
+	WHERE varietyNum = #{varietyNum}
+</delete>
+
+
+<select id="findByVarietyNum" parameterType="Long" resultType="com.sp.app.farm.model.Variety">
+    SELECT
+      varietyNum, varietyName
+    FROM variety
+    WHERE varietyNum = #{varietyNum}
+</select>
+
+
+<select id="existsVarietyName" parameterType="String" resultType="Integer">
+    SELECT COUNT(*)
+    FROM variety
+    WHERE varietyName = #{varietyName}
+</select>
+
+
+<select id="listAll" resultType="com.sp.app.farm.model.Variety">
+  SELECT varietyNum, varietyName
+  FROM variety
+  ORDER BY varietyName ASC
+</select>
+<select id="allCount" resultType="Integer">
+    SELECT COUNT(*)
+    FROM variety
+</select>
+
+
+<select id="listVariety" parameterType="map" resultType="com.sp.app.farm.model.Variety">
+    SELECT
+      varietyNum, varietyName
+    FROM variety
+    <where>
+      <if test="keyword != null and keyword != ''">
+        varietyName LIKE '%' || #{keyword} || '%'
+      </if>
+    </where>
+    ORDER BY varietyNum DESC
+    <if test="offset != null and size != null">
+      OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+    </if>
+</select>
+<select id="VarietyCount" parameterType="map" resultType="Integer">
+    SELECT COUNT(*)
+    FROM variety
+    <where>
+      <if test="keyword != null and keyword != ''">
+        varietyName LIKE '%' || #{keyword} || '%'
+      </if>
+    </where>
+</select>
+
+</mapper>

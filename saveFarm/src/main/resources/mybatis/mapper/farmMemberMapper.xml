@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sp.app.mapper.FarmMemberMapper">
-	<insert id="insertFarm" parameterType="com.sp.app.model.Farm">
+<mapper namespace="com.sp.app.farm.mapper.FarmMemberMapper">
+<!-- 로그인 -->
+	<select id="loginMember" parameterType="map" resultType="com.sp.app.farm.model.Farm">
+		SELECT farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
+			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
+		FROM farm
+		WHERE farmerId = #{farmerId} AND farmerPwd = #{farmerPwd} AND status = 3
+	</select>
+	
 <!-- 회원추가 -->
+	<insert id="insertFarm" parameterType="com.sp.app.farm.model.Farm">
 		INSERT INTO farm(farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
 			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount)
 		VALUES (farm_seq.NEXTVAL, #{farmName}, #{businessNumber}, #{farmManager}, #{farmTel}, #{farmZip}, #{farmAddress1},
@@ -11,10 +19,10 @@
 	</insert>
 	
 <!-- 정보수정, 비밀번호 재설정 -->
-	<update id="updateFarm" parameterType="com.sp.app.model.Farm">
-		UPDATE farm SET farmManager = #{farmManager}, farmTel = #{farmTel}, farmerTel = #{farmerTel},
+	<update id="updateFarm" parameterType="com.sp.app.farm.model.Farm">
+		UPDATE farm SET farmManager = #{farmManager}, farmTel = #{farmTel},
 			farmZip = #{farmZip}, farmAddress1 = #{farmAddress1}, farmAddress2 = #{farmAddress2},
-			farmerName = #{farmerName}, farmerTel = #{farmerTel},farmAccount = #{farmAccount}
+			farmerTel = #{farmerTel}, farmerPwd = #{farmerPwd}, farmAccount = #{farmAccount}
 		WHERE farmerId = #{farmerId}
 	</update>
 	
@@ -22,17 +30,18 @@
 		UPDATE farm SET farmName = #{farmName}
 		WHERE farmNum = #{farmNum}
 	</update>
-	<update id="updateFarmManager" parameterType="map">
-		UPDATE farm SET farmName = #{farmName}
+	
+	<update id="updateFarmerName" parameterType="map">
+		UPDATE farm SET farmerName = #{farmerName}
 		WHERE farmNum = #{farmNum}
 	</update>
 	
-	<update id="updateStatus" parameterType="map">
+	<update id="updateStatus" parameterType="com.sp.app.farm.model.Farm">
 		UPDATE farm SET status = #{status}
 		WHERE farmNum = #{farmNum}
 	</update>
 	
-	<update id="updatePassword" parameterType="map">
+	<update id="updatePassword" parameterType="com.sp.app.farm.model.Farm">
 		UPDATE farm SET farmerPwd = #{farmerPwd}
 		WHERE farmNum = #{farmNum}
 	</update>
@@ -45,46 +54,53 @@
 
 <!-- 데이터 찾기 -->
 	<!-- 농장번호로 정보찾기 -->
-	<select id="findByFarmNum" parameterType="Long" resultType="com.sp.app.model.Farm">
-		SELECT farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
+	<select id="findByFarmNum" parameterType="Long" resultType="com.sp.app.farm.model.Farm">
+		SELECT farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
 			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
 		FROM farm
-		WHERE farmNum = ${farmNum}
+		WHERE farmNum = #{farmNum}
 	</select>
 	
 	<!-- 아이디 찾기 -->
-	<select id="findFarmerId" parameterType="map" resultType="String">
-		SELECT farmerId
+	<select id="findFarmerId" parameterType="map" resultType="com.sp.app.farm.model.Farm">
+		SELECT farmNum, farmerId, status, farmName
 		FROM farm
-		WHERE businessNumber = #{businessNumber}, farmerName = #{farmerName}, farmerTel = #{farmerTel}
+		WHERE businessNumber = #{businessNumber} AND farmerName = #{farmerName} AND farmerTel = #{farmerTel}
 	</select>
 	
 	<!-- 아이디로 정보찾기 -->
-	<select id="findByFarmerId" parameterType="String" resultType="com.sp.app.model.Farm">
+	<select id="findByFarmerId" parameterType="String" resultType="com.sp.app.farm.model.Farm">
 		SELECT farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
 			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
 		FROM farm
 		WHERE farmerId = #{farmerId}
 	</select>
+	<select id="findByBusinessNumber" parameterType="String" resultType="com.sp.app.farm.model.Farm">
+		SELECT farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
+			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
+		FROM farm
+		WHERE REPLACE(businessNumber,'-','') = REPLACE(#{businessNumber},'-','')
+	</select>
 	
 	<!-- 사업장번호 등록여부 확인-->
-	<select id="existsBusinessNumber" parameterType="String" resultType="int">
-		SELECT COUNT(1)
+	<select id="existsBusinessNumber" parameterType="String" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
 		FROM farm		
-		WHERE businessNumber = #{businessNumber}
+		WHERE REPLACE(businessNumber,'-','') = REPLACE(#{businessNumber},'-','')
 	</select>
 	
 <!-- 농가 리스트 -->
 	<!-- 공통 WHERE 블록 -->
 	<sql id="farmWhere">
 	  <where>
+	  
 	    <!-- 상태: 사용할 때만 -->
 	    <if test="useStatus">
 	      AND status = #{status}
 	    </if>
 	
 	    <!-- 등록일: 사용할 때만 (from~to 포함) -->
-	    <if test="useDate">
+	    <if test="useRegDate and fromDate != null and fromDate != '' and toDate != null and toDate != ''">
 	      AND farmRegDate &gt;= TO_DATE(#{fromDate}, 'YYYY-MM-DD')
 	      AND farmRegDate &lt; TO_DATE(#{toDate},   'YYYY-MM-DD') + 1
 	    </if>
@@ -111,7 +127,7 @@
 	               farmName LIKE '%' || #{kwd} || '%'
 	            OR farmerId LIKE '%' || #{kwd} || '%'
 	            OR REPLACE(businessNumber,'-','') LIKE '%' || REPLACE(#{kwd},'-','') || '%'
-	            OR accountOwnerName LIKE '%' || #{kwd} || '%'
+	            OR farmAccount LIKE '%' || #{kwd} || '%'
 	          )
 	        </otherwise>
 	      </choose>
@@ -119,7 +135,7 @@
 	  </where>
 	</sql>
 	
-	<select id="listFarm" parameterType="map" resultType="com.sp.app.model.Farm">
+	<select id="listFarm" parameterType="map" resultType="com.sp.app.farm.model.Farm">
 		SELECT farmNum, farmName, businessNumber, farmManager, farmTel, farmZip, farmAddress1, 
 			farmAddress2, farmRegDate, farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
 		FROM farm
@@ -129,8 +145,8 @@
 	</select>
 	
 	<!-- 데이터 수 -->
-	<select id="farmCount" parameterType="map" resultType="int">
-		SELECT COUNT(*)
+	<select id="farmCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
 		FROM farm
 		<include refid="farmWhere"/>
 	</select>

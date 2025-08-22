@@ -1,4 +1,4 @@
-package com.sp.app.model;
+package com.sp.app.farm.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,0 +1,62 @@
+/* ==== Register page actions (match btn-primary size/feel) ==== */
+/* 스코프: 이 페이지 컨테이너에 register-actions 클래스를 붙였다는 가정 */
+.register-actions .sf-actions{
+  display:flex;
+  /* 기본은 오른쪽 정렬, 필요시 d-flex justify-content-center 유틸 붙이면 중앙정렬 가능 */
+  justify-content:flex-end;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+/* btn-primary(원본) 높이에 맞춤: padding, radius 동일 */
+.register-actions .sf-btn{
+  padding:10px 20px;            /* 원본 .btn-primary와 동일 */
+  border-radius:4px;            /* 원본과 동일 */
+  font-weight:600;
+  line-height:1.2;
+  border:1px solid transparent;
+  transition:background-color .18s ease,
+             color .18s ease,
+             border-color .18s ease,
+             box-shadow .18s ease,
+             transform .02s ease-in;
+}
+
+/* --- 삭제하기: 빨강 대신 톤다운 오렌지 (btn-primary와 조화) --- */
+.register-actions .sf-btn-danger{
+  background:#d24a14;           /* 벽돌 오렌지 */
+  color:#fff;
+}
+.register-actions .sf-btn-danger:hover{
+  background:#b43f11;           /* 살짝 더 어둡게 */
+  color:#fff;
+}
+.register-actions .sf-btn-danger:focus{
+  outline:none;
+  box-shadow:0 0 0 .2rem rgba(210,74,20,.25);
+}
+.register-actions .sf-btn-danger:active{
+  transform: translateY(1px);
+}
+
+/* --- 수정취소: 기본 아웃라인(브랜드 초록), hover는 '연한 초록' --- */
+.register-actions .sf-btn-outline{
+  background:#fff;
+  color: var(--accent-color);        /* 원본 초록(#116530) */
+  border:1px solid var(--accent-color);
+}
+.register-actions .sf-btn-outline:hover,
+.register-actions .sf-btn-outline:focus,
+.register-actions .sf-btn-outline:active:hover {
+  background:#7acb89 !important;     /* 밝고 연한 초록 */
+  border-color:#58b368 !important;   /* 중간톤 초록 */
+  color:#fff !important;
+}
+.register-actions .sf-btn-outline:focus{
+  outline:none;
+  box-shadow:0 0 0 .2rem rgba(17,101,48,.18);
+}
+.register-actions .sf-btn-outline:active{
+  transform: translateY(1px);
+}

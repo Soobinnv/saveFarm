@@ -21,6 +21,11 @@
 <!-- Main CSS File -->
 <link href="${pageContext.request.contextPath}/dist/farm/header_footer/css/main.css" rel="stylesheet">
 
+
+<!-- ✅ jQuery (네 프로젝트 실제 경로 사용) -->
+<script src="${pageContext.request.contextPath}/dist/vendor/jquery/js/jquery.min.js"></script>
+
+
 <!-- Vendor JS Files -->
 <script src="${pageContext.request.contextPath}/dist/farm/header_footer/vendor/bootstrap/js/bootstrap.bundle.js"></script>
 <script src="${pageContext.request.contextPath}/dist/farm/header_footer/vendor/aos/aos.js"></script>

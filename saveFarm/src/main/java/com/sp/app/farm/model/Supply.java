@@ -1,4 +1,4 @@
-package com.sp.app.model;
+package com.sp.app.farm.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,11 +13,16 @@ public class Supply {
 	private int unitQuantity;
 	private int unitPrice;
 	private String harvestDate;
+	private String approvedDate;
 	private int state;
 	private int rescuedApply;
 	private String coment;
-	
+
 	private Long farmNum;
 	private Long productNum;
 	private Long varietyNum;
+	
+    private String farmName;
+    private String productName;
+    private String varietyName;
 }

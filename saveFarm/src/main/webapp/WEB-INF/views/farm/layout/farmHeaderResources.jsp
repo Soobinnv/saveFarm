@@ -23,3 +23,4 @@
 
 <!-- Main CSS File -->
 <link href="${pageContext.request.contextPath}/dist/farm/header_footer/css/main.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/dist/farm/header_footer/css/register_actions.css" rel="stylesheet">

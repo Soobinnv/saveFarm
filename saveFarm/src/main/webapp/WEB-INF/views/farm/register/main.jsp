@@ -55,7 +55,7 @@
               <div class="post-content d-flex flex-column">
 
                 <h3 class="post-title">새로 납품할 농산물 접수하러 가기</h3>
-                <a href="${pageContext.request.contextPath}/farm/registerForm" class="readmore stretched-link"><span>보러가기</span><i class="bi bi-arrow-right"></i></a>
+                <a href="${pageContext.request.contextPath}/farm/register/write" class="readmore stretched-link"><span>보러가기</span><i class="bi bi-arrow-right"></i></a>
 
               </div>
 
@@ -75,7 +75,7 @@
 
               <div class="post-content d-flex flex-column">
                 <h3 class="post-title">이미 납품 신청한 내역 확인하기</h3>
-                <a href="${pageContext.request.contextPath}/farm/registerList" class="readmore stretched-link"><span>보러가기</span><i class="bi bi-arrow-right"></i></a>
+                <a href="${pageContext.request.contextPath}/farm/register/list" class="readmore stretched-link"><span>보러가기</span><i class="bi bi-arrow-right"></i></a>
               </div>
 
             </article>

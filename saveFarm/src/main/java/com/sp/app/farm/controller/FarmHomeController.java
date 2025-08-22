@@ -18,57 +18,15 @@ public class FarmHomeController {
 		return "farm/main/farmHome";
 	}
 	
+	@GetMapping("/farm/myFarm")
+	public String myFarm (Model model) {
+		
+		return "farm/myFarm/myFarmMain";
+	}
+	
 	@GetMapping("/farm/guide")
 	public String guide (Model model) {
 		
 		return "farm/guide/guidePage";
-	}
-	
-	@GetMapping("/farm/register")
-	public String register (Model model) {
-		
-		return "farm/register/registerMain";
-	}
-	
-	@GetMapping("/farm/registerForm")
-	public String registerFrom (Model model) {
-		
-		return "farm/register/registerWrite";
-	}
-	
-	@GetMapping("/farm/registerList")
-	public String registerList (Model model) {
-		
-		return "farm/register/registerList";
-	}
-	
-	@GetMapping("/farm/login")
-	public String loginForm () {
-		
-		return "farm/member/login";
-	}
-	
-	@GetMapping("/farm/member")
-	public String member (Model model) {
-		
-		return "farm/member/member";
-	}
-	
-	@GetMapping("/farm/member/idFind")
-	public String idFind (Model model) {
-		
-		return "farm/member/idFind";
-	}
-	
-	@GetMapping("/farm/member/pwdFind")
-	public String pwdFind (Model model) {
-		
-		return "farm/member/pwdFind";
-	}
-	
-	@GetMapping("/farm/member/pwd")
-	public String pwd (Model model) {
-		
-		return "farm/member/pwd";
 	}
 }

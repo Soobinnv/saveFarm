@@ -1,4 +1,4 @@
-package com.sp.app.model;
+package com.sp.app.farm.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,4 +24,5 @@ public class Farm {
 	private String farmerPwd;
 	
 	private int status;
+	private String farmAccount;
 }

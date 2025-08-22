@@ -384,14 +384,14 @@
                 <div class="service-item-content">
                   <h3 class="service-heading">출고 및 배송</h3>
                   <p>
-                     소비자에게 배송이 시작됩니다. <br> 신선함을 유지하기 위해 콜드체인(냉장) 택배로 보내드립니다.
+                     신선함을 유지하기 위해 콜드체인(냉장) 택배로 보내드립니다.
                   </p>
                 </div>
               </div>
             </div>
             <div class="col-lg-3 col-md-6">
               <div class="service-item">
-                <span class="number">07</span>
+                <span class="number">08</span>
                 <div class="service-item-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="80" height="80" x="0" y="0" viewBox="0 0 512.805 512.805" style="enable-background: new 0 0 512 512" xml:space="preserve" class="">
                     <g stroke="currentColor"

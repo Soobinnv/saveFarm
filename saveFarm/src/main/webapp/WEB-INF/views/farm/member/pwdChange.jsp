@@ -14,9 +14,6 @@
 </style>
 </head>
 <body class="index-page">
-<c:if test="${empty mode}">
-	<c:set var="mode" value="${not empty param.dropout ? 'dropout' : 'update'}"/>
-</c:if>
 
 <header>
 	<jsp:include page="/WEB-INF/views/farm/layout/farmHeader.jsp"/>
@@ -27,11 +24,11 @@
     <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/memberTitle1.webp);">
       <div class="container position-relative">
         <h1>
-        	<span class="title">개인정보 확인</span>
+        	<span class="title">개인정보 변경</span>
         </h1>
        <nav class="breadcrumbs">
           <ol>
-            <li class="current"> 정보확인 > 비밀번호 확인 </li>
+            <li class="current"> 정보변경 > 비밀번호 변경 </li>
           </ol>
         </nav>
       </div>
@@ -45,27 +42,24 @@
 				<div class="col-md-5">
 					
 				<form name="pwdForm" action="" method="post" class="row g-3 mb-2">
-					<h3 class="text-center pt-3">비밀번호 재확인</h3>
+					<h3 class="text-center pt-3">비밀번호 변경</h3>
                        <div class="col-12">
 						<p class="form-control-plaintext text-center">
-                           	정보보호를 위해 패스워드를 다시 한 번 입력해주세요.
+                           	변경하실 비밀번호를 입력해주세요
 						</p>
                        </div>
                        	                    
-                       	<div class="col-12">
-							<input type="text" name="login_id" class="form-control form-control-lg" placeholder="아이디"
-	                           		value="${sessionScope.farm.farmerId}" 
-	                           		readonly>
-
-                       	</div>
                        <div class="col-12">
-							<input type="password" name="password" class="form-control form-control-lg" autocomplete="off" placeholder="비밀번호">
-                        </div>
-                        <div class="col-12 text-center">
-							<input type="hidden" name="mode" value="${mode}">
-							<button type="button" class="btn-accent btn-lg w-100" onclick="sendOk();">확인 <i class="bi bi-check2"></i></button>
-                        </div>
-                    </form>
+						<input type="password" name="password" class="form-control form-control-lg" autocomplete="off" placeholder="새비밀번호">
+                       </div>
+                       <div class="col-12">
+						<input type="password" name="password2" class="form-control form-control-lg" autocomplete="off" placeholder="비밀번호 확인">
+                       </div>
+                       <div class="col-12 text-center">
+						<button type="button" class="btn-accent btn-lg w-100" onclick="sendOk();">확인 <i class="bi bi-check2"></i></button>
+                       </div>
+                   </form>
+                   
                 <div>
 					<p class="form-control-plaintext text-center text-danger">${message}</p>
 				</div>
@@ -87,15 +81,31 @@
 <script type="text/javascript">
 function sendOk() {
 	const f = document.pwdForm;
-
-	if(! f.password.value.trim()) {
-		alert('패스워드를 입력하세요. ');
+	let str, p;
+	
+	// 영문+숫자, 영문+특수 - 5~10개
+	p =/^(?=.*[a-z])(?=.*[!@#$%^*+=-]|.*[0-9]).{5,10}$/i;
+	str = f.password.value;
+	if( ! p.test(str) ) { 
+		alert('비밀번호를 다시 입력 하세요. ');
 		f.password.focus();
 		return;
 	}
+	str2 = f.password2.value; 
+	if( ! p.test(str2)) { 
+		alert('비밀번호를 다시 입력 하세요. ');
+		f.password2.focus();
+		return;
+	}
 
-	f.action = '${pageContext.request.contextPath}/farm/member/pwd';
-	f.submit();
+	if( str !== str2 ) {
+        alert('비밀번호가 일치하지 않습니다. ');
+        f.password.focus();
+        return;
+	}
+	
+	f.action = '${pageContext.request.contextPath}/farm/member/pwdChange';
+    f.submit();
 }
 </script>
 </body>

@@ -1,4 +1,4 @@
-package com.sp.app.mapper;
+package com.sp.app.farm.mapper;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sp.app.model.Variety;
+import com.sp.app.farm.model.Variety;
 
 @Mapper
 public interface VarietyMapper {
@@ -19,7 +19,11 @@ public interface VarietyMapper {
 	// 이름 중복여부
 	public int existsVarietyName(String varietyName);
 	
+	// 전체리스트
+	public List<Variety> listAll();
+	public int allCount();
+	
 	// 전체 조건 리스트
-	public List<Variety> listFindVariety(Map<String, Object> map);
-	public int varietyListCount(Map<String, Object> map);
+	public List<Variety> listVariety(Map<String, Object> map);
+	public int VarietyCount(Map<String, Object> map);
 }

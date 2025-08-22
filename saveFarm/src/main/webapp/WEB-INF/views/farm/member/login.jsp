@@ -45,21 +45,21 @@
 					<form name="loginForm" action="" method="post" class="row g-3 mb-2">
 						<div class="col-12">
 							<label class="mb-1">아이디</label>
-							<input type="text" name="login_id" class="form-control" placeholder="아이디">
+							<input type="text" name="farmerId" class="form-control" placeholder="아이디">
 						</div>
 						<div class="col-12">
-							<label class="mb-1">패스워드</label>
-							<input type="password" name="password" class="form-control" autocomplete="off" 
-								placeholder="패스워드">
+							<label class="mb-1">비밀번호</label>
+							<input type="password" name="farmerPwd" class="form-control" autocomplete="off" 
+								placeholder="비밀번호">
 						</div>
 						<div class="col-12">
 							<div class="form-check">
-								<input class="form-check-input rememberMe" type="checkbox" id="rememberMe">
-								<label class="form-check-label ms-2" for="rememberMe">아이디 저장</label>
+							  <input class="form-check-input" type="checkbox" id="rememberMeLogin" name="rememberMe">
+							  <label class="form-check-label ms-2" for="rememberMeLogin">아이디 저장</label>
 							</div>
 						</div>
 						<div class="col-12 text-center">
-							<button type="button" class="btn btn-primary fw-semibold w-100" onclick="sendLogin();">&nbsp;Login&nbsp;<i class="bi bi-check2"></i></button>
+							<button type="button" class="btn btn-primary fw-semibold w-100" onclick="sendLogin();">&nbsp;로그인&nbsp;<i class="bi bi-check2"></i></button>
 						</div>
 					</form>
 		                  
@@ -69,9 +69,9 @@
 		
 					<div class="mt-3">
 						<p class="text-center">
-							<a href="${pageContext.request.contextPath}/farm/idFind" class="me-2 border-link-right">아이디 찾기</a>
+							<a href="${pageContext.request.contextPath}/farm/member/idFind" class="me-2 border-link-right">아이디 찾기</a>
 							<a href="${pageContext.request.contextPath}/farm/member/pwdFind" class="me-2 border-link-right">패스워드 찾기</a>
-							<a href="${pageContext.request.contextPath}/farm/member/member" class="border-link-right">회원가입</a>
+							<a href="${pageContext.request.contextPath}/farm/member/account" class="border-link-right">회원가입</a>
 						</p>
 					</div>
 			    </div>
@@ -88,6 +88,37 @@
 
 <jsp:include page="/WEB-INF/views/farm/layout/farmFooterResources.jsp"/>
 
-<script src="${pageContext.request.contextPath}/dist/farm/js/supplyForm.js"></script>
+
+<script type="text/javascript">
+function sendLogin() {
+	  const f = document.loginForm;
+
+	  if (!f.farmerId.value.trim()) { f.farmerId.focus(); return; }
+	  if (!f.farmerPwd.value.trim()) { f.farmerPwd.focus(); return; }
+
+	  // 폼 스코프로 안전하게 접근 (ID 중복 영향 없음)
+	  const saveId = f.rememberMe.checked;
+
+	  if (saveId) {
+	    localStorage.setItem('savedLoginId', f.farmerId.value.trim());
+	  } else {
+	    localStorage.removeItem('savedLoginId');
+	  }
+
+	  f.action = '${pageContext.request.contextPath}/farm/member/login';
+	  f.submit();
+	}
+
+	// (선택) 페이지 로드 시 저장된 아이디 복원 + 체크 상태 반영
+	document.addEventListener('DOMContentLoaded', () => {
+	  const f = document.loginForm;
+	  const saved = localStorage.getItem('savedLoginId');
+	  if (saved) {
+	    f.farmerId.value = saved;
+	    f.rememberMe.checked = true;
+	  }
+	});
+
+</script>
 </body>
 </html>
