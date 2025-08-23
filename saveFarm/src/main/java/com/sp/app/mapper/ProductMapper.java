@@ -15,14 +15,14 @@ public interface ProductMapper {
 	public List<Product> getRescuedProductList(Map<String, Object> map);
 	public List<Product> getAllProductList(Map<String, Object> map);
 	
+	public Product getProductAllInfo(long productNum);	
 	public Product getProductInfo(long productNum);	
 	public Product getRescuedProductInfo(long productNum);	
 	public List<Product> getProductImageList(long productNum);	
 	
 	public List<Product> getRescuedProductNumsClosingSoon(LocalDateTime twentyFourHoursLater);
 	
-	public int getDataCount(int productClassification);
-	public int getAllDataCount();
+	public int getDataCount(Integer productClassification);
 	
 	public void insertProduct(Product dto) throws SQLException;
 	public void insertProductDetail(Product dto) throws SQLException;

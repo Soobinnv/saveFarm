@@ -21,6 +21,7 @@ public class ProductQna {
 	
 	private String name;
 	private String answerName;
+	private String answerDate;
 	
 	private String productName;
 }

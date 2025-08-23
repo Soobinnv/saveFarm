@@ -48,9 +48,9 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 	}
 
 	@Override
-	public void deleteReview(long num, String uploadPath) throws Exception {
+	public void deleteReview(long orderDetailNum, String uploadPath) throws Exception {
 		try {
-			mapper.deleteReview(num);
+			mapper.deleteReview(orderDetailNum);
 			
 			// 파일 삭제
 			
@@ -60,7 +60,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 			throw e;
 		}
 	}
-
+	
 	@Override
 	public List<ProductReview> getReviewList(Map<String, Object> map) {
 		List<ProductReview> list = null;
@@ -129,22 +129,7 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		
 		return count;
 	}
-	
-	@Override
-	public int getAllDataCount() {
-		int count = 0;
-		
-		try {
-			count = mapper.getAllDataCount();
-			
-		} catch (Exception e) {
-			log.info("getAllDataCount : ", e);
-			
-			throw e;
-		}
-		
-		return count;
-	}
+
 
 	@Override
 	public int getMyReviewDataCount(long memberId) {
@@ -198,6 +183,23 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 			log.info("deleteReviewLike : ", e);
 			throw e;
 		}
+	}
+
+	@Override
+	public ProductReview findByOrderDetailNum(long orderDetailNum) {
+		ProductReview list = null;
+		
+		try {
+			list = mapper.findByOrderDetailNum(orderDetailNum);
+	
+			
+		} catch (Exception e) {
+			log.info("findByOrderDetailNum : ", e);
+			
+			throw e;
+		}
+		
+		return list;
 	}
 
 }

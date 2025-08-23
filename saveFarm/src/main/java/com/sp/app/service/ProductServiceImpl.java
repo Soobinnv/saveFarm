@@ -62,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
 		
 		try {
 			Integer classifyCode = (Integer)map.get("classifyCode");
-
+			
 			switch (classifyCode) {
 				case null: 
 					list = getAllProductList(map); break;
@@ -143,6 +143,21 @@ public class ProductServiceImpl implements ProductService {
 		}						
 	}
 
+	@Override
+	public Product getProductAllInfo(long productNum) {
+		Product dto = null;
+		
+		try {
+			dto = mapper.getProductAllInfo(productNum);
+			
+			applyDiscount(dto);
+		} catch (Exception e) {
+			log.info("getProductAllInfo : ", e);
+		}
+		
+		return dto;
+	}
+	
 	@Override
 	public Product getProductInfo(long productNum) {
 		Product dto = null;
@@ -235,7 +250,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public int getDataCount(int productClassification) {
+	public int getDataCount(Integer productClassification) {
 		int result = 0;
 		
 		try {
@@ -246,21 +261,5 @@ public class ProductServiceImpl implements ProductService {
 		
 		return result;
 	}
-	
-	@Override
-	public int getAllDataCount() {
-		int result = 0;
-		
-		try {
-			result = mapper.getAllDataCount();
-		} catch (Exception e) {
-			log.info("getAllDataCount : ", e);
-		}
-		
-		return result;
-	}
-
-
-
 
 }

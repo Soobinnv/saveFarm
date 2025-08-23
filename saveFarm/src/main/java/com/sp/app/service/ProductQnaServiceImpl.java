@@ -113,11 +113,11 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 	
 
 	@Override
-	public int getDataCount(Long productNum) {
+	public int getDataCount(Map<String, Object> map) {
 		int count = 0;
 		
 		try {
-			count = mapper.getDataCount(productNum);
+			count = mapper.getDataCount(map);
 			
 		} catch (Exception e) {
 			log.info("getDataCount : ", e);
@@ -127,22 +127,7 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 		
 		return count;
 	}
-	
-	@Override
-	public int getAllDataCount() {
-		int count = 0;
-		
-		try {
-			count = mapper.getAllDataCount();
-			
-		} catch (Exception e) {
-			log.info("getAllDataCount : ", e);
-			
-			throw e;
-		}
-		
-		return count;
-	}
+
 
 	@Override
 	public int getMyQnaDataCount(long memberId) {
@@ -158,6 +143,22 @@ public class ProductQnaServiceImpl implements ProductQnaService {
 		}
 		
 		return count;
+	}
+
+	@Override
+	public ProductQna findByQnaNum(long qnaNum) {
+		ProductQna dto = null;
+		
+		try {
+			dto = mapper.findByQnaNum(qnaNum);
+			
+		} catch (Exception e) {
+			log.info("findByQnaNum : ", e);
+			
+			throw e;
+		}
+		
+		return dto;
 	}
 
 }

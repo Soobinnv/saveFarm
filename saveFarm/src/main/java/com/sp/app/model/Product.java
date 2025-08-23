@@ -19,6 +19,7 @@ public class Product {
 	private int deliveryFee;
 	private String mainImageFilename;
 	private int productClassification;
+		// 상품 분류 코드
 	private MultipartFile mainImageFile;
 	
 	// 상품 리뷰 수
@@ -47,5 +48,4 @@ public class Product {
 	
 	// 회원의 찜 여부
 	private int userWish;
-	
 }

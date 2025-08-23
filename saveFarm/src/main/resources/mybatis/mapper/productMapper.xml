@@ -59,14 +59,13 @@
 	</select>
 
 	<select id="getRescuedProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
-		FROM product p
-		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
-		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
-		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
-        LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
+		<include refid="productSelect"/>
 		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 200 AND ENDDATE >= SYSDATE
+	</select>
+
+	<select id="getProductAllInfo" parameterType="Long" resultType="com.sp.app.model.Product">
+		<include refid="productSelect"/>
+		WHERE p.PRODUCTNUM = #{productNum}
 	</select>
 
 	<select id="getProductImageList" parameterType="Long" resultType="com.sp.app.model.Product">
@@ -155,14 +154,14 @@
         WHERE PRODUCTNUM = #{productNum}
     </delete>
     
-    <select id="getDataCount" parameterType="int" resultType="Integer">
+    <select id="getDataCount" parameterType="Integer" resultType="int">
 		SELECT COUNT(*)
 		FROM product
-		WHERE productClassification = #{productClassification}
-	</select>
-	
-    <select id="getAllDataCount" resultType="Integer">
-		SELECT COUNT(*) FROM product
+		<where>
+			<if test="productClassification != null and productClassification != ''">
+				productClassification = #{productClassification}
+			</if>
+		</where>
 	</select>
 	
 </mapper>

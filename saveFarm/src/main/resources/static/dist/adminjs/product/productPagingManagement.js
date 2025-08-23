@@ -1,17 +1,20 @@
 // 관리자 - 상품관리 paging // 
 let paging = "";
 
-const pagingManagement = function(methodName) {
+const pagingManagement = function(methodName, params) {
 	let page = $('#dataTables').data('page');
 	let dataCount = $('#dataTables').data('datacount');
 	let totalPage = $('#dataTables').data('totalpage');
+	
+	// 요청 파라미터 저장
+	$('#dataTables').data('params', JSON.stringify(params));
 	
 	let schType = $('#dataTables').data('schtype');
 	let kwd = $('#dataTables').data('kwd');	
 
 	paging = pagingMethod(page, totalPage, methodName);
 	
-	$('.page-navigation').html(dataCount === 0 ? '목록이 없습니다.' : paging);
+	$('.page-navigation').html(dataCount === 0 ? '' : paging);
 	
 }
 
@@ -20,7 +23,13 @@ const pagingManagement = function(methodName) {
  * @param {number} page - 현재 페이지
  */
 function productListPage(page) {
-	let parameter = {pageNo:page};
+	const paramsString = $('#dataTables').data('params');
+	
+	// 요청 파라미터 가져오기
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,classifyCode:params.classifyCode};
+	
 	loadContent('/api/admin/products', renderProductListHTML, parameter, 'productListPage'); 
 }
 
@@ -29,7 +38,11 @@ function productListPage(page) {
  * @param {number} page - 현재 페이지
  */
 function supplyListPage(page) {
-	let parameter = {pageNo:page};
+	const paramsString = $('#dataTables').data('params');
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,state:params.state};
+		
 	loadContent('/api/admin/supplies', renderFarmProductListHTML, parameter, 'supplyListPage'); 
 }
 
@@ -38,7 +51,11 @@ function supplyListPage(page) {
  * @param {number} page - 현재 페이지
  */
 function inquiryListPage(page) {
-	let parameter = {pageNo:page};
+	const paramsString = $('#dataTables').data('params');
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,isAnswerd:params.isAnswerd};
+	
 	loadContent('/api/admin/inquiries', renderProductQnaListHTML, parameter, 'inquiryListPage');
 }
 
@@ -47,6 +64,10 @@ function inquiryListPage(page) {
  * @param {number} page - 현재 페이지
  */
 function qnaListPage(page) {
-	let parameter = {pageNo:page};
+	const paramsString = $('#dataTables').data('params');
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,reviewBlock:params.reviewBlock};
+	
 	loadContent('/api/admin/reviews', renderProductReviewListHTML, parameter, 'qnaListPage');
 }

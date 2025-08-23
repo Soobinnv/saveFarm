@@ -21,13 +21,19 @@
 	</delete>
 	
 	<sql id="qnaColumns">
-	    SELECT qnaNum, secret, question, answer, block, q.memberId, q.answerId, productNum, 
-	           TO_CHAR(qnaDate, 'YYYY-MM-DD HH24:MI') qnaDate, answerdate, title, 
+	    SELECT qnaNum, secret, question, answer, block, q.memberId, q.answerId, q.productNum, productName,
+	           TO_CHAR(qnaDate, 'YYYY-MM-DD HH24:MI') qnaDate, TO_CHAR(answerDate, 'YYYY-MM-DD HH24:MI') answerDate, title, 
 	           qm.name name, am.name answerName
 	    FROM productQna q
 	    LEFT OUTER JOIN member2 qm ON q.memberId = qm.memberId
 	    LEFT OUTER JOIN member2 am ON q.answerId = am.memberId
+	    LEFT OUTER JOIN product p ON q.productNum = p.productNum
 	</sql>
+	
+	<select id="findByQnaNum" parameterType="long" resultType="com.sp.app.model.ProductQna">
+		<include refid="qnaColumns"/>
+		WHERE qnaNum = #{qnaNum}
+	</select>
 	
 	<select id="getQnaList" parameterType="long" resultType="com.sp.app.model.ProductQna">
 		<include refid="qnaColumns"/>
@@ -50,18 +56,39 @@
 	    LEFT OUTER JOIN member2 qm ON q.memberId = qm.memberId
 	    LEFT OUTER JOIN member2 am ON q.answerId = am.memberId
 	    LEFT OUTER JOIN product p ON q.productNum = p.productNum
+    <where>
+		<if test="isAnswerd != null and isAnswerd == 1">
+			AND q.answerId IS NOT NULL
+		</if>
+		<if test="isAnswerd != null and isAnswerd == 0">
+			AND q.answerId IS NULL
+		</if>
+	</where>
 	    ORDER BY qnaDate DESC
 	    OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
-	<select id="getDataCount" parameterType="Long" resultType="Integer">
-		SELECT COUNT(*)
-		FROM productQna
-		WHERE productNum = #{productNum} AND block = 0
-	</select>
-	
-	<select id="getAllDataCount" parameterType="Long" resultType="Integer">
-		SELECT COUNT(*) FROM productQna
+	<select id="getDataCount" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM productQna q
+    <where>
+        <if test="productNum != null">
+            AND q.productNum = #{productNum}
+        </if>
+        <if test="block != null">
+            AND q.block = #{block}
+        </if>
+        <if test="isAnswerd != null">
+            <choose>
+                <when test="isAnswerd == 1">
+                    AND q.answerId IS NOT NULL
+                </when>
+                <otherwise>
+                    AND q.answerId IS NULL
+                </otherwise>
+            </choose>
+        </if>
+    </where> 
 	</select>
 
 	<select id="getMyQnaDataCount" parameterType="long" resultType="Integer">

@@ -10,11 +10,12 @@ public interface ProductQnaService {
 	public void updateQna(ProductQna dto) throws Exception;
 	public void deleteQna(long qnaNum) throws Exception;
 	
+	public ProductQna findByQnaNum(long qnaNum);
+
 	public List<ProductQna> getQnaList(long productNum);
 	public List<ProductQna> getMyQnaList(Map<String, Object> map);
 	public List<ProductQna> getAllQnaList(Map<String, Object> map);
 	
-	public int getDataCount(Long productNum);
+	public int getDataCount(Map<String, Object> map);
 	public int getMyQnaDataCount(long memberId);
-	public int getAllDataCount();
 }
