@@ -70,7 +70,7 @@
 
 	<select id="subItemList" parameterType="String" resultType="com.sp.app.model.PackageOrder">
 		SELECT
-			(itemPrice)itemPrices, (count)counts, (productNum)productNums
+			productNum, itemPrice, count
 		FROM subItem
 		WHERE subNum = #{subNum}
 	</select>
@@ -88,6 +88,13 @@
 				AND memberId = #{memberId}
 	</select>
 
-	
+	<select id="mysubinfo" parameterType = "Long" resultType = "com.sp.app.model.PackageOrder">
+		SELECT
+			subNum,subMonth,totalPay,payMethod,isExtend
+		FROM subStatus
+		WHERE memberId = #{memberId}
+		ORDER BY payDate DESC
+    	FETCH FIRST 1 ROWS ONLY
+	</select>
 
 </mapper>

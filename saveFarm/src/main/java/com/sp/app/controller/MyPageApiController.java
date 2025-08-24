@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
 import com.sp.app.model.Order;
+import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
 import com.sp.app.model.ProductQna;
 import com.sp.app.model.ProductReview;
@@ -391,6 +392,29 @@ public class MyPageApiController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
+	
+	// 구독중인 정보
+	@GetMapping("/subInfo")
+	public ResponseEntity<?> subInfo(@RequestParam Map<String, Object> paramMap,HttpSession session, Model model) throws Exception{
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			PackageOrder dto = mypageService.findMySubinfo(info.getMemberId());
+			
+			body.put("dto",dto);
+			
+			return ResponseEntity.ok(body);
+			
+		} catch (Exception e) {
+			log.error("detailView: ", e);
+			body.put("message", "구독패키지정보 - 상세정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); 
+		}
+		
+		
+	}
+	
 
 
 }

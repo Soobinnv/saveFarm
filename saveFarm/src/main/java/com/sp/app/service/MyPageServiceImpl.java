@@ -1,7 +1,10 @@
 package com.sp.app.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,7 +14,9 @@ import org.springframework.stereotype.Service;
 
 import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.mapper.OrderMapper;
+import com.sp.app.mapper.PackageMapper;
 import com.sp.app.model.Order;
+import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
 import com.sp.app.state.OrderState;
 
@@ -24,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MyPageServiceImpl implements MyPageService {
 	private final MyPageMapper mapper;
 	private final OrderMapper orderMapper;
+	private final PackageMapper PackageMapper;
 	
 	@Override
 	public int countPayment(Map<String, Object> map) {
@@ -167,5 +173,45 @@ public class MyPageServiceImpl implements MyPageService {
 			
 			throw e;
 		}
+	}
+
+	@Override
+	public PackageOrder findMySubinfo(long memberId) throws Exception {
+		PackageOrder dto  = null;
+		
+		try {
+			// 최근 
+			dto = PackageMapper.mysubinfo(memberId);
+			List<Long> productNums = new ArrayList<>();
+			List<Integer> itemPrices = new ArrayList<>();
+			List<Integer> counts = new ArrayList<>();
+			
+			// 
+			PackageOrder PackageInfo = PackageMapper.subPackageinfo(dto.getSubNum());
+			List<PackageOrder> items = PackageMapper.subItemList(dto.getSubNum());
+			
+			dto.setHomePackageNum(PackageInfo.getHomePackageNum());
+			dto.setSaladPackageNum(PackageInfo.getSaladPackageNum());
+			dto.setPackagePrice(PackageInfo.getPackagePrice());
+			
+			if (items == null || items.isEmpty()) {
+			    dto.setProductNums(Collections.emptyList());
+			    dto.setItemPrices(Collections.emptyList());
+			    dto.setCounts(Collections.emptyList());
+			} else {
+			    dto.setProductNums(items.stream().map(PackageOrder::getProductNum).toList());
+			    dto.setItemPrices(items.stream().map(PackageOrder::getItemPrice).toList());
+			    dto.setCounts(items.stream().map(PackageOrder::getCount).toList());
+			}
+			
+			
+		} catch (Exception e) {
+			log.info("PackageOrder: ",e);
+			
+			throw e;
+		}
+		
+		
+		return dto;
 	}
 }

@@ -19,8 +19,9 @@ public interface PackageMapper {
 	public void updateProductStockDec(PackageOrder dto) throws SQLException;
 	
 	public PackageOrder subPackageinfo(String subNum) throws SQLException;
-	public PackageOrder subItemList(String subNum) throws SQLException;
+	public List<PackageOrder> subItemList(String subNum) throws SQLException;
 	
 	public List<PackageOrder> findBysubData(long memberId) throws SQLException;
+	public PackageOrder mysubinfo(long memberId) throws SQLException;
 	
 }

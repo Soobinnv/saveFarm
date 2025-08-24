@@ -1030,3 +1030,90 @@ const renderFaqListHtml = function(data) {
 	
 	return html;
 }
+
+/**
+ * 
+ * 
+ */
+
+const renderMySubInfoHtml = function(data) {
+  const dto = data?.dto || null;
+
+  // 미이용 화면
+  if (!dto || dto.isExtend === 2 || dto.isExtend == null) {
+    return `
+      <section class="mp-sub-wrap" data-state="empty">
+        <div class="mp-sub-panel mp-sub-panel--empty">
+          <h3 class="mp-sub-title">정기배송 정보</h3>
+          <p class="mp-sub-empty-desc">현재 정기구독 서비스를 사용하고 있지 않아요</p>
+          <button type="button" class="mp-sub-cta" id="btnGoBenefits">정기구독 서비스 혜택 확인하러 가기</button>
+        </div>
+      </section>`;
+  }
+
+  // 1) 패키지명 만들기 (둘 다 null이면 '-')
+  const hasHome   = dto.homePackageNum   !== null && dto.homePackageNum   !== undefined;
+  const hasSalad  = dto.saladPackageNum  !== null && dto.saladPackageNum  !== undefined;
+  const names = [];
+  if (hasHome)  names.push('집밥 패키지');
+  if (hasSalad) names.push('샐러드 패키지');
+  const packageLabel = names.length ? names.join(' + ') : '-';
+
+  // 2) 카드의 가격은 무조건 packagePrice만
+  const packagePrice = Number(dto.packagePrice || 0).toLocaleString();
+
+  // 3) 추가구매 리스트
+  const hasAddons = Array.isArray(dto.productNums) && dto.productNums.length > 0;
+  const addonsHtml = hasAddons
+    ? dto.productNums.map((p, i) => `
+        <li class="mp-sub-addon">
+          <div class="mp-sub-addon__info">
+            <div class="mp-sub-addon__name">상품번호 ${p}</div>
+            <div class="mp-sub-addon__meta">
+              수량 ${dto.counts?.[i] ?? '-'} · ${Number(dto.itemPrices?.[i] ?? 0).toLocaleString()}원
+            </div>
+          </div>
+        </li>`).join('')
+    : `<li class="mp-sub-empty">추가구매 품목이 없어요.</li>`;
+
+  // 4) 월 결제 합계는 totalPay
+  const monthlyTotal = Number(dto.totalPay || 0).toLocaleString();
+
+  return `
+    <section class="mp-sub-wrap" data-state="active">
+      <div class="mp-sub-panel">
+        <h3 class="mp-sub-title">정기배송 정보</h3>
+
+        <div class="mp-sub-block">
+          <div class="mp-sub-block__title">구독중인 패키지</div>
+          <div class="mp-sub-card">
+            <div class="mp-sub-card__body">
+              <div class="mp-sub-card__name">${packageLabel}</div>
+              <div class="mp-sub-card__meta">
+                월 ${dto.subMonth || '-'}개월차 · 결제수단: ${dto.payMethod || '-'}
+              </div>
+              <div class="mp-sub-card__price">${packagePrice}원</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mp-sub-block">
+          <div class="mp-sub-block__title">추가구매 상품</div>
+          <ul class="mp-sub-addons">${addonsHtml}</ul>
+        </div>
+
+        <div class="mp-sub-bottom">
+          <div class="mp-sub-total">
+            월 결제 : <strong>${monthlyTotal}</strong>원
+          </div>
+          <div class="mp-sub-actions">
+            <button type="button" class="mp-sub-btn mp-sub-btn--primary" id="btnChange">정기구독 품목변경</button>
+            <button type="button" class="mp-sub-btn mp-sub-btn--danger" id="btnStop">정기구독 그만두기</button>
+          </div>
+        </div>
+      </div>
+    </section>`;
+};
+
+
+

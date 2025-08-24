@@ -104,8 +104,10 @@ public class TaskServiceImpl implements TaskService {
 			// 둘다 null인 경우에는 random 돌리지 않음
 			if(prehomeNum[0] != 0 || prehomeNum[1] != 0) {
 				random.setHomePackageNum(pickRandomExcluding(prehomeNum[0], prehomeNum[1])); 
-			}else if(presaladNum[0] != 0 || presaladNum[1] != 0) {
-				random.setSaladPackageNum(pickRandomExcluding(presaladNum[0], presaladNum[1])%6); 
+			} 
+			
+			if(presaladNum[0] != 0 || presaladNum[1] != 0) {
+				random.setSaladPackageNum(pickRandomExcluding(presaladNum[0], presaladNum[1])+6); 
 			}
 			
 		} catch (Exception e) {
@@ -119,7 +121,8 @@ public class TaskServiceImpl implements TaskService {
 	public long pickRandomExcluding(long num1, long num2) {
 		List<Integer> candidates = new ArrayList<>();
 		
-		if(num1>6 && num2>6) {
+		// 셀러드 패키지 번호 
+		if(num1>6 || num2>6) {
 			num1= num1%6;
 			num2= num2%6;
 		}

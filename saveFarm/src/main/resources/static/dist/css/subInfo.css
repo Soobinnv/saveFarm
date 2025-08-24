@@ -1,0 +1,59 @@
+/* === Subscription Component (scoped) === */
+.mp-sub-wrap { padding: 10px; }
+.mp-sub-panel {
+  border: 1px solid #e6e6e6;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,.04);
+  padding: 20px;
+}
+.mp-sub-panel--empty { text-align: center; padding: 40px 20px; }
+.mp-sub-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #222;
+}
+
+.mp-sub-block { border: 1px solid #efefef; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: #fafafa; }
+.mp-sub-block__title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #444; }
+
+.mp-sub-card { display: flex; align-items: center; gap: 16px; background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 12px; }
+.mp-sub-card__thumb { width: 72px; height: 72px; border-radius: 8px; object-fit: cover; border: 1px solid #e5e5e5; }
+.mp-sub-card__body { flex: 1; }
+.mp-sub-card__name { font-size: 16px; font-weight: 700; color: #222; }
+.mp-sub-card__meta { font-size: 12px; color: #777; margin-top: 2px; }
+.mp-sub-card__price { font-size: 14px; font-weight: 800; color: #222; margin-top: 6px; }
+
+.mp-sub-addons { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 640px){ .mp-sub-addons { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px){ .mp-sub-addons { grid-template-columns: 1fr 1fr 1fr; } }
+
+.mp-sub-addon { display: flex; gap: 12px; align-items: center; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+.mp-sub-addon__thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; border: 1px solid #e9e9e9; }
+.mp-sub-addon__info { flex: 1; }
+.mp-sub-addon__name { font-size: 14px; font-weight: 600; color: #222; }
+.mp-sub-addon__meta { font-size: 12px; color: #666; margin-top: 2px; }
+
+.mp-sub-empty { color: #999; font-size: 13px; padding: 12px; text-align: center; background: #fff; border: 1px dashed #ddd; border-radius: 10px; }
+
+.mp-sub-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; gap: 16px; }
+.mp-sub-total { font-size: 15px; color: #333; }
+.mp-sub-actions { display: flex; gap: 10px; }
+
+.mp-sub-btn {
+  appearance: none; border: 1px solid #ccc; background: #fff; color: #222;
+  padding: 10px 16px; border-radius: 999px; font-size: 14px; cursor: pointer; transition: .2s;
+}
+.mp-sub-btn:hover { background: #f5f5f5; }
+.mp-sub-btn--primary { border-color: #039a63; color: #039a63; }
+.mp-sub-btn--primary:hover { background: #e9f6f1; }
+.mp-sub-btn--danger { border-color: #c0392b; color: #c0392b; }
+.mp-sub-btn--danger:hover { background: #fdeceb; }
+
+.mp-sub-cta {
+  appearance: none; border: none; background: #039a63; color: #fff;
+  padding: 12px 20px; border-radius: 999px; font-size: 14px; cursor: pointer; transition: .2s;
+}
+.mp-sub-cta:hover { filter: brightness(0.95); }
+.mp-sub-empty-desc { color: #888; margin: 18px 0; }

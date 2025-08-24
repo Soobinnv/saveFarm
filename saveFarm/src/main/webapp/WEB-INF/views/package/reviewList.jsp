@@ -64,14 +64,13 @@
 </div>
 
 <script>
-  // ★ 컨트롤러에 맞춘 고정 경로
-  var LIST_URL     = '/package/list';             // GET JSON
-  var WRITE_URL    = '/package/reviewWriteForm';  // 작성 버튼
-  var DETAIL_URL   = function(subNum){ return '#'; }; // TODO: 상세 URL 생기면 교체
+  var LIST_URL     = '/package/list';            
+  var WRITE_URL    = '/package/reviewWriteForm';  
+  var DETAIL_URL   = function(subNum){ return '#'; }; 
 
-  // 정적 리소스 (앱이 루트(/)에 배포돼 있다고 가정)
+  // 정적 리소스
   var PLACEHOLDER  = '/resources/img/no-image.png';
-  var UPLOAD_DIR   = '/uploads/PackageReview/';   // 끝에 / 필수
+  var UPLOAD_DIR   = '/uploads/PackageReview/'; 
 
   // 간단 이스케이프
   function esc(s){
@@ -133,7 +132,7 @@
       pagingEl.innerHTML = phtml;
     }
 
-    // 하단 작성 버튼(있다면 갱신)
+
     var writeBtn = document.querySelector('.btn-write');
     if(writeBtn){ writeBtn.setAttribute('href', WRITE_URL); }
   }

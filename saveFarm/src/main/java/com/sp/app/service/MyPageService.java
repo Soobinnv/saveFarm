@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sp.app.model.Order;
+import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
 
 public interface MyPageService {
@@ -15,4 +16,6 @@ public interface MyPageService {
 	public Order findByOrderDelivery(Map<String, Object> map);
 	public void updateOrderDetailState(Map<String, Object> map) throws Exception;
 	public void updateOrderHistory(long orderDetailNum) throws Exception;
+	
+	public PackageOrder findMySubinfo(long memberId) throws Exception;
 }
