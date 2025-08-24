@@ -26,6 +26,8 @@ public class OrderManage {
 	private Long memberId;
 	private String loginId;
 	
+	private String name;
+	
 	private String orderNum;
 	private String orderDate;
 	private int payment;
