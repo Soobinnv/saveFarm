@@ -129,8 +129,8 @@ const renderProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="javascript:void(0);">재고</a>
-                <a class="dropdown-item" href="javascript:void(0);">상품정보변경</a>
+                <a class="dropdown-item stock-edit" href="javascript:void(0);">재고</a>
+                <a class="dropdown-item product-edit" href="javascript:void(0);">상품정보변경</a>
               </div>
             </td>
           </tr>
@@ -151,11 +151,13 @@ const renderProductDetailHTML = function(data) {
 		? `<span class="badge badge-pill badge-primary">${classifyName}</span>`
 		: `<span class="badge badge-pill badge-success">${classifyName}</span>`;
 
-	// 가격과 재고가 null 또는 undefined일 경우 0으로 처리, 숫자 형식 변환
 	const price = (product.unitPrice || 0).toLocaleString();
 	const stock = (product.stockQuantity || 0).toLocaleString();
 	const unit = product.unit || '';
 
+	
+	const productJSON = JSON.stringify({productInfo: product});
+	
 	const html = `
 	<table>
 		<tr class="product-detail-row" style="background-color: #f8f9fa;">
@@ -186,7 +188,10 @@ const renderProductDetailHTML = function(data) {
 						</div>
 						<div class="row mt-3">
 							<div class="col-12 d-flex justify-content-end">
-								<button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.href='/products/edit/${product.productNum}'">수정하기</button>
+								<div>
+									<button data-product-json='${productJSON}' type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고</button>
+									<button type="button" class="btn btn-sm btn-outline-secondary ms-2">수정하기</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -194,6 +199,72 @@ const renderProductDetailHTML = function(data) {
 			</td>
 		</tr>
 	</table>
+	`;
+	return html;
+}
+
+/**
+ * 재고 관리 HTML 문자열 생성
+ * @param {object} data - 상품 정보 데이터
+ * @param {object} data.productInfo - 상품 정보 객체
+ * @returns {string} 재고 관리 HTML 문자열
+ */
+const renderStockEditHTML = function(productJSONString) {
+	const data = JSON.parse(productJSONString);
+	
+	const product = data.productInfo;
+	const stock = product.stockQuantity || 0;
+	const unit = product.unit || '개';
+
+	const html = `
+	<div class="stock-management-ui card shadow-sm mt-3 mb-3 border-light">
+		<div class="card-header bg-light d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-bold">
+				<i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${product.productName}</span>
+			</h5>
+			<button type="button" class="btn-close" aria-label="Close" onclick="this.closest('.stock-management-ui').remove()"></button>
+		</div>
+		<div class="card-body p-4">
+			<div class="row mb-4">
+				<div class="col-md-12">
+					<p class="fs-5">
+						<strong>현재 재고:</strong> 
+						<span id="current-stock" data-stock="${stock}" class="badge bg-dark rounded-pill">${stock.toLocaleString()} ${unit}</span>
+					</p>
+				</div>
+			</div>
+			<div class="row g-3 align-items-end">
+				<div class="col-sm-4">
+					<label for="stock-change-type" class="form-label"><strong>조정 유형</strong></label>
+					<select class="form-select" id="stock-change-type">
+						<option value="in" selected>입고 (+)</option>
+						<option value="out">출고 (-)</option>
+						<option value="adjustment">실사 조정</option>
+					</select>
+				</div>
+				<div class="col-sm-4">
+					<label for="stock-quantity-input" class="form-label"><strong>조정 수량</strong></label>
+					<input type="number" class="form-control" id="stock-quantity-input" placeholder="수량을 입력하세요" min="0">
+				</div>
+				<div class="col-sm-4">
+					 <label for="stock-after-quantity" class="form-label"><strong>조정 후 재고</strong></label>
+					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${stock.toLocaleString()} ${unit}">
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-12">
+					<label for="stock-memo" class="form-label"><strong>메모</strong></label>
+					<textarea class="form-control" id="stock-memo" rows="2" placeholder="재고 조정 사유를 입력하세요 (예: 정기 재고 실사)"></textarea>
+				</div>
+			</div>
+		</div>
+		<div class="card-footer text-end bg-light">
+			<button type="button" class="btn btn-secondary" onclick="this.closest('.stock-management-ui').remove()">취소</button>
+			<button type="button" class="btn btn-primary ms-2" id="save-stock-btn">
+				<i class="fas fa-save me-1"></i> 저장하기
+			</button>
+		</div>
+	</div>
 	`;
 	return html;
 }
@@ -214,7 +285,6 @@ const renderFarmProductListHTML = function(item, params) {
 	const schType = item.schType || "all";
 	const kwd = item.kwd || "";
 
-	// tbody에 렌더링할 HTML (개별 행 생성 함수 호출)
     const tbodyHTML = renderFarmProductRows(item.list);
 
 	const html = `
@@ -305,8 +375,8 @@ const renderFarmProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="javascript:void(0);">승인</a>
-                <a class="dropdown-item" href="javascript:void(0);">반려</a>
+                <a class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
+                <a class="dropdown-item supply-update-state-return" href="javascript:void(0);">반려</a>
               </div>
             </td>
           </tr>
@@ -685,8 +755,8 @@ const renderProductReviewRows = function(list) {
 	            <span class="text-muted sr-only">선택</span>
 	          </button>
 	          <div class="dropdown-menu dropdown-menu-right">
-	            <a class="dropdown-item" href="content">리뷰 상태변경</a>
-	            <a class="dropdown-item" href="content">리뷰 삭제</a>
+	            <a class="dropdown-item review-update-block" href="content">리뷰 상태변경</a>
+	            <a class="dropdown-item review-delete" href="content">리뷰 삭제</a>
 	          </div>
 	        </td>
 	      </tr>
@@ -727,13 +797,11 @@ const renderProductReviewDetailHTML = function(data) {
 		<tr class="review-detail-row" style="background-color: #f8f9fa;">
 			<td colspan="9">
 				<div class="row m-3 p-3 align-items-start">
-					<!-- 1. 상품 이미지 영역 -->
 					<div class="col-md-3 text-center">
 						<img src="${webContextPath}/uploads/product/${item.mainImageFilename || 'https://placehold.co/250x250/EFEFEF/31343C?text=No+Photo'}" 
 							 onerror="this.onerror=null;this.src='https://placehold.co/250x250/EFEFEF/31343C?text=Image+Error';"
 							 class="img-fluid rounded border" style="max-height: 250px;" alt="${item.productName} 리뷰 이미지">
 					</div>
-					<!-- 2. 리뷰 상세 정보 영역 -->
 					<div class="col-md-9">
 						<div class="d-flex justify-content-between align-items-center mb-2">
 							<h5 class="mb-0">${item.productName}</h5>
@@ -761,9 +829,9 @@ const renderProductReviewDetailHTML = function(data) {
 }
 
 /**
- * 별점(rating) 숫자를 받아 별 모양 아이콘으로 변환하는 내부 함수
+ * 별점(rating) 숫자를 받아 별 모양 아이콘으로 변환
  * @param {number} rating - 1~5 사이의 별점
- * @returns {string} 별점 아이콘 SVG와 점수가 포함된 HTML 문자열
+ * @returns {string} 별점 아이콘, 점수가 포함된 HTML 문자열
  */
 const createStarRating = (rating) => {
 	let stars = '';

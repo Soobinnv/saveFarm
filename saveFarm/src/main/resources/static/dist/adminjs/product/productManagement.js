@@ -1,40 +1,48 @@
 // -- 관리자 상품 관리 - 이벤트 처리 및 기능 -- //
 
 // 설정 객체 정의 - switch문 반복 제거
+// - 상품 option 버튼
+const productOptions = {
+    optionSelector1: ".stock-edit",
+    optionRender1: renderStockEditHTML,
+    optionSelector2: ".product-edit",
+    // optionRender2: renderProductEditHTML
+};
+
 // - 메인 탭(상품 리스트, 농가 상품 등)
 const mainTabConfig = {
-    'productList': { url: '/api/admin/products', render: renderProductListHTML, page: 'productListPage' },
-    'supplyManagement': { url: '/api/admin/supplies', render: renderFarmProductListHTML, page: 'supplyListPage' },
-    'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, page: 'inquiryListPage' },
-    'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, page: 'qnaListPage' }
+    'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage', options: productOptions},
+    'supplyManagement': { url: '/api/admin/supplies', render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
+    'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, pagingMethodName: 'inquiryListPage' },
+    'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'qnaListPage' }
 };
 
 // - 상품 리스트 하위 탭(전체, 일반, 구출)
 const productTabConfig = {
-    'tab-product-all': { url: '/api/admin/products', params: '', page: 'productListPage', render: renderProductListHTML },
-    'tab-product-normal': { url: '/api/admin/products', params: { classifyCode: 100 }, page: 'productListPage', render: renderProductListHTML },
-    'tab-product-rescued': { url: '/api/admin/products', params: { classifyCode: 200 }, page: 'productListPage', render: renderProductListHTML }
+    'tab-product-all': { url: '/api/admin/products', params: '', pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions},
+    'tab-product-normal': { url: '/api/admin/products', params: { classifyCode: 100 }, pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions},
+    'tab-product-rescued': { url: '/api/admin/products', params: { classifyCode: 200 }, pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions}
 };
 
 // - 농가 상품 리스트 하위 탭(전체, 승인대기, 승인)
 const supplyTabConfig = {
-    'tab-status-all': { url: '/api/admin/supplies', params: '', page: 'supplyListPage', render: renderFarmProductListHTML },
-    'tab-status-unapproved': { url: '/api/admin/supplies', params: { state: 1 }, page: 'supplyListPage', render: renderFarmProductListHTML },
-    'tab-status-approved': { url: '/api/admin/supplies', params: { state: 2 }, page: 'supplyListPage', render: renderFarmProductListHTML }
+    'tab-status-all': { url: '/api/admin/supplies', params: '', pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-unapproved': { url: '/api/admin/supplies', params: { state: 1 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-approved': { url: '/api/admin/supplies', params: { state: 2 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML }
 };
 
 // - 상품 문의 하위 탭(전체, 답변대기, 답변완료)
 const qnaTabConfig = {
-    'tab-status-all': { url: '/api/admin/inquiries', params: '', page: 'inquiryListPage', render: renderProductQnaListHTML },
-    'tab-status-unanswered': { url: '/api/admin/inquiries', params: { isAnswerd: 0 }, page: 'inquiryListPage', render: renderProductQnaListHTML },
-    'tab-status-answered': { url: '/api/admin/inquiries', params: { isAnswerd: 1 }, page: 'inquiryListPage', render: renderProductQnaListHTML }
+    'tab-status-all': { url: '/api/admin/inquiries', params: '', pagingMethodName: 'inquiryListPage', render: renderProductQnaListHTML },
+    'tab-status-unanswered': { url: '/api/admin/inquiries', params: { isAnswerd: 0 }, pagingMethodName: 'inquiryListPage', render: renderProductQnaListHTML },
+    'tab-status-answered': { url: '/api/admin/inquiries', params: { isAnswerd: 1 }, pagingMethodName: 'inquiryListPage', render: renderProductQnaListHTML }
 };
 
 // - 상품 리뷰 하위 탭(전체, 보임, 숨김)
 const reviewTabConfig = {
-    'tab-status-all': { url: '/api/admin/reviews', params: '', page: 'qnaListPage', render: renderProductReviewListHTML },
-    'tab-status-visible': { url: '/api/admin/reviews', params: { reviewBlock: 0 }, page: 'qnaListPage', render: renderProductReviewListHTML },
-    'tab-status-hidden': { url: '/api/admin/reviews', params: { reviewBlock: 1 }, page: 'qnaListPage', render: renderProductReviewListHTML }
+    'tab-status-all': { url: '/api/admin/reviews', params: '', pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML },
+    'tab-status-visible': { url: '/api/admin/reviews', params: { reviewBlock: 0 }, pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML },
+    'tab-status-hidden': { url: '/api/admin/reviews', params: { reviewBlock: 1 }, pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML }
 };
 
 
@@ -55,7 +63,7 @@ $(function() {
 		const config = mainTabConfig[navId];
 		
 		if (config) {
-			loadContent(config.url, config.render, '', config.page);
+			loadContent(config.url, config.render, '', config.pagingMethodName, config.options);
 		}
 	});
 	
@@ -83,7 +91,7 @@ $(function() {
 		}
 		
 		if (config) {
-			loadContent(config.url, config.render, config.params, config.page);
+			loadContent(config.url, config.render, config.params, config.pagingMethodName, config.options);
 		}
 	});
 	
@@ -99,7 +107,7 @@ $(function() {
 		
 		if (config) {
 			let url = config.baseUrl;
-			// 상세 조회를 위한 id가 필요한 경우 URL 조합
+			// 상세 조회를 위한 id
 			if (config.idAttr) {
 				const entityId = $(this).data(config.idAttr);
 				url += entityId;

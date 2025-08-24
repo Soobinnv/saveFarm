@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
 <script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/myPage.js"></script>
 <script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/product.js"></script>
+		src="${pageContext.request.contextPath}/dist/js/product/productAction.js"></script>
 
 </body>
 </html>
