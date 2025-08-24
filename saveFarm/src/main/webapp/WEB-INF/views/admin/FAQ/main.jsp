@@ -61,9 +61,10 @@
 					<div class="col-md-12" id="nav-tabContent"> </div>
 						
 					<form name="faqSearchForm">
+						<input type="hidden" name="schTypeFAQ" value="memberFAQ">
 						<input type="hidden" name="schType" value="all">
 						<input type="hidden" name="kwd" value="">
-						<input type="hidden" name="categoryNum" value="categoryNum">
+						<input type="hidden" name="categoryNum" value="">
 					</form>
 				</div>
 			</div>
@@ -74,115 +75,85 @@
 
 <script type="text/javascript">
 $(function(){
-	listCategory(1);
+	listFaq(1);
 });
 
-function listCategory(page) {
+// FAQ 목록을 불러오는 메인 함수
+// 카테고리, 검색, 페이지 이동 등 모든 목록 요청을 처리합니다.
+function listFaq(page) {
 	let url = '${pageContext.request.contextPath}/admin/FAQ/FAQ';	
-	let params = $('form[name=faqSearchForm]').serialize();
+	let params = $('form[name=faqSearchForm]').serialize(); 
 	params += '&page=' + page;
-	
-	let schTypeFAQ = $('#schTypeFAQSelect').val();
-    params += '&schTypeFAQ=' + schTypeFAQ;
-    console.log(schTypeFAQ);
-	
+
 	const fn = function(data) {
+		// FAQ.jsp의 전체 컨텐츠를 새로운 데이터로 대체
 		$('#nav-tabContent').html(data);
 	};
 	
 	ajaxRequest(url, 'get', params, 'text', fn);
 }
 
+// 2. FAQ 타입 (회원/농가) 선택 시 호출되는 함수
+function changeFaqType() {
+    const f = document.faqSearchForm;
+    f.kwd.value = '';
+    f.schType.value = 'all';
+    f.categoryNum.value = '';
+    f.schTypeFAQ.value = $('#schTypeFAQSelect').val();
+    
+    listFaq(1); // 이 함수가 최종 목록을 다시 불러옵니다.
+}
+
+// 네비바 카테고리 탭 클릭 시 호출되는 함수
 function loadCategory(categoryNum) {
-    let url = '${pageContext.request.contextPath}/admin/FAQ/FAQ';
-    let params = $('form[name=faqSearchForm]').serialize();
-
-    if (categoryNum) {
-        params += '&categoryNum=' + categoryNum;
-    }
-
-    const fn = function(data) {
-        // FAQ 목록 영역만 갱신
-        $('#faqTableArea').html($(data).find('#faqTableArea').html());
-    };
-
-    ajaxRequest(url, 'get', params, 'text', fn);
+    const f = document.faqSearchForm;
+    f.kwd.value = '';
+    f.schType.value = 'all';
+    f.categoryNum.value = categoryNum;
+    
+    listFaq(1);
 }
-
-function resetList() {
-	// 초기화
-	const $tab = $('button[role="tab"].active');
-	let role = $tab.attr('data-tab');
-
-	const f = document.faqSearchForm;
-	
-	f.schType.value = 'all';
-	f.kwd.value = '';
-	f.enabled.value = '';
-	
-	listCategory(1);
-}
-
+// 검색 버튼 클릭 시 호출되는 함수
 function searchList() {
-	// 검색
-	const f = document.faqSearchForm;
-	
-	f.schType.value = $('#searchType').val();
-	f.kwd.value = $('#keyword').val();
-	
-	listCategory(1);
+    const f = document.faqSearchForm;
+    const searchType = $('#searchType').val();
+    const keyword = $('#keyword').val();
+    
+    f.schType.value = searchType;
+    f.kwd.value = keyword;
+
+    listFaq(1);
 }
 
-function details(memberId, page) {
-	// 모달이 제대로 작동죄지 않는 현상을 위해 body로 옮긴 모달이 존재하는 경우 제거
-	$('#memberStatusDetailesDialogModal').remove();
-	$('#memberUpdateDialogModal').remove();
-	
-	// 회원 상세 보기
-	let url = '${pageContext.request.contextPath}/admin/member/details';
-	let params = 'memberId=' + memberId + '&page=' + page;
-	
-	const fn = function(data){
-		$('#nav-tabContent').html(data);
-	};
-
-	ajaxRequest(url, 'get', params, 'text', fn);
+// 검색 초기화
+function resetSearch() {
+    const f = document.faqSearchForm;
+    f.schType.value = 'all';
+    f.kwd.value = '';
+    f.categoryNum.value = '';
+    
+    listFaq(1);
 }
 
-function statusDetailesMember() {
-	// data-aos 에 의해 부모에 transform css로 인하여 모달이 제대로 작동되지 않는 현상 해결
-	$('#memberStatusDetailesDialogModal').appendTo('body');
-	$('#memberStatusDetailesDialogModal').modal('show');	
-}
+// 페이지네이션 클릭 이벤트 처리
+// 동적으로 로드된 HTML에도 이벤트를 적용하기 위해 on() 메서드를 사용합니다.
+$(document).on('click', '.pagination a', function(e) {
+    e.preventDefault();
+    const page = $(this).attr('data-page');
+    if (page) {
+        listFaq(page);
+    }
+});
 
-function selectStatusChange() {
-	const f = document.memberStatusDetailesForm;
 
-	let code = f.statusCode.value;
-	console.log(code);
-	let memo = f.statusCode.options[f.statusCode.selectedIndex].text;
-	
-	f.memo.value = '';	
-	if(! code) {
-		return;
-	}
-
-	if(code!=='0' && code!=='8') {
-		f.memo.value = memo;
-	}
-	
-	f.memo.focus();
-}
-
+//--- 회원 관리 관련 함수들 (기존 코드) ---
 
 function updateMember() {
-	// data-aos 에 의해 부모에 transform css로 인하여 모달이 제대로 작동되지 않는 현상 해결
 	$('#memberUpdateDialogModal').appendTo('body');
 	$('#memberUpdateDialogModal').modal('show');
 }
 
 function updateMemberOk(page) {
-	// 회원 정보 변경(권한, 이름, 생년월일)
 	const f = document.memberUpdateForm;
 
 	if( ! f.name.value ) {
@@ -197,7 +168,6 @@ function updateMemberOk(page) {
 	
 	let url = '${pageContext.request.contextPath}/admin/member/updateMember';
 	let params = $('#memberUpdateForm').serialize();
-	console.log(params);
 	const fn = function(data){
 		listMember(page);
 	};
@@ -207,7 +177,6 @@ function updateMemberOk(page) {
 }
 
 function deleteMember(memberId) {
-	// 회원 삭제
 	if(! confirm('삭제하시겠습니까 ? ')){
 		return;
 	}
@@ -220,11 +189,9 @@ function deleteMember(memberId) {
     };
 	
 	ajaxRequest(url, 'post', params, 'text', fn);
-	
 }
 
 function updateStatusOk(page) {
-	// 회원 상태 변경
 	const f = document.memberStatusDetailesForm;
 	
 	if( ! f.statusCode.value ) {
@@ -253,7 +220,6 @@ function updateStatusOk(page) {
 }
 
 function memberAnalysis() {
-	// 연령별 어낼러시스(분석) - echarts bar
 	let out;
 	out = `
 		<div class="row gy-4 mt-2">

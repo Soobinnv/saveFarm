@@ -13,40 +13,63 @@
 				INSTR(f.subject, #{kwd}) > 0
 			</when>
 			<when test="schType == 'subject'">
-				INSTR(f.name, #{kwd}) > 0
-			</when>
-		</choose>
-	</sql>
-	<sql id="FAQ-list">
-		<choose>
-			<when test="schTypeFAQ == 'memberFAQ'">
-				classify = 1
-			</when>
-			<when test="schTypeFAQ == 'farmFAQ'">
-				classify = 2
+				INSTR(m.name, #{kwd}) > 0
 			</when>
 		</choose>
 	</sql>
 	
-	<select id="categoryFAQList" resultType="com.sp.app.admin.model.FaqManage">
+	<sql id="FAQ-classify-list">
+		<choose>
+			<when test="schTypeFAQ == 'memberFAQ'">
+				cf.classify = 1
+			</when>
+			<when test="schTypeFAQ == 'farmFAQ'">
+				cf.classify = 2
+			</when>
+		</choose>
+	</sql>
+	
+	<select id="categoryFAQList" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
 		SELECT categoryNum, categoryName, classify
 		FROM categoryFAQ
 		<where>
-			<if test="schTypeFAQ != null">
-				AND <include refid="FAQ-list"/>
-			</if>
+			<choose>
+				<when test="schTypeFAQ == 'memberFAQ'">
+					classify = 1
+				</when>
+				<when test="schTypeFAQ == 'farmFAQ'">
+					classify = 2
+				</when>
+			</choose>
 		</where>
+		ORDER BY categoryNum
 	</select>
+	
 	<select id="faqList" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
-		SELECT f.faqNum, f.categoryNum, categoryName, classify, name, f.memberId, subject, content, regDate 
-		FROM FAQ f
-		LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
-		LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
-		<where>
-			<if test="kwd != null and kwd != ''">
-			<include refid="where-list"/>
-		</if>
-		</where>
+	    SELECT f.faqNum, f.categoryNum, cf.categoryName, cf.classify, m.name, f.memberId, f.subject, f.content, f.regDate 
+	    FROM FAQ f
+	    LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+	    LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
+	    <where>
+	        <if test="schTypeFAQ != null and schTypeFAQ != ''">
+	            <choose>
+	                <when test="schTypeFAQ == 'memberFAQ'">
+	                    cf.classify = 1
+	                </when>
+	                <when test="schTypeFAQ == 'farmFAQ'">
+	                    cf.classify = 2
+	                </when>
+	            </choose>
+	        </if>
+	        <if test="categoryNum != null and categoryNum != ''">
+	            AND f.categoryNum = #{categoryNum}
+	        </if>
+	        <if test="kwd != null and kwd != ''">
+	            AND <include refid="where-list"/>
+	        </if>
+	    </where>
+	    ORDER BY f.faqNum DESC
+	    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
 	</select>
 	
 	<select id="dataCount" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
@@ -56,13 +79,44 @@
 	    SUM(DECODE(classify, 2, 1, 0)) AS farmCount
 	FROM FAQ f
 	LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
-	<where>
-		<if test="schTypeFAQ != null">
-			AND <include refid="FAQ-list"/>
-		</if>
-		<if test="kwd != null and kwd != ''">
-			AND <include refid="where-list"/>
-		</if>
-	</where>
-</select>
+		<where>
+			<if test="schTypeFAQ != null and schTypeFAQ != ''">
+				<include refid="FAQ-classify-list"/>
+			</if>
+			<if test="categoryNum != null and categoryNum != ''">
+				AND f.categoryNum = #{categoryNum}
+			</if>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	<select id="findById" parameterType="long" resultType="com.sp.app.admin.model.FaqManage">
+		SELECT f.faqNum, f.categoryNum, cf.categoryName, f.classify, m.name, f.memberId, f.subject, f.content, f.regDate 
+		FROM FAQ f
+		LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+		LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
+		WHERE f.faqNum = #{faqNum}
+	</select>
+	
+	<!-- FAQ 추가 -->
+	<insert id="insertFAQ" parameterType="com.sp.app.admin.model.FaqManage">
+		INSERT INTO FAQ(faqNum, categoryNum, memberId, subject, content, regDate)
+		VALUES (FAQ_SEQ.NEXTVAL, #{categoryNum}, #{memberId}, #{subject}, #{content}, SYSDATE)
+	</insert>
+	
+	<!-- FAQ 수정 -->
+	<update id="updateFAQ" parameterType="com.sp.app.admin.model.FaqManage">
+		UPDATE FAQ SET
+			categoryNum = #{categoryNum},
+			subject = #{subject},
+			content = #{content}
+		WHERE faqNum = #{faqNum}
+	</update>
+	
+	<!-- FAQ 삭제 -->
+	<delete id="deleteFAQ" parameterType="long">
+		DELETE FROM FAQ WHERE faqNum = #{faqNum}
+	</delete>
+	
 </mapper>

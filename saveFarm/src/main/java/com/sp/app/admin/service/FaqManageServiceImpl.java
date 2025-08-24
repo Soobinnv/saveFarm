@@ -31,11 +31,11 @@ public class FaqManageServiceImpl implements FaqManageService{
 	}
 
 	@Override
-	public List<FaqManage> categoryFAQList() {
+	public List<FaqManage> categoryFAQList(Map<String, Object> map) {
 		List<FaqManage> list = null;
 		
 		try {
-			list = mapper.categoryFAQList();
+			list = mapper.categoryFAQList(map);
 		} catch (Exception e) {
 			log.info("categoryFAQList 문제: ", e);
 		}
@@ -59,11 +59,10 @@ public class FaqManageServiceImpl implements FaqManageService{
 		FaqManage dto = null;
 		
 		try {
-			
+			dto = mapper.findById(faqNum);
 		} catch (Exception e) {
 			log.info("categoryList 문제: ", e);
 		}
-		
 		
 		return dto;
 	}
@@ -74,6 +73,7 @@ public class FaqManageServiceImpl implements FaqManageService{
 			mapper.insertFAQ(dto);
 		} catch (Exception e) {
 			log.info("insertFAQ 문제: ", e);
+			throw e;
 		}
 		
 	}
@@ -83,7 +83,8 @@ public class FaqManageServiceImpl implements FaqManageService{
 		try {
 			mapper.updateFAQ(dto);
 		} catch (Exception e) {
-			log.info("insertFAQ 문제: ", e);
+			log.info("updateFAQ 문제: ", e);
+			throw e;
 		}
 		
 	}
@@ -93,7 +94,8 @@ public class FaqManageServiceImpl implements FaqManageService{
 		try {
 			mapper.deleteFAQ(faqNum);
 		} catch (Exception e) {
-			log.info("insertFAQ 문제: ", e);
+			log.info("deleteFAQ 문제: ", e);
+			throw e;
 		}
 		
 	}
