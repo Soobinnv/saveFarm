@@ -20,7 +20,7 @@
 		
 		<ul class="navbar-nav flex-fill w-100 mb-2">
 			<li class="nav-item dropdown">
-				<a href="${pageContext.request.contextPath}/admin/"
+				<a href="${pageContext.request.contextPath}/admin"
 					aria-expanded="false"
 					class="nav-link">
 					<i class="fe fe-hard-drive fe-16"></i>
@@ -234,7 +234,7 @@
 		
 		<ul class="navbar-nav flex-fill w-100 mb-2">
 			<li class="nav-item dropdown">
-				<a href="${pageContext.request.contextPath}/admin/other/FAQ" aria-expanded="false" class="nav-link">
+				<a href="${pageContext.request.contextPath}/admin/FAQ/" aria-expanded="false" class="nav-link">
 					<i class="fe fe-message-square fe-16"></i>
 					<span class="ml-3 item-text">자주하는 질문</span>
 				</a>
