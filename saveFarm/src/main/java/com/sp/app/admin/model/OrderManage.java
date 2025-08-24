@@ -32,12 +32,11 @@ public class OrderManage {
 	private int deliveryCharge;
 	private int totalMoney;
 	private int orderState;
-	private String orderStateDate;
 	private int discountMoney;
 	private int cancelAmount;
+	private String orderStateInfo;
 	
 	private long orderDetailNum;
-	
 	
 	private int totalPayment;
 	private int unitPrice;
@@ -57,6 +56,17 @@ public class OrderManage {
 	
 	private Long cartNum;
 
+	private String orderStateDate; // 상태변경일자
+	private String deliveryName; // 택배사
+	private String invoiceNumber; // 송장번호
+	
+	private int totalOrderCount; // 주문 상품수
+	private int totalQty; // 상품 주문 개수
+	private int detailCancelCount; // 취소건수(판매취소, 주문취소완료, 반품접수, 반품완료)
+	private int cancelRequestCount; // 배송전 주문 취소요청수, 반품요청수
+	private int exchangeRequestCount; // 배송후 교환 요청수
+	
+	
 	// 배송지 정보
 	private String recipientName;
 	private String tel;

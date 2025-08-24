@@ -106,7 +106,7 @@ public class OrderController {
 			}
 			
 			// 배송비
-			deliveryCharge = totalPayment >= 200000 ? 0 : deliveryCharge;
+			deliveryCharge = totalPayment >= 20000 ? 0 : deliveryCharge;
 			
 			// 결제할 금액(상품 총금액 + 배송비)
 			totalPayment = totalPayment + deliveryCharge;

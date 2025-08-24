@@ -16,13 +16,12 @@ public class Payment {
 	private String mainImageFilename;
 	private int price;
 	private int discountRate;
-	private int savedMoney;
+	private int discountPrice;
 	private int delivery;
 
 	private String orderNum;
 	private String orderDate;
 	private long orderDetailNum;
-	private int usedSaved;
 	private int payment;
 	private int totalMoney;
 	private int deliveryCharge;

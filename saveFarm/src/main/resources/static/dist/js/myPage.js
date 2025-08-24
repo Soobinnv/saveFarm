@@ -167,17 +167,25 @@ document.addEventListener("DOMContentLoaded", function () {
 $(document).on('click', '.order-details', function() {
     let orderNum = $(this).attr('data-orderNum');
     let orderDetailNum = $(this).attr('data-orderDetailNum');
-    
-	let params = 'orderNum=' + orderNum + '&orderDetailNum=' + orderDetailNum;
+
+	// 파라미터를 객체 형태로 전달하는 것이 더 깔끔하고 안전합니다.
+	let params = { orderNum: orderNum, orderDetailNum: orderDetailNum };
 	let url = contextPath + '/api/myPage/detailView';
 	
+    // 성공 콜백 함수
     const fn = function(data) {
-       $('.order-detail-view').html(data);
+       // 1. 위에서 만든 render 함수로 예쁜 HTML을 생성합니다.
+       const detailHtml = renderOrderDetailHtml(data);
+       
+       // 2. 생성된 HTML을 모달의 내용 부분에 삽입합니다.
+       $('.order-detail-view').html(detailHtml);
+       
+       // 3. 내용이 준비된 후, 모달 창을 띄웁니다.
+	   $('#orderDetailViewDialogModal').modal('show');
     };
 	
-	ajaxRequest(url, 'get', params, 'text', fn);
-    
-	$('#orderDetailViewDialogModal').modal('show');
+	// dataType을 'json'으로 변경하여 서버로부터 받은 데이터를 JS 객체로 자동 변환합니다.
+	ajaxRequest(url, 'get', params, 'json', fn);
 });
 
 
@@ -226,7 +234,7 @@ const renderMyPageMainHtml = function(data) {
 
 	    <div class="order-card">
 	      <div class="order-topline">
-	        <div class="text-black-50 fw-semibold">${item.orderState ?? "주문상태"}</div>
+	        <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
 	        <div class="order-menu">
 	          <a href="javascript:void(0)" class="order-details"
 	             data-orderNum="${item.orderNum}" data-orderDetailNum="${item.orderDetailNum}">주문 상세</a>
@@ -278,6 +286,106 @@ const renderMyPageMainHtml = function(data) {
   `;
 
   return html;
+};
+
+
+/**
+ * 마이 페이지 - 주문 상세정보 HTML 문자열 생성
+ * @param {object} data - 주문 상세정보 데이터
+ * @param {object} data.dto - 주문 상품 상세 정보
+ * @param {object} data.orderDelivery - 배송 정보
+ * @param {Array<object>} data.listBuy - 함께 구매한 상품 목록
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderOrderDetailHtml = function(data) {
+    const { dto, orderDelivery, listBuy } = data;
+
+    // 숫자를 세 자리마다 콤마로 변환하는 헬퍼 함수
+    const formatNumber = (num) => num ? num.toLocaleString('ko-KR') : '0';
+
+    // 날짜/시간에서 날짜만 추출하는 함수
+    const formatDate = (datetime) => datetime ? datetime.substring(0, 10) : '정보 없음';
+
+    // 할인금액 계산 (총 상품금액 + 배송비 - 최종 결제금액)
+    const discountAmount = (dto.totalMoney + dto.deliveryCharge) - dto.payment;
+
+    let html = `
+        <h6 class="section-title">구매 상품</h6>
+        <table class="table table-bordered mb-3">
+            <tr>
+                <td class="table-light-green" style="width:100px;">상품명</td>
+                <td colspan="5">${dto.productName}</td>
+            </tr>
+            <tr>
+                <td class="table-light-green">주문상태</td>
+                <td>${dto.detailStateInfo}</td>
+                <td class="table-light-green" style="width:100px;">구매총금액</td>
+                <td>${formatNumber(dto.productMoney)}원</td>
+            </tr>
+        </table>
+    `;
+
+    // 함께 구매한 상품이 2개 이상일 때만 표시
+    if (listBuy && listBuy.length > 1) {
+        html += `<h6 class="section-title">함께 구매한 상품</h6>
+                 <table class="table table-bordered mb-3">`;
+        listBuy.forEach(vo => {
+            if (dto.orderDetailNum !== vo.orderDetailNum) {
+                html += `
+                    <tr>
+                        <td>
+                            ${vo.productName}
+                            &nbsp; | &nbsp;수량 : ${vo.qty}
+                            &nbsp; | &nbsp;금액 : ${formatNumber(vo.productMoney)}원
+                        </td>
+                    </tr>
+                `;
+            }
+        });
+        html += `</table>`;
+    }
+
+    html += `
+        <h6 class="section-title">결제 정보</h6>
+        <div class="payment-summary">
+            <strong>${formatNumber(dto.payment)}원</strong> 결제 완료
+            <div class="text-muted small mt-1">
+                (총 상품금액 ${formatNumber(dto.totalMoney)}원
+                + 배송비 ${formatNumber(dto.deliveryCharge)}원
+                ${discountAmount > 0 ? `- 할인 ${formatNumber(discountAmount)}원` : ''})
+                <br>
+                ${dto.cardName || dto.payMethod} | 승인일: ${formatDate(dto.applyDate)}
+            </div>
+        </div>
+    `;
+
+    html += `
+        <h6 class="section-title mt-3">배송 정보</h6>
+        <table class="table table-bordered mb-1">
+            <tr>
+                <td class="table-light-green" style="width:100px;">받는사람</td>
+                <td style="width:160px;">${orderDelivery.recipientName}</td>
+                <td class="table-light-green" style="width:100px;">연락처</td>
+                <td>${orderDelivery.tel}</td>
+            </tr>
+            <tr>
+                <td class="table-light-green">주소</td>
+                <td colspan="3">${orderDelivery.addr1} ${orderDelivery.addr2}</td>
+            </tr>
+            <tr>
+                <td class="table-light-green">배송 메모</td>
+                <td colspan="3">${orderDelivery.requestMemo || '요청사항 없음'}</td>
+            </tr>
+        </table>
+    `;
+
+    html += `<script>
+        $('#orderDetailViewDialogModal').on('shown.bs.modal', function () {
+            $(this).find('.modal-header').addClass('modal-header-custom');
+        });
+    </script>`;
+
+    return html;
 };
 
 
