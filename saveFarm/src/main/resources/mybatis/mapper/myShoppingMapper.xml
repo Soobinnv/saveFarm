@@ -30,7 +30,6 @@
 		JOIN (
 			SELECT productNum, productName, deliveryFee, mainImageFilename, productClassification
 			FROM product
-			WHERE productClassification = 100
 		) p ON ct.productNum = p.productNum
 		LEFT OUTER JOIN productDetail pd ON p.productNum = pd.productNum
 		WHERE ct.memberId = #{memberId}

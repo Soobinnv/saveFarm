@@ -10,6 +10,7 @@ public interface OrderStatusManageService {
 	public int orderCount(Map<String, Object> map);
 	public List<OrderManage> listOrder(Map<String, Object> map);
 	public OrderManage findByOrderId(String orderNum);
+	public OrderManage findInvoiceNumber(String orderNum);
 	public List<OrderDetailManage> listOrderDetails(String orderNum);
 	
 	public int detailCount(Map<String, Object> map);

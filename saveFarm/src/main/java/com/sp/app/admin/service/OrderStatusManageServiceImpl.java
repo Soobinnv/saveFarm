@@ -143,8 +143,13 @@ public class OrderStatusManageServiceImpl implements OrderStatusManageService {
 			if(mode.equals("state")) {
 				mapper.updateOrderState(map);
 			} else if(mode.equals("invoiceNumber")) { // 송장번호 등록
-				mapper.updateOrderInvoiceNumber(map);
+				String deliveryName = (String)map.get("deliveryName");
+				long deliveryCompanyNum = mapper.selectDeliveryNum(deliveryName);
+				map.put("deliveryCompanyNum", deliveryCompanyNum);
+				mapper.insertOrderInvoiceNumber(map);
+				mapper.updateOrderState(map);
 			} else if(mode.equals("delivery")) { // 배송 변경
+				mapper.updateDeliveryState(map);
 				mapper.updateOrderState(map);
 			} else if(mode.equals("cancelAmount")) { // 주문취소 금액 수정
 				mapper.updateCancelAmount(map);
@@ -283,5 +288,18 @@ public class OrderStatusManageServiceImpl implements OrderStatusManageService {
 		}
 		
 		return map;
+	}
+
+	@Override
+	public OrderManage findInvoiceNumber(String orderNum) {
+		OrderManage dto = null;
+		
+		try {
+			dto = mapper.findInvoiceNumber(orderNum);
+		} catch (Exception e) {
+			log.info("findInvoiceNumber : ", e);
+		}
+		
+		return dto;
 	}
 }
