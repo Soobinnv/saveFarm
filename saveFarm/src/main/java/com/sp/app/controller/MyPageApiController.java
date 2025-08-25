@@ -400,9 +400,12 @@ public class MyPageApiController {
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			
-			PackageOrder dto = mypageService.findMySubinfo(info.getMemberId());
+		    List<PackageOrder> list = mypageService.findMySubinfo(info.getMemberId());
 			
+		    PackageOrder dto = list.get(0);
+		    
 			body.put("dto",dto);
+			body.put("list", list);
 			
 			return ResponseEntity.ok(body);
 			

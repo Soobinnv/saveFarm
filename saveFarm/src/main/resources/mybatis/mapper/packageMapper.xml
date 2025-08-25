@@ -21,7 +21,7 @@
 	</insert>
 	
 	<insert id="insertsubItem" parameterType="com.sp.app.model.PackageOrder">
-			INSERT INTO subItem (itemNum, itemPrice, count, subNum, productNum)
+			INSERT INTO subItem (itemNum, itemPrice, "COUNT", subNum, productNum)
 		    VALUES (
 		        subItem_seq.NEXTVAL,
 		        #{itemPrice},
@@ -90,11 +90,10 @@
 
 	<select id="mysubinfo" parameterType = "Long" resultType = "com.sp.app.model.PackageOrder">
 		SELECT
-			subNum,subMonth,totalPay,payMethod,isExtend
+			subNum,subMonth,totalPay,payMethod,isExtend,TO_CHAR(payDate, 'YYYY-MM-DD') AS payDate
 		FROM subStatus
 		WHERE memberId = #{memberId}
 		ORDER BY payDate DESC
-    	FETCH FIRST 1 ROWS ONLY
 	</select>
 
 </mapper>

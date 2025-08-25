@@ -164,6 +164,8 @@
 	  
 	  chipPrice = parseInt(prc.replace(/[^0-9]/g, ''), 10);
 	  node.setAttribute('data-price', chipPrice);
+	  node.setAttribute('data-id', id);
+	  
 	  
       wrap.appendChild(node);
    	 won += chipPrice;

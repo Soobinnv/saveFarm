@@ -141,6 +141,18 @@
 		VALUES(detailState_seq.NEXTVAL, #{orderNum}, #{memberId}, #{detailState},
 			#{stateMemo,jdbcType=VARCHAR}, SYSDATE)
 	</insert>
+	
+	
+	<!-- 패키지 구매내역 -->
+	<select id="mySubList" parameterType="Long" resultType="com.sp.app.model.PackageOrder">
+		SELECT
+			subNum,subMonth,payDate,payMethod,totalPay,memberId,isExtend,
+			homePackageNum,PackagePrice,saladPackageNum
+			itemPrice,count,productNum
+		FROM subStatus ss
+		
+		
+	</select>
 
 </mapper>
 	

@@ -528,6 +528,7 @@ function sendOk(){
   const totalPay = parseInt(totalTxt.replace(/[^\d]/g,''),10) || 0;
   document.getElementById('totalPay').value = totalPay;
  
+  console.log("extraItems count =", document.querySelectorAll('#extraItems .extra-item').length);
 
   /* 4) 추가상품 리스트 */
   const productNums = [];
@@ -538,7 +539,9 @@ function sendOk(){
     const pn   = item.getAttribute('data-id') || '';
     const qty  = parseInt(item.querySelector('.quantity')?.textContent||'1',10) || 1;
     const up   = (parseInt(item.getAttribute('data-price')||'0',10)) * qty ; 
-
+	
+    console.log('>> extra-item:', {pn, qty, up});
+    
     if(pn){
       productNums.push(pn);
       itemPrices.push(up);
@@ -560,6 +563,8 @@ function sendOk(){
   document.getElementById('addr').value     = addr1;
   document.getElementById('zip').value      = addr2;
 
+  
+  
   
   /* 6) 제출 */
   f.action = '${pageContext.request.contextPath}/package/payForm';
