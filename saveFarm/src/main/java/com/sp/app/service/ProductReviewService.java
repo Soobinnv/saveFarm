@@ -8,6 +8,7 @@ import com.sp.app.model.ProductReview;
 public interface ProductReviewService {
 	public void insertReview(ProductReview dto, String uploadPath) throws Exception;
 	public void updateReview(ProductReview dto, String uploadPath) throws Exception;
+	public void updateReviewBlockStatus(long orderDetailNum, int reviewBlock) throws Exception;	
 	public void deleteReview(long orderDetailNum, String uploadPath) throws Exception;
 	
 	public ProductReview findByOrderDetailNum(long orderDetailNum);

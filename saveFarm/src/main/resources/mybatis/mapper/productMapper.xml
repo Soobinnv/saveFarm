@@ -31,7 +31,10 @@
 
 	<select id="getRescuedProductList" parameterType="map" resultType="com.sp.app.model.Product">
 		<include refid="productSelect"/>	
-		WHERE PRODUCTCLASSIFICATION = 200
+		WHERE PRODUCTCLASSIFICATION = 200 
+		<if test="pageType != 'admin'">
+	        AND endDate > SYSDATE
+	    </if>
 		<include refid="stockCondition"/>
 		<if test="offset != null and size != null">
 			OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
@@ -83,7 +86,7 @@
             DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION
         ) VALUES (
             #{productNum}, #{productName}, #{productDesc},
-            #{deliveryFee}, #{mainImageFileName}, #{productClassification}
+            #{deliveryFee}, #{mainImageFilename}, #{productClassification}
         )
     </insert>
 
@@ -117,7 +120,7 @@
             <if test="productName != null and productName != ''">PRODUCTNAME = #{productName},</if>
             <if test="productDesc != null and productDesc != ''">PRODUCTDESC = #{productDesc},</if>
             <if test="deliveryFee != null and deliveryFee != ''">DELIVERYFEE = #{deliveryFee},</if>
-            <if test="mainImageFileName != null and mainImageFileName != ''">MAINIMAGEFILENAME = #{mainImageFileName},</if>
+            <if test="mainImageFilename != null and mainImageFilename != ''">MAINIMAGEFILENAME = #{mainImageFilename},</if>
         </set>
         WHERE PRODUCTNUM = #{productNum}
     </update>

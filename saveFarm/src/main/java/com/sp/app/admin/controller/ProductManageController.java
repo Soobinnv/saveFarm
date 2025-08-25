@@ -6,8 +6,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -99,17 +102,49 @@ public class ProductManageController {
 		try {
 			Product productInfo = productService.getProductAllInfo(productNum);
 			
-			if(productInfo == null) {
-				body.put("message", "현제 상품의 상세 정보가 없습니다.");
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
-			}
-			
 			body.put("productInfo", productInfo);
 
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProductInfo: ", e);
 			body.put("message", "상품의 상세 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 등록
+	@PostMapping("/api/admin/products")
+	public ResponseEntity<?> insertProduct(
+			Product dto
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productService.insertProductWithDetails(dto, null);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "상품 등록 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 수정
+	@PutMapping("/api/admin/products/{productNum}")
+	public ResponseEntity<?> updateProduct(
+			@PathVariable(name = "productNum") long productNum,
+			Product dto
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productService.updateProductWithDetails(dto, null);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "상품 수정 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -312,6 +347,43 @@ public class ProductManageController {
 		} catch (Exception e) {
 			log.error("getProductInfo: ", e);
 			body.put("message", "상품 리뷰 상세 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 리뷰 상태 변경
+	@PutMapping("/api/admin/reviews/{orderDetailNum}")
+	public ResponseEntity<?> updateReviewBlock(
+			@PathVariable(name = "orderDetailNum") long orderDetailNum,
+			@RequestParam(name = "reviewBlock") int reviewBlock
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productReviewService.updateReviewBlockStatus(orderDetailNum, reviewBlock);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateReviewBlock: ", e);
+			body.put("message", "상품 리뷰 상태 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 리뷰 삭제
+	@DeleteMapping("/api/admin/reviews/{orderDetailNum}")
+	public ResponseEntity<?> deleteReview(
+			@PathVariable(name = "orderDetailNum") long orderDetailNum
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productReviewService.deleteReview(orderDetailNum, null);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("deleteReview: ", e);
+			body.put("message", "상품 리뷰 삭제 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

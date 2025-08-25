@@ -202,4 +202,19 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		return list;
 	}
 
+	@Override
+	public void updateReviewBlockStatus(long orderDetailNum, int reviewBlock) throws Exception {
+		try {
+			ProductReview dto = new ProductReview();
+			 
+			dto.setOrderDetailNum(orderDetailNum);
+			dto.setReviewBlock(reviewBlock);
+			
+			mapper.updateReview(dto);
+		} catch (Exception e) {
+			log.info("updateReviewBlockStatus : ", e);
+			throw e;
+		}
+	}
+
 }

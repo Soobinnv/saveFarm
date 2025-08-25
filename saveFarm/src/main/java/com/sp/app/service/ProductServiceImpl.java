@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.Product;
@@ -203,44 +204,73 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public void insertProduct(Product dto, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			dto.setMainImageFilename("test");
+			
+			mapper.insertProduct(dto);
+			
+			// 파일 등록
+			
+			
+		} catch (Exception e) {
+			log.info("insertProduct : ", e);
+		}
 		
 	}
 
 	@Override
 	public void insertProductDetail(Product dto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.insertProductDetail(dto);
+		} catch (Exception e) {
+			log.info("insertProductDetail : ", e);
+		}
 	}
 
 	@Override
 	public void insertRescuedProduct(Product dto, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.insertRescuedProduct(dto);
+		} catch (Exception e) {
+			log.info("insertRescuedProduct : ", e);
+		}
 	}
 
 	@Override
 	public void updateProduct(Product dto, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
+		try {
+			mapper.updateProduct(dto);
+		} catch (Exception e) {
+			log.info("updateProduct : ", e);
+		}
 		
 	}
 
 	@Override
 	public void updateProductDetail(Product dto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.updateProductDetail(dto);
+		} catch (Exception e) {
+			log.info("updateProductDetail : ", e);
+		}
 	}
 
 	@Override
 	public void updateRescuedProduct(Product dto, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.updateRescuedProduct(dto);
+		} catch (Exception e) {
+			log.info("updateRescuedProduct : ", e);
+		}
 	}
 
 	@Override
 	public void deleteProduct(long productNum, String uploadPath) throws Exception {
-		// TODO Auto-generated method stub
-		
+		try {
+			mapper.deleteProduct(productNum);
+		} catch (Exception e) {
+			log.info("deleteProduct : ", e);
+		}
 	}
 
 	@Override
@@ -260,6 +290,35 @@ public class ProductServiceImpl implements ProductService {
 		}
 		
 		return result;
+	}
+
+	@Transactional
+	@Override
+	public void updateProductWithDetails(Product dto, String uploadPath) throws Exception {
+		try {
+			updateProduct(dto, null);
+	        updateProductDetail(dto);
+		} catch (Exception e) {
+			log.info("updateProductWithDetails : ", e);
+			throw e;
+		}
+	}
+
+	@Transactional
+	@Override
+	public void insertProductWithDetails(Product dto, String uploadPath) throws Exception {
+		try {
+			insertProduct(dto, null);
+			insertProductDetail(dto);
+			
+			if(dto.getFarmNum() != 0) {
+				insertRescuedProduct(dto, null);				
+			}
+			
+		} catch (Exception e) {
+			log.info("insertProductWithDetails : ", e);
+			throw e;
+		}
 	}
 
 }

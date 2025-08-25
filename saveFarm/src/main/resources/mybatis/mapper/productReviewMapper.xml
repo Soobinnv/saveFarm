@@ -8,7 +8,22 @@
 	</insert>
 	
 	<update id="updateReview" parameterType="com.sp.app.model.ProductReview">
-		UPDATE ProductReview SET REVIEWTITLE = #{reviewTitle}, REVIEW = #{review}, STAR = #{star}, REVIEWDATE = SYSDATE, REVIEWBLOCK = #{reviewBlock}
+		UPDATE ProductReview 
+		<set> 
+			<if test="reviewTitle != null">
+	            REVIEWTITLE = #{reviewTitle},
+	        </if>
+	        <if test="review != null">
+	            REVIEW = #{review},
+	        </if>
+	        <if test="star != null"> 
+	        	STAR = #{star},
+	        </if>
+	        REVIEWDATE = SYSDATE, 
+	        <if test="reviewBlock != null">
+	            REVIEWBLOCK = #{reviewBlock}
+	        </if>
+    	</set>
 		WHERE ORDERDETAILNUM = #{orderDetailNum}
 	</update>
 	
