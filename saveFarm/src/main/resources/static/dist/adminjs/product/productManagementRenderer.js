@@ -129,8 +129,15 @@ const renderProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item stock-edit" href="javascript:void(0);">재고</a>
-                <a class="dropdown-item product-edit" href="javascript:void(0);">상품정보변경</a>
+                <a 
+				data-num="${item.productNum}" 
+				data-name="${item.productName}" 
+				data-unit="${item.unit}" 
+				data-stock="${item.stockQuantity}"  
+					class="dropdown-item stock-edit-btn" 
+					href="javascript:void(0);"
+					>재고</a>
+                <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
               </div>
             </td>
           </tr>
@@ -155,9 +162,6 @@ const renderProductDetailHTML = function(data) {
 	const stock = (product.stockQuantity || 0).toLocaleString();
 	const unit = product.unit || '';
 
-	
-	const productJSON = JSON.stringify({productInfo: product});
-	
 	const html = `
 	<table>
 		<tr class="product-detail-row" style="background-color: #f8f9fa;">
@@ -189,8 +193,13 @@ const renderProductDetailHTML = function(data) {
 						<div class="row mt-3">
 							<div class="col-12 d-flex justify-content-end">
 								<div>
-									<button data-product-json='${productJSON}' type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고</button>
-									<button type="button" class="btn btn-sm btn-outline-secondary ms-2">수정하기</button>
+									<button 
+										data-num="${product.productNum}" 
+										data-name="${product.productName}" 
+										data-unit="${product.unit}" 
+										data-stock="${product.stockQuantity}" 
+										type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고</button>
+									<button data-num="${product.productNum}" type="button" class="btn btn-sm btn-outline-secondary ms-2">수정하기</button>
 								</div>
 							</div>
 						</div>
@@ -209,27 +218,26 @@ const renderProductDetailHTML = function(data) {
  * @param {object} data.productInfo - 상품 정보 객체
  * @returns {string} 재고 관리 HTML 문자열
  */
-const renderStockEditHTML = function(productJSONString) {
-	const data = JSON.parse(productJSONString);
-	
-	const product = data.productInfo;
-	const stock = product.stockQuantity || 0;
-	const unit = product.unit || '개';
+const renderStockEditHTML = function(productNum, productName, unit, stock) {
 
 	const html = `
 	<div class="stock-management-ui card shadow-sm mt-3 mb-3 border-light">
 		<div class="card-header bg-light d-flex justify-content-between align-items-center">
 			<h5 class="mb-0 fw-bold">
-				<i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${product.productName}</span>
+			    <i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${productName}</span>
 			</h5>
-			<button type="button" class="btn-close" aria-label="Close" onclick="this.closest('.stock-management-ui').remove()"></button>
+			<div class="stock-edit-back-btn">
+			    뒤로가기
+			</div>
 		</div>
 		<div class="card-body p-4">
 			<div class="row mb-4">
 				<div class="col-md-12">
 					<p class="fs-5">
-						<strong>현재 재고:</strong> 
-						<span id="current-stock" data-stock="${stock}" class="badge bg-dark rounded-pill">${stock.toLocaleString()} ${unit}</span>
+						<strong>단위: ${unit}</strong> 
+					</p>
+					<p id="data-stock" data-stock="${stock}" class="fs-5">
+						<strong>현재 재고: ${stock}</strong> 
 					</p>
 				</div>
 			</div>
@@ -239,7 +247,6 @@ const renderStockEditHTML = function(productJSONString) {
 					<select class="form-select" id="stock-change-type">
 						<option value="in" selected>입고 (+)</option>
 						<option value="out">출고 (-)</option>
-						<option value="adjustment">실사 조정</option>
 					</select>
 				</div>
 				<div class="col-sm-4">
@@ -248,23 +255,183 @@ const renderStockEditHTML = function(productJSONString) {
 				</div>
 				<div class="col-sm-4">
 					 <label for="stock-after-quantity" class="form-label"><strong>조정 후 재고</strong></label>
-					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${stock.toLocaleString()} ${unit}">
-				</div>
-			</div>
-			<div class="row mt-3">
-				<div class="col-12">
-					<label for="stock-memo" class="form-label"><strong>메모</strong></label>
-					<textarea class="form-control" id="stock-memo" rows="2" placeholder="재고 조정 사유를 입력하세요 (예: 정기 재고 실사)"></textarea>
+					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${stock}">
 				</div>
 			</div>
 		</div>
 		<div class="card-footer text-end bg-light">
-			<button type="button" class="btn btn-secondary" onclick="this.closest('.stock-management-ui').remove()">취소</button>
-			<button type="button" class="btn btn-primary ms-2" id="save-stock-btn">
+			<button type="button" class="btn btn-secondary">취소</button>
+			<button data-num="${productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn">
 				<i class="fas fa-save me-1"></i> 저장하기
 			</button>
 		</div>
 	</div>
+	`;
+	return html;
+}
+
+/**
+ * 신규 상품 등록 폼 HTML 문자열 생성 (조건부 필드 적용)
+ * @returns {string} 상품 등록 폼 HTML 문자열
+ */
+const renderProductFormHTML = function() {
+	const html = `
+	<div class="product-registration-ui card shadow-sm mt-3 mb-3 border-light">
+		<div class="card-header bg-light d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-bold">
+				<i class="fas fa-plus-circle me-2"></i>신규 상품 등록
+			</h5>
+		</div>
+		<form id="product-form" enctype="multipart/form-data">
+			<div class="card-body p-4">
+				<div class="row g-3 mb-4">
+					<div class="col-md-6">
+						<label for="productName" class="form-label"><strong>상품명</strong></label>
+						<input type="text" class="form-control" id="productName" name="productName" placeholder="상품명을 입력하세요" required>
+					</div>
+					<div class="col-md-6">
+						<label for="productClassification" class="form-label"><strong>상품 분류</strong></label>
+						<select class="form-select" id="productClassification" name="productClassification" required>
+							<option value="" selected disabled>카테고리 선택</option>
+							<option value="100">일반</option>
+							<option value="200">구출 상품</option>
+						</select>
+					</div>
+
+					<div id="farm-info-section" class="d-none">
+						<div class="col-md-12">
+							<label for="farmNum" class="form-label"><strong>농장 번호</strong></label>
+							<input type="number" value="0" class="form-control" id="farmNum" name="farmNum" placeholder="농장 고유 번호를 입력하세요">
+						</div>
+						<div class="col-md-12">
+							<label for="endDate" class="form-label"><strong>판매 종료일</strong></label>
+							<input type="date" class="form-control" id="endDate" name="endDate">
+						</div>
+					</div>
+					<div class="col-12">
+						<label for="mainImage" class="form-label"><strong>대표 이미지</strong></label>
+						<input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*">
+					</div>
+					<div class="col-12">
+						<label for="productDesc" class="form-label"><strong>상품 설명</strong></label>
+						<textarea class="form-control" id="productDesc" name="productDesc" rows="5" placeholder="상품에 대한 상세 설명을 입력하세요" required></textarea>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<h6 class="mb-3 fw-bold text-secondary">가격 및 재고 정보</h6>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label for="unitPrice" class="form-label"><strong>단위당 가격 (원)</strong></label>
+						<input type="number" class="form-control" id="unitPrice" name="unitPrice" placeholder="숫자만 입력" min="0" required>
+					</div>
+					<div class="col-md-4">
+						<label for="discountRate" class="form-label"><strong>할인율 (%)</strong></label>
+						<input type="number" class="form-control" id="discountRate" name="discountRate" placeholder="0 ~ 100" min="0" max="100" value="0" required>
+					</div>
+					<div class="col-md-4">
+						<label for="unit" class="form-label"><strong>판매 단위: kg</strong></label>
+						<input type="text" class="form-control" id="unit" name="unit" placeholder="kg" required>
+					</div>
+					<div class="col-md-6">
+						<label for="stockQuantity" class="form-label"><strong>초기 재고 수량</strong></label>
+						<input type="number" class="form-control" id="stockQuantity" name="stockQuantity" placeholder="초기 재고" min="0" required>
+					</div>
+					<div class="col-md-6">
+						<label for="deliveryFee" class="form-label"><strong>배송비 (원)</strong></label>
+						<input type="number" class="form-control" id="deliveryFee" name="deliveryFee" placeholder="기본 배송비" min="0" value="3000" required>
+					</div>
+				</div>
+			</div>
+			<div class="card-footer text-end bg-light">
+				<button type="button" class="btn btn-secondary">취소</button>
+				<button data-method="post" type="button" class="btn btn-primary ms-2" id="save-product-btn">
+					<i class="fas fa-save me-1"></i> 저장하기
+				</button>
+			</div>
+		</form>
+	</div>
+	`;
+	return html;
+}
+
+/**
+ * 상품 수정 폼 HTML 문자열 생성
+ * @param {object} data - 상품 정보 데이터
+ * @param {object} data.productInfo - 상품 정보 객체
+ * @returns {string} 수정용 tr HTML 문자열
+ */
+const renderProductEditHTML = function(data) {
+	const product = data.productInfo;
+
+	const price = product.unitPrice || 0;
+	const stock = product.stockQuantity || 0;
+	const unit = product.unit || '';
+	const productName = product.productName || '';
+	const productDesc = product.productDesc || '';
+	const farmName = product.farmName || '';
+	const endDate = product.endDate || '';
+
+	const isNormalProduct = product.productClassification === 100;
+
+	const html = `
+	<table>
+		<tr class="product-edit-row" style="background-color: #f8f9fa;" data-product-num="${product.productNum}">
+			<td colspan="7">
+				<div class="row m-3 p-3 align-items-center">
+					<div class="col-md-3 text-center">
+						<img src="${webContextPath}/uploads/product/${product.mainImageFilename}" 
+							 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/31343C?text=Image+Error';"
+							 class="img-fluid rounded border mb-3" style="max-height: 200px;" alt="${productName} 이미지">
+						<input type="file" class="form-control form-control-sm" id="productImageFile">
+					</div>
+					<div class="col-md-9">
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<input type="text" class="form-control" id="productName" value="${productName}" placeholder="상품명">
+							<select class="form-select form-select-sm ms-3" id="productClassification" style="width: 120px;">
+								<option value="100" ${isNormalProduct ? 'selected' : ''}>일반 상품</option>
+								<option value="200" ${!isNormalProduct ? 'selected' : ''}>구출 상품</option>
+							</select>
+						</div>
+						<textarea class="form-control" id="productDesc" rows="3" placeholder="상세 설명">${productDesc}</textarea>
+						<hr class="my-3">
+						<div class="row">
+							<div class="col-md-6">
+								<div class="input-group mb-2">
+									<span class="input-group-text" style="width: 80px;">가격</span>
+									<input type="number" class="form-control" id="unitPrice" value="${price}">
+									<span class="input-group-text">원</span>
+								</div>
+								<div class="input-group">
+									<span class="input-group-text" style="width: 80px;">단위</span>
+									<input type="text" class="form-control" id="unit" value="${unit}" placeholder="예: 1박스, 1kg">
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="input-group mb-2">
+									<span class="input-group-text" style="width: 80px;">농장</span>
+									<input type="text" class="form-control" id="farmName" value="${farmName}">
+								</div>
+								<div class="input-group">
+									<span class="input-group-text" style="width: 80px;">판매 종료</span>
+									<input type="date" class="form-control" id="endDate" value="${endDate}">
+								</div>
+							</div>
+						</div>
+						<div class="row mt-3">
+							<div class="col-12 d-flex justify-content-end">
+								<div>
+									<button data-method="put" data-num="${product.productNum}" type="button" class="btn btn-sm btn-primary product-save-btn">저장</button>
+									<button type="button" class="btn btn-sm btn-outline-secondary ms-2 product-cancel-btn">취소</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
 	`;
 	return html;
 }
@@ -375,8 +542,8 @@ const renderFarmProductRows = function(list) {
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
-                <a class="dropdown-item supply-update-state-return" href="javascript:void(0);">반려</a>
+                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
+                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-return" href="javascript:void(0);">반려</a>
               </div>
             </td>
           </tr>
@@ -431,8 +598,8 @@ const renderFarmProductDetailHTML = function(item) {
 						</div>
 						<div class="row mt-3">
 							<div class="col-12 d-flex justify-content-end">
-								<button type="button" class="btn btn-sm btn-success mr-1" data-no="${item.productNo}" id="btn-approve">승인</button>
-								<button type="button" class="btn btn-sm btn-danger" data-no="${item.productNo}" id="btn-reject">반려</button>
+								<button type="button" class="btn btn-sm btn-success mr-1" data-num="${item.productNum}" id="btn-approve">승인</button>
+								<button type="button" class="btn btn-sm btn-danger" data-num="${item.productNum}" id="btn-reject">반려</button>
 							</div>
 						</div>
 					</div>
@@ -593,7 +760,7 @@ const renderProductQnaDetailHTML = function(data) {
 		<h6>답변 등록</h6>
 		<textarea id="answer-content-${item.qnaNum}" class="form-control" rows="5" placeholder="답변을 입력하세요..."></textarea>
 		<div class="text-end mt-3">
-			<button type="button" class="btn btn-primary btn-sm btn-submit-answer" data-no="${item.qnaNum}">답변 등록</button>
+			<button type="button" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
 		</div>
 		`;
 
@@ -749,14 +916,14 @@ const renderProductReviewRows = function(list) {
 	        <td>${item.reviewerName}</td>
 	        <td>${item.reviewDate}</td>
 	        <td>${'★'.repeat(item.star)}${'☆'.repeat(5 - item.star)}</td>
-	        <td>${statusText}</td>
+	        <td class="status-block">${statusText}</td>
 	        <td>
 	          <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 	            <span class="text-muted sr-only">선택</span>
 	          </button>
 	          <div class="dropdown-menu dropdown-menu-right">
-	            <a class="dropdown-item review-update-block" href="content">리뷰 상태변경</a>
-	            <a class="dropdown-item review-delete" href="content">리뷰 삭제</a>
+	            <a data-num="${item.orderDetailNum}" data-status="${statusText}" class="dropdown-item review-update-block" href="javascript:void(0);">리뷰 상태변경</a>
+	            <a data-num="${item.orderDetailNum}" class="dropdown-item review-delete" href="javascript:void(0);">리뷰 삭제</a>
 	          </div>
 	        </td>
 	      </tr>
@@ -784,10 +951,10 @@ const renderProductReviewDetailHTML = function(data) {
 	
 	
 	const adminButtonsHTML = `
-		<button type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" data-no="${item.orderDetailNum}">
 			${item.isBest ? '베스트 리뷰 해제' : '베스트 리뷰 등록'}
 		</button>
-		<button type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide" data-no="${item.orderDetailNum}">
 			${status === '숨김' ? '리뷰 게시' : '리뷰 숨기기'}
 		</button>
 	`;

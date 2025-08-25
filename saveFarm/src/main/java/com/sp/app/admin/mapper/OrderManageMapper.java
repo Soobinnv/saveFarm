@@ -27,7 +27,10 @@ public interface OrderManageMapper {
 	public int totalOrderCount(String orderNum);
 
 	public void updateCancelAmount(Map<String, Object> map) throws SQLException;
-	public void updateOrderInvoiceNumber(Map<String, Object> map) throws SQLException;
+	public void insertOrderInvoiceNumber(Map<String, Object> map) throws SQLException;
+	public OrderManage findInvoiceNumber(String orderNum) throws SQLException;
+	public long selectDeliveryNum(String delivaryName) throws SQLException;
+	public void updateDeliveryState(Map<String, Object> map) throws SQLException;
 	public void updateOrderDetailState(Map<String, Object> map) throws SQLException;
 	
 	public List<Map<String, Object>> listDeliveryCompany();

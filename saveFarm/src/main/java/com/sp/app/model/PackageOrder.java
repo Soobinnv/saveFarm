@@ -24,6 +24,12 @@ public class PackageOrder {
 	private int itemPrice;
 	private int count;
 	
+	private String productName;
+	private String MAINIMAGEFILENAME;
+	
+	private List<String> productNames;
+	private List<String> mainImageFileNames;
+	
 	
 	private List<Long> productNums;
 	private List<Integer> itemPrices;

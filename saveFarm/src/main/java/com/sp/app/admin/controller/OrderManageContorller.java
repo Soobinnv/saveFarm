@@ -68,7 +68,7 @@ public class OrderManageContorller {
 			map.put("offset", offset);
 			map.put("size", size);
 
-			List<OrderManage> list = service.listOrder(map);
+	        List<OrderManage> list = service.listOrder(map);
 			
 			String cp = req.getContextPath();
 			String listUrl = cp + "/admin/order/orderList/" + itemId;
@@ -113,7 +113,7 @@ public class OrderManageContorller {
 	}
 	
 	@GetMapping("orderList/{itemId}/{orderNum}")
-	public String handelOrderDetails(
+	public String handleOrderDetails(
 			@PathVariable("itemId") int itemId,
 			@PathVariable("orderNum") String orderNum,
 			@RequestParam(name = "page") String page,
@@ -133,6 +133,13 @@ public class OrderManageContorller {
 			// 주문 정보
 			OrderManage order = Objects.requireNonNull(service.findByOrderId(orderNum));
 			
+			// 송장번호 / 택배사
+			OrderManage deliveryInfo = service.findInvoiceNumber(orderNum);
+			if (deliveryInfo != null) {
+	            order.setInvoiceNumber(deliveryInfo.getInvoiceNumber());
+	            order.setDeliveryCompanyName(deliveryInfo.getDeliveryCompanyName());
+	        }
+			
 			// 주문 정보의 상세 리스트 
 			List<OrderDetailManage> listDetail = service.listOrderDetails(orderNum);
 
@@ -151,7 +158,7 @@ public class OrderManageContorller {
 			model.addAttribute("query", query);
 			model.addAttribute("page", page);
 			
-			return "admin/orderStatus/orderDetial";
+			return "admin/order/orderDetailList";
 			
 		} catch (NullPointerException e) {
 		} catch (Exception e) {

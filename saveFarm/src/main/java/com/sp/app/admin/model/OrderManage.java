@@ -59,7 +59,8 @@ public class OrderManage {
 	private Long cartNum;
 
 	private String orderStateDate; // 상태변경일자
-	private String deliveryName; // 택배사
+	private long deliveryCompanyNum; // 택배사 번호
+	private String deliveryCompanyName; // 택배사
 	private String invoiceNumber; // 송장번호
 	
 	private int totalOrderCount; // 주문 상품수

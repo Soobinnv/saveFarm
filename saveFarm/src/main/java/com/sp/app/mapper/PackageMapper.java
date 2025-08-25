@@ -22,6 +22,6 @@ public interface PackageMapper {
 	public List<PackageOrder> subItemList(String subNum) throws SQLException;
 	
 	public List<PackageOrder> findBysubData(long memberId) throws SQLException;
-	public PackageOrder mysubinfo(long memberId) throws SQLException;
+	public List<PackageOrder> mysubinfo(long memberId) throws SQLException;
 	
 }

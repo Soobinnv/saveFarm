@@ -36,6 +36,7 @@ public class Product {
 	// 긴급 구출 상품 정보
 	private String endDate;
 	private long supplyNum;
+	private long farmNum;
 	private String farmName;
 	
 	// 마감 임박 여부

@@ -7,7 +7,7 @@ const webContextPath = document.getElementById('web-contextPath').value;
  * @param {string} url - URL (contextPath 제외)
  * @param {Function} renderFn - AJAX 응답 데이터를 인자로 받아 HTML 문자열을 반환하는 callback 함수
  */
-function loadContent(url, renderFn, params = '', pagingMethodName = '', options = '') {
+function loadContent(url, renderFn, params = '', pagingMethodName = '', method='get') {
 	// 요청 경로 생성
 	url = webContextPath + url;
 	// 렌더링할 HTML 요소 선택자
@@ -22,31 +22,8 @@ function loadContent(url, renderFn, params = '', pagingMethodName = '', options 
 		if(pagingMethodName !== '') {
 			pagingManagement(pagingMethodName, params);		
 		}
-		
-		// 이벤트 리스너 등록 및 응답 데이터 전달
-		if(options !== '') {
-			$(options.optionSelector1).on('click', function() {
-				// const entityId = $(this).data(config.idAttr);
-				// options.optionRender1(data);
-			});
-		}
-		
-		$('main').on('click', function(event) {
-		    const stockButton = event.target.closest('.stock-edit-btn');
-
-		    if (!stockButton) {
-		        return;
-		    }
-
-		    const productJSONString = stockButton.dataset.productJson;
-
-		    const stockEditHTML = renderStockEditHTML(productJSONString);
-
-			$(selector).html(stockEditHTML);
-		});
-		
 	}
 	
-	ajaxRequest(url, 'get', params, 'json', fn);
+	ajaxRequest(url, method, params, 'json', fn);
 }
 

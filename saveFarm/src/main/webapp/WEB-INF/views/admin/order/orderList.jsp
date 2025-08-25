@@ -97,13 +97,15 @@
 								&nbsp;
 							</div>
 						</div>
-
+						</div>
+						</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-</main>
+	</main>
+</div>
 
 <footer>
 	<jsp:include page="/WEB-INF/views/admin/layout/footer.jsp"/>

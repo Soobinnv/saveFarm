@@ -1,17 +1,10 @@
 // -- 관리자 상품 관리 - 이벤트 처리 및 기능 -- //
 
 // 설정 객체 정의 - switch문 반복 제거
-// - 상품 option 버튼
-const productOptions = {
-    optionSelector1: ".stock-edit",
-    optionRender1: renderStockEditHTML,
-    optionSelector2: ".product-edit",
-    // optionRender2: renderProductEditHTML
-};
 
 // - 메인 탭(상품 리스트, 농가 상품 등)
 const mainTabConfig = {
-    'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage', options: productOptions},
+    'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage'},
     'supplyManagement': { url: '/api/admin/supplies', render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
     'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, pagingMethodName: 'inquiryListPage' },
     'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'qnaListPage' }
@@ -19,9 +12,9 @@ const mainTabConfig = {
 
 // - 상품 리스트 하위 탭(전체, 일반, 구출)
 const productTabConfig = {
-    'tab-product-all': { url: '/api/admin/products', params: '', pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions},
-    'tab-product-normal': { url: '/api/admin/products', params: { classifyCode: 100 }, pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions},
-    'tab-product-rescued': { url: '/api/admin/products', params: { classifyCode: 200 }, pagingMethodName: 'productListPage', render: renderProductListHTML, options: productOptions}
+    'tab-product-all': { url: '/api/admin/products', params: '', pagingMethodName: 'productListPage', render: renderProductListHTML},
+    'tab-product-normal': { url: '/api/admin/products', params: { classifyCode: 100 }, pagingMethodName: 'productListPage', render: renderProductListHTML},
+    'tab-product-rescued': { url: '/api/admin/products', params: { classifyCode: 200 }, pagingMethodName: 'productListPage', render: renderProductListHTML}
 };
 
 // - 농가 상품 리스트 하위 탭(전체, 승인대기, 승인)
@@ -63,7 +56,7 @@ $(function() {
 		const config = mainTabConfig[navId];
 		
 		if (config) {
-			loadContent(config.url, config.render, '', config.pagingMethodName, config.options);
+			loadContent(config.url, config.render, '', config.pagingMethodName);
 		}
 	});
 	
@@ -91,14 +84,15 @@ $(function() {
 		}
 		
 		if (config) {
-			loadContent(config.url, config.render, config.params, config.pagingMethodName, config.options);
+			loadContent(config.url, config.render, config.params, config.pagingMethodName);
 		}
 	});
 	
-	// 상세 정보
+	// 상세 보기
 	$('main').on('click', '#contentTable tbody tr', function(e) {
+		
+		// 드롭다운 버튼 클릭 시
 		if ($(e.target).closest('td').is(':last-child')) {
-			// 드롭다운 버튼 클릭 시 이벤트 제외
 		    return;
 		}
 		 
@@ -115,4 +109,168 @@ $(function() {
 			loadContent(url, config.render, '');
 		}
 	});
+	
+	// 재고 버튼
+	$('main').on('click', '.stock-edit-btn', function(e) {
+		const $btnEL = $(e.target);
+		const productNum = $btnEL.attr('data-num');
+		const productName = $btnEL.attr('data-name');
+		const unit = $btnEL.attr('data-unit');
+		const stock = $btnEL.attr('data-stock');
+
+		$('main').html(renderStockEditHTML(productNum, productName, unit, stock));
+				
+	});
+
+	// 상품 정보 변경 UI 버튼
+	$('main').on('click', '.product-edit-btn', function(e) {
+		const num = $(e.target).attr('data-num');
+		
+		loadContent(`/api/admin/products/${num}`, renderProductEditHTML, '');	
+	});
+	
+	// 리뷰 상태 변경 버튼
+	$('main').on('click', '.review-update-block', function(e) {
+		const $btnEL = $(e.target);
+		const num = $btnEL.attr('data-num');
+		const updateBlockCode = $btnEL.attr('data-status') === '보임' ? 1 : 0;
+		const statusText = $btnEL.attr('data-status') === '보임' ? '숨김': '보임';
+		const params = {reviewBlock:updateBlockCode};
+		
+		let url = `/api/admin/reviews/${num}`;
+		
+		const fn = function(data) {
+			// UI 변경
+			$btnEL.closest('tbody').find('td.status-block').text(statusText);
+			$btnEL.attr('data-status', statusText)
+		}
+		
+		ajaxRequest(url, 'put', params, 'json', fn);
+	});
+	
+	// 리뷰 삭제 버튼
+	$('main').on('click', '.review-delete', function(e) {
+		const num = $(e.target).attr('data-num');
+		
+		if(! confirm("리뷰를 삭제하시겠습니까?")) {
+			return false;
+		}
+		
+		loadContent(`/api/admin/reviews/${num}`, renderProductReviewListHTML, '', 'qnaListPage', 'delete');	
+	});
+	
+	// 재고 조정 수량 입력
+	$('main').on('keyup', '#stock-quantity-input', function(e) {
+		let mode = $('#stock-change-type').val();
+		let stock = Number($('#data-stock').attr('data-stock'));
+		let adjStock = Number($(e.target).val());
+		let afterStock = Number($('#stock-after-quantity').val());
+		
+		if(mode === 'in') {
+			afterStock = stock + adjStock;
+			$('#stock-after-quantity').val(afterStock);
+		} else if(mode === 'out') {
+			afterStock = stock - adjStock;
+			$('#stock-after-quantity').val(afterStock);			
+		}
+	});
+	
+	// 재고 조정 유형 변경
+	$('main').on('change', '#stock-change-type', function(e) {
+		let mode = $(e.target).val();
+		let stock = Number($('#data-stock').attr('data-stock'));
+		let adjStock = Number($('#stock-quantity-input').val());
+		let afterStock = Number($('#stock-after-quantity').val());
+		
+		if(mode === 'in') {
+			afterStock = stock + adjStock;
+			$('#stock-after-quantity').val(afterStock);
+		} else if(mode === 'out') {
+			afterStock = stock - adjStock;
+			$('#stock-after-quantity').val(afterStock);			
+		}
+	});
+	
+	// 재고 저장 버튼
+	$('main').on('click', '#save-stock-btn', function(e) {
+		const num = $(e.target).attr('data-num');
+		let afterStock = Number($('#stock-after-quantity').val());
+		
+		const fn = function(data) {
+			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
+		}
+				
+		ajaxRequest(`/api/admin/products/${num}`, 'put', {stockQuantity:afterStock}, 'json', fn);		
+	});
+	
+	// 상품 등록/변경 저장 버튼
+	$('main').on('click', '.product-save-btn, #save-product-btn', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const currentRow = $(e.target).closest('.product-edit-row');
+		
+		const method = $(e.target).attr('data-method');
+		
+		let params = null;
+		
+		const fn = function(data) {
+			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
+		}
+		
+		if(method === 'post') {
+			
+			const productForm = $('#product-form');
+			params = new FormData(productForm[0]);
+			ajaxRequest(`/api/admin/products`, method, params, 'json', fn, true, 'multipart');	
+		} else if(method === 'put') {
+			params = getProductData(currentRow);		
+			ajaxRequest(`/api/admin/products/${num}`, method, params, 'json', fn);	
+		}
+		
+	});
+	
+	// 상품 등록 폼 버튼
+	$('main').on('click', '#btn-product-insert', function(e) {
+		$('main').html(renderProductFormHTML);		
+	});
+
+	// 상품 분류에 따른 상품 등록 UI 변경
+	$('main').on('change', '#productClassification', function(e) {
+		
+		const $farmInfoSection = $('#farm-info-section');
+        if (e.target.value === '200') {
+			// 농가 번호 입력창 띄우기
+            $farmInfoSection.removeClass('d-none');
+        } else {
+            $farmInfoSection.addClass('d-none');
+        }
+		
+	});
+	
 });
+
+// 상품 수정 데이터
+function getProductData(editRow) {
+  const productNum = editRow.data('product-num');
+
+  const productName = editRow.find('#productName').val();
+  const productClassification = editRow.find('#productClassification').val();
+  const productDesc = editRow.find('#productDesc').val();
+  const unitPrice = editRow.find('#unitPrice').val();
+  const unit = editRow.find('#unit').val();
+  const farmName = editRow.find('#farmName').val();
+  const endDate = editRow.find('#endDate').val();
+  
+  // const productImageFilename = editRow.find('#productImageFile').prop('files')[0];
+
+  return {
+    productNum,
+    productName,
+    productClassification,
+    productDesc,
+    unitPrice,
+    unit,
+    farmName,
+    endDate
+    // productImageFilename
+  };
+}

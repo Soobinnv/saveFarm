@@ -228,8 +228,26 @@
 		WHERE orderNum = #{orderNum}
 	</update>
 	
-	<update id="updateOrderInvoiceNumber" parameterType="map">
-		UPDATE delivary SET deliveryCompanyNum = #{deliveryCompanyNum}, invoiceNumber = #{invoiceNumber}
+	<insert id="insertOrderInvoiceNumber" parameterType="map">
+		INSERT INTO delivery(deliveryNum, invoiceNumber, deliveryCompanyNum, orderNum, deliveryState)
+			VALUES(delivery_seq.NEXTVAL, #{invoiceNumber}, #{deliveryCompanyNum}, #{orderNum}, #{orderState})
+	</insert>
+	
+	<select id="selectDeliveryNum" parameterType="String" resultType="long">
+		SELECT deliveryCompanyNum 
+		FROM deliveryCompany 
+		WHERE deliveryCompanyName = #{deliveryName}
+	</select>
+	
+	<select id="findInvoiceNumber" parameterType="map" resultType="com.sp.app.admin.model.OrderManage">
+		SELECT invoiceNumber, dc.deliveryCompanyName
+		FROM delivery d
+		JOIN deliveryCompany dc ON d.deliveryCompanyNum = dc.deliveryCompanyNum
+		WHERE orderNum = #{orderNum}
+	</select>
+	
+	<update id="updateDeliveryState" parameterType="map">
+		UPDATE delivery SET deliveryState = #{orderState}
 		WHERE orderNum = #{orderNum}
 	</update>
 

@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,11 +14,14 @@ import org.springframework.stereotype.Service;
 import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.mapper.OrderMapper;
 import com.sp.app.mapper.PackageMapper;
+import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
+import com.sp.app.model.Product;
 import com.sp.app.state.OrderState;
 
+import jakarta.mail.FetchProfile.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +32,7 @@ public class MyPageServiceImpl implements MyPageService {
 	private final MyPageMapper mapper;
 	private final OrderMapper orderMapper;
 	private final PackageMapper PackageMapper;
+	private final ProductMapper productMapper;
 	
 	@Override
 	public int countPayment(Map<String, Object> map) {
@@ -176,32 +179,67 @@ public class MyPageServiceImpl implements MyPageService {
 	}
 
 	@Override
-	public PackageOrder findMySubinfo(long memberId) throws Exception {
-		PackageOrder dto  = null;
+	public List<PackageOrder> findMySubinfo(long memberId) throws Exception {
+		List<PackageOrder> list = null;
 		
 		try {
 			// 최근 
-			dto = PackageMapper.mysubinfo(memberId);
-			List<Long> productNums = new ArrayList<>();
-			List<Integer> itemPrices = new ArrayList<>();
-			List<Integer> counts = new ArrayList<>();
+			list = PackageMapper.mysubinfo(memberId);
 			
-			// 
-			PackageOrder PackageInfo = PackageMapper.subPackageinfo(dto.getSubNum());
-			List<PackageOrder> items = PackageMapper.subItemList(dto.getSubNum());
-			
-			dto.setHomePackageNum(PackageInfo.getHomePackageNum());
-			dto.setSaladPackageNum(PackageInfo.getSaladPackageNum());
-			dto.setPackagePrice(PackageInfo.getPackagePrice());
-			
-			if (items == null || items.isEmpty()) {
-			    dto.setProductNums(Collections.emptyList());
-			    dto.setItemPrices(Collections.emptyList());
-			    dto.setCounts(Collections.emptyList());
-			} else {
-			    dto.setProductNums(items.stream().map(PackageOrder::getProductNum).toList());
-			    dto.setItemPrices(items.stream().map(PackageOrder::getItemPrice).toList());
-			    dto.setCounts(items.stream().map(PackageOrder::getCount).toList());
+			for (int i = 0; i < list.size(); i++) {
+			    List<Long> productNums = new ArrayList<>();
+			    List<Integer> itemPrices = new ArrayList<>();
+			    List<Integer> counts = new ArrayList<>();
+
+			    PackageOrder dto = list.get(i);
+			    System.out.println(dto.getSubNum());
+
+			    // 패키지 기본정보
+			    PackageOrder packageInfo = PackageMapper.subPackageinfo(dto.getSubNum());
+			    List<PackageOrder> items = PackageMapper.subItemList(dto.getSubNum());
+
+			    dto.setHomePackageNum(packageInfo.getHomePackageNum());
+			    dto.setSaladPackageNum(packageInfo.getSaladPackageNum());
+			    dto.setPackagePrice(packageInfo.getPackagePrice());
+			    
+
+			    if (items == null || items.isEmpty()) {
+			        dto.setProductNums(Collections.emptyList());
+			        dto.setItemPrices(Collections.emptyList());
+			        dto.setCounts(Collections.emptyList());
+			    } else {
+			        dto.setProductNums(items.stream().map(PackageOrder::getProductNum).toList());
+			        dto.setItemPrices(items.stream().map(PackageOrder::getItemPrice).toList());
+			        dto.setCounts(items.stream().map(PackageOrder::getCount).toList());
+			    }
+			    
+			    
+			    if (dto.getProductNames() == null) {
+			        dto.setProductNames(new ArrayList<>());
+			    }
+			    if (dto.getMainImageFileNames() == null) {
+			        dto.setMainImageFileNames(new ArrayList<>());
+			    }
+			    
+			    
+			    for (int j = 0; j < items.size(); j++) {   // i++ -> j++
+			        Product productInfo = productMapper.getProductInfo(items.get(j).getProductNum());
+
+			        if (productInfo != null) {
+			            dto.getProductNames().add(productInfo.getProductName());
+			            dto.getMainImageFileNames().add(productInfo.getMainImageFilename());
+
+			            // syso로 로그 확인
+			            System.out.println("추가된 상품명: " + productInfo.getProductName());
+			            System.out.println("추가된 이미지: " + productInfo.getMainImageFilename());
+			            System.out.println("현재 productNames 리스트: " + dto.getProductNames());
+			            System.out.println("현재 mainImageFileNames 리스트: " + dto.getMainImageFileNames());
+			        } else {
+			            System.out.println("productInfo == null -> productNum=" + items.get(j).getProductNum());
+			        }
+			    }
+			    
+			    
 			}
 			
 			
@@ -212,6 +250,6 @@ public class MyPageServiceImpl implements MyPageService {
 		}
 		
 		
-		return dto;
+		return list;
 	}
 }

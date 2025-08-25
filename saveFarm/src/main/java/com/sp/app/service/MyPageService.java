@@ -17,5 +17,5 @@ public interface MyPageService {
 	public void updateOrderDetailState(Map<String, Object> map) throws Exception;
 	public void updateOrderHistory(long orderDetailNum) throws Exception;
 	
-	public PackageOrder findMySubinfo(long memberId) throws Exception;
+	public List<PackageOrder> findMySubinfo(long memberId) throws Exception;
 }
