@@ -3,6 +3,7 @@ package com.sp.app.admin.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -73,13 +74,11 @@ public class FAQManageController {
            
             if("memberFAQ".equals(schTypeFAQ)) {
             	dataCount = dto.getMemberCount();
-            	System.out.println("memberFAQ : " + dataCount);
             }
             
             if("farmFAQ".equals(schTypeFAQ)) {
             	dataCount = dto.getFarmCount();
             }
-            System.out.println("farmFAQ : " + dataCount);
           
             if (dataCount != 0) {
                 totalPage = paginateUtil.pageCount(dataCount, size);
@@ -181,7 +180,6 @@ public class FAQManageController {
 		try {
 			SessionInfo info = (SessionInfo) session.getAttribute("member");
 			dto.setMemberId(info.getMemberId());
-			System.out.println();
 			service.insertFAQ(dto);
 			
 		} catch (Exception e) {
@@ -191,4 +189,66 @@ public class FAQManageController {
 		return "redirect:/admin/FAQ/";
 	}
     
+    @GetMapping("update")
+	public String updateForm(
+			@RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ,
+			@RequestParam(name = "faqNum") long faqNum,
+			@RequestParam(name = "schType", defaultValue = "all") String schType,
+            @RequestParam(name = "kwd", defaultValue = "") String kwd, 
+			@RequestParam(name = "page") String page,
+			Model model, 
+			HttpSession session) throws Exception {
+    	
+    	FaqManage dto = Objects.requireNonNull(service.findById(faqNum));
+
+		model.addAttribute("mode", "update");
+		model.addAttribute("dto", dto);
+		model.addAttribute("schType", schType);
+		model.addAttribute("kwd", kwd);
+		model.addAttribute("page", page);
+
+		return "admin/FAQ/write";
+	}
+    
+    @PostMapping("update")
+    public String updateSubmit(
+    		@RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ,
+    		FaqManage dto,
+    		@RequestParam(name = "schType", defaultValue = "all") String schType,
+    		@RequestParam(name = "kwd", defaultValue = "") String kwd, 
+    		@RequestParam(name = "page") String page,
+    		HttpSession session) throws Exception {
+    	
+    	try {
+			service.updateFAQ(dto);
+			
+		} catch (Exception e) {
+			log.info("updateSubmit : ", e);
+		}
+		
+		String query = "page=" + page;
+        if (! kwd.isBlank()) {
+            query += "&schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
+        }
+		
+    	return "redirect:/admin/FAQ/";
+    }
+    
+    @PostMapping("delete")
+    public String deleteSubmit(
+    		@RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ,
+    		FaqManage dto,
+    		HttpSession session) throws Exception {
+    	
+    	try {
+    		service.deleteFAQ(dto.getFaqNum());
+    		
+    	} catch (Exception e) {
+    		log.info("updateSubmit : ", e);
+    	}
+    	
+    	return "redirect:/admin/FAQ/";
+    }
+	
+	
 }

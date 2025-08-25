@@ -31,6 +31,8 @@
 
 <!-- Vendor JS Files -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor/jquery/js/jquery.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor/jquery/js/wow.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/vendor/jquery/js/owl.carousel.min.js"></script>
 <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/util-jquery.js"></script>

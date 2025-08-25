@@ -67,12 +67,12 @@
                         <div class="col-md-12">
                             <div class="card shadow">
                                 <div class="card-body">
-                                    <form name="faqForm" action="${pageContext.request.contextPath}/admin/FAQ/write" method="post" enctype="multipart/form-data">
+                                    <form name="faqForm" method="post" enctype="multipart/form-data">
                                         <!-- 분류 선택 (itemId에 따라 회원/농가 등) -->
                                         <div class="form-group row mb-3">
 										    <label for="classify" class="col-sm-2 col-form-label">분류</label>
 										    <div class="col-sm-10">
-										        <select class="form-control me-2 col-1" name="schTypeFAQ" id="writeSelect" onchange="changeFaqWriteType(this);">
+										        <select class="form-control me-2 col-2" name="schTypeFAQ" id="writeSelect" onchange="changeFaqWriteType(this);">
 										            <option value="memberFAQ" ${schTypeFAQ == 'memberFAQ' ? 'selected' : ''}> 회원</option>
 										            <option value="farmFAQ" ${schTypeFAQ == 'farmFAQ' ? 'selected' : ''}>농가</option>
 										        </select>
@@ -105,14 +105,16 @@
                                         <!-- 버튼 -->
                                         <div class="form-group row">
                                             <div class="col-sm-10 offset-sm-2">
-                                                <button type="submit" class="btn btn-primary">${mode == 'update' ? '수정완료' : '등록완료'}</button>
-                                                <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/main';">${mode == 'update' ? '수정취소' : '등록취소' }</button>
+                                                <button type="button" class="btn btn-primary" onclick="faqSubmit();">${mode == 'update' ? '수정완료' : '등록완료'}</button>
+                                                <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/';">${mode == 'update' ? '수정취소' : '등록취소' }</button>
                                             </div>
                                         </div>
                                         
                                         <c:if test="${mode == 'update'}">
-	                                        <input type="hidden" name="noticeNum" value="${dto.noticeNum}">
+	                                        <input type="hidden" name="faqNum" value="${dto.faqNum}">
 	                                        <input type="hidden" name="page" value="${page}">
+	                                        <input type="hidden" name="schType" value="${schType}">
+	                                        <input type="hidden" name="kwd" value="${kwd}">
 										</c:if>
                                     </form>
                                 </div>
@@ -129,9 +131,11 @@
     </footer>
 
 <script type="text/javascript">
+var quill;
 
 $(function(){
-	changeFaqWriteType('memberFAQ');
+// 	changeFaqWriteType('memberFAQ');
+	changeFaqWriteType(document.getElementById('writeSelect'));
 });
 
 function changeFaqWriteType(selectElement) {
@@ -158,19 +162,20 @@ function changeFaqWriteType(selectElement) {
     });
 }
 
-function faqSubmit(formElement) {
-    const quill = new Quill('#editor-container', { theme: 'snow' }); // Quill 인스턴스 다시 가져옴
-    const htmlContent = quill.root.innerHTML.trim(); // ⬅️ trim()으로 공백 제거
-    $('#content').val(htmlContent);
-
-    // Quill 에디터 내용이 비어 있는지 확인
-    const isContentEmpty = htmlContent === '' || htmlContent === '<p><br></p>';
-    if (isContentEmpty) {
+function faqSubmit() {
+    const f = document.faqForm;
+    
+    const quill = new Quill('#editor-container', { readOnly: true }); 
+    const htmlContent = quill.root.innerHTML.trim();
+    if (htmlContent === '' || htmlContent === '<p><br></p>' || htmlContent === '<p></p>') {
         alert("내용을 입력하세요.");
-        return false; // 폼 제출 중단
+        return;
     }
+    document.getElementById('content').value = htmlContent;
 
-    formElement.submit();
+    f.action="${pageContext.request.contextPath}/admin/FAQ/${mode == 'update' ? 'update' : 'write'}";
+    f.method = "post";
+    f.submit();
 }
 
 
@@ -195,9 +200,8 @@ $(document).ready(function() {
                     ['clean']
                 ],
                 handlers: {
-                    // Quill의 기본 이미지 핸들러를 오버라이드
                     'image': function() {
-                        selectLocalImage(); // 커스텀 이미지 선택 및 업로드 함수 호출
+                        selectLocalImage();
                     }
                 }
             }

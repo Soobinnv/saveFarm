@@ -85,11 +85,6 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/farm/applyFormUpdate">
-							<span class="ml-1 item-text">농가 신청함</span>
-						</a>
-					</li>
-					<li class="nav-item">
 						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/inquiry/inquiryList/200">
 							<span class="ml-1 item-text">농가 문의</span>
 						</a>
@@ -150,7 +145,7 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/200">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/110">
 							<span class="ml-1 item-text">배송</span>
 						</a>
 					</li>
@@ -160,12 +155,12 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/200">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/110">
 							<span class="ml-1 item-text">구매확정</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/300">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/120">
 							<span class="ml-1 item-text">주문리스트</span>
 						</a>
 					</li>
@@ -243,7 +238,7 @@
 		</ul>
 		<ul class="navbar-nav flex-fill w-100 mb-2">
 			<li class="nav-item dropdown">
-				<a href="${pageContext.request.contextPath}/admin/other/Report" aria-expanded="false" class="nav-link">
+				<a href="${pageContext.request.contextPath}/admin/report/" aria-expanded="false" class="nav-link">
 					<i class="fe fe-alert-circle fe-16"></i>
 					<span class="ml-3 item-text">신고</span>
 				</a>
