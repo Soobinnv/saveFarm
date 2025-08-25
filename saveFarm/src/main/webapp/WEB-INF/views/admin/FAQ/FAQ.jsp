@@ -36,47 +36,66 @@
 				           onclick="loadCategory('${dto.categoryNum}');">${dto.categoryName}</button>
 				</li>
 			</c:forEach>
-		</ul>	
-		<div id="faqListContent">
-			<table class="table datatables" id="dataTable-1">
-				<thead>
-					<tr>
-						<th>번호</th>
-						<th>분류</th>
-						<th>제목</th>
-						<th>작성자</th>
-						<th>작성일</th>
-						<th>구분</th> 
-					</tr>
-				</thead>
-			<tbody>
-				<c:forEach var="dto" items="${list}" varStatus="status">
-					<tr>
-						<td>${dataCount - ( page - 1 ) * size - status.index }</td>
-						<td>${dto.categoryName}</td>
-						<td>
-							<a href="${pageContext.request.contextPath}/admin/FAQ/article?faqNum=${dto.faqNum}" class="text-secondary">${dto.subject}</a>
-						</td>
-						<td>${dto.name}</td>
-						<td>${dto.regDate}</td>
-						<td>
-							<c:choose>
-								<c:when test="${dto.classify == 1}">회원</c:when>
-								<c:when test="${dto.classify == 2}">농가</c:when>
-								<c:otherwise>기타</c:otherwise>
-							</c:choose>
-						</td>
-					</tr>
-				</c:forEach> 
-			</tbody>
-			</table>
-			 <div class="row justify-content-center">
-				${paging}
+		</ul>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="accordion w-100" id="faqAccordion">
+					<table class="table datatables" id="dataTable-1">
+						<thead>
+							<tr>
+								<th class="col-1">번호</th>
+								<th class="col-2">분류</th>
+								<th class="col-5">제목</th>
+								<th class="col-1">작성자</th>
+								<th class="col-2">작성일</th>
+								<th class="col-1">구분</th> 
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<tr>
+									<td>${dataCount - ( page - 1 ) * size - status.index }</td>
+									<td>${dto.categoryName}</td>
+									<td>
+										<a href="#collapse${status.index}" data-toggle="collapse" data-target="#collapse${status.index}" aria-expanded="false" aria-controls="collapse${status.index}">
+											${dto.subject}
+										</a>
+									</td>
+									<td>${dto.name}</td>
+									<td>${dto.regDate}</td>
+									<td>
+										<c:choose>
+											<c:when test="${dto.classify == 1}">회원</c:when>
+											<c:when test="${dto.classify == 2}">농가</c:when>
+											<c:otherwise>기타</c:otherwise>
+										</c:choose>
+									</td>
+								</tr>
+								
+								<tr id="collapse${status.index}" class="collapse">
+									<td colspan=""></td>
+									<td> 내용</td>
+									<td>
+										${dto.content}
+									</td>
+									<td colspan="2"></td>
+									<td>
+										<button class="btn btn p-0" type="button" onclick="updateFAQ(this, ${page});">수정</button> | 
+										<button class="btn btn p-0" type="button" onclick="deleteFAQ(${dto.faqNum});">삭제</button>
+										<input type="hidden" name="faqNum" value="${dto.faqNum}">
+                           			</td>
+								</tr>
+							</c:forEach> 
+						</tbody>
+					</table>
+					<div class="row justify-content-center">
+						${paging}
+					</div>	
+				</div>		
 			</div>
-		</div>	 
+		</div>
 		<div class="row">
 			<div class="col-sm-12 col-md-3"></div>
-		
 			<div class="col-sm-12 col-md-6 d-flex justify-content-center flex-column text-center"> 
 				<div class="d-flex justify-content-center align-items-center mb-3"> 
 					<button type="button" class="fe fe-rotate-ccw btn btn-outline-primary me-2 mr-1" onclick="resetSearch();"></button>

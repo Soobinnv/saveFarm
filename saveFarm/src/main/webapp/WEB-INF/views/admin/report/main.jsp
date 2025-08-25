@@ -55,7 +55,7 @@
 	<div class="container-fluid">
 		<div class="row justify-content-center">
 			<div class="col-12">
-				<h2 class="mb-2 page-title">자주하는 질문</h2>
+				<h2 class="mb-2 page-title">신고 리스트</h2>
 	
 				<div class="row my-4">
 					<div class="col-md-9" id="nav-tabContent"> </div>
