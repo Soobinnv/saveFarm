@@ -1,15 +1,12 @@
-package com.sp.app.mapper;
+package com.sp.app.service;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.sp.app.model.Report;
 
-@Mapper
-public interface ReportMapper {
+public interface ReportService {
 	public void insertReports(Report dto) throws SQLException;
 	
 	public int dataCount(Map<String, Object> map);
