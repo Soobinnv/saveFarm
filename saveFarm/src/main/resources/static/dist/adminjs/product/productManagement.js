@@ -1,7 +1,7 @@
-// -- 관리자 상품 관리 - 이벤트 처리 및 기능 -- //
+// 관리자 상품 관리 - 이벤트 처리 및 기능 //
+
 
 // 설정 객체 정의 - switch문 반복 제거
-
 // - 메인 탭(상품 리스트, 농가 상품 등)
 const mainTabConfig = {
     'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage'},
@@ -60,7 +60,7 @@ $(function() {
 		}
 	});
 	
-	// 테이블 - tab
+	// 테이블 - 필터 tab, 상세 - 목록 불러오기 버튼
 	$('main').on('click', 'button.nav-link', function(e) {
 		const navId = $(e.target).attr('id');
 		const contentId = $(e.target).closest('div.card-body').attr('id');
@@ -200,7 +200,7 @@ $(function() {
 			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
 		}
 				
-		ajaxRequest(`/api/admin/products/${num}`, 'put', {stockQuantity:afterStock}, 'json', fn);		
+		ajaxRequest(`/api/admin/products/${num}`, 'patch', {stockQuantity:afterStock}, 'json', fn);		
 	});
 	
 	// 상품 등록/변경 저장 버튼
@@ -217,15 +217,64 @@ $(function() {
 		}
 		
 		if(method === 'post') {
-			
 			const productForm = $('#product-form');
 			params = new FormData(productForm[0]);
+			
 			ajaxRequest(`/api/admin/products`, method, params, 'json', fn, true, 'multipart');	
 		} else if(method === 'put') {
 			params = getProductData(currentRow);		
+			
 			ajaxRequest(`/api/admin/products/${num}`, method, params, 'json', fn);	
 		}
 		
+	});
+	
+	// 문의 답변 수정 폼 버튼
+	$('main').on('click', '.btn-edit-answer', function(e) {
+		
+		
+	});
+	
+	// 문의 답변 등록/변경 저장 버튼
+	$('main').on('click', '.btn-submit-answer', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const currentRow = $(e.target).closest('.qna-detail-row');
+		
+		const method = $(e.target).attr('data-method');
+		
+		let params = null;
+		
+		const fn = function(data) {
+			loadContent('/api/admin/inquiries', renderProductQnaListHTML, '', 'qnaListPage');
+		}
+		
+		if(method === 'post') {
+			params = getQnaData(currentRow);		
+
+			ajaxRequest(`/api/admin/inquiries`, method, params, 'json', fn);	
+		} else if(method === 'put') {
+			params = getQnaData(currentRow);		
+			
+			ajaxRequest(`/api/admin/inquiries/${num}`, method, params, 'json', fn);	
+		}
+		
+	});
+	
+	// 상품 삭제 버튼
+	$('main').on('click', '.product-delete-btn', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		
+		if(! confirm('상품을 삭제하시겠습니까?')) {
+			return false;
+		}
+		
+		const fn = function(data) {
+			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
+			
+			alert('상품을 삭제하였습니다.');
+		}
+		
+		ajaxRequest(`/api/admin/products/${num}`, 'delete', '', 'json', fn);
 	});
 	
 	// 상품 등록 폼 버튼
@@ -245,10 +294,10 @@ $(function() {
         }
 		
 	});
-	
+
 });
 
-// 상품 수정 데이터
+// 상품 수정 데이터 가져오기
 function getProductData(editRow) {
   const productNum = editRow.data('product-num');
 
@@ -273,4 +322,11 @@ function getProductData(editRow) {
     endDate
     // productImageFilename
   };
+}
+
+// 문의 답변 데이터 가져오기
+function getQnaData(editRow) {
+	const answer = editRow.find('#answer-content').text();
+	
+	return {answer:answer}
 }

@@ -38,7 +38,7 @@
 	<select id="getQnaList" parameterType="long" resultType="com.sp.app.model.ProductQna">
 		<include refid="qnaColumns"/>
 		WHERE block = 0 AND q.productNum = #{productNum}
-		ORDER BY qnaDate DESC
+		ORDER BY qnaDate DESC 
 	</select>
 	
 	<select id="getMyQnaList" parameterType="map" resultType="com.sp.app.model.ProductQna">

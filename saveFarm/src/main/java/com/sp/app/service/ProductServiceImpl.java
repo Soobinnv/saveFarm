@@ -52,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
 			
 		} catch (Exception e) {
 			log.info("getProductWithDetails : ", e);
+			throw e;
 		}
 		
 		return productInfo;
@@ -214,6 +215,7 @@ public class ProductServiceImpl implements ProductService {
 			
 		} catch (Exception e) {
 			log.info("insertProduct : ", e);
+			throw e;
 		}
 		
 	}
@@ -224,6 +226,7 @@ public class ProductServiceImpl implements ProductService {
 			mapper.insertProductDetail(dto);
 		} catch (Exception e) {
 			log.info("insertProductDetail : ", e);
+			throw e;
 		}
 	}
 
@@ -242,6 +245,7 @@ public class ProductServiceImpl implements ProductService {
 			mapper.updateProduct(dto);
 		} catch (Exception e) {
 			log.info("updateProduct : ", e);
+			throw e;
 		}
 		
 	}
@@ -252,6 +256,7 @@ public class ProductServiceImpl implements ProductService {
 			mapper.updateProductDetail(dto);
 		} catch (Exception e) {
 			log.info("updateProductDetail : ", e);
+			throw e;
 		}
 	}
 
@@ -261,6 +266,7 @@ public class ProductServiceImpl implements ProductService {
 			mapper.updateRescuedProduct(dto);
 		} catch (Exception e) {
 			log.info("updateRescuedProduct : ", e);
+			throw e;
 		}
 	}
 
@@ -270,6 +276,7 @@ public class ProductServiceImpl implements ProductService {
 			mapper.deleteProduct(productNum);
 		} catch (Exception e) {
 			log.info("deleteProduct : ", e);
+			throw e;
 		}
 	}
 

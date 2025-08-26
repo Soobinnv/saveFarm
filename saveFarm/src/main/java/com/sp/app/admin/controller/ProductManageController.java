@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.common.PaginateUtil;
+import com.sp.app.common.StorageService;
 import com.sp.app.farm.model.Supply;
 import com.sp.app.farm.service.SupplyService;
 import com.sp.app.model.Product;
@@ -24,6 +26,7 @@ import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.ProductService;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +39,15 @@ public class ProductManageController {
 	private final SupplyService supplyService;
 	private final ProductQnaService productQnaService;
 	private final ProductReviewService productReviewService;
+	private final StorageService storageService;
 	private final PaginateUtil paginateUtil;
+	
+	private String uploadPath;
+	
+	@PostConstruct
+	public void init() {
+		uploadPath = this.storageService.getRealPath("/uploads/product");		
+	}
 	
 	// 상품 리스트 데이터
 	@GetMapping("/api/admin/products")
@@ -120,7 +131,7 @@ public class ProductManageController {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			productService.insertProductWithDetails(dto, null);
+			productService.insertProductWithDetails(dto, uploadPath);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
@@ -139,12 +150,50 @@ public class ProductManageController {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			productService.updateProductWithDetails(dto, null);
+			productService.updateProductWithDetails(dto, uploadPath);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("updateProduct: ", e);
 			body.put("message", "상품 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 재고 수정
+	@PatchMapping("/api/admin/products/{productNum}")
+	public ResponseEntity<?> updateProductStock(
+			@PathVariable(name = "productNum") long productNum,
+			Product dto
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productService.updateProductDetail(dto);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "상품 재고 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	
+	// 상품 삭제
+	@DeleteMapping("/api/admin/products/{productNum}")
+	public ResponseEntity<?> deleteteProduct(
+			@PathVariable(name = "productNum") long productNum
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productService.deleteProduct(productNum, uploadPath);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "상품 삭제 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -378,7 +427,7 @@ public class ProductManageController {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			productReviewService.deleteReview(orderDetailNum, null);
+			productReviewService.deleteReview(orderDetailNum, uploadPath);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {

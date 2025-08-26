@@ -77,7 +77,6 @@ const renderProductListHTML = function(item, params) {
                   <div class="row d-flex justify-content-end"">
                     <div class="col-sm-12 col-md-2 d-flex justify-content-end">
                         <button type="button" class="btn mb-2 mr-1 btn-outline-primary" id="btn-product-insert">상품등록</button>
-                        <button type="button" class="btn mb-2 btn-outline-primary" id="btn-product-delete">상품삭제</button>
                     </div>
 				  </div
 	            </div>
@@ -138,6 +137,7 @@ const renderProductRows = function(list) {
 					href="javascript:void(0);"
 					>재고</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
+                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품삭제</a>
               </div>
             </td>
           </tr>
@@ -166,7 +166,7 @@ const renderProductDetailHTML = function(data) {
 	<table>
 		<tr class="product-detail-row" style="background-color: #f8f9fa;">
 			<td colspan="7">
-				<div class="row m-3 p-3 align-items-center">
+				<div id="product-card" class="row m-3 p-3 align-items-center card-body">
 					<div class="col-md-3 text-center">
 						<img src="${webContextPath}/uploads/product/${product.mainImageFilename}" 
 							 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/31343C?text=Image+Error';"
@@ -226,19 +226,18 @@ const renderStockEditHTML = function(productNum, productName, unit, stock) {
 			<h5 class="mb-0 fw-bold">
 			    <i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${productName}</span>
 			</h5>
-			<div class="stock-edit-back-btn">
-			    뒤로가기
-			</div>
 		</div>
-		<div class="card-body p-4">
+		<div id="product-card" class="card-body p-4">
 			<div class="row mb-4">
-				<div class="col-md-12">
-					<p class="fs-5">
-						<strong>단위: ${unit}</strong> 
-					</p>
-					<p id="data-stock" data-stock="${stock}" class="fs-5">
-						<strong>현재 재고: ${stock}</strong> 
-					</p>
+				<div class="col-md-8 d-flex justify-content-between">
+					<div>
+						<p class="fs-5">
+							<strong>단위: ${unit}</strong> 
+						</p>
+						<p id="data-stock" data-stock="${stock}" class="fs-5">
+							<strong>현재 재고: ${stock}</strong> 
+						</p>
+					</div>
 				</div>
 			</div>
 			<div class="row g-3 align-items-end">
@@ -741,32 +740,42 @@ const renderProductQnaDetailHTML = function(data) {
 	
 	// 답변 여부
 	const status = isAnswered ? '답변완료' : '답변대기';
+	const method = isAnswered ? 'put' : 'post';
+	
 	const statusBadge = isAnswered
 		? `<span class="badge rounded-pill bg-success">${status}</span>`
 		: `<span class="badge rounded-pill text-dark bg-warning">${status}</span>`;
-
-	const answerSectionHTML = isAnswered
+		
+	const answerButtonHTML = isAnswered
 		? `
-		<h6>답변</h6>
-		<div class="p-3 border bg-white rounded" style="min-height: 150px; white-space: pre-wrap;">${item.answer || ''}</div>
-		<div class="text-end mt-2">
-			<small class="text-muted">답변자: ${item.answerName || ''} | ${item.answerDate || ''}</small>
-		</div>
 		<div class="text-end mt-3">
-			<button type="button" class="btn btn-outline-primary btn-sm btn-edit-answer" data-no="${item.qnaNum}">답변 수정</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-edit-answer" data-num="${item.qnaNum}">답변 수정</button>
 		</div>
 		`
 		: `
-		<h6>답변 등록</h6>
-		<textarea id="answer-content-${item.qnaNum}" class="form-control" rows="5" placeholder="답변을 입력하세요..."></textarea>
 		<div class="text-end mt-3">
 			<button type="button" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
 		</div>
 		`;
 
+	const answerSectionHTML = isAnswered
+		? `
+		<h6 class="mt-3">답변</h6>
+		<div class="p-3 border bg-white rounded" style="white-space: pre-wrap;">${item.answer || ''}</div>
+		<div class="text-end mt-2">
+			<small class="text-muted">답변자: ${item.answerName || ''} | ${item.answerDate || ''}</small>
+		</div>
+		
+		`
+		: `
+		<h6 class="mt-3">답변 등록</h6>
+		<textarea id="answer-content" class="form-control" rows="5" placeholder="답변을 입력하세요..." style="resize:none;"></textarea>
+
+		`;
+
 	const html = `
 	<table>
-		<tr class="qna-detail-row">
+		<tr data-method="${method}" class="qna-detail-row">
 			<td colspan="9" class="p-3">
 				<div class="row justify-content-center">
 					<div style="width: 95vw;" class="col-12 col-lg-10 col-xl-9">
@@ -791,13 +800,14 @@ const renderProductQnaDetailHTML = function(data) {
 									</div>
 									<div class="col-md-6">
 										${answerSectionHTML}
+										${answerButtonHTML}
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-				</td>
+			</td>
 		</tr>
 	</table>
 	`;
