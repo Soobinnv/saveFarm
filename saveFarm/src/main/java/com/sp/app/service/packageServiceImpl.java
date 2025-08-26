@@ -1,12 +1,16 @@
 package com.sp.app.service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.stereotype.Service;
 
 import com.sp.app.mapper.PackageMapper;
+import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.PackageOrder;
+import com.sp.app.model.Product;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 public class packageServiceImpl implements packageService {
 
 	private final PackageMapper mapper;
-
+	private final ProductMapper productMapper;
 	private static AtomicLong count = new AtomicLong(0);
 
 
@@ -106,6 +110,51 @@ public class packageServiceImpl implements packageService {
 			throw e;
 		}
 
+	}
+
+	@Override
+	public PackageOrder setMysubInfo(String subNum) throws Exception {
+		PackageOrder dto = null;
+		
+		try {
+			dto = mapper.findBySubnum(subNum);
+			
+			 List<Long> productNums = new ArrayList<>();
+			 List<Integer> itemPrices = new ArrayList<>();
+			 List<Integer> counts = new ArrayList<>();
+			
+			
+			PackageOrder packageInfo = mapper.subPackageinfo(dto.getSubNum());
+		    List<PackageOrder> items = mapper.subItemList(dto.getSubNum());
+
+		    dto.setHomePackageNum(packageInfo.getHomePackageNum());
+		    dto.setSaladPackageNum(packageInfo.getSaladPackageNum());
+		    dto.setPackagePrice(packageInfo.getPackagePrice());
+			
+		    dto.setProductNums(items.stream().map(PackageOrder::getProductNum).toList());
+	        dto.setItemPrices(items.stream().map(PackageOrder::getItemPrice).toList());
+	        dto.setCounts(items.stream().map(PackageOrder::getCount).toList());
+	        
+	        
+	        if (dto.getProductNames() == null) {
+		        dto.setProductNames(new ArrayList<>());
+		    }
+		    if (dto.getMainImageFileNames() == null) {
+		        dto.setMainImageFileNames(new ArrayList<>());
+		    }
+	        
+	        
+	        for (int j = 0; j < items.size(); j++) {   
+		        Product productInfo = productMapper.getProductInfo(items.get(j).getProductNum());
+		        
+		        dto.getProductNames().add(productInfo.getProductName());
+	            dto.getMainImageFileNames().add(productInfo.getMainImageFilename());
+	        }
+		} catch (Exception e) {
+		}
+		
+		
+		return dto;
 	}
 
 

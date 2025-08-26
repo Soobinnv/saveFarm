@@ -25,5 +25,8 @@ public interface MyPageMapper {
 
 	// 주문상세 상태 등록
 	public void insertDetailStateInfo(Map<String, Object> map) throws SQLException;
-
+	
+	
+	// 패키지 리뷰 작성 여부
+	public int findBysubReview(String subNum) throws SQLException;
 }

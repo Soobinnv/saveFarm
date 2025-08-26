@@ -63,7 +63,7 @@ function inquiryListPage(page) {
  * 관리자 페이지 - 상품 관리 - 상품 리뷰 페이징 처리
  * @param {number} page - 현재 페이지
  */
-function qnaListPage(page) {
+function reviewListPage(page) {
 	const paramsString = $('#dataTables').data('params');
 	const params = JSON.parse(paramsString);
 	

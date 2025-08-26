@@ -100,9 +100,7 @@
 				<div class="d-flex justify-content-center align-items-center mb-3"> 
 					<button type="button" class="fe fe-rotate-ccw btn btn-outline-primary me-2 mr-1" onclick="resetSearch();"></button>
 					<select class="form-control me-2 col-2" name="schType" id="searchType"> 
-						<option value="all" ${schType == 'all' ? 'selected' : ''}>제목 + 내용</option>
-						<option value="subject" ${schType == 'subject' ? 'selected' : ''}>제목</option>
-						<option value="name" ${schType == 'name' ? 'selected' : ''}>작성자</option>
+						<option value="all" ${schType == 'all' ? 'selected' : ''}>검색</option>
 					</select>
 					<input type="text" class="form-control me-2 mr-1 col-3" name="kwd" id="keyword" value="${kwd}" placeholder="Search"> 
 					<button type="button" class="btn btn-outline-primary" onclick="searchList();">검색</button>

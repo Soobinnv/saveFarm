@@ -123,8 +123,8 @@
     <div class="title">구독리뷰</div>
 
     <div class="meta-row">
-      <div>구독 주문 번호 : <b>202508147000000007</b></div>
-      <div><b>${loginInfo.userName}</b> 님의 <b>${nth}</b>회차 구독 리뷰</div>
+      <div>구독 주문 번호 : <b>${subNum}</b></div>
+      <div><b>${memberName}</b> 님의 <b>${subMonth}</b>회차 구독 리뷰</div>
     </div>
     <div class="hr"></div>
 
@@ -145,7 +145,7 @@
           </div>
         </div>
       </div>
-
+		
       <!-- 제목 -->
       <div class="field">
         <label class="label" for="title">제목</label>
@@ -174,7 +174,7 @@
       </div>
 
       <!-- 숨김값 (필요 시) -->
-      <input type="hidden" name="subNum" value="202508147000000007">
+      <input type="hidden" name="subNum" value="${subNum}">
       
      
 

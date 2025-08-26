@@ -24,9 +24,9 @@
 			    <li class="dropdown">
 				    <a href="#"><span>판매 성과 분석</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
 				    <ul>
-				      <li><a href="#">판매흐름</a></li>
-				      <li><a href="#">매출</a></li>
-				      <li><a href="#">인기순위</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/totalList">판매흐름</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/starList">인기순위</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/myFarmList">농장관리</a></li>
 				    </ul>
 			  </c:if>
 			  <li class="dropdown">
@@ -34,7 +34,7 @@
 			    <ul>
 			      <li><a href="#">공지사항</a></li>
 			      <li><a href="#">문의</a></li>
-			      <li><a href="#">자주묻는 질문</a></li>
+			      <li><a href="${pageContext.request.contextPath}/farm/FAQ/list">자주묻는 질문</a></li>
 			    </ul>
 			  </li>
 			
@@ -50,7 +50,7 @@
 					    <ul>
 					      	<li><a href="${pageContext.request.contextPath}/farm/member/update">정보수정</a></li>
 					      	<li><a href="${pageContext.request.contextPath}/farm/delivery/list">배송 관리</a></li>
-					      	<li><a href="${pageContext.request.contextPath}/farm">농산물 관리</a></li>
+					      	<li><a href="${pageContext.request.contextPath}/farm/myFarm/cropsList">농산물 관리</a></li>
 					      	<li><a href="${pageContext.request.contextPath}/farm/member/logout"> 로그아웃</a></li>
 				    	</ul>
 				  	</li>

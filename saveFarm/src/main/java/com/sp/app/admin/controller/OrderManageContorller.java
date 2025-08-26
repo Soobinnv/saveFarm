@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sp.app.admin.model.OrderDetailManage;
 import com.sp.app.admin.model.OrderManage;
 import com.sp.app.admin.service.OrderStatusManageService;
+import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.model.SessionInfo;
 
@@ -81,7 +82,7 @@ public class OrderManageContorller {
 				query += "&" + qs;
 			}
 			
-			String paging = paginateUtil.pagingUrl(current_page, total_page, listUrl);
+			String paging = paginateUtil.adminPagingUrl(current_page, total_page, listUrl);
 			
 			String title = "주문 현황";
 			if(itemId == 110) {
@@ -295,7 +296,7 @@ public class OrderManageContorller {
 				query += "&" + qs;
 			}
 			
-			String paging = paginateUtil.pagingUrl(current_page, total_page, listUrl);
+			String paging = paginateUtil.adminPagingUrl(current_page, total_page, listUrl);
 			
 			String title = "구매확정 현황";
 			if(itemId == 100) {

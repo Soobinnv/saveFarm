@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sp.app.model.SessionInfo;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
 import com.sp.app.farm.model.Supply;
@@ -27,6 +28,7 @@ import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.ProductService;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -215,6 +217,8 @@ public class ProductManageController {
 			int total_page = 0; 
 			int dataCount = 0;
 			
+			paramMap.put("state", state);
+			
 			dataCount = supplyService.listSupplyCount(paramMap);
 			total_page = paginateUtil.pageCount(dataCount, size);
 			current_page = Math.min(current_page, total_page);
@@ -225,8 +229,8 @@ public class ProductManageController {
 			paramMap.put("offset", offset);
 			paramMap.put("size", size);
 			
-			paramMap.put("kwd", kwd);
-			paramMap.put("state", state);
+//			paramMap.put("schType", schType);
+//			paramMap.put("kwd", kwd);
 			
 			List<Supply> list = supplyService.listManageSupply(paramMap); 
 			
@@ -299,15 +303,57 @@ public class ProductManageController {
 		}
 	}
 	
-	// 상품 문의 상세 데이터
-	@GetMapping("/api/admin/inquiries/{qnanum}")
-	public ResponseEntity<?> getQnaInfo(
-			@PathVariable(name = "qnanum") long qnanum
+	// 상품 문의 수정 (답변 등록)
+	@PutMapping("/api/admin/inquiries/{qnaNum}")
+	public ResponseEntity<?> updateQna(
+			@PathVariable(name = "qnaNum") long qnaNum,
+			ProductQna dto,
+			HttpSession session
 			) {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			ProductQna productQnaInfo = productQnaService.findByQnaNum(qnanum);
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			dto.setAnswerId(info.getMemberId());
+			dto.setAnswerName(info.getName());
+			
+			productQnaService.updateQna(dto);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "상품 답변 등록 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 문의 삭제
+	@DeleteMapping("/api/admin/inquiries/{qnaNum}")
+	public ResponseEntity<?> deleteteQna(
+			@PathVariable(name = "qnaNum") long qnaNum
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			productQnaService.deleteQna(qnaNum);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "문의 삭제 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 상품 문의 상세 데이터
+	@GetMapping("/api/admin/inquiries/{qnaNum}")
+	public ResponseEntity<?> getQnaInfo(
+			@PathVariable(name = "qnaNum") long qnaNum
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			ProductQna productQnaInfo = productQnaService.findByQnaNum(qnaNum);
 			
 			if(productQnaInfo == null) {
 				body.put("message", "현제 상품 문의 상세 정보가 없습니다.");

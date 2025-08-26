@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.farm.mapper.FaqMapper">
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'all'">
+				(
+					INSTR(f.subject, #{kwd}) > 0
+					OR INSTR(f.content, #{kwd}) > 0
+				)
+			</when>
+			<when test="schType == 'subject'">
+				INSTR(f.subject, #{kwd}) > 0
+			</when>
+		</choose>
+	</sql>
+	
+	<select id="categoryFAQList" parameterType="map" resultType="com.sp.app.farm.model.Faq">
+		SELECT categoryNum, categoryName, classify
+		FROM categoryFAQ
+		WHERE classify = 2
+		ORDER BY categoryNum
+	</select>
+	
+	<select id="faqList" parameterType="map" resultType="com.sp.app.farm.model.Faq">
+	    SELECT f.faqNum, f.categoryNum, cf.categoryName, cf.classify, m.name, f.memberId, f.subject, f.content, f.regDate 
+	    FROM FAQ f
+	    LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+	    LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
+	    <where>
+	        classify = 2
+	        <if test="categoryNum != null and categoryNum &gt; 0">
+		    	AND f.categoryNum = #{categoryNum}
+		    </if>
+		    <if test="kwd != null and kwd != ''">
+		    	AND <include refid="where-list"/>
+		    </if>
+		</where>
+		ORDER BY f.faqNum DESC, f.regDate DESC
+		OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+	</select>
+	
+	<select id="dataCount" parameterType="map" resultType="com.sp.app.farm.model.Faq">
+	SELECT
+	    SUM(DECODE(classify, 2, 1, 0)) AS farmCount
+	FROM FAQ f
+	LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+		<where>
+			<if test="categoryNum != null and categoryNum != ''">
+				AND f.categoryNum = #{categoryNum}
+			</if>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	
+	<select id="findById" parameterType="long" resultType="com.sp.app.farm.model.Faq">
+		SELECT f.faqNum, f.categoryNum, cf.categoryName, cf.classify, m.name, f.memberId, f.subject, f.content, f.regDate 
+		FROM FAQ f
+		LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
+		LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
+		WHERE f.faqNum = #{faqNum}
+	</select>
+	
+</mapper>

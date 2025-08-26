@@ -14,4 +14,5 @@ public interface PackageReviewMapper {
 	public void insertsubImage(packageReview dto) throws SQLException;
 	public List<packageReview> listReview(Map<String, Object> map)throws SQLException;
 	public int countReview() throws SQLException;
+	public int findBysubReview(String subNum) throws SQLException;
 }

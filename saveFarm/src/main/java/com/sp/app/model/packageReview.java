@@ -13,12 +13,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class packageReview {
 	private int count;
-	private long subNum;
+	private String subNum;
 	private Long memberId;
 	private int star;
 	private String subject;
 	private String content;
 	private String regDate;
+	private String memberName;
+	
 	private long imageNum;
 	private String imageFilename;
 	private List<MultipartFile> selectFile;

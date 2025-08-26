@@ -11,9 +11,26 @@
 	</insert>
 	
 	<update id="updateQna" parameterType="com.sp.app.model.ProductQna">
-		UPDATE productQna SET answer = #{answer}, answerId = #{answerId}, answerDate = SYSDATE, block = #{block}
-		WHERE qnaNum = #{qnaNum}
-	</update>
+    UPDATE productQna
+    <set>
+        <if test="secret != null">
+            secret = #{secret},
+        </if>
+        <if test="question != null and question != ''">
+            question = #{question},
+        </if>
+        <if test="answer != null and answer != ''">
+            answer = #{answer}, 
+        </if>
+        <if test="answerId != null and answerId != ''">
+            answerId = #{answerId}, answerDate = SYSDATE,
+        </if>
+        <if test="block != null">
+            block = #{block},
+        </if>
+    </set>
+    WHERE qnaNum = #{qnaNum}
+</update>
 	
 	<delete id="deleteQna" parameterType="long">
 		DELETE FROM productQna

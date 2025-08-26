@@ -137,7 +137,7 @@ const renderProductRows = function(list) {
 					href="javascript:void(0);"
 					>재고</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품삭제</a>
+                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
               </div>
             </td>
           </tr>
@@ -437,7 +437,7 @@ const renderProductEditHTML = function(data) {
 
 /**
  * 농가상품 신청 리스트 HTML 문자열 생성
- * @param {object} item - 농가상품 데이터 객체
+ * @param {object} item - 페이지 데이터 객체
  * @param {Array<object>} item.list - 농가상품 신청 리스트
  * @param {number} item.dataCount - 총 신청 수
  * @param {number} item.size - 페이지 당 항목 수
@@ -445,12 +445,14 @@ const renderProductEditHTML = function(data) {
  * @param {number} item.total_page - 총 페이지 수
  * @param {string} [item.schType="all"] - 검색 타입
  * @param {string} [item.kwd=""] - 검색 키워드
+ * @param {object} params - 탭 상태 구분을 위한 파라미터 객체
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderFarmProductListHTML = function(item, params) {
 	const schType = item.schType || "all";
 	const kwd = item.kwd || "";
 
+    // tbody에 들어갈 HTML 생성
     const tbodyHTML = renderFarmProductRows(item.list);
 
 	const html = `
@@ -480,7 +482,7 @@ const renderFarmProductListHTML = function(item, params) {
 				  			? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체상품</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
-				        <button class="nav-link ${params.state === 1 ? 'active' : ''}" id="tab-status-unapproved" type="button" role="tab">숭인대기</button>
+				        <button class="nav-link ${params.state === 1 ? 'active' : ''}" id="tab-status-unapproved" type="button" role="tab">승인대기</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
 				        <button class="nav-link ${params.state === 2 ? 'active' : ''}" id="tab-status-approved" type="button" role="tab">승인</button>
@@ -489,12 +491,12 @@ const renderFarmProductListHTML = function(item, params) {
 	              <table data-type="supply" class="table datatables" id="contentTable">
 	                <thead>
 	                  <tr>
-	                    <th>상품번호</th>
-	                    <th>상품명</th>
-						<th>가격</th>
-	                    <th>농가명</th>
-	                    <th>농가아이디</th>
-	                    <th>신청일</th>
+	                    <th>납품번호</th>
+	                    <th>품종명</th>
+						<th>제시가격</th>
+	                    <th>농가이름</th>
+	                    <th>수확일</th>
+	                    <th>상태</th>
 	                    <th>변경</th>
 	                  </tr>
 	                </thead>
@@ -528,21 +530,22 @@ const renderFarmProductRows = function(list) {
     }
 
     return list.map(item => {
+		
         return `
-          <tr data-product-num="${item.productNum}">
-            <td>${item.productNum}</td>
-            <td>${item.productName}</td>
+          <tr data-supply-num="${item.supplyNum}">
+            <td>${item.supplyNum}</td>
+            <td>${item.varietyName}</td>
             <td>${item.unitPrice}원</td>
             <td>${item.farmName}</td>
-            <td>${item.farmId}</td>
-            <td>${item.applyDate}</td>
+            <td>${item.harvestDate}</td>
+            <td>${item.state}</td>
             <td>
               <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
-                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-return" href="javascript:void(0);">반려</a>
+                <a data-num="${item.supplyNum}" class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
+                <a data-num="${item.supplyNum}" class="dropdown-item supply-update-state-return" href="javascript:void(0);">기각</a>
               </div>
             </td>
           </tr>
@@ -748,29 +751,29 @@ const renderProductQnaDetailHTML = function(data) {
 		
 	const answerButtonHTML = isAnswered
 		? `
-		<div class="text-end mt-3">
-			<button type="button" class="btn btn-outline-primary btn-sm btn-edit-answer" data-num="${item.qnaNum}">답변 수정</button>
+		<div class="d-flex mt-3">
+			<button type="button" style="margin-right: 7px;" class="btn btn-outline-primary btn-sm btn-edit-answer" data-num="${item.qnaNum}">답변 수정</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-delete-answer" data-num="${item.qnaNum}">답변 삭제</button>
 		</div>
 		`
 		: `
-		<div class="text-end mt-3">
-			<button type="button" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
+		<div class="d-flex mt-3">
+			<button type="button" style="margin-right: 7px;" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-delete-answer" data-num="${item.qnaNum}">답변 삭제</button>
 		</div>
 		`;
 
 	const answerSectionHTML = isAnswered
 		? `
 		<h6 class="mt-3">답변</h6>
-		<div class="p-3 border bg-white rounded" style="white-space: pre-wrap;">${item.answer || ''}</div>
+		<div id="answerBlock" class="p-3 border bg-white rounded" style="white-space: pre-wrap;">${item.answer || ''}</div>
 		<div class="text-end mt-2">
 			<small class="text-muted">답변자: ${item.answerName || ''} | ${item.answerDate || ''}</small>
 		</div>
-		
 		`
 		: `
 		<h6 class="mt-3">답변 등록</h6>
 		<textarea id="answer-content" class="form-control" rows="5" placeholder="답변을 입력하세요..." style="resize:none;"></textarea>
-
 		`;
 
 	const html = `
@@ -798,7 +801,7 @@ const renderProductQnaDetailHTML = function(data) {
 											<small class="text-muted">작성자: ${item.name} | ${item.qnaDate}</small>
 										</div>
 									</div>
-									<div class="col-md-6">
+									<div id="answerLayout" class="col-md-6">
 										${answerSectionHTML}
 										${answerButtonHTML}
 									</div>
@@ -961,10 +964,13 @@ const renderProductReviewDetailHTML = function(data) {
 	
 	
 	const adminButtonsHTML = `
-		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" 
+			data-num="${item.orderDetailNum}">
 			${item.isBest ? '베스트 리뷰 해제' : '베스트 리뷰 등록'}
 		</button>
-		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide btn-review-block-update" 
+			data-block="${item.reviewBlock}"
+			data-num="${item.orderDetailNum}">
 			${status === '숨김' ? '리뷰 게시' : '리뷰 숨기기'}
 		</button>
 	`;
@@ -987,8 +993,7 @@ const renderProductReviewDetailHTML = function(data) {
 						<div class="mb-3">
 							${starRatingHTML}
 						</div>
-						<div class="p-3 border bg-light rounded mb-3" style="min-height: 100px; white-space: pre-wrap;">
-							${item.review}
+						<div class="p-3 border bg-light rounded mb-3" style="min-height: 100px; white-space: pre-wrap;">${item.review}
 						</div>
 						<div class="d-flex justify-content-between align-items-center">
 							<small class="text-muted">작성자: ${item.reviewerName} | 작성일: ${item.reviewDate}</small>

@@ -162,7 +162,7 @@ public class FarmDeliveryController {
 	}
 	
 	@PostMapping("list")
-	public String listubmit(
+	public String listsubmit(
 	        @RequestParam(name = "targetState", defaultValue = "-1") int targetState,
 	        @RequestParam(name = "supplyNums", required = false) List<Long> supplyNums,
 	        @RequestParam(name = "page", defaultValue = "1") int current_page,

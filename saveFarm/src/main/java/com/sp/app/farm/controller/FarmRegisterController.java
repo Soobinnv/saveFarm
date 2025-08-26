@@ -176,6 +176,8 @@ public class FarmRegisterController {
 			HttpSession session) {
 	    try {
 			SessionInfo info = (SessionInfo) session.getAttribute("farm");
+			if (info == null) return "redirect:/farm/member/login";
+			
 			dto.setRescuedApply(rescuedApply);
 			dto.setFarmNum(info.getFarmNum());
 			service.insertSupply(dto);
