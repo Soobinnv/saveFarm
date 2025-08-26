@@ -1,12 +1,15 @@
 package com.sp.app.farm.mapper;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.sp.app.farm.model.MyFarmSale;
 import com.sp.app.farm.model.Supply;
+import com.sp.app.farm.model.Variety;
 
 
 @Mapper
@@ -20,6 +23,8 @@ public interface SupplyMapper {
     public void updateRescuedApply(Map<String, Object> map) throws SQLException;        // supplyNum / state
     public void deleteSupply(Map<String, Object> map) throws SQLException;       // supplyNum 또는 다건
 
+    public List<Variety> listFarmVarieties(Map<String, Object> map);
+    
     // 관리자용 리스트
     public List<Supply> listManageSupply(Map<String, Object> map);
     
@@ -53,6 +58,7 @@ public interface SupplyMapper {
     // 이전 글/다음 글
     public Supply findByPrev(Map<String, Object> map);
     public Supply findByNext(Map<String, Object> map);
+
 
 }
 

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
@@ -29,21 +30,23 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(value = "/farm/register/*")
-public class FarmRegisterController {
+@RequestMapping(value = "/farm/crops/*")
+public class FarmCropsController {
 
 	private final SupplyServiceImpl service;
 	private final VarietyServiceImpl varietyService;
 	private final PaginateUtil paginateUtil;
 	private final MyUtil myUtil;
 
+	/*
 	@GetMapping("main")
-    public String registerMain(Model model) {
-        return "farm/register/main"; // 원하는 뷰
+    public String cropsMain(Model model) {
+        return "farm/myFarm/main"; // 원하는 뷰
 	}
+	*/
 	
 	@GetMapping("list")
-	public String list(
+	public String listFrom(
 		@RequestParam(name = "page", defaultValue = "1") int current_page,
 		@RequestParam(name = "schType", defaultValue = "all") String schType,
 		@RequestParam(name = "kwd", defaultValue = "") String kwd,
@@ -105,17 +108,6 @@ public class FarmRegisterController {
 		List<Supply> list = service.listSupply(map);
 
 		String cp = req.getContextPath();
-		/*
-		String query = "";
-		String listUrl = cp + "/farm/register/list";
-        String articleUrl = cp + "/farm/register/detail?page=" + current_page;
-		if (! kwd.isBlank()) {
-			query = "schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
-			
-			listUrl += "?" + query;
-			articleUrl += "&" + query;
-		}
-		*/
 		
 		// 1) 필터 문자열 구성
 		List<String> parts = new ArrayList<>();
@@ -131,10 +123,10 @@ public class FarmRegisterController {
 		String filter = String.join("&", parts);
 
 		// 2) 페이징용 base URL (필터만 포함, page는 paginateUtil이 붙임)
-		String listUrl = cp + "/farm/register/list" + (filter.isEmpty() ? "" : ("?" + filter));
+		String listUrl = cp + "/farm/crops/list" + (filter.isEmpty() ? "" : ("?" + filter));
 		
 		//3) 상세로 가는 base URL (PK만 전달)
-		String articleUrl = cp + "/farm/register/detail";
+		String articleUrl = cp + "/farm/crops/detail";
 		
 		String paging = paginateUtil.paging(current_page, total_page, listUrl);	
 		
@@ -157,7 +149,60 @@ public class FarmRegisterController {
 			log.info("list : ", e);
 		}
 	
-		return "farm/register/list";
+		return "farm/crops/list";
+	}
+	
+	@PostMapping("list")
+	public String listsubmit(
+	        @RequestParam(name = "targetState", defaultValue = "-1") int targetState,
+	        @RequestParam(name = "supplyNums", required = false) List<Long> supplyNums,
+	        @RequestParam(name = "page", defaultValue = "1") int current_page,
+	        @RequestParam(name = "schType", defaultValue = "all") String schType,
+	        @RequestParam(name = "kwd", defaultValue = "") String kwd,
+	        @RequestParam(name = "state", defaultValue = "2") int viewState, // 현재 화면 드롭다운 상태
+	        HttpSession session,
+	        Model model,
+	        final RedirectAttributes reAttr ) {
+	    SessionInfo info = (SessionInfo) session.getAttribute("farm");
+	    if (info == null) return "redirect:/farm/member/login";
+
+	    // 1) 체크박스 선택 + 목표상태가 있을 때만 일괄 상태 변경
+	    if (targetState != -1 && supplyNums != null && !supplyNums.isEmpty()) {
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("farmNum", info.getFarmNum()); // 본인 농가 것만
+	        map.put("state", targetState);
+	        map.put("supplyNums", supplyNums);     // IN 절로 사용
+
+	        int affected = service.updateState(map);
+
+	        // 안내 메시지(선택사항: 필요 없으면 주석)
+	        if (affected != supplyNums.size()) {
+	            reAttr.addFlashAttribute("warn",
+	                "요청 " + supplyNums.size() + "건 중 " + affected + "건만 변경되었습니다.");
+	        } else {
+	            reAttr.addFlashAttribute("msg", affected + "건 상태 변경 완료");
+	        }
+
+	        // 보고 있던 필터(상태/검색) 유지해서 목록으로
+	        reAttr.addAttribute("state", viewState);
+	        if (kwd != null && !kwd.isBlank()) {
+	            reAttr.addAttribute("schType", schType);
+	            reAttr.addAttribute("kwd", kwd);
+	        }
+	        reAttr.addAttribute("page", current_page);
+
+	        return "redirect:/farm/crops/clist";
+	    }
+
+	    // 2) 배치 변경 조건이 아니면, 그냥 목록으로 되돌림(필터 유지)
+	    reAttr.addAttribute("state", viewState);
+	    if (kwd != null && !kwd.isBlank()) {
+	        reAttr.addAttribute("schType", schType);
+	        reAttr.addAttribute("kwd", kwd);
+	    }
+	    reAttr.addAttribute("page", current_page);
+
+	    return "redirect:/farm/crops/list";
 	}
 	
 	@GetMapping("write")
@@ -166,7 +211,7 @@ public class FarmRegisterController {
 		model.addAttribute("varieties", varieties);
 		model.addAttribute("mode", "write");
 		
-		return "farm/register/write";
+		return "farm/crops/write";
 	}
 	
 	@PostMapping("write")
@@ -177,16 +222,16 @@ public class FarmRegisterController {
 	    try {
 			SessionInfo info = (SessionInfo) session.getAttribute("farm");
 			if (info == null) return "redirect:/farm/member/login";
-			
 			dto.setRescuedApply(rescuedApply);
 			dto.setFarmNum(info.getFarmNum());
+			
 			service.insertSupply(dto);
 			
 		} catch (Exception e) {
 			log.info("writeSubmit : ", e);
 		}
 		
-	    return "redirect:/farm/register/main";
+	    return "redirect:/farm/crops/list";
 	}
 
 	
@@ -217,7 +262,7 @@ public class FarmRegisterController {
 	        return "farm/register/detail";
 	    } catch (Exception e) {
 	        log.info("detail :", e);
-	        return "redirect:/farm/register/list";
+	        return "redirect:/farm/crops/list";
 	    }
 	}
 	
@@ -236,7 +281,7 @@ public class FarmRegisterController {
 		        return "redirect:/farm/member/login";
 		    }
 			if (dto.getFarmNum() != info.getFarmNum()) {
-				return "redirect:/farm/register/list?";
+				return "redirect:/farm/crops/list?";
 			}
 			
 			String varietyName = varietyService.findByVarietyNum(dto.getVarietyNum()).getVarietyName();
@@ -251,14 +296,14 @@ public class FarmRegisterController {
 			// 리스트에서 돌아가는 리스트 주소위해
 	        model.addAttribute("back", back);
 	        
-			return "farm/register/write";
+			return "farm/crops/write";
 			
 		} catch (NullPointerException e) {
 		} catch (Exception e) {
 			log.info("updateForm : ", e);
 		}
 		
-		return "redirect:/farm/register/list?";
+		return "redirect:/farm/myFarm/cropsList?";
 	}
 
 	@PostMapping("update")
@@ -273,7 +318,7 @@ public class FarmRegisterController {
 			log.info("updateSubmit : ", e);
 		}
 
-		return "redirect:/farm/register/list?page=" + page;
+		return "redirect:/farm/crops/list?page=" + page;
 	}
 
 	@PostMapping("delete")
@@ -301,7 +346,7 @@ public class FarmRegisterController {
 			log.info("delete : ", e);
 		}
 
-		return "redirect:/farm/register/list";
+		return "redirect:/farm/crops/list";
 	}
 	
 	/*

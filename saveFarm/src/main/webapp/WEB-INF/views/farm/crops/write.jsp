@@ -124,7 +124,8 @@
 				<c:if test="${mode=='update'}">
 			       	<button type="button" class="btn btn-primary" style="background-color: white; color: black; border: 1px solid #116530;"
        					onclick="location.href='${pageContext.request.contextPath}/farm/register/detail?supplyNum=${dto.supplyNum}&back=${back}'">
- 							수정취소</button>
+ 						수정취소
+					</button>
 					<input type="hidden" name="supplyNum" value="${dto.supplyNum}">
 					<input type="hidden" name="farmNum" value="${dto.farmNum}">
 					<input type="hidden" name="productNum" value="${dto.productNum}">

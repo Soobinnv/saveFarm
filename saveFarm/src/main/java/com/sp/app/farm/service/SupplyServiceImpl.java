@@ -1,5 +1,6 @@
 package com.sp.app.farm.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +9,9 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.sp.app.farm.mapper.SupplyMapper;
+import com.sp.app.farm.model.MyFarmSale;
 import com.sp.app.farm.model.Supply;
+import com.sp.app.farm.model.Variety;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +103,6 @@ public class SupplyServiceImpl implements SupplyService {
 	        list = mapper.listManageSupply(map);
 	    } catch (Exception e) {
 	        log.info("listSupply : ", e);
-	        return Collections.emptyList();
 	    }
 		
 		return list;
@@ -116,7 +118,6 @@ public class SupplyServiceImpl implements SupplyService {
 	        list = mapper.listSupply(map);
 	    } catch (Exception e) {
 	        log.info("listSupply : ", e);
-	        return Collections.emptyList();
 	    }
 		
 		return list;
@@ -302,6 +303,18 @@ public class SupplyServiceImpl implements SupplyService {
 		}
 		return dto;
 	}
+
+	@Override
+	public List<Variety> listFarmVarieties(Map<String, Object> map) {
+		 List<Variety> list = null;
+			try {
+				list = mapper.listFarmVarieties(map);
+		    } catch (Exception e) {
+		        log.info("topVarieties : ", e);
+		    }
+			return list;
+	}
+
 
 }
 

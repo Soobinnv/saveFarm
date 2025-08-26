@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sp.app.farm.model.Supply;
+import com.sp.app.farm.model.Variety;
 
 public interface SupplyService {
     // 기본 CRUD
@@ -15,6 +16,8 @@ public interface SupplyService {
     public void updateRescuedApply(Map<String, Object> map) throws Exception; // supplyNum, rescuedApply
     public void deleteSupply(Map<String, Object> map) throws Exception;       // supplyNum 또는 ids(다건)
 
+    public List<Variety> listFarmVarieties(Map<String, Object> map);
+    
     // 관리자용 리스트
     public List<Supply> listManageSupply(Map<String, Object> map);
     
@@ -48,4 +51,5 @@ public interface SupplyService {
     // 이전글 다음글
     public Supply findByPrev(Map<String, Object> map) throws Exception;
     public Supply findByNext(Map<String, Object> map) throws Exception;
+
 }
