@@ -188,7 +188,6 @@ $(document).on('click', '.order-details', function() {
 	ajaxRequest(url, 'get', params, 'json', fn);
 });
 
-
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data - 내가 주문한 상품 데이터
@@ -196,20 +195,34 @@ $(document).on('click', '.order-details', function() {
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderMyPageMainHtml = function(data) {
+  // 버튼 생성 헬퍼 함수 (이전과 동일)
+  const generateActionButtons = (item) => {
+    let buttons = [];
+    if (item.orderState === 1) {
+      buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">결제취소</button>`);
+    } else if (item.orderState >= 2 && item.orderState <= 4) {
+      buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
+      buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
+    } else if (item.orderState === 5) {
+      if (item.reviewWrite === 0 && (item.detailState === 1 || item.detailState === 2)) {
+         buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
+      } else if (item.detailState === 0) {
+        buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
+        buttons.push(`<button type="button" class="btn-ghost btn-return-request" data-orderdetailnum="${item.orderDetailNum}">반품요청</button>`);
+        buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
+      }
+    } else if (item.detailState === 1 || item.detailState === 2) {
+      if (item.reviewWrite === 0) {
+        buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
+      }
+    }
+    buttons.push(`<button type="button" class="btn-ghost" onclick="location.href='${contextPath}/products/${item.productNum}'">재구매</button>`);
+    return buttons.join('');
+  };
+
   let html = `
     <div class="welcome-box">
-      <div class="welcome-left">
-        <img src="${contextPath}/dist/images/person.png" class="profile-avatar" alt="프로필 사진">
-        <div>
-          <strong>${data.list.memberId ?? "회원"}님 반갑습니다.</strong><br />
-          가입하신 회원은 <span style="color: red;">${data.grade ?? "WELCOME"}</span> 입니다.
         </div>
-      </div>
-      <div class="welcome-right">
-        <div>주문내역<br><strong>${data.list.length ?? 0}</strong></div>
-        <div style="margin-top: 10px;">구매후기<br><strong>${data.reviewCount ?? 0}</strong></div>
-      </div>
-    </div>
 
     <section class="order-section">
       <div class="orderList-title">
@@ -218,77 +231,90 @@ const renderMyPageMainHtml = function(data) {
       <div class="order-content" id="orderList">
   `;
 
-  	if (!data.list || data.list.length === 0) {
-	    html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
-	  	return html;
-	} 
-	
-	html += data.list.map(item => {
-	  const orderDate = item.orderDate.substring(0, 10);
+  if (!data.list || data.list.length === 0) {
+    html += `<p style="text-align:center; color:#aaa; margin-top: 20px;">주문 내역이 없습니다.</p>`;
+  } else {
+    const groupedOrders = data.list.reduce((acc, item) => {
+      if (!acc[item.orderNum]) {
+        acc[item.orderNum] = [];
+      }
+      acc[item.orderNum].push(item);
+      return acc;
+    }, {});
 
-	  return `
-	    <div class="order-day-header mt-3">
-	      <div>주문번호 : ${item.orderNum}</div>
-	      <a href="javascript:void(0)" class="text-decoration-none fw-semibold text-black-50">주문 상세</a>
-	    </div>
+    // --- 주문 목록 루프 시작 ---
+    html += Object.values(groupedOrders).map(orderGroup => {
+      const firstItem = orderGroup[0];
 
-	    <div class="order-card">
-	      <div class="order-topline">
-	        <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
-	        <div class="order-menu">
-	          <a href="javascript:void(0)" class="order-details"
-	             data-orderNum="${item.orderNum}" data-orderDetailNum="${item.orderDetailNum}">주문 상세</a>
-	          <a href="${contextPath}/products/${item.productNum}">상품 보기</a>
-	        </div>
-	      </div>
+      let orderHtml = `
+        <div class="order-day-header mt-3">
+          <div>주문번호 : ${firstItem.orderNum}</div>
+        </div>
+      `;
 
-	      <div class="d-flex gap-3">
-	        <img src="${contextPath}/uploads/product/${item.mainImageFilename}" alt="상품 이미지" class="order-img">
-	        <div class="flex-grow-1">
-	          <div class="order-meta">${orderDate} 구매</div>
-	          <div class="order-name">${item.productName}</div>
-	          <div class="order-meta">
-	            <span class="order-label">수량</span>
-	            ${item.qty}개
-	          </div>
-	          <div class="order-price">${Number(item.productMoney).toLocaleString()}원</div>
-	        </div>
-	      </div>
+      orderHtml += orderGroup.map(item => {
+        const orderDate = item.orderDate.substring(0, 10);
+        return `
+          <div class="order-card">
+            <div class="order-topline">
+              <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
+              <div class="order-menu">
+                <a href="javascript:void(0)" class="order-details"
+                   data-ordernum="${item.orderNum}" data-orderdetailnum="${item.orderDetailNum}">주문 상세</a>
+                <a href="${contextPath}/products/${item.productNum}">상품 보기</a>
+              </div>
+            </div>
 
-	      <div class="mt-3">
-	        <div class="order-actions">
-	          <button type="button" class="btn-ghost"
-	                  data-orderDetailNum="${item.orderDetailNum}">배송 조회</button>
-	          <button type="button" class="btn-ghost"
-	                  onclick="location.href='${contextPath}/products/${item.productNum}'">재구매</button>
-	        </div>
-	      </div>
-	    </div>
-		
-		<div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body order-detail-view"></div>
-				</div>
-			</div>
-		</div>
-	  `;
-	}).join('');
+            <div class="d-flex gap-3">
+              <img src="${contextPath}/uploads/product/${item.mainImageFilename}" alt="상품 이미지" class="order-img">
+              <div class="flex-grow-1">
+                <div class="order-meta">${orderDate} 구매</div>
+                <div class="order-name">${item.productName}</div>
+                <div class="order-meta">
+                  <span class="order-label">수량</span>
+                  ${item.qty}개
+                </div>
+                <div class="order-price">${Number(item.productMoney).toLocaleString()}원</div>
+              </div>
+            </div>
 
+            <div class="mt-3">
+              <div class="order-actions">
+                ${generateActionButtons(item)}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
 
+      return orderHtml;
+    }).join('');
+    // --- 주문 목록 루프 끝 ---
+  }
+
+  // 섹션과 컨텐츠 div를 닫아줍니다.
   html += `
       </div>
     </section>
   `;
+  
+  // [수정] 모달창은 모든 루프가 끝난 후, 여기에 한 번만 생성합니다.
+  html += `
+    <div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body order-detail-view"></div>
+            </div>
+        </div>
+    </div>
+  `;
 
   return html;
 };
-
-
 /**
  * 마이 페이지 - 주문 상세정보 HTML 문자열 생성
  * @param {object} data - 주문 상세정보 데이터
