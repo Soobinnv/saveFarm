@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 
 <c:if test="${list.size() > 0}">
 	<div class="accordion accordion-flush mt-1" id="accordionFlush"> 
@@ -31,7 +32,3 @@
 		</c:forEach>
 	</div>
 </c:if>
-
-<div class="btn page-navigation d-flex justify-content-center my-3">
-	${dataCount == 0 ? "등록된 게시글이 없습니다" : paging}
-</div>

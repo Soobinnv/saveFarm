@@ -25,7 +25,6 @@
 	WHERE varietyNum = #{varietyNum}
 </delete>
 
-
 <select id="findByVarietyNum" parameterType="Long" resultType="com.sp.app.farm.model.Variety">
     SELECT
       varietyNum, varietyName

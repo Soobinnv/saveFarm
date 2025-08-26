@@ -10,6 +10,36 @@
 <jsp:include page="/WEB-INF/views/farm/layout/farmHeaderResources.jsp"/>
 
 <style type="text/css">
+/* 모든 page 링크를 pill 형태로 보이게 */
+.my-pagination-plain a{
+  display: inline-block;
+  padding: 6px 12px;
+  margin: 0 3px;
+  border: 1px solid rgba(17,101,48,0.25);
+  border-radius: 7px;
+  text-decoration: none;
+  color: var(--bs-primary);
+  line-height: 1.2;
+}
+
+/* 현재 페이지 표시(헬퍼가 <b>1</b> 혹은 <span class="current">1</span> 등으로 주는 경우 대응) */
+.my-pagination-plain b,
+.my-pagination-plain .current,
+.my-pagination-plain a.active,
+.my-pagination-plain a[aria-current="page"]{
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  color: #fff !important;
+  border-radius: 7px;
+  padding: 6px 12px;
+}
+
+/* hover */
+.my-pagination-plain a:hover{
+  background-color: var(--bs-secondary);
+  border-color: var(--bs-primary);
+  color: var(--bs-primary);
+}
 
 </style>
 </head>
@@ -69,6 +99,10 @@
 						
 						<div class="tab-pane fade show active px-2 py-2" id="nav-content" role="tabpanel" aria-labelledby="nav-tab-content">
 							<jsp:include page="/WEB-INF/views/farm/faq/list.jsp"/>
+							
+							<div class="page-navigation d-flex justify-content-center my-4 my-pagination-plain">
+								${dataCount == 0 ? "등록된 게시글이 없습니다" : paging}
+							</div>
 						</div>
 	
 					</div>
