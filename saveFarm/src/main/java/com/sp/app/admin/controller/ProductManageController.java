@@ -217,6 +217,8 @@ public class ProductManageController {
 			int total_page = 0; 
 			int dataCount = 0;
 			
+			paramMap.put("state", state);
+			
 			dataCount = supplyService.listSupplyCount(paramMap);
 			total_page = paginateUtil.pageCount(dataCount, size);
 			current_page = Math.min(current_page, total_page);
@@ -227,8 +229,8 @@ public class ProductManageController {
 			paramMap.put("offset", offset);
 			paramMap.put("size", size);
 			
-			paramMap.put("kwd", kwd);
-			paramMap.put("state", state);
+//			paramMap.put("schType", schType);
+//			paramMap.put("kwd", kwd);
 			
 			List<Supply> list = supplyService.listManageSupply(paramMap); 
 			

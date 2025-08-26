@@ -18,6 +18,7 @@ public class Payment {
 	private int discountRate;
 	private int discountPrice;
 	private int delivery;
+	private int productClassification;
 
 	private String orderNum;
 	private String orderDate;

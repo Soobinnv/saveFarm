@@ -437,7 +437,7 @@ const renderProductEditHTML = function(data) {
 
 /**
  * 농가상품 신청 리스트 HTML 문자열 생성
- * @param {object} item - 농가상품 데이터 객체
+ * @param {object} item - 페이지 데이터 객체
  * @param {Array<object>} item.list - 농가상품 신청 리스트
  * @param {number} item.dataCount - 총 신청 수
  * @param {number} item.size - 페이지 당 항목 수
@@ -445,12 +445,14 @@ const renderProductEditHTML = function(data) {
  * @param {number} item.total_page - 총 페이지 수
  * @param {string} [item.schType="all"] - 검색 타입
  * @param {string} [item.kwd=""] - 검색 키워드
+ * @param {object} params - 탭 상태 구분을 위한 파라미터 객체
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderFarmProductListHTML = function(item, params) {
 	const schType = item.schType || "all";
 	const kwd = item.kwd || "";
 
+    // tbody에 들어갈 HTML 생성
     const tbodyHTML = renderFarmProductRows(item.list);
 
 	const html = `
@@ -480,7 +482,7 @@ const renderFarmProductListHTML = function(item, params) {
 				  			? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체상품</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
-				        <button class="nav-link ${params.state === 1 ? 'active' : ''}" id="tab-status-unapproved" type="button" role="tab">숭인대기</button>
+				        <button class="nav-link ${params.state === 1 ? 'active' : ''}" id="tab-status-unapproved" type="button" role="tab">승인대기</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
 				        <button class="nav-link ${params.state === 2 ? 'active' : ''}" id="tab-status-approved" type="button" role="tab">승인</button>
@@ -489,12 +491,12 @@ const renderFarmProductListHTML = function(item, params) {
 	              <table data-type="supply" class="table datatables" id="contentTable">
 	                <thead>
 	                  <tr>
-	                    <th>상품번호</th>
-	                    <th>상품명</th>
-						<th>가격</th>
-	                    <th>농가명</th>
-	                    <th>농가아이디</th>
-	                    <th>신청일</th>
+	                    <th>납품번호</th>
+	                    <th>품종명</th>
+						<th>제시가격</th>
+	                    <th>농가이름</th>
+	                    <th>수확일</th>
+	                    <th>상태</th>
 	                    <th>변경</th>
 	                  </tr>
 	                </thead>
@@ -528,21 +530,22 @@ const renderFarmProductRows = function(list) {
     }
 
     return list.map(item => {
+		
         return `
-          <tr data-product-num="${item.productNum}">
-            <td>${item.productNum}</td>
-            <td>${item.productName}</td>
+          <tr data-supply-num="${item.supplyNum}">
+            <td>${item.supplyNum}</td>
+            <td>${item.varietyName}</td>
             <td>${item.unitPrice}원</td>
             <td>${item.farmName}</td>
-            <td>${item.farmId}</td>
-            <td>${item.applyDate}</td>
+            <td>${item.harvestDate}</td>
+            <td>${item.state}</td>
             <td>
               <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="text-muted sr-only">Action</span>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
-                <a data-num="${item.productNum}" class="dropdown-item supply-update-state-return" href="javascript:void(0);">반려</a>
+                <a data-num="${item.supplyNum}" class="dropdown-item supply-update-state-approval" href="javascript:void(0);">승인</a>
+                <a data-num="${item.supplyNum}" class="dropdown-item supply-update-state-return" href="javascript:void(0);">기각</a>
               </div>
             </td>
           </tr>

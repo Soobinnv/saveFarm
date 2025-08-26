@@ -258,7 +258,7 @@ const renderMyPageMainHtml = function(data) {
               <div class="order-menu">
                 <a href="javascript:void(0)" class="order-details"
                    data-ordernum="${item.orderNum}" data-orderdetailnum="${item.orderDetailNum}">주문 상세</a>
-                <a href="${contextPath}/products/${item.productNum}">상품 보기</a>
+                <a href="${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}">상품 보기</a>
               </div>
             </div>
 
