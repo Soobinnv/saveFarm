@@ -143,15 +143,11 @@
 	</insert>
 	
 	
-	<!-- 패키지 구매내역 -->
-	<select id="mySubList" parameterType="Long" resultType="com.sp.app.model.PackageOrder">
-		SELECT
-			subNum,subMonth,payDate,payMethod,totalPay,memberId,isExtend,
-			homePackageNum,PackagePrice,saladPackageNum
-			itemPrice,count,productNum
-		FROM subStatus ss
-		
-		
+	<!-- 패키지리뷰 작성 여부 -->
+	<select id="findBysubReview" parameterType="String" resultType="Integer">
+		SELECT NVL(COUNT(*), 0) count
+		FROM subReview
+		WHERE subNum = #{subNum}
 	</select>
 
 </mapper>

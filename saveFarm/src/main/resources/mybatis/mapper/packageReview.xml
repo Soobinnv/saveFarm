@@ -33,7 +33,7 @@
 	</select>
 
 	
-	<select id="listsubImage" parameterType="long" resultType="com.sp.app.model.packageReview">
+	<select id="listsubImage" parameterType="Long" resultType="com.sp.app.model.packageReview">
 		SELECT imageNum, subNum, imageFilename
 		FROm subImage
 		WHERE subNum = #{subNum}

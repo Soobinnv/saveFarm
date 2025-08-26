@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
+import com.sp.app.mapper.PackageMapper;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.packageReview;
@@ -37,6 +38,7 @@ public class packageController {
 	private final StorageService storageService;
 	private final PackageReviewService packageReviewService;
 	private final PaginateUtil paginateUtil;
+	private final PackageMapper packageMapper;
 
 	private String uploadPath;
 
@@ -110,10 +112,17 @@ public class packageController {
 	}
 
 	@GetMapping("reviewWriteForm")
-	public String reviewWriteForm() throws Exception {
-
+	public String reviewWriteForm(Model model,@RequestParam("subNum") String subNum,@RequestParam("mode") String mode,@RequestParam("subMonth") int subMonth, HttpSession session) throws Exception {
+		
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		model.addAttribute("subNum",subNum);
+		model.addAttribute("subMonth",subMonth);
+		model.addAttribute("memberName", info.getName());
+		
 		return "package/reviewwrite";
 	}
+	
 
 	@PostMapping("reviewSubmit")
 	public String reviewSubmit(packageReview dto) throws Exception {
@@ -122,6 +131,35 @@ public class packageController {
 
 		return "redirect:/";
 	}
+	
+	@GetMapping("reviewUpdateForm")
+	public String reviewUPdateForm(Model model,@RequestParam("subNum") String subNum,@RequestParam("mode") String mode,@RequestParam("subMonth") int subMonth, HttpSession session) {
+		
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		model.addAttribute("subNum",subNum);
+		model.addAttribute("subMonth",subMonth);
+		model.addAttribute("memberName", info.getName());
+		
+		
+		return "package/reviewwrite";
+	}
+	
+	@PostMapping("quitSubscribe")
+	public String quitSubscribe(String subNum) {
+		
+		
+		try {
+			packageMapper.quitSubscribe(subNum);
+			packageMapper.deletesubDes(subNum);
+			
+		} catch (Exception e) {
+			log.info("quitSubscribe: ",e);
+		}
+		
+		return "redirect:/";
+	}
+	
 
 	@GetMapping("reviewList")
 	public String reviewList() throws Exception {

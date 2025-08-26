@@ -53,4 +53,6 @@ public class PackageOrder {
 	private String tel;
 	private String zip;
 	private String addr;
+	
+	private int reviewExists;
 }

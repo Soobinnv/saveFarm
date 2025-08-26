@@ -1082,7 +1082,7 @@ function renderMySubInfoHtml(data) {
   if (!packageLabelTop) packageLabelTop = '-';
 
   var packagePriceTop = fmt(dto.packagePrice);
-  var subMonthLabel   = dto.subMonth ? ('월 ' + dto.subMonth + '개월차') : '월 -개월차';
+  var subMonthLabel   = dto.subMonth ? ( dto.subMonth + '개월차') : '월 -개월차';
   var payMethod       = dto.payMethod || '-';
   var monthlyTotalTop = fmt(dto.totalPay);
 
@@ -1094,6 +1094,7 @@ function renderMySubInfoHtml(data) {
   for (var i2=0;i2<itemPrices_top.length;i2++) itemPrices_top[i2] = n(itemPrices_top[i2],0);
   var names_top       = toArray(dto.productNames);
   var imgs_top        = toArray(dto.mainImageFileNames);
+  var reviewExists	  = dto.reviewExists;
 
   var unit_top = [];
   for (var i3=0;i3<productNums_top.length;i3++) {
@@ -1196,6 +1197,27 @@ function renderMySubInfoHtml(data) {
           var qv   = cnts[m] || 1;
           var upv  = unit[m] || 0;
           var line = upv * qv;
+		  var btnText;
+		  var subNumHidden = '<input type="hidden" name="subNum" value="'+row.subNum+'">';
+		  var subMonthHidden = '<input type="hidden" name="subMonth" value="'+dto.subMonth+'">';
+		  
+		  if(reviewExists == 0){
+			btnText = '<form method="get" action="'+CP+'/package/reviewWriteForm">'
+					+ 	subNumHidden
+					+	subMonthHidden
+					+	'<input type="hidden" name="mode" value="write">'
+					+	'<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰작성하기</button>'
+					+'</form>'
+		  }else{
+			btnText = '<form method="get" action="'+CP+'/package/reviewUpdateForm">'
+					+	subMonthHidden
+					+	subNumHidden
+					+ 	'<input type="hidden" name="mode" value="update">'
+					+	'<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰수정하기</button>'
+					+'</form>'
+		  }
+		  
+		  
 
           out += ''
             + '<li class="mp-sub-addon">'
@@ -1224,7 +1246,7 @@ function renderMySubInfoHtml(data) {
         +   '<div class="mb-2"><strong>월 결제금액</strong> : ' + total + '원</div>'
         +   addons
         +   '<div class="d-flex justify-content-end mt-2">'
-        +     '<button type="button" class="mp-sub-btn mp-sub-btn--ghost">택배조회하기 / 배송 수정하기</button>'
+		+ 		btnText
         +   '</div>'
         + '</div>';
     }

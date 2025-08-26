@@ -222,7 +222,7 @@ public class MyPageServiceImpl implements MyPageService {
 			    }
 			    
 			    
-			    for (int j = 0; j < items.size(); j++) {   // i++ -> j++
+			    for (int j = 0; j < items.size(); j++) {   
 			        Product productInfo = productMapper.getProductInfo(items.get(j).getProductNum());
 
 			        if (productInfo != null) {
@@ -239,6 +239,8 @@ public class MyPageServiceImpl implements MyPageService {
 			        }
 			    }
 			    
+			    
+			    dto.setReviewExists(mapper.findBysubReview(dto.getSubNum()));
 			    
 			}
 			
