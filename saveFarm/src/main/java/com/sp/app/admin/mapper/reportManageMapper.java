@@ -5,7 +5,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface reportManagemapper {
+public interface reportManageMapper {
 	
 	public int dataCount(Map<String, Object> map);
 	public int dataGroupCount(Map<String, Object> map);

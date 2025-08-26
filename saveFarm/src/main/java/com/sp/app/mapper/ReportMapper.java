@@ -6,26 +6,26 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sp.app.model.Report;
+import com.sp.app.model.Reports;
 
 @Mapper
 public interface ReportMapper {
-	public void insertReports(Report dto) throws SQLException;
+	public void insertReports(Reports dto) throws SQLException;
 	
 	public int dataCount(Map<String, Object> map);
 	public int dataGroupCount(Map<String, Object> map);
 	
-	public List<Report> listReports(Map<String, Object> map);
-	public List<Report> listGroupReports(Map<String, Object> map);
+	public List<Reports> listReports(Map<String, Object> map);
+	public List<Reports> listGroupReports(Map<String, Object> map);
 	
-	public Report findById(Long num);
+	public Reports findById(Long num);
 	
 	public int dataRelatedCount(Map<String, Object> map);
-	public List<Report> listRelatedReports(Map<String, Object> map);
+	public List<Reports> listRelatedReports(Map<String, Object> map);
 
-	public void updateReports(Report dto) throws SQLException;
+	public void updateReports(Reports dto) throws SQLException;
 	public void updateBlockPosts(Map<String, Object> ma) throws SQLException;
 	public void deletePosts(Map<String, Object> map) throws SQLException;
 	
-	public Report findByPostsId(Map<String, Object> map);
+	public Reports findByPostsId(Map<String, Object> map);
 }

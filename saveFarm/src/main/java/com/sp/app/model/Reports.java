@@ -1,7 +1,5 @@
 package com.sp.app.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Report {
+public class Reports {
 	private long num;				// report 번호
 	private long reprotedBy;		// 신고자 번호
 	private long targetNum;			// 신고된 게시물 번호

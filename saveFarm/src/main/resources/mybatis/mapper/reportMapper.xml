@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.ReportsMapper">
+	<insert id="insertReports" parameterType="com.sp.app.model.Reports">
+		INSERT INTO reports(num, target, target_num, reporter_id, content_type, 
+			content_title, reason_code, reason_detail, report_date, report_ip, report_status)
+		VALUES (reports_seq.NEXTVAL, #{target}, #{target_num}, #{reporter_id}, #{content_type}, 
+			#{content_title}, #{reason_code},
+			#{reason_detail, jdbcType=VARCHAR},
+			SYSDATE, #{report_ip}, 1)
+	</insert>
+	
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'all' ">
+				(
+					INSTR(reason_code, #{kwd}) &gt; 0
+					OR INSTR(reason_detail, #{kwd}) &gt; 0
+				)
+			</when>
+			<when test="schType == 'report_date' ">
+				( INSTR(TO_CHAR(report_date, 'YYYYMMDD'), #{kwd}) &gt; 0
+					OR TO_CHAR(report_date, 'YYYY-MM-DD') = #{kwd} )
+			</when>			
+			<otherwise>
+			    INSTR(${schType}, #{kwd}) &gt; 0
+			</otherwise>
+		</choose>
+	</sql>
+
+	<!-- 전체 리스트 -->
+	<select id="dataCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
+		FROM reports r
+		JOIN member2 m ON r.reporter_id = m.member_id
+		<where>
+			<if test="status != null and status != 0">
+				report_status = #{status}
+			</if>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+		</where>   
+	</select>
+
+	<select id="listReports" parameterType="map" resultType="com.sp.app.model.Reports">
+		SELECT r.num, r.target, r.target_num, r.reporter_id, r.content_type, r.content_title, r.reason_code, 
+			   TO_CHAR(r.report_date, 'YYYY-MM-DD') report_date, report_status,
+			   m.name reporter_name, processor_id
+		FROM reports r
+		JOIN member2 m ON r.reporter_id = m.member_id
+		<where>
+			<if test="status != null and status != 0">
+				report_status = #{status}
+			</if>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+		</where>
+		ORDER BY num DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	<!-- 게시글별 신고 개수 -->
+	<select id="dataGroupCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
+		FROM (
+			SELECT target, target_num, content_type, content_title
+			FROM reports
+			<where>
+				<if test="status != null and status != 0">
+					report_status = #{status}
+				</if>
+			</where>   
+			GROUP BY target, target_num, content_type, content_title
+		)
+	</select>
+	
+	<select id="listGroupReports" parameterType="map" resultType="com.sp.app.model.Reports">
+		SELECT target, target_num, content_type, content_title, NVL(COUNT(*), 0) reportsCount
+		FROM reports
+		<where>
+			<if test="status != null and status != 0">
+				report_status = #{status}
+			</if>
+		</where>   
+		GROUP BY target, target_num, content_type, content_title
+		ORDER BY reportsCount DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	<!-- 신고 상세보기 -->
+	<select id="findById" parameterType="Long" resultType="com.sp.app.model.Reports">
+		SELECT r.num, r.target, r.target_num, r.reporter_id, content_type, content_title,
+			   reason_code, reason_detail, report_date, report_ip, report_status,
+			   action_taken, processor_id, processed_date,
+			   m.name reporter_name, m2.name processor_name
+		FROM reports r
+		JOIN member2 m ON r.reporter_id = m.member_id
+		LEFT JOIN member2 m2 ON r.processor_id = m2.member_id
+		WHERE r.num = #{num}
+	</select>
+	
+	<!-- 해당 게시글 신고 리스트 -->
+	<select id="dataRelatedCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
+		FROM reports r
+		<where>
+			<if test="num != null">
+				num != #{num} AND
+			</if>
+			target = #{target} AND target_num = #{target_num}
+		</where>
+	</select>
+	
+	<select id="listRelatedReports" resultType="com.sp.app.model.Reports">
+		SELECT r.num, r.target, r.target_num, r.reporter_id, r.content_type, r.content_title, r.reason_code, 
+			   TO_CHAR(r.report_date, 'YYYY-MM-DD') report_date, report_status,
+			   m.name reporter_name, processor_id
+		FROM reports r
+		JOIN member2 m ON r.reporter_id = m.member_id
+		<where>
+			<if test="num != null">
+				num != #{num} AND
+			</if>
+			target = #{target} AND target_num = #{target_num}
+		</where>
+		ORDER BY num DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+
+	<!-- 신고사항 조치 -->
+	<update id="updateReports" parameterType="com.sp.app.model.Reports">
+		UPDATE reports SET report_status = #{report_status}, action_taken = #{action_taken},
+			processor_id = #{processor_id}, processed_date = SYSDATE
+		<where>
+			<choose>
+				<when test="mode == 'all'">
+					target = #{target} AND target_num = #{target_num}
+				</when>
+				<otherwise>
+					num = #{num}
+				</otherwise>
+			</choose>
+		</where>
+	</update>
+	
+	<!-- 게시글 block 처리 -->
+	<select id="updateBlockPosts" parameterType="map">
+		UPDATE ${target} SET block = #{block}
+		WHERE ${field_name} = #{num}
+	</select>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="deletePosts" parameterType="map">
+		DELETE FROM ${target}
+		WHERE ${field_name} = #{num}
+		<if test="content_type != null and content_type == 'reply'">
+			OR parentNum = #{num}
+		</if>
+	</delete>
+	
+	<sql id="field-list">
+		<choose>
+			<when test="content_type == 'reply' or  content_type == 'replyAnswer' ">
+				'${target}' target, p.replyNum target_num, p.content, p.member_id writer_id, 
+				m.name writer, block
+			</when>
+			<when test="content_type == 'photo' ">
+				'${target}' target, p.num target_num, p.subject, p.content, p.imageFilename, 
+				p.member_id writer_id, m.name writer, block
+			</when>
+			<otherwise>
+				'${target}' target, p.num target_num, p.subject, p.content, p.member_id writer_id, 
+				m.name writer, block
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="findByPostsId" parameterType="map" resultType="com.sp.app.model.Reports">
+		SELECT <include refid="field-list"/>
+		FROM ${target} p
+		JOIN member2 m ON p.member_id = m.member_id
+		WHERE ${field_name} = #{num}
+	</select>
+	
+</mapper>

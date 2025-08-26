@@ -169,25 +169,25 @@
 		</ul>
 		<ul class="navbar-nav flex-fill w-100 mb-2">
 			<li class="nav-item dropdown">
-				<a href="#ui-elements-sub"
+				<a href="#ui-elements-package"
 					data-toggle="collapse" aria-expanded="false"
 					class="dropdown-toggle nav-link">
 					<i class="fe fe-shopping-cart fe-16"></i>
 					<span class="ml-3 item-text">구독패키지</span>
 				</a>
-				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-sub">
+				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-package">
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/package">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/package/list">
 							<span class="ml-1 item-text">구독패키지목록</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/memberList">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/package/memberList">
 							<span class="ml-1 item-text">회원 구독리스트</span>
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/Subscription/review">
+						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/package/review">
 							<span class="ml-1 item-text">구독상품 리뷰</span>
 						</a>
 					</li>

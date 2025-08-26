@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.PackageManageMapper">
+	
+<sql id="where-list">
+		<choose>
+			<when test="schType == 'packageName'">
+				INSTR(packageName, #{kwd}) > 0
+			</when>
+			<when test="schType == 'content'">
+				INSTR(content, #{kwd}) > 0
+			</when>
+		</choose>
+	</sql>
+	
+	<select id="dataCount" parameterType="map" resultType="Integer">
+		SELECT NVL(count(*),0)
+		FROM package
+		<where>
+			<if test="schType != null and schType != ''">
+				<include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	
+	
+	
+	<select id="packageList" parameterType="map" resultType="com.sp.app.admin.model.PackageManage">
+		SELECT p.packageNum, p.packageName, p.price, p.content
+		FROM package p
+		LEFT OUTER JOIN packageItem pi ON p.packageNum = pi.packageNum
+
+		<where>
+			<if test="schType != null and schType != ''">
+				<include refid="where-list"/>
+			</if>
+		</where>
+		GROUP BY p.packageNum, p.packageName, p.price, p.content
+	</select>
+	
+	<select id="productList" parameterType="long" resultType="com.sp.app.admin.model.PackageManage">
+	    SELECT pi.productNum, pd.productName
+	    FROM packageItem pi
+		LEFT OUTER JOIN ProductDetail pdt ON pi.productNum = pdt.productNum
+		LEFT OUTER JOIN Product pd ON pdt.productNum = pd.productNum
+		where pi.packageNum = #{packageNum}
+	</select>
+</mapper>
