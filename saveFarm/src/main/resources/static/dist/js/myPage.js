@@ -1074,7 +1074,6 @@ const renderFaqListHtml = function(data) {
  */
 
 
- 
 function renderMySubInfoHtml(data) {
   function toArray(v) {
     if (Object.prototype.toString.call(v) === '[object Array]') return v;
@@ -1163,6 +1162,18 @@ function renderMySubInfoHtml(data) {
         + '</li>';
     }
   }
+  
+  
+  function updatesubInfo(subNum){
+	location.href = contextPath+'/package/updateSubItem?subNum='+subNum;
+  };
+  
+  function quitInfo(){
+  		const f	= document.changesubInfo;
+		f.action = contextPath+'/package/quitSubscribe';
+		f.method = 'post';
+		f.submit();
+   };
 
   var infoHtml = ''
     + '<section class="mp-sub-wrap" data-state="active">'
@@ -1185,9 +1196,14 @@ function renderMySubInfoHtml(data) {
     + '    <div class="mp-sub-bottom">'
     + '      <div class="mp-sub-total">월 결제 : <strong>' + monthlyTotalTop + '</strong>원</div>'
     + '      <div class="mp-sub-actions">'
-    + '        <button type="button" class="mp-sub-btn mp-sub-btn--primary" id="btnChange">정기구독 품목변경</button>'
-    + '        <button type="button" class="mp-sub-btn mp-sub-btn--danger" id="btnStop">정기구독 그만두기</button>'
-    + '      </div>'
+	+ '  <a class="mp-sub-btn mp-sub-btn--primary" '
+	+ '     href="' + contextPath + '/package/updateSubItem?subNum=' + dto.subNum + '">'
+	+ '     정기구독 품목변경</a>'
+	+ '  <form method="post" action="' + contextPath + '/package/quitSubscribe" name="changesubInfo">'
+	+ '    <input type="hidden" name="subNum" value="' + dto.subNum + '">'
+	+ '    <button type="submit" class="mp-sub-btn mp-sub-btn--danger">정기구독 그만두기</button>'
+	+ '  </form>'
+	+ '      </div>'
     + '    </div>'
     + '  </div>'
     + '</section>';
@@ -1246,7 +1262,7 @@ function renderMySubInfoHtml(data) {
 					+	'<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰작성하기</button>'
 					+'</form>'
 		  }else{
-			btnText = '<form method="get" action="'+CP+'/package/reviewUpdateForm">'
+			btnText = '<form method="Post" action="'+CP+'/package/reviewUpdateForm">'
 					+	subMonthHidden
 					+	subNumHidden
 					+ 	'<input type="hidden" name="mode" value="update">'

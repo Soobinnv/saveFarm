@@ -103,5 +103,12 @@
 	<delete id="deletesubDes" parameterType="String">
 		DELETE FROM subDes WHERE subNum=#{subNum}
 	</delete>
+	
+	<select id="findBySubnum" parameterType = "String" resultType = "com.sp.app.model.PackageOrder">
+		SELECT
+			subNum,subMonth,totalPay,payMethod,isExtend,TO_CHAR(payDate, 'YYYY-MM-DD') AS payDate
+		FROM subStatus
+		WHERE subNum = #{subNum}
+	</select>
 
 </mapper>

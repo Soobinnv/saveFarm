@@ -68,6 +68,29 @@ public class packageController {
 		model.addAttribute("price", 20000);
 		return "package/packageCart";
 	}
+	
+	@GetMapping("updateSubItem")
+	public String updateForm(Model model,@RequestParam("subNum") String subNum) throws Exception{
+		PackageOrder dto = packageService.setMysubInfo(subNum);
+		
+		String mode =""; 
+		if(dto.getHomePackageNum() != null && dto.getSaladPackageNum() != null) {
+			mode = "homePackage";
+		}else if(dto.getHomePackageNum() == null) {
+			mode="saladPackage";
+		}else{
+			mode = "homePackage";
+		}
+		
+		System.out.println("Names :"+dto.getProductNames());
+		System.out.println("Names :"+dto.getMAINIMAGEFILENAME());
+		
+		model.addAttribute("price",dto.getPackagePrice());
+		model.addAttribute("mode",mode);
+		model.addAttribute("dto",dto);
+		
+		return "package/packageCart";
+	}
 
 	@PostMapping("payForm")
 	public String packageSubmit(PackageOrder dto, HttpSession session, final RedirectAttributes reAttr)

@@ -311,6 +311,25 @@ body{
     var cp = '<c:url value="/"/>';        
     cp = cp.replace(/\/$/, '');           
     window.contextPath = cp;
+	
+    const hasDto = '${not empty dto}' === 'true';
+    if (hasDto) {
+      hydrateExtrasFromDTO({
+        packagePrice: ${dto.packagePrice != null ? dto.packagePrice : 0},
+        productNums: '${dto.productNums}',
+        itemPrices: '${dto.itemPrices}',
+        counts: '${dto.counts}',
+        productNames: '${dto.productNames}',
+        mainImageFileNames: '${dto.mainImageFileNames}'
+      });
+    }
+    
+    let packagePrice = Number('${dto.packagePrice}') || 0 ;
+	
+    if(packagePrice == 38000){
+      addPackage('saladPackage');
+    }
+    
   })();
 
     // 가격 숫자만 분리 
@@ -571,6 +590,90 @@ function sendOk(){
   f.method = 'post';
   f.submit();
 }
+
+function toNumArr(s, def = 0) {
+  if (!s) return [];
+  return String(s)
+    .replace(/[\[\]\s'"]/g, '')          
+    .split(',')
+    .filter(Boolean)
+    .map(v => parseInt(v.replace(/[^\d-]/g, ''), 10) || def);
+}
+
+// 문자열 배열 파싱: [ "이름1", "이름2" ] / "이름1,이름2"
+function toStrArr(s) {
+  if (!s) return [];
+  return String(s)
+    .replace(/^\s*\[|\]\s*$/g, '')        // 양끝 대괄호 제거
+    .split(',')
+    .map(v => v.replace(/^['"]|['"]$/g, '').trim())
+    .filter(Boolean);
+}
+
+
+
+
+function hydrateExtrasFromDTO(dto) {
+  const wrap = document.getElementById('extraItems');
+  const tpl  = document.getElementById('tplExtraItem');
+  if (!wrap || !tpl || !dto) return;
+
+  const pns   = toNumArr(dto.productNums).map(String);        // 상품번호
+  const ips   = toNumArr(dto.itemPrices, 0);                  // 각 품목 총액
+  const cts   = toNumArr(dto.counts, 1);                      // 수량
+  const names = toStrArr(dto.productNames);
+  const imgs  = toStrArr(dto.mainImageFileNames);
+
+
+  let extrasSum = 0;
+
+  for (let i = 0; i < pns.length; i++) {
+    const id   = pns[i];
+    const qty  = cts[i]  ?? 1;
+    const line = ips[i]  ?? 0;                   // 라인 총액
+    const unit = qty > 0 ? Math.floor(line/qty) : line; // 단가 추출
+    const nm   = names[i] || ('상품번호 ' + id);
+    const img  = imgs[i] 
+      ? ( (window.contextPath || '') + '/uploads/product/' + imgs[i] )
+      : ( (window.contextPath || '') + '/dist/images/noimage.png' );
+
+    // 이미 렌더된 동일 상품 있으면 스킵(중복 방지)
+    if (wrap.querySelector('.subcart-item[data-id="' + id + '"]')) continue;
+
+    const node = tpl.content.firstElementChild.cloneNode(true);
+    node.classList.add('extra-item');
+    node.setAttribute('data-id', id);
+    node.setAttribute('data-price', unit); // 단가: plus/minus 로직과 호환
+
+    // 템플릿 채우기
+    const imgEl  = node.querySelector('.thumb');
+    const nameEl = node.querySelector('.name');
+    const priceEl= node.querySelector('.price');
+    const qtyEl  = node.querySelector('.quantity');
+
+    if (imgEl)  { imgEl.src = img; imgEl.alt = nm; }
+    if (nameEl) nameEl.textContent = nm;
+    if (priceEl) priceEl.textContent = unit.toLocaleString('ko-KR') + ' 원';
+    if (qtyEl) {
+      qtyEl.textContent = String(qty);
+      qtyEl.setAttribute('data-quantity', qty);
+      // 재고는 DTO에 없으면 기본 10 정도로. 필요하면 서버에서 같이 내려줘.
+      if (!qtyEl.hasAttribute('data-stock')) qtyEl.setAttribute('data-stock', '10');
+    }
+
+    wrap.appendChild(node);
+    extrasSum += unit * qty;
+  }
+
+  // 총액 = 패키지 금액 + 추가상품 합
+  const base = parseInt(dto.packagePrice, 10) || 0;
+  priceUpdate(base + extrasSum);
+
+  // 히든 값 정리(필요 시)
+  $('#packagePrice').val(base);
+  $('#totalPay').val(base + extrasSum);
+}
+
 
 </script>
 

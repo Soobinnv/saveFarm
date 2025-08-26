@@ -21,7 +21,9 @@ public interface PackageMapper {
 	public void deletesubDes(String subNum) throws SQLException;
 	
 	public PackageOrder subPackageinfo(String subNum) throws SQLException;
+	public PackageOrder findBySubnum(String subNum) throws SQLException;
 	public List<PackageOrder> subItemList(String subNum) throws SQLException;
+	
 	
 	public List<PackageOrder> findBysubData(long memberId) throws SQLException;
 	public List<PackageOrder> mysubinfo(long memberId) throws SQLException;

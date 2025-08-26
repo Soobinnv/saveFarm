@@ -246,7 +246,7 @@ public class MyPageServiceImpl implements MyPageService {
 			
 			
 		} catch (Exception e) {
-			log.info("PackageOrder: ",e);
+			log.info("findMySubinfo: ",e);
 			
 			throw e;
 		}

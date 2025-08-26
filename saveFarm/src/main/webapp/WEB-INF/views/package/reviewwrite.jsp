@@ -145,7 +145,7 @@
           </div>
         </div>
       </div>
-
+		
       <!-- 제목 -->
       <div class="field">
         <label class="label" for="title">제목</label>
@@ -174,7 +174,7 @@
       </div>
 
       <!-- 숨김값 (필요 시) -->
-      <input type="hidden" name="subNum" value="202508147000000007">
+      <input type="hidden" name="subNum" value="${subNum}">
       
      
 
