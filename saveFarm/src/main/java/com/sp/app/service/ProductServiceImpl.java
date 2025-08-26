@@ -39,6 +39,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			Map<String, Object> paramMap = new HashMap<>();
 			paramMap.put("productNum", productInfo.getProductNum());
+			paramMap.put("reviewBlock", 0);
 			
 			int reviewCount = reviewService.getDataCount(paramMap);
 			

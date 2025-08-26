@@ -7,7 +7,7 @@ const mainTabConfig = {
     'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage'},
     'supplyManagement': { url: '/api/admin/supplies', render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
     'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, pagingMethodName: 'inquiryListPage' },
-    'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'qnaListPage' }
+    'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'reviewListPage' }
 };
 
 // - 상품 리스트 하위 탭(전체, 일반, 구출)
@@ -33,9 +33,9 @@ const qnaTabConfig = {
 
 // - 상품 리뷰 하위 탭(전체, 보임, 숨김)
 const reviewTabConfig = {
-    'tab-status-all': { url: '/api/admin/reviews', params: '', pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML },
-    'tab-status-visible': { url: '/api/admin/reviews', params: { reviewBlock: 0 }, pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML },
-    'tab-status-hidden': { url: '/api/admin/reviews', params: { reviewBlock: 1 }, pagingMethodName: 'qnaListPage', render: renderProductReviewListHTML }
+    'tab-status-all': { url: '/api/admin/reviews', params: '', pagingMethodName: 'reviewListPage', render: renderProductReviewListHTML },
+    'tab-status-visible': { url: '/api/admin/reviews', params: { reviewBlock: 0 }, pagingMethodName: 'reviewListPage', render: renderProductReviewListHTML },
+    'tab-status-hidden': { url: '/api/admin/reviews', params: { reviewBlock: 1 }, pagingMethodName: 'reviewListPage', render: renderProductReviewListHTML }
 };
 
 
@@ -156,7 +156,7 @@ $(function() {
 			return false;
 		}
 		
-		loadContent(`/api/admin/reviews/${num}`, renderProductReviewListHTML, '', 'qnaListPage', 'delete');	
+		loadContent(`/api/admin/reviews/${num}`, renderProductReviewListHTML, '', 'reviewListPage', 'delete');	
 	});
 	
 	// 재고 조정 수량 입력
@@ -229,35 +229,61 @@ $(function() {
 		
 	});
 	
-	// 문의 답변 수정 폼 버튼
+	// 문의 답변 수정 버튼 - UI 변경
 	$('main').on('click', '.btn-edit-answer', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const answer = $('#answerBlock').text() || '';
 		
+		const answerButtonHTML =
+		`
+		<div class="d-flex mt-3">
+			<button style="margin-right: 7px;" type="button" class="btn btn-primary btn-sm btn-submit-answer" data-num="${num}">답변 수정</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-delete-answer" data-num="${num}">답변 삭제</button>
+		</div>
+		`;
 		
+		const answerSectionHTML =
+		`
+		<h6 class="mt-3">답변 등록</h6>
+		<textarea id="answer-content" class="form-control" rows="5" placeholder="답변을 입력하세요..." style="resize:none;">${answer}
+		</textarea>
+		`;		 
+		
+		$('#answerLayout').html(answerSectionHTML + answerButtonHTML);
 	});
 	
 	// 문의 답변 등록/변경 저장 버튼
 	$('main').on('click', '.btn-submit-answer', function(e) {
 		const num = $(e.target).attr('data-num') || 0;
-		const currentRow = $(e.target).closest('.qna-detail-row');
-		
-		const method = $(e.target).attr('data-method');
 		
 		let params = null;
 		
 		const fn = function(data) {
-			loadContent('/api/admin/inquiries', renderProductQnaListHTML, '', 'qnaListPage');
+			loadContent('/api/admin/inquiries', renderProductQnaListHTML, '', 'inquiryListPage');
 		}
-		
-		if(method === 'post') {
-			params = getQnaData(currentRow);		
 
-			ajaxRequest(`/api/admin/inquiries`, method, params, 'json', fn);	
-		} else if(method === 'put') {
-			params = getQnaData(currentRow);		
+		// 문의 답변
+		const answer = $('#answer-content').val();
+		params = {answer:answer};		
 			
-			ajaxRequest(`/api/admin/inquiries/${num}`, method, params, 'json', fn);	
+		ajaxRequest(`/api/admin/inquiries/${num}`, 'put', params, 'json', fn);	
+	});
+	
+	// 문의 삭제 버튼
+	$('main').on('click', '.btn-delete-answer', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		
+		if(! confirm('문의를 삭제하시겠습니까?')) {
+			return false;
 		}
 		
+		const fn = function(data) {
+			loadContent('/api/admin/inquiries', renderProductQnaListHTML, '', 'inquiryListPage');
+			
+			alert('문의를 삭제하였습니다.');
+		}
+		
+		ajaxRequest(`/api/admin/inquiries/${num}`, 'delete', '', 'json', fn);	
 	});
 	
 	// 상품 삭제 버튼
@@ -294,10 +320,69 @@ $(function() {
         }
 		
 	});
-
+	
+	// 리뷰 목록 - 리뷰 상태 변경 버튼
+	$('main').on('click', '.review-update-block', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const status = $(e.target).attr('data-status') || '';
+		let afterBlock = '-1';
+		let afterStatus = '보임';
+		
+		if(status === '보임') {
+			afterBlock = '1';
+			confirmMsg = '리뷰를 숨김 처리하시겠습니까?';
+			afterStatus = '숨김';
+		} else if(status === '숨김') {
+			afterBlock = '0'
+			confirmMsg = '숨긴 리뷰를 게시하시겠습니까?';			
+			afterStatus = '보임';
+		} else {
+			return false;
+		}
+		
+		if(! confirm(confirmMsg)) {
+			return false;
+		}
+		
+		const fn = function(data) {
+			const $statusDivEL = $(e.target).closest('tr').find('.status-block');
+			
+			// UI - 상태 변경
+			$statusDivEL.html(afterStatus);
+		}
+		
+		ajaxRequest(`/api/admin/reviews/${num}`, 'put', {orderDetailNum:num, reviewBlock:afterBlock}, 'json', fn);		
+	});
+	
+	// 리뷰 상세 - 리뷰 상태 변경 버튼
+	$('main').on('click', '.btn-review-block-update', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const block = $(e.target).attr('data-block') || 0;
+		let afterBlock = '-1';
+		
+		if(block === '0') {
+			afterBlock = '1';
+			confirmMsg = '리뷰를 숨김 처리하시겠습니까?';
+		} else if(block === '1') {
+			afterBlock = '0'
+			confirmMsg = '숨긴 리뷰를 게시하시겠습니까?';			
+		} else {
+			return false;
+		}
+		
+		if(! confirm(confirmMsg)) {
+			return false;
+		}
+		
+		const fn = function(data) {
+			loadContent('/api/admin/reviews', renderProductReviewListHTML, '', 'reviewListPage');
+		}
+		
+		ajaxRequest(`/api/admin/reviews/${num}`, 'put', {orderDetailNum:num, reviewBlock:afterBlock}, 'json', fn);		
+	});
 });
 
-// 상품 수정 데이터 가져오기
+// 상품 수정 데이터 반환
 function getProductData(editRow) {
   const productNum = editRow.data('product-num');
 
@@ -324,9 +409,3 @@ function getProductData(editRow) {
   };
 }
 
-// 문의 답변 데이터 가져오기
-function getQnaData(editRow) {
-	const answer = editRow.find('#answer-content').text();
-	
-	return {answer:answer}
-}

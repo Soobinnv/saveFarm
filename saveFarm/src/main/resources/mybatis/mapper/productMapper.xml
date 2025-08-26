@@ -161,7 +161,7 @@
 		SELECT COUNT(*)
 		FROM product
 		<where>
-			<if test="productClassification != null and productClassification != ''">
+			<if test="productClassification != null">
 				productClassification = #{productClassification}
 			</if>
 		</where>

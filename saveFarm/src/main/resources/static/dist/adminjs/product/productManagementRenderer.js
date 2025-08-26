@@ -137,7 +137,7 @@ const renderProductRows = function(list) {
 					href="javascript:void(0);"
 					>재고</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품삭제</a>
+                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
               </div>
             </td>
           </tr>
@@ -748,29 +748,29 @@ const renderProductQnaDetailHTML = function(data) {
 		
 	const answerButtonHTML = isAnswered
 		? `
-		<div class="text-end mt-3">
-			<button type="button" class="btn btn-outline-primary btn-sm btn-edit-answer" data-num="${item.qnaNum}">답변 수정</button>
+		<div class="d-flex mt-3">
+			<button type="button" style="margin-right: 7px;" class="btn btn-outline-primary btn-sm btn-edit-answer" data-num="${item.qnaNum}">답변 수정</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-delete-answer" data-num="${item.qnaNum}">답변 삭제</button>
 		</div>
 		`
 		: `
-		<div class="text-end mt-3">
-			<button type="button" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
+		<div class="d-flex mt-3">
+			<button type="button" style="margin-right: 7px;" class="btn btn-primary btn-sm btn-submit-answer" data-num="${item.qnaNum}">답변 등록</button>
+			<button type="button" class="btn btn-outline-primary btn-sm btn-delete-answer" data-num="${item.qnaNum}">답변 삭제</button>
 		</div>
 		`;
 
 	const answerSectionHTML = isAnswered
 		? `
 		<h6 class="mt-3">답변</h6>
-		<div class="p-3 border bg-white rounded" style="white-space: pre-wrap;">${item.answer || ''}</div>
+		<div id="answerBlock" class="p-3 border bg-white rounded" style="white-space: pre-wrap;">${item.answer || ''}</div>
 		<div class="text-end mt-2">
 			<small class="text-muted">답변자: ${item.answerName || ''} | ${item.answerDate || ''}</small>
 		</div>
-		
 		`
 		: `
 		<h6 class="mt-3">답변 등록</h6>
 		<textarea id="answer-content" class="form-control" rows="5" placeholder="답변을 입력하세요..." style="resize:none;"></textarea>
-
 		`;
 
 	const html = `
@@ -798,7 +798,7 @@ const renderProductQnaDetailHTML = function(data) {
 											<small class="text-muted">작성자: ${item.name} | ${item.qnaDate}</small>
 										</div>
 									</div>
-									<div class="col-md-6">
+									<div id="answerLayout" class="col-md-6">
 										${answerSectionHTML}
 										${answerButtonHTML}
 									</div>
@@ -961,10 +961,13 @@ const renderProductReviewDetailHTML = function(data) {
 	
 	
 	const adminButtonsHTML = `
-		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${item.isBest ? 'btn-secondary' : 'btn-outline-primary'} mr-1 btn-toggle-best" 
+			data-num="${item.orderDetailNum}">
 			${item.isBest ? '베스트 리뷰 해제' : '베스트 리뷰 등록'}
 		</button>
-		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide" data-no="${item.orderDetailNum}">
+		<button data-num="${item.orderDetailNum}" type="button" class="btn btn-sm ${status === '숨김' ? 'btn-outline-info' : 'btn-outline-secondary'} btn-toggle-hide btn-review-block-update" 
+			data-block="${item.reviewBlock}"
+			data-num="${item.orderDetailNum}">
 			${status === '숨김' ? '리뷰 게시' : '리뷰 숨기기'}
 		</button>
 	`;
@@ -987,8 +990,7 @@ const renderProductReviewDetailHTML = function(data) {
 						<div class="mb-3">
 							${starRatingHTML}
 						</div>
-						<div class="p-3 border bg-light rounded mb-3" style="min-height: 100px; white-space: pre-wrap;">
-							${item.review}
+						<div class="p-3 border bg-light rounded mb-3" style="min-height: 100px; white-space: pre-wrap;">${item.review}
 						</div>
 						<div class="d-flex justify-content-between align-items-center">
 							<small class="text-muted">작성자: ${item.reviewerName} | 작성일: ${item.reviewDate}</small>
