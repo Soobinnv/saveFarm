@@ -99,7 +99,7 @@
 	    	<c:otherwise>
 	    		<div class="summary">
 	    			<input type="hidden" name="mode" value="cart">
-	        		<div><p class="total-money" name="totalMoney">총합계: ${dto.totalMoney}</p></div>
+	        		<div><p class="total-money" name="total-money"></p></div>
 	        		<button type="button" class="checkout-btn" style="width: 200px;" onclick="sendOk();">선택상품 결제하기</button>
 	    		</div>
 	    	</c:otherwise>
@@ -128,19 +128,38 @@ document.querySelectorAll(".itemCheckbox").forEach(cb => {
 });	
 
 
+// 총 합계를 계산하는 함수
+function updateTotal() {
+    let totalMoney = 0;
+    
+    $('form input[name=nums]').each(function() {
+        if ($(this).is(':checked')) {
+            const $tr = $(this).closest('tr');
+            let productMoney = Number($tr.find('input[name=productMoneys]').val()) || 0;
+            totalMoney += productMoney;
+        }
+    });
+
+    // 계산된 총합계를 화면에 표시합니다.
+    $('.total-money').text('총합계: ' + totalMoney.toLocaleString() + '원');
+}
+
 $(function(){
 	let cartSize = Number('${list.size()}') || 0;
 	if(cartSize !== 0) {
 		$('.cart-selectAll').prop('checked', true);
 		$('form input[name=nums]').prop('checked', true);
 	}
+	updateTotal(); 
 	
     $('.cart-selectAll').click(function() {
     	$('form input[name=nums]').prop('checked', $(this).is(':checked'));
+    	updateTotal(); 
     });
     
     $('form input[name=nums]').click(function() {
 		$(".cart-selectAll").prop("checked", $("form input[name=nums]").length === $("form input[name=nums]:checked").length);
+		updateTotal(); 
    });
 });
 
@@ -234,6 +253,8 @@ $(function(){
 		
 		$tr.find('.productMoneys').text(total.toLocaleString());
 		$tr.find('input[name=productMoneys]').val(total);
+		
+		updateTotal(); 
 	});
 
 	$('.btn-plus').click(function(){
@@ -259,21 +280,9 @@ $(function(){
 		
 		$tr.find('.productMoneys').text(total.toLocaleString());
 		$tr.find('input[name=productMoneys]').val(total);
+		
+		updateTotal(); 
 	});
-});
-
-$(function(){
-	
-	let totalMoney = 0;
-	const $div = $('.summary');
-    $('form input[name=nums]').each(function(index, item) {
-		if($(this).is(':checked')) {
-			totalMoney += Number($(this).attr('data-productMoney'));
-		}
-	});
-    
-    $div.find('.total-money').text(totalMoney.toLocaleString());
-    
 });
 </script>
 
