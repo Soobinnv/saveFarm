@@ -195,7 +195,7 @@ $(document).on('click', '.order-details', function() {
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderMyPageMainHtml = function(data) {
-  // 버튼 생성 헬퍼 함수 (이전과 동일)
+  // 버튼 생성 헬퍼 함수
   const generateActionButtons = (item) => {
     let buttons = [];
     if (item.orderState === 1) {
@@ -221,9 +221,6 @@ const renderMyPageMainHtml = function(data) {
   };
 
   let html = `
-    <div class="welcome-box">
-        </div>
-
     <section class="order-section">
       <div class="orderList-title">
         <div><i class="fas fa-clipboard-list"></i>주문내역</div>
@@ -289,16 +286,21 @@ const renderMyPageMainHtml = function(data) {
 
       return orderHtml;
     }).join('');
-    // --- 주문 목록 루프 끝 ---
   }
 
-  // 섹션과 컨텐츠 div를 닫아줍니다.
   html += `
       </div>
     </section>
   `;
   
-  // [수정] 모달창은 모든 루프가 끝난 후, 여기에 한 번만 생성합니다.
+  if (data.paging) {
+      html += `
+        <div class="myPagePaginate">
+            ${data.paging}
+        </div>
+      `;
+    }
+  
   html += `
     <div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -1003,6 +1005,15 @@ const renderMyQnaListHtml = function(data) {
 	`;
 	
 	return html;
+}
+
+/**
+ * 마이 페이지 - 주문 내역 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function paymentListPage(page) {
+    let parameter = { pageNo: page };
+    loadContent('/api/myPage/paymentList', renderMyPageMainHtml, parameter);
 }
 
 /**
