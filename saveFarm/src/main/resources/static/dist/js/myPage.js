@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// 주문 상세 정보
+// 주문 상세 정보(클릭 시)
 $(document).on('click', '.order-details', function() {
     let orderNum = $(this).attr('data-orderNum');
     let orderDetailNum = $(this).attr('data-orderDetailNum');
@@ -174,19 +174,20 @@ $(document).on('click', '.order-details', function() {
 	
     // 성공 콜백 함수
     const fn = function(data) {
-       // 1. 위에서 만든 render 함수로 예쁜 HTML을 생성합니다.
        const detailHtml = renderOrderDetailHtml(data);
        
-       // 2. 생성된 HTML을 모달의 내용 부분에 삽입합니다.
        $('.order-detail-view').html(detailHtml);
        
-       // 3. 내용이 준비된 후, 모달 창을 띄웁니다.
 	   $('#orderDetailViewDialogModal').modal('show');
     };
 	
-	// dataType을 'json'으로 변경하여 서버로부터 받은 데이터를 JS 객체로 자동 변환합니다.
+	// dataType을 'json'으로 변경하여 서버로부터 받은 데이터를 JS 객체로 자동 변환
 	ajaxRequest(url, 'get', params, 'json', fn);
 });
+
+// 재구매 버튼 클릭 시 상품으로 이동
+
+
 
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
@@ -216,7 +217,7 @@ const renderMyPageMainHtml = function(data) {
         buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
       }
     }
-    buttons.push(`<button type="button" class="btn-ghost" onclick="location.href='${contextPath}/products/${item.productNum}'">재구매</button>`);
+    buttons.push(`<button type="button" class="btn-ghost" onclick="location.href='${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}'">재구매</button>`);
     return buttons.join('');
   };
 
@@ -416,6 +417,14 @@ const renderOrderDetailHtml = function(data) {
     return html;
 };
 
+/**
+ * 마이 페이지 - 주문 내역 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function paymentListPage(page) {
+    let parameter = { pageNo: page };
+    loadContent('/api/myPage/paymentList', renderMyPageMainHtml, parameter);
+}
 
 /**
  * 마이 페이지 - 내 활동 - 찜
@@ -1007,14 +1016,6 @@ const renderMyQnaListHtml = function(data) {
 	return html;
 }
 
-/**
- * 마이 페이지 - 주문 내역 페이징 처리
- * @param {number} page - 현재 페이지
- */
-function paymentListPage(page) {
-    let parameter = { pageNo: page };
-    loadContent('/api/myPage/paymentList', renderMyPageMainHtml, parameter);
-}
 
 /**
  * 마이 페이지 - 내 활동 - 상품 문의 페이징 처리

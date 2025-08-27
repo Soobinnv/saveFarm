@@ -93,7 +93,7 @@ public class MyPageApiController {
 			List<Payment> list = mypageService.listPayment(map);
 			
 			// AJAX 용 페이징 처리
-			String paging = paginateUtil.paging(current_page, total_page, "paymentListPage");
+			String paging = paginateUtil.pagingMethod(current_page, total_page, "paymentListPage");
 			
 			body.put("list", list);
 			body.put("pageNo", current_page);
