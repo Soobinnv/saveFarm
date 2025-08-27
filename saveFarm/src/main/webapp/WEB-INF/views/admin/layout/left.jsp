@@ -114,12 +114,12 @@
 					</li>
 					<li class="nav-item">
 						<a id="supplyManagement" class="nav-link pl-3" href="javascript:void(0);">
-							<span class="ml-1 item-text">농가상품등록</span>
+							<span class="ml-1 item-text">납품관리</span>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a id="productQna" class="nav-link pl-3" href="javascript:void(0);">
-							<span class="ml-1 item-text">상풍문의</span>
+							<span class="ml-1 item-text">상품문의</span>
 						</a>
 					</li>
 					<li class="nav-item">
