@@ -213,26 +213,28 @@ public class ProductManageController {
 		Map<String, Object> body = new HashMap<>();
 		try {			
 			Map<String, Object> paramMap = new HashMap<>();
-
-			// 페이징 처리
+			
 			int total_page = 0; 
 			int dataCount = 0;
-			
+
 			paramMap.put("state", state);
 			
-			dataCount = supplyService.listSupplyCount(paramMap);
-			total_page = paginateUtil.pageCount(dataCount, size);
-			current_page = Math.min(current_page, total_page);
-			
-			int offset = (current_page - 1) * size;
-			if(offset < 0) offset = 0;
-			
-			paramMap.put("offset", offset);
-			paramMap.put("size", size);
-			
-//			paramMap.put("schType", schType);
-//			paramMap.put("kwd", kwd);
-			
+			if(size != null) {
+				// 페이징 처리
+//				paramMap.put("schType", schType);
+//				paramMap.put("kwd", kwd);
+				
+				dataCount = supplyService.listSupplyCount(paramMap);
+				total_page = paginateUtil.pageCount(dataCount, size);
+				current_page = Math.min(current_page, total_page);
+				
+				int offset = (current_page - 1) * size;
+				if(offset < 0) offset = 0;
+				
+				paramMap.put("offset", offset);
+				paramMap.put("size", size);
+				
+			}
 			List<Supply> list = supplyService.listManageSupply(paramMap); 
 			
 			body.put("list", list);
