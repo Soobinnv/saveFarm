@@ -11,8 +11,8 @@ public interface SupplyService {
     public void insertSupply(Supply dto) throws Exception;
     public void updateSupply(Supply dto) throws Exception;
     public int updateState(Map<String, Object> map) throws Exception;        // supplyNum, state
-    public void updateState1(Long supplyNum) throws Exception;        // supplyNum
-    public void updateState2(Long supplyNum) throws Exception;        // supplyNum, state
+    public void updateState1(Map<String, Object> mapm) throws Exception;        // supplyNum
+    public void updateState2(Map<String, Object> map) throws Exception;        // supplyNum, state
     public void updateRescuedApply(Map<String, Object> map) throws Exception; // supplyNum, rescuedApply
     public void deleteSupply(Map<String, Object> map) throws Exception;       // supplyNum 또는 ids(다건)
 

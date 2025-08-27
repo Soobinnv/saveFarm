@@ -56,18 +56,18 @@ public class SupplyServiceImpl implements SupplyService {
 	
 	
 	@Override
-	public void updateState1(Long supplyNum) throws Exception {
+	public void updateState1(Map<String, Object> map) throws Exception {
 		try {
-	        mapper.updateState1(supplyNum);
+	        mapper.updateState1(map);
 	    } catch (Exception e) {
 	        log.info("updateState : ", e);
 	    }
 	}
 
 	@Override
-	public void updateState2(Long supplyNum) throws Exception {
+	public void updateState2(Map<String, Object> map) throws Exception {
 		try {
-	        mapper.updateState2(supplyNum);
+	        mapper.updateState2(map);
 	    } catch (Exception e) {
 	        log.info("updateState : ", e);
 	    }
