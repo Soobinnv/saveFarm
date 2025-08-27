@@ -52,10 +52,10 @@
 	
 	<!-- 주문 내역 상세 리스트 -->
 	<select id="listOrderProduct" parameterType="java.util.List" resultType="com.sp.app.model.Order">
-		SELECT pd.productNum, pd.stockQuantity, p.productName, pd.unitPrice,
+		SELECT pd.productNum, pd.stockQuantity, p.productName, pd.unitPrice, pd.unit, 
 			pd.discountRate, p.deliveryFee, p.mainImageFilename 
     	FROM (
-    		SELECT productNum, stockQuantity, discountRate, unitPrice
+    		SELECT productNum, stockQuantity, discountRate, unitPrice, unit
     		FROM productDetail
     		WHERE productNum IN
 				<foreach collection="list" item="item" index="index"

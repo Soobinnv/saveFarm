@@ -28,6 +28,7 @@ public class Payment {
 	private int deliveryCharge;
 	private int salePrice;
 	private int qty;
+	private String unit;
 	private int productMoney;
 	
 	private String payMethod;

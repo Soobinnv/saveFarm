@@ -48,10 +48,6 @@ $(document).on('click', '.order-details', function() {
 	ajaxRequest(url, 'get', params, 'json', fn);
 });
 
-// 재구매 버튼 클릭 시 상품으로 이동
-
-
-
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data - 내가 주문한 상품 데이터
