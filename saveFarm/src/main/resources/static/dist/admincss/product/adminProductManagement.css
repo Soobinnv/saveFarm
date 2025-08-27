@@ -78,3 +78,56 @@
     border: 1px solid #1B68FF;
     cursor: default; /* 클릭할 수 없음을 표시 */
 }
+
+/* 부모 컨테이너에 relative 속성 추가 */
+.checkbox-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* 체크박스와 라벨 사이 간격 */
+}
+
+.supply-checkbox{
+	display: none !important;
+}
+
+/* 부트스트랩 체크박스의 기본 스타일 덮어쓰기 */
+.supply-checkbox:checked {
+  background-color: #0d6efd; /* 부트스트랩 기본 파란색 */
+  border-color: #0d6efd;
+}
+
+/* 라벨의 가상요소에 relative 속성 추가 */
+.form-check-label::before {
+  content: '' !important;
+  position: relative; /* ::after가 ::before를 기준으로 위치하도록 설정 */
+  width: 21px;
+  height: 21px;
+  background-color: transparent;
+  border: 1px solid #ced4da;
+  border-radius: 1em;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0.25em;
+  margin-bottom: 1em;
+  box-shadow: 0 0.1rem 0.25rem rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+.supply-checkbox:checked + .form-check-label::before {
+  background-color: #1b68ff;
+  border-color: #0d6efd;
+  line-height: 21px;
+}
+
+/* 체크박스 가상 요소의 내용 및 위치 조정 */
+.supply-checkbox:checked + .form-check-label::after {
+  content: '✓' !important; 
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em;
+  color: white;
+  line-height: 1;
+}

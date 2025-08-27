@@ -133,9 +133,17 @@ const renderProductRows = function(list) {
 				data-name="${item.productName}" 
 				data-unit="${item.unit}" 
 				data-stock="${item.stockQuantity}"  
+					class="dropdown-item stock-insert-btn" 
+					href="javascript:void(0);"
+					>재고등록</a>
+                <a 
+				data-num="${item.productNum}" 
+				data-name="${item.productName}" 
+				data-unit="${item.unit}" 
+				data-stock="${item.stockQuantity}"  
 					class="dropdown-item stock-edit-btn" 
 					href="javascript:void(0);"
-					>재고</a>
+					>재고수정</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
               </div>
@@ -198,7 +206,13 @@ const renderProductDetailHTML = function(data) {
 										data-name="${product.productName}" 
 										data-unit="${product.unit}" 
 										data-stock="${product.stockQuantity}" 
-										type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고</button>
+										type="button" class="btn btn-sm btn-outline-secondary stock-insert-btn">재고등록</button>
+									<button 
+										data-num="${product.productNum}" 
+										data-name="${product.productName}" 
+										data-unit="${product.unit}" 
+										data-stock="${product.stockQuantity}"
+										type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고수정</button>
 									<button data-num="${product.productNum}" type="button" class="btn btn-sm btn-outline-secondary ms-2">수정하기</button>
 								</div>
 							</div>
@@ -213,18 +227,18 @@ const renderProductDetailHTML = function(data) {
 }
 
 /**
- * 재고 관리 HTML 문자열 생성
+ * 재고 수정 HTML 문자열 생성
  * @param {object} data - 상품 정보 데이터
  * @param {object} data.productInfo - 상품 정보 객체
  * @returns {string} 재고 관리 HTML 문자열
  */
-const renderStockEditHTML = function(productNum, productName, unit, stock) {
+const renderStockEditHTML = function(productInfo) {
 
 	const html = `
 	<div class="stock-management-ui card shadow-sm mt-3 mb-3 border-light">
 		<div class="card-header bg-light d-flex justify-content-between align-items-center">
 			<h5 class="mb-0 fw-bold">
-			    <i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${productName}</span>
+			    <i class="fas fa-box me-2"></i>재고 관리: <span class="text-primary">${productInfo.productName}</span>
 			</h5>
 		</div>
 		<div id="product-card" class="card-body p-4">
@@ -232,10 +246,10 @@ const renderStockEditHTML = function(productNum, productName, unit, stock) {
 				<div class="col-md-8 d-flex justify-content-between">
 					<div>
 						<p class="fs-5">
-							<strong>단위: ${unit}</strong> 
+							<strong>단위: ${productInfo.unit}</strong> 
 						</p>
-						<p id="data-stock" data-stock="${stock}" class="fs-5">
-							<strong>현재 재고: ${stock}</strong> 
+						<p id="data-stock" data-stock="${productInfo.stock}" class="fs-5">
+							<strong>현재 재고: ${productInfo.stock}</strong> 
 						</p>
 					</div>
 				</div>
@@ -254,13 +268,13 @@ const renderStockEditHTML = function(productNum, productName, unit, stock) {
 				</div>
 				<div class="col-sm-4">
 					 <label for="stock-after-quantity" class="form-label"><strong>조정 후 재고</strong></label>
-					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${stock}">
+					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${productInfo.stock}">
 				</div>
 			</div>
 		</div>
 		<div class="card-footer text-end bg-light">
 			<button type="button" class="btn btn-secondary">취소</button>
-			<button data-num="${productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn">
+			<button data-num="${productInfo.productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn">
 				<i class="fas fa-save me-1"></i> 저장하기
 			</button>
 		</div>
@@ -268,6 +282,91 @@ const renderStockEditHTML = function(productNum, productName, unit, stock) {
 	`;
 	return html;
 }
+
+/**
+ * 재고 등록 HTML 문자열 생성
+ * @param {object} productInfo - 상품 정보 객체
+ * @param {Array<object>} initialSupplyList - 화면에 처음으로 보여줄 납품 목록 배열
+ * @returns {string} 재고 관리 전체 UI HTML 문자열
+ */
+const renderStockUpdateFromSupplyHTML = function(productInfo, initialSupplyList) {
+	const hasSupplies = initialSupplyList && initialSupplyList.length > 0;
+
+	const html = `
+	<div class="stock-update-ui card shadow-sm mt-3 mb-3 border-light">
+		<div class="card-header bg-light d-flex justify-content-between align-items-center">
+			<h5 class="mb-0 fw-bold">
+				<i class="fas fa-truck-loading me-2"></i>상품명: <span class="text-primary">${productInfo.productName}</span>
+			</h5>
+		</div>
+		<div id="product-card" class="card-body p-4">
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<p id="current-stock" data-stock="${productInfo.currentStock}" class="fs-5">
+						<strong>현재 재고: ${productInfo.currentStock}</strong>
+					</p>
+				</div>
+			</div>
+
+			<div class="row mb-4">
+				<div class="col-12">
+					<label class="form-label"><strong>납품 내역 선택 (다중 선택 가능)</strong></label>
+					<div id="supply-checkbox-list" class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
+						${hasSupplies 
+							? createSupplyCheckboxesHTML(initialSupplyList) 
+							: '<p class="text-muted mb-0">처리할 납품 내역이 없습니다.</p>'
+						}
+					</div>
+				</div>
+			</div>
+
+			<div class="row g-3 align-items-end">
+				<div class="col-md-6">
+					<label for="quantity-to-add" class="form-label"><strong>추가될 수량 총합</strong></label>
+					<input type="text" class="form-control pe-2 ps-2" id="quantity-to-add" readonly disabled placeholder="자동 계산">
+				</div>
+				<div class="col-md-6">
+					 <label for="stock-after-quantity" class="form-label"><strong>조정 후 재고</strong></label>
+					 <input type="text" class="form-control" id="stock-after-quantity" readonly disabled value="${productInfo.currentStock}">
+				</div>
+			</div>
+		</div>
+		<div class="card-footer text-end bg-light">
+			<button type="button" class="btn btn-secondary">취소</button>
+			<button data-num="${productInfo.productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn" ${!hasSupplies ? 'disabled' : ''}>
+				<i class="fas fa-save me-1"></i> 저장하기
+			</button>
+		</div>
+	</div>
+	`;
+	return html;
+};
+
+/**
+ * 납품 내역 목록 HTML 문자열 생성
+ * @param {Array<object>} supplyList - 납품 목록 배열
+ * @returns {string} 체크박스 HTML 문자열
+ */
+const createSupplyCheckboxesHTML = function(supplyList) {
+	if (!supplyList || supplyList.length === 0) {
+		return '';
+	}
+
+	return supplyList.map(supply => `
+		<div class="form-check checkbox-container">
+			<input 
+				class="form-check-input supply-checkbox" 
+				type="checkbox" 
+				value="${supply.supplyNum}" 
+				id="supply-${supply.supplyNum}" 
+				data-quantity="${supply.supplyQuantity}">
+			<label class="form-check-label" for="supply-${supply.supplyNum}">
+				농가명: [${supply.farmName}] / 납품 수량: ${supply.supplyQuantity} / 납품일: ${supply.harvestDate}
+			</label>
+		</div>
+	`).join('');
+};
+
 
 /**
  * 신규 상품 등록 폼 HTML 문자열 생성 (조건부 필드 적용)
@@ -335,7 +434,7 @@ const renderProductFormHTML = function() {
 					</div>
 					<div class="col-md-6">
 						<label for="stockQuantity" class="form-label"><strong>초기 재고 수량</strong></label>
-						<input type="number" class="form-control" id="stockQuantity" name="stockQuantity" placeholder="초기 재고" min="0" required>
+						<input type="number" class="form-control" id="stockQuantity" name="stockQuantity" placeholder="초기 재고" min="0" value="0" disabled required>
 					</div>
 					<div class="col-md-6">
 						<label for="deliveryFee" class="form-label"><strong>배송비 (원)</strong></label>

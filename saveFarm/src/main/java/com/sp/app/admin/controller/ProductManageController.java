@@ -162,21 +162,22 @@ public class ProductManageController {
 		}
 	}
 	
-	// 재고 수정
+	// 재고 추가/수정
 	@PatchMapping("/api/admin/products/{productNum}")
 	public ResponseEntity<?> updateProductStock(
 			@PathVariable(name = "productNum") long productNum,
+			@RequestParam(name = "supplyNum", required = false) Long supplyNum,
 			Product dto
 			) {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			productService.updateProductDetail(dto);
+			productService.updateProductDetail(dto, supplyNum);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("updateProduct: ", e);
-			body.put("message", "상품 재고 수정 중 오류가 발생했습니다.");
+			body.put("message", "상품 재고 추가/수정 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -204,6 +205,7 @@ public class ProductManageController {
 	@GetMapping("/api/admin/supplies")
 	public ResponseEntity<?> getSupplies(
 			@RequestParam(name = "state", required = false) Integer state,
+			@RequestParam(name = "size", required = false) Integer size,
 			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
 			@RequestParam(name = "schType", required = false, defaultValue = "all") String schType,
 			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd
@@ -213,7 +215,6 @@ public class ProductManageController {
 			Map<String, Object> paramMap = new HashMap<>();
 
 			// 페이징 처리
-			int size = 10;
 			int total_page = 0; 
 			int dataCount = 0;
 			
