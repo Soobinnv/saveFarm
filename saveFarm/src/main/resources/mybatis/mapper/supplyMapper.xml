@@ -1,371 +1,387 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.farm.mapper.SupplyMapper">
 
-<sql id="WhereList">
-	<if test="stateList != null and stateList.size() > 0">
-    	AND s.state IN
-      	<foreach collection="stateList" item="st" open="(" separator="," close=")">
-       		#{st}
-      	</foreach>
-    </if>
+  <!-- 공용 WHERE 절 -->
+  <sql id="WhereList">
+    <!-- ★ stateList / state 배타 처리 -->
+    <choose>
+      <when test="stateList != null and stateList.size() > 0">
+        AND s.state IN
+        <foreach collection="stateList" item="st" open="(" separator="," close=")">
+          #{st}
+        </foreach>
+      </when>
+      <when test="state != null and state != -1">
+        AND s.state = #{state}
+      </when>
+    </choose>
 
-	<if test="productNumOnly != null and productNumOnly == 1">
-	  AND productNum IS NOT NULL
-	</if>
-
-  	<if test="fromDate != null and toDate != null">
-    	AND harvestDate &gt;= TO_DATE(#{fromDate}, 'YYYY-MM-DD')
-    	AND harvestDate &lt;  TO_DATE(#{toDate},   'YYYY-MM-DD') + 1
-  	</if>
-  	<if test="fromDate != null and toDate == null">
-   	 	AND harvestDate &gt;= TO_DATE(#{fromDate}, 'YYYY-MM-DD')
- 	</if>
-  	<if test="fromDate == null and toDate != null">
-    	AND harvestDate &lt;  TO_DATE(#{toDate},   'YYYY-MM-DD') + 1
-  	</if>
-
-  	<if test="approvedFrom != null and approvedTo != null">
-    	AND approvedDate &gt;= TO_DATE(#{approvedFrom}, 'YYYY-MM-DD')
-    	AND approvedDate &lt;  TO_DATE(#{approvedTo},   'YYYY-MM-DD') + 1
-  	</if>
-  	
-  	<if test="approvedFrom != null and approvedTo == null">
-   	 	AND approvedDate &gt;= TO_DATE(#{approvedFrom}, 'YYYY-MM-DD')
-  	</if>
-  	<if test="approvedFrom == null and approvedTo != null">
-    	AND approvedDate &lt;  TO_DATE(#{approvedTo},   'YYYY-MM-DD') + 1
-  	</if>
-
-  	<!-- 검색 조건: schType 값에 따라 분기 -->
-  	<if test="kwd != null and kwd.trim() != ''">
-  		<choose>
-  			<when test="schType == 'varietyName'">
-  				AND LOWER(v.varietyName) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
-  			</when>
-  			<when test="schType == 'rescuedApply'">
-  				AND TO_CHAR(rescuedApply) LIKE '%' || #{kwd} || '%'
-  			</when>
-  			<when test="schType == 'coment'">
-  				AND LOWER(coment) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
-  			</when>
-  			<otherwise>
-  				AND ( LOWER(v.varietyName) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
-  				      OR LOWER(coment) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\')
-  			</otherwise>
-  		</choose>
-  	</if>
-
-  	<if test="state != null and state != -1">
-    	AND state = #{state}
-  	</if>
-
-  	<if test="rescuedApply != null and rescuedApply != -1">
-    	AND rescuedApply = #{rescuedApply}
-  	</if>
-
-	<if test="farmNum != null">
-	  AND s.farmNum = #{farmNum}
-	</if>
-	
-	<if test="productNum != null and productNum != -1">
-	  AND s.productNum = #{productNum}
-	</if>
-	
-	<if test="varietyNum != null and varietyNum != -1">
-	  AND s.varietyNum = #{varietyNum}
-	</if>
-</sql>
-
-<insert id="insertSupply" parameterType="com.sp.app.farm.model.Supply">
-	INSERT INTO supply 
-	(
-      supplyNum, supplyQuantity, unitQuantity, unitPrice,
-      harvestDate, state, rescuedApply, coment, approvedDate,
-      farmNum, productNum, varietyNum
-   	) 
-	VALUES 
-	(
-	   supply_seq.NEXTVAL, #{supplyQuantity}, #{unitQuantity}, #{unitPrice},
-	   #{harvestDate}, 1, #{rescuedApply}, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
-	   #{farmNum}, #{productNum, jdbcType=NUMERIC}, #{varietyNum}
-	)
-</insert>
-
-<insert id="insertCrops" parameterType="com.sp.app.farm.model.Supply">
-	INSERT INTO supply 
-	(
-      supplyNum, supplyQuantity, unitQuantity, unitPrice,
-      harvestDate, state, rescuedApply, coment, approvedDate,
-      farmNum, productNum, varietyNum
-   	) 
-	VALUES 
-	(
-	   supply_seq.NEXTVAL, #{supplyQuantity}, 0, 0,
-	   #{harvestDate}, 0, 0, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
-	   #{farmNum}, #{productNum, jdbcType=NUMERIC}, #{varietyNum}
-	)
-</insert>
-
-<update id="updateSupply" parameterType="com.sp.app.farm.model.Supply">
-	UPDATE supply
-	SET 
-	   supplyQuantity = #{supplyQuantity},
-       unitQuantity   = #{unitQuantity},
-       unitPrice      = #{unitPrice},
-       harvestDate    = #{harvestDate},
-       state          = #{state},
-       rescuedApply   = #{rescuedApply},
-       coment         = #{coment, jdbcType=VARCHAR},
-       approvedDate   = #{approvedDate, jdbcType=DATE},
-       farmNum        = #{farmNum},
-       productNum     = #{productNum, jdbcType=NUMERIC},
-       varietyNum     = #{varietyNum}
- 	WHERE supplyNum = #{supplyNum}
-</update>
-
-<update id="updateState" parameterType="map">
-	UPDATE supply SET state = #{state}
-	<where>
-		<if test="farmNum != null">
-			AND farmNum = #{farmNum}
-		</if>
-	
-		<choose>
-		  <!-- 다건 -->
-			<when test="supplyNums != null and supplyNums.size > 0">
-			AND supplyNum IN
-				<foreach collection="supplyNums" item="id" open="(" separator="," close=")">
-					#{id}
-				</foreach>
-			</when>
-		
-			<!-- 단건 -->
-			<when test="supplyNum != null">
-				AND supplyNum = #{supplyNum}
-			</when>
-			
-			<!-- 안전장치: 조건 없으면 아무 것도 변경하지 않음 -->
-			<otherwise>
-				AND 1=0
-			</otherwise>
-		</choose>
-	</where>
-</update>
-
-<update id="updateState1" parameterType="map">
-	UPDATE supply SET state = #{state}
-	WHERE supplyNum = #{supplyNum}
-</update>
-
-<update id="updateState2" parameterType="map">
-	UPDATE supply SET state = #{state}, approvedDate = SYSDATE
-	WHERE supplyNum = #{supplyNum}
-</update>
-
-<update id="updateRescuedApply" parameterType="map">
-	UPDATE supply SET rescuedApply = #{rescuedApply}
-	WHERE supplyNum = #{supplyNum}
-</update>
-
-<delete id="deleteSupply" parameterType="map">
-	DELETE FROM supply
-	WHERE supplyNum = #{supplyNum}
-</delete>
-
-<select id="listFarmVarieties" parameterType="map"
-        resultType="com.sp.app.farm.model.Variety">
-  SELECT DISTINCT
-         v.varietyNum,
-         v.varietyName
-  FROM supply s
-  JOIN variety v ON v.varietyNum = s.varietyNum
-  <where>
-    s.farmNum = #{farmNum}
     <if test="productNumOnly != null and productNumOnly == 1">
       AND s.productNum IS NOT NULL
     </if>
-  </where>
-  ORDER BY v.varietyName
-</select>
 
-<!-- 농가 관리용 쿼리 -->
-<select id="listManageSupply" parameterType="map" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		s.farmNum, productNum, s.varietyNum, varietyName, 
-		farmName, businessNumber, farmManager, farmTel, 
-		farmZip, farmAddress1, farmAddress2, farmRegDate, 
-		farmerName, farmerTel, farmerId, farmerPwd, status, farmAccount
-	FROM supply s
-	JOIN variety v ON s.varietyNum = v.varietyNum
-	JOIN farm f ON f.farmNum = s.farmNum
+    <!-- harvestDate -->
+    <if test="fromDate != null and toDate != null">
+      AND s.harvestDate &gt;= TO_DATE(#{fromDate}, 'YYYY-MM-DD')
+      AND s.harvestDate &lt;  TO_DATE(#{toDate},   'YYYY-MM-DD') + 1
+    </if>
+    <if test="fromDate != null and toDate == null">
+      AND s.harvestDate &gt;= TO_DATE(#{fromDate}, 'YYYY-MM-DD')
+    </if>
+    <if test="fromDate == null and toDate != null">
+      AND s.harvestDate &lt;  TO_DATE(#{toDate},   'YYYY-MM-DD') + 1
+    </if>
+
+    <!-- approvedDate -->
+    <if test="approvedFrom != null and approvedTo != null">
+      AND s.approvedDate &gt;= TO_DATE(#{approvedFrom}, 'YYYY-MM-DD')
+      AND s.approvedDate &lt;  TO_DATE(#{approvedTo},   'YYYY-MM-DD') + 1
+    </if>
+    <if test="approvedFrom != null and approvedTo == null">
+      AND s.approvedDate &gt;= TO_DATE(#{approvedFrom}, 'YYYY-MM-DD')
+    </if>
+    <if test="approvedFrom == null and approvedTo != null">
+      AND s.approvedDate &lt;  TO_DATE(#{approvedTo},   'YYYY-MM-DD') + 1
+    </if>
+
+    <!-- 검색 -->
+    <if test="kwd != null and kwd.trim() != ''">
+      <choose>
+        <when test="schType == 'varietyName'">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
+        </when>
+        <when test="schType == 'rescuedApply'">
+          AND TO_CHAR(s.rescuedApply) LIKE '%' || #{kwd} || '%'
+        </when>
+        <when test="schType == 'coment'">
+          AND LOWER(s.coment) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
+        </when>
+        <otherwise>
+          AND (
+            LOWER(v.varietyName) LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
+            OR LOWER(s.coment)    LIKE '%' || LOWER(#{kwd}) || '%' ESCAPE '\'
+          )
+        </otherwise>
+      </choose>
+    </if>
+
+    <if test="rescuedApply != null and rescuedApply != -1">
+      AND s.rescuedApply = #{rescuedApply}
+    </if>
+
+    <if test="farmNum != null">
+      AND s.farmNum = #{farmNum}
+    </if>
+
+    <if test="productNum != null and productNum != -1">
+      AND s.productNum = #{productNum}
+    </if>
+
+    <if test="varietyNum != null and varietyNum != -1">
+      AND s.varietyNum = #{varietyNum}
+    </if>
+  </sql>
+
+  <!-- INSERT -->
+  <insert id="insertSupply" parameterType="com.sp.app.farm.model.Supply">
+    INSERT INTO supply
+    (
+      supplyNum, supplyQuantity, unitQuantity, unitPrice,
+      harvestDate, state, rescuedApply, coment, approvedDate,
+      farmNum, productNum, varietyNum
+    )
+    VALUES
+    (
+      supply_seq.NEXTVAL, #{supplyQuantity}, #{unitQuantity}, #{unitPrice},
+      #{harvestDate}, 1, #{rescuedApply}, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
+      #{farmNum}, #{productNum, jdbcType=NUMERIC}, #{varietyNum}
+    )
+  </insert>
+
+  <insert id="insertCrops" parameterType="com.sp.app.farm.model.Supply">
+    INSERT INTO supply
+    (
+      supplyNum, supplyQuantity, unitQuantity, unitPrice,
+      harvestDate, state, rescuedApply, coment, approvedDate,
+      farmNum, productNum, varietyNum
+    )
+    VALUES
+    (
+      supply_seq.NEXTVAL, #{supplyQuantity}, 0, 0,
+      #{harvestDate}, 0, 0, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
+      #{farmNum}, #{productNum, jdbcType=NUMERIC}, #{varietyNum}
+    )
+  </insert>
+
+  <!-- UPDATE -->
+  <update id="updateSupply" parameterType="com.sp.app.farm.model.Supply">
+    UPDATE supply
+    SET
+      supplyQuantity = #{supplyQuantity},
+      unitQuantity   = #{unitQuantity},
+      unitPrice      = #{unitPrice},
+      harvestDate    = #{harvestDate},
+      state          = #{state},
+      rescuedApply   = #{rescuedApply},
+      coment         = #{coment, jdbcType=VARCHAR},
+      approvedDate   = #{approvedDate, jdbcType=DATE},
+      farmNum        = #{farmNum},
+      productNum     = #{productNum, jdbcType=NUMERIC},
+      varietyNum     = #{varietyNum}
+    WHERE supplyNum = #{supplyNum}
+  </update>
+
+  <update id="updateState" parameterType="map">
+    UPDATE supply SET state = #{state}
     <where>
-    	<include refid="WhereList"/>
-  	</where>
-  	ORDER BY s.supplyNum DESC
-  	<if test="size != null">
-  		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
-  	</if>
-  	
-</select>
-<!--  -->
+      <if test="farmNum != null">
+        AND farmNum = #{farmNum}
+      </if>
+      <choose>
+        <!-- 다건 -->
+        <when test="supplyNums != null and supplyNums.size > 0">
+          AND supplyNum IN
+          <foreach collection="supplyNums" item="id" open="(" separator="," close=")">
+            #{id}
+          </foreach>
+        </when>
+        <!-- 단건 -->
+        <when test="supplyNum != null">
+          AND supplyNum = #{supplyNum}
+        </when>
+        <!-- 안전장치 -->
+        <otherwise>
+          AND 1=0
+        </otherwise>
+      </choose>
+    </where>
+  </update>
 
-<select id="listSupply" parameterType="map" resultType="com.sp.app.farm.model.Supply">
- SELECT
-    s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
-    s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
-    s.farmNum, s.productNum, s.varietyNum, v.varietyName
-  FROM supply s
-  JOIN variety v ON s.varietyNum = v.varietyNum
-  <where>
-    <include refid="WhereList"/>
-  </where>
-  ORDER BY s.supplyNum DESC
-  OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
-</select>
+  <update id="updateState1" parameterType="map">
+    UPDATE supply SET state = #{state}
+    WHERE supplyNum = #{supplyNum}
+  </update>
 
-<select id="listSupplyCount" parameterType="map" resultType="Integer">
-	SELECT COUNT(*)
-	FROM supply s
-	JOIN variety v ON s.varietyNum = v.varietyNum
-	<where>
-	  	<include refid="WhereList"/>
-	</where>
-</select>
+  <update id="updateState2" parameterType="map">
+    UPDATE supply SET state = #{state}, approvedDate = SYSDATE
+    WHERE supplyNum = #{supplyNum}
+  </update>
 
+  <update id="updateRescuedApply" parameterType="map">
+    UPDATE supply SET rescuedApply = #{rescuedApply}
+    WHERE supplyNum = #{supplyNum}
+  </update>
 
-<select id="findBySupplyNum" parameterType="Long" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
-	WHERE supplyNum = #{supplyNum}
-</select>
+  <!-- DELETE -->
+  <delete id="deleteSupply" parameterType="map">
+    DELETE FROM supply
+    WHERE supplyNum = #{supplyNum}
+  </delete>
 
+  <!-- 셀렉트들 -->
+  <select id="listFarmVarieties" parameterType="map"
+          resultType="com.sp.app.farm.model.Variety">
+    SELECT DISTINCT
+           v.varietyNum,
+           v.varietyName
+    FROM supply s
+    JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      s.farmNum = #{farmNum}
+      <if test="productNumOnly != null and productNumOnly == 1">
+        AND s.productNum IS NOT NULL
+      </if>
+    </where>
+    ORDER BY v.varietyName
+  </select>
 
-<select id="listByFarm" parameterType="Long" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
-	<where>
-		farmNum = #{farmNum}
-    	<include refid="WhereList"/>
-  	</where>
-  	ORDER BY supplyNum DESC
-  	OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY	
-</select>
-<select id="farmSupplyListCount" parameterType="Long" resultType="Integer">
-	SELECT COUNT(*) FROM supply
-	<where>
-		farmNum = #{farmNum}
-    	<include refid="WhereList"/>
-  	</where>
-</select>
+  <!-- 농가 관리용 쿼리 -->
+  <select id="listManageSupply" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName,
+      f.farmName, f.businessNumber, f.farmManager, f.farmTel,
+      f.farmZip, f.farmAddress1, f.farmAddress2, f.farmRegDate,
+      f.farmerName, f.farmerTel, f.farmerId, f.farmerPwd, f.status, f.farmAccount
+    FROM supply s
+    JOIN variety v ON s.varietyNum = v.varietyNum
+    JOIN farm f    ON f.farmNum   = s.farmNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+    ORDER BY s.supplyNum DESC
+    <if test="size != null">
+      OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+    </if>
+  </select>
 
+  <select id="listSupply" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    JOIN variety v ON s.varietyNum = v.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+    ORDER BY s.supplyNum DESC
+    OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+  </select>
 
-<select id="listByState" parameterType="Integer" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
-	<where>
-		state = #{state}
-    	<include refid="WhereList"/>
-  	</where>
-</select>
-<select id="stateListCount" parameterType="Integer" resultType="Integer">
-	SELECT COUNT(*) FROM supply
-	<where>
-		state = #{state}
-    	<include refid="WhereList"/>
-  	</where>
-</select>
+  <select id="listSupplyCount" parameterType="map" resultType="Integer">
+    SELECT COUNT(*)
+    FROM supply s
+    JOIN variety v ON s.varietyNum = v.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
 
+  <select id="findBySupplyNum" parameterType="Long" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      supplyNum, supplyQuantity, unitQuantity, unitPrice,
+      harvestDate, state, rescuedApply, coment, approvedDate,
+      farmNum, productNum, varietyNum
+    FROM supply
+    WHERE supplyNum = #{supplyNum}
+  </select>
 
-<select id="listFindRescuedApply" parameterType="Integer" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
-	<where>
-		rescuedApply = #{rescuedApply}
-    	<include refid="WhereList"/>
-  	</where>
-</select>
-<select id="rescuedApplyListCount" parameterType="Integer" resultType="Integer">
-	SELECT COUNT(*) FROM supply
-	<where>
-		rescuedApply = #{rescuedApply}
-    	<include refid="WhereList"/>
-  	</where>
-</select>
+  <!-- ★ WhereList 쓰므로 parameterType=map, alias/LEFT JOIN 추가 -->
+  <select id="listByFarm" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+    ORDER BY s.supplyNum DESC
+    OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+  </select>
 
+  <select id="farmSupplyListCount" parameterType="map" resultType="Integer">
+    SELECT COUNT(*)
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
 
-<select id="nextSupplyNum" resultType="Long">
+  <!-- ★ 별도 state조건 중복 제거, WhereList에 맡김 -->
+  <select id="listByState" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
+
+  <select id="stateListCount" parameterType="map" resultType="Integer">
+    SELECT COUNT(*)
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
+
+  <!-- ★ rescuedApply 중복 조건 제거, WhereList에 맡김 -->
+  <select id="listFindRescuedApply" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
+
+  <select id="rescuedApplyListCount" parameterType="map" resultType="Integer">
+    SELECT COUNT(*)
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      <include refid="WhereList"/>
+    </where>
+  </select>
+
+  <select id="nextSupplyNum" resultType="Long">
     SELECT NVL(MAX(supplyNum), 0) + 1
-    FROM supply	
-</select>
-
-
-<select id="monthlyAmount" parameterType="map" resultType="com.sp.app.farm.model.Supply">
-    SELECT 
-        TO_CHAR(harvestDate, 'YYYY-MM') AS month,
-        SUM(supplyQuantity * unitPrice) AS totalAmount
     FROM supply
+  </select>
+
+  <!-- ★ alias/LEFT JOIN 추가 -->
+  <select id="monthlyAmount" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      TO_CHAR(s.harvestDate, 'YYYY-MM') AS month,
+      SUM(s.supplyQuantity * s.unitPrice) AS totalAmount
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
     <where>
-        <include refid="WhereList"/>
+      <include refid="WhereList"/>
     </where>
-    GROUP BY TO_CHAR(harvestDate, 'YYYY-MM')
+    GROUP BY TO_CHAR(s.harvestDate, 'YYYY-MM')
     ORDER BY month
-</select>
-<select id="totalsByState" parameterType="map" resultType="map">
+  </select>
 
-</select>
-<select id="topVarieties" parameterType="map" resultType="com.sp.app.farm.model.Supply">
-    SELECT varietyNum, SUM(supplyQuantity) AS totalQuantity
-    FROM supply
+  <select id="totalsByState" parameterType="map" resultType="map">
+    <!-- 필요 시 구현 -->
+  </select>
+
+  <!-- ★ alias/LEFT JOIN 추가 -->
+  <select id="topVarieties" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT s.varietyNum, SUM(s.supplyQuantity) AS totalQuantity
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
     <where>
-        <include refid="WhereList"/>
+      <include refid="WhereList"/>
     </where>
-    GROUP BY varietyNum
+    GROUP BY s.varietyNum
     ORDER BY totalQuantity DESC
     FETCH FIRST #{size} ROWS ONLY
-</select>
+  </select>
 
+  <!-- ★ alias/LEFT JOIN 추가 -->
+  <select id="findByPrev" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
+    <where>
+      s.supplyNum &lt; #{supplyNum}
+      <include refid="WhereList"/>
+    </where>
+    ORDER BY s.supplyNum DESC
+    FETCH FIRST 1 ROWS ONLY
+  </select>
 
-<select id="findByPrev" parameterType="map" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
+  <select id="findByNext" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+    SELECT
+      s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
+      s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
+      s.farmNum, s.productNum, s.varietyNum, v.varietyName
+    FROM supply s
+    LEFT JOIN variety v ON v.varietyNum = s.varietyNum
     <where>
-        supplyNum &lt; #{supplyNum}
-        <include refid="WhereList"/>
+      s.supplyNum &gt; #{supplyNum}
+      <include refid="WhereList"/>
     </where>
-    ORDER BY supplyNum DESC
+    ORDER BY s.supplyNum ASC
     FETCH FIRST 1 ROWS ONLY
-</select>
-<select id="findByNext" parameterType="map" resultType="com.sp.app.farm.model.Supply">
-	SELECT 
-		supplyNum, supplyQuantity, unitQuantity, unitPrice,
-		harvestDate, state, rescuedApply, coment, approvedDate,
-		farmNum, productNum, varietyNum
-	FROM supply
-    <where>
-        supplyNum &gt; #{supplyNum}
-        <include refid="WhereList"/>
-    </where>
-    ORDER BY supplyNum ASC
-    FETCH FIRST 1 ROWS ONLY
-</select>
+  </select>
 
 </mapper>
