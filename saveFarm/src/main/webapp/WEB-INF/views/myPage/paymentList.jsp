@@ -29,8 +29,10 @@
       <ul>
         <li>주문내역 조회</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/paymentList', renderMyPageMainHtml);" clicked>주문/배송 조회</a></li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subInfo', renderMySubInfoHtml);">정기배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">취소/교환/반품 조회</a></li>
+        <li>정기 배송</li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subInfo', renderMySubInfoHtml);">정기배송 조회</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="">정기배송 리뷰</a></li>
         <li>내 활동</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/wish', renderMyWishListHtml);">찜</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/reviews', renderMyReviewListHtml);">나의 리뷰</a></li>
@@ -75,7 +77,11 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-serialize-object/2.5.0/jquery.serialize-object.min.js"></script>
 <script type="text/javascript"
-		src="${pageContext.request.contextPath}/dist/js/myPage.js"></script>
+		src="${pageContext.request.contextPath}/dist/js/myPageMyActivity.js"></script>
+<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/myPageOrderHistory.js"></script>
+<script type="text/javascript"
+		src="${pageContext.request.contextPath}/dist/js/myPageSubscription.js"></script>
 <script type="text/javascript"
 		src="${pageContext.request.contextPath}/dist/js/product/productAction.js"></script>
 

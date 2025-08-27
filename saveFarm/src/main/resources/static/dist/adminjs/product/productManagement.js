@@ -19,9 +19,9 @@ const productTabConfig = {
 
 // - 농가 상품 리스트 하위 탭(전체, 승인대기, 승인)
 const supplyTabConfig = {
-    'tab-status-all': { url: '/api/admin/supplies', params: '', pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
-    'tab-status-unapproved': { url: '/api/admin/supplies', params: { state: 1 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
-    'tab-status-approved': { url: '/api/admin/supplies', params: { state: 2 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML }
+    'tab-status-all': { url: '/api/admin/supplies', params: {size:10}, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-unapproved': { url: '/api/admin/supplies', params: {size:10, state: 1 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-approved': { url: '/api/admin/supplies', params: {size:10, state: 2 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML }
 };
 
 // - 상품 문의 하위 탭(전체, 답변대기, 답변완료)
@@ -110,7 +110,33 @@ $(function() {
 		}
 	});
 	
-	// 재고 버튼
+	// 재고 등록 버튼 (납품 목록 등록)
+	$('main').on('click', '.stock-insert-btn', function(e) {
+		const $btnEL = $(e.target);
+		const productNum = $btnEL.attr('data-num');
+		const productName = $btnEL.attr('data-name');
+		const unit = $btnEL.attr('data-unit');
+		const stock = $btnEL.attr('data-stock');
+
+		const productInfo = {
+			productNum,
+			productName,
+			unit,
+			currentStock:stock
+		};
+
+		const fn = function(data) {
+			const supplyList = data.list;
+			
+			$('main').html(renderStockUpdateFromSupplyHTML(productInfo, supplyList));
+		}
+		
+		// 납품 목록 요청
+		ajaxRequest('/api/admin/supplies', 'get', {state: 5}, 'json', fn);
+			// state: 5 - 납품 완료 (재고 등록 전)		
+	});
+	
+	// 재고 수정 버튼 (실사 조정)
 	$('main').on('click', '.stock-edit-btn', function(e) {
 		const $btnEL = $(e.target);
 		const productNum = $btnEL.attr('data-num');
@@ -118,7 +144,14 @@ $(function() {
 		const unit = $btnEL.attr('data-unit');
 		const stock = $btnEL.attr('data-stock');
 
-		$('main').html(renderStockEditHTML(productNum, productName, unit, stock));
+		const productInfo = {
+			productNum,
+			productName,
+			unit,
+			stock
+		};
+		
+		$('main').html(renderStockEditHTML(productInfo));
 				
 	});
 
@@ -159,7 +192,7 @@ $(function() {
 		loadContent(`/api/admin/reviews/${num}`, renderProductReviewListHTML, '', 'reviewListPage', 'delete');	
 	});
 	
-	// 재고 조정 수량 입력
+	// 재고 수정 수량 입력
 	$('main').on('keyup', '#stock-quantity-input', function(e) {
 		let mode = $('#stock-change-type').val();
 		let stock = Number($('#data-stock').attr('data-stock'));
@@ -175,7 +208,7 @@ $(function() {
 		}
 	});
 	
-	// 재고 조정 유형 변경
+	// 재고 수정 유형 변경
 	$('main').on('change', '#stock-change-type', function(e) {
 		let mode = $(e.target).val();
 		let stock = Number($('#data-stock').attr('data-stock'));
@@ -189,6 +222,21 @@ $(function() {
 			afterStock = stock - adjStock;
 			$('#stock-after-quantity').val(afterStock);			
 		}
+	});
+	
+	// 납품 내역 선택 - 조정 후 재고 반영 
+	$('main').on('change', '.supply-checkbox', function(e) {
+		const $checkboxEL = $(e.target);
+		const quantity = Number($checkboxEL.attr('data-quantity'));
+		let afterStock = Number($('#stock-after-quantity').val());
+		
+		if($checkboxEL.is(':checked')) {
+			afterStock = afterStock + quantity;
+		} else {
+			afterStock = afterStock - quantity;			
+		}
+		
+		$('#stock-after-quantity').val(afterStock);
 	});
 	
 	// 재고 저장 버튼

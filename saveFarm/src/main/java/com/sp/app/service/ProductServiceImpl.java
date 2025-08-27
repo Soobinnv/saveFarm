@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sp.app.farm.mapper.SupplyMapper;
 import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.Product;
 
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProductServiceImpl implements ProductService {
 	private final ProductMapper mapper;
+	private final SupplyMapper supplyMapper;
 	private final ProductReviewService reviewService;
 	private final WishService wishService;
 	
@@ -251,10 +253,21 @@ public class ProductServiceImpl implements ProductService {
 		
 	}
 
+	@Transactional
 	@Override
-	public void updateProductDetail(Product dto) throws Exception {
+	public void updateProductDetail(Product dto, Long supplyNum) throws Exception {
 		try {
 			mapper.updateProductDetail(dto);
+			
+			if(supplyNum != null) {
+				Map<String, Object> paramMap = new HashMap<>();
+				
+				// 판매 상품 재고 등록
+				paramMap.put("supplyNum", supplyNum);
+				paramMap.put("state", 6);
+				supplyMapper.updateState1(paramMap);				
+			}
+			
 		} catch (Exception e) {
 			log.info("updateProductDetail : ", e);
 			throw e;
@@ -304,8 +317,9 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void updateProductWithDetails(Product dto, String uploadPath) throws Exception {
 		try {
-			updateProduct(dto, null);
-	        updateProductDetail(dto);
+			updateProduct(dto, uploadPath);
+			
+	        updateProductDetail(dto, null);
 		} catch (Exception e) {
 			log.info("updateProductWithDetails : ", e);
 			throw e;

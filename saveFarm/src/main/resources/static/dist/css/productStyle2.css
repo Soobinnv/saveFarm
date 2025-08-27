@@ -5,7 +5,7 @@ body {
 }
 
 main {
-	padding-top: 140px;
+	padding-top: 30px;
 	flex-grow: 1;
 }
 
@@ -328,3 +328,6 @@ main {
     width: 100%;
   }
 
+.lattest-product-area {
+	padding-bottom: 0px !important;
+}
