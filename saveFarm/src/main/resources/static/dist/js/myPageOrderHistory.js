@@ -48,6 +48,53 @@ $(document).on('click', '.order-details', function() {
 	ajaxRequest(url, 'get', params, 'json', fn);
 });
 
+// 배송조회 이벤트 핸들러 등록
+$(function() {
+	$('#content').on('click', '.btn-track-shipment', function() {
+		const orderDetailNum = $(this).data('orderdetailnum');
+		
+		const url = contextPath + '/api/myPage/shipmentInfo';
+		const params = { orderDetailNum: orderDetailNum };
+
+		const fn = function(data) {
+			// 모달에 데이터 채우기
+			$('#shipping-company').text(data.companyName || '정보 없음');
+			$('#tracking-number').text(data.trackingNumber || '정보 없음');
+			
+			const $statusList = $('#shipping-status-list');
+			$statusList.empty(); // 기존 목록 비우기
+
+			if (data.statusHistory && data.statusHistory.length > 0) {
+				data.statusHistory.forEach(item => {
+					const listItem = `
+						<li class="list-group-item d-flex justify-content-between align-items-center">
+							<div>
+								<div class="fw-bold">${item.status}</div>
+								<small class="text-muted">${item.location} | ${item.description}</small>
+							</div>
+							<span class="badge bg-secondary rounded-pill">${item.time}</span>
+						</li>
+					`;
+					$statusList.append(listItem);
+				});
+			} else {
+				$statusList.append('<li class="list-group-item">배송 상태 정보가 없습니다.</li>');
+			}
+			
+			// 모달 띄우기
+			$('#shipmentTrackingModal').modal('show');
+		};
+
+		// ajaxRequest 함수는 이미 구현되어 있으므로 그대로 사용합니다.
+		ajaxRequest(url, 'get', params, 'json', fn);
+	});
+	
+	$('#content').on('click', '.btn-review-write', function() {
+		
+	});
+
+});
+
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
  * @param {object} data - 내가 주문한 상품 데이터
@@ -170,6 +217,31 @@ const renderMyPageMainHtml = function(data) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body order-detail-view"></div>
+            </div>
+        </div>
+    </div>
+  `;
+  
+  html += `
+    <div class="modal fade" id="shipmentTrackingModal" tabindex="-1" aria-labelledby="shipmentTrackingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shipmentTrackingModalLabel">배송조회</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <strong>배송업체:</strong> <span id="shipping-company"></span>
+                    </div>
+                    <div class="mb-3">
+                        <strong>송장번호:</strong> <span id="tracking-number"></span>
+                    </div>
+                    <hr>
+                    <h6>배송 상태</h6>
+                    <ul class="list-group list-group-flush" id="shipping-status-list">
+                        </ul>
+                </div>
             </div>
         </div>
     </div>
