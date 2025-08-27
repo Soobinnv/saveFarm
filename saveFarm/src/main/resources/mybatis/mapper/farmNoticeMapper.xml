@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.farm.mapper.NoticeMapper">
+
+  <!-- 결과 매핑 -->
+  <resultMap id="NoticeManageResultMap" type="com.sp.app.admin.model.NoticeManage">
+    <id property="noticeNum" column="noticeNum"/>
+    <result property="notice" column="notice"/>
+    <result property="memberId" column="memberId"/>
+    <result property="subject" column="subject"/>
+    <result property="content" column="content" jdbcType="CLOB" javaType="java.lang.String"/>
+    <result property="hitCount" column="hitCount"/>
+    <result property="regDate" column="regDate"/>
+    <result property="updateId" column="updateId"/>
+    <result property="updateDate" column="updateDate"/>
+    <result property="showNotice" column="showNotice"/>
+    <result property="categoryNum" column="categoryNum"/>
+    <result property="categoryName" column="categoryName"/>
+    <result property="classify" column="classify"/>
+    <result property="updateName" column="updateName"/>
+    <result property="loginId" column="loginId"/>
+    <result property="loginUpdate" column="loginUpdate"/>
+    <result property="name" column="name"/>
+  </resultMap>
+
+  <!-- 검색 블록: 별칭 명시 (n./c.) -->
+<sql id="where-list">
+  <choose>
+    <!-- 제목+내용 -->
+    <when test="schType == 'all' and kwd != null and kwd != ''">
+      <![CDATA[
+        (
+          INSTR(LOWER(n.subject), LOWER(#{kwd})) > 0
+		  	OR NVL(DBMS_LOB.INSTR(
+	         UPPER(REGEXP_REPLACE(n.content, '<[^>]+>', '')),
+	         UPPER(#{kwd})
+	       ), 0) > 0
+        )
+      ]]>
+    </when>
+
+    <!-- 작성일 -->
+    <when test="schType == 'reg_date' and kwd != null and kwd != ''">
+      ( INSTR(TO_CHAR(n.regDate, 'YYYYMMDD'), #{kwd}) > 0
+        OR TO_CHAR(n.regDate, 'YYYY-MM-DD') = #{kwd} )
+    </when>
+
+    <!-- 제목 -->
+    <when test="schType == 'subject' and kwd != null and kwd != ''">
+      INSTR(LOWER(n.subject), LOWER(#{kwd})) > 0
+    </when>
+
+    <!-- 내용(CLOB) -->
+    <when test="schType == 'content' and kwd != null and kwd != ''">
+      <![CDATA[
+        NVL(DBMS_LOB.INSTR(
+	      UPPER(REGEXP_REPLACE(n.content, '<[^>]+>', '')),
+	      UPPER(#{kwd})
+	    ), 0) > 0
+      ]]>
+    </when>
+  </choose>
+</sql>
+
+<select id="findByNoticeNum" parameterType="map" resultMap="NoticeManageResultMap">
+  SELECT
+    n.noticeNum, n.notice, n.memberId, n.subject, n.content,
+    n.hitCount, n.regDate, n.updateId, n.updateDate, n.showNotice,
+    n.categoryNum, c.categoryName, c.classify,
+    NVL(m.name, '관리자') AS name
+  FROM notice n
+  LEFT JOIN member2 m ON m.memberId = n.memberId   -- 관리자 글도 누락되지 않도록
+  JOIN category c ON c.categoryNum = n.categoryNum
+  WHERE n.noticeNum = #{noticeNum}
+    AND n.showNotice = 1
+    AND c.classify >= 1
+	<if test="categoryNum != null"> 
+		AND n.categoryNum = #{categoryNum} 
+	</if>
+</select>
+  
+  <select id="listFarmCategories" resultMap="NoticeManageResultMap">
+	  SELECT categoryNum, categoryName, classify
+	  FROM category
+	  WHERE classify >= 1
+	  ORDER BY classify, categoryName
+  </select>
+
+  <!-- 카운트: 농가글(classify>=1) + 표시글(showNotice=1) + 동일 검색 -->
+  <select id="noticeCount" parameterType="map" resultType="Integer">
+    SELECT NVL(COUNT(n.noticeNum), 0)
+    FROM notice n
+    JOIN category c ON c.categoryNum = n.categoryNum
+    <where>
+      n.showNotice = 1
+      AND c.classify &gt;= 1
+      <if test="kwd != null and kwd != ''">
+        AND <include refid="where-list"/>
+      </if>
+      <if test="categoryNum != null">
+        AND n.categoryNum = #{categoryNum}
+      </if>
+      <if test="categoryName != null and categoryName != ''">
+        AND LOWER(c.categoryName) LIKE '%' || LOWER(#{categoryName}) || '%'
+      </if>
+    </where>
+  </select>
+
+  <!-- 조회수 증가 -->
+  <update id="updateHitCount" parameterType="Long">
+    UPDATE notice SET hitCount = hitCount + 1
+    WHERE noticeNum = #{noticeNum}
+  </update>
+
+  <!-- 상단 고정 공지(공지 notice=1), 농가글만 -->
+  <select id="listNoticeTop" parameterType="map" resultMap="NoticeManageResultMap">
+    SELECT
+      n.noticeNum, n.notice, n.memberId, n.subject, n.content,
+      n.hitCount,
+      TO_CHAR(n.regDate, 'YYYY-MM-DD') AS regDate,
+      TO_CHAR(n.updateDate, 'YYYY-MM-DD') AS updateDate,
+      c.categoryNum, c.categoryName, c.classify
+    FROM notice n
+    JOIN category c ON c.categoryNum = n.categoryNum
+    <where>
+      n.notice = 1
+      AND n.showNotice = 1
+      AND c.classify &gt;= 1
+      <if test="classify != null">
+        AND c.classify = #{classify}
+      </if>
+    </where>
+    ORDER BY n.updateDate DESC, n.noticeNum DESC
+  </select>
+
+  <!-- 리스트: 농가글 + 파일 개수 -->
+  <select id="listNotice" parameterType="map" resultMap="NoticeManageResultMap">
+    SELECT
+      n.noticeNum, n.notice, n.memberId, n.subject, n.content,
+      n.hitCount, n.regDate, n.updateId, n.updateDate, n.showNotice,
+      c.classify, n.categoryNum, c.categoryName,
+      f.fileCount
+    FROM notice n
+    JOIN category c ON c.categoryNum = n.categoryNum
+    LEFT JOIN (
+      SELECT noticeNum, COUNT(*) AS fileCount
+      FROM notiFile
+      GROUP BY noticeNum
+    ) f ON f.noticeNum = n.noticeNum
+    <where>
+      n.showNotice = 1
+      AND c.classify &gt;= 1
+      <if test="kwd != null and kwd != ''">
+        AND <include refid="where-list"/>
+      </if>
+      <if test="categoryNum != null">
+        AND n.categoryNum = #{categoryNum}
+      </if>
+      <if test="categoryName != null and categoryName != ''">
+        AND LOWER(c.categoryName) LIKE '%' || LOWER(#{categoryName}) || '%'
+      </if>
+    </where>
+    ORDER BY n.updateDate DESC, n.noticeNum DESC
+    OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+  </select>
+
+  <!-- 파일 목록 -->
+  <select id="listNoticeFile" parameterType="long">
+    SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
+    FROM notiFile
+    WHERE noticeNum = #{noticeNum}
+  </select>
+
+  <!-- 이전글: 동일 조건 + 현재글보다 더 최신 1건 -->
+  <select id="findByPrev" parameterType="map" resultMap="NoticeManageResultMap">
+    SELECT n.noticeNum, n.subject
+    FROM notice n
+    JOIN member2 m ON n.memberId = m.memberId
+    JOIN category c ON c.categoryNum = n.categoryNum
+    <where>
+      n.showNotice = 1
+      AND c.classify &gt;= 1
+     <if test="categoryNum != null">
+     	AND n.categoryNum = #{categoryNum}
+      </if>
+      <if test="kwd != null and kwd != ''">
+        AND <include refid="where-list"/>
+      </if>
+      AND (
+        n.updateDate &gt; #{updateDate}
+        OR (n.updateDate = #{updateDate} AND n.noticeNum &gt; #{noticeNum})
+      )
+    </where>
+    ORDER BY n.updateDate ASC, n.noticeNum ASC
+    FETCH FIRST 1 ROWS ONLY
+  </select>
+
+  <!-- 다음글: 동일 조건 + 현재글보다 더 예전 1건 -->
+  <select id="findByNext" parameterType="map" resultMap="NoticeManageResultMap">
+    SELECT n.noticeNum, n.subject
+    FROM notice n
+    JOIN member2 m ON n.memberId = m.memberId
+    JOIN category c ON c.categoryNum = n.categoryNum
+    <where>
+      n.showNotice = 1
+      AND c.classify &gt;= 1
+      <if test="categoryNum != null">
+      	AND n.categoryNum = #{categoryNum}
+     </if>
+      <if test="kwd != null and kwd != ''">
+        AND <include refid="where-list"/>
+      </if>
+      AND (
+        n.updateDate &lt; #{updateDate}
+        OR (n.updateDate = #{updateDate} AND n.noticeNum &lt; #{noticeNum})
+      )
+    </where>
+    ORDER BY n.updateDate DESC, n.noticeNum DESC
+    FETCH FIRST 1 ROWS ONLY
+  </select>
+  
+  	<select id="findByFileId" parameterType="Long" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
+		FROM notiFile
+	    WHERE fileNum = #{fileNum}
+	</select>
+</mapper>

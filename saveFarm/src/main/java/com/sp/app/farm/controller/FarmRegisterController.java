@@ -1,10 +1,12 @@
 package com.sp.app.farm.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -48,7 +50,7 @@ public class FarmRegisterController {
 		@RequestParam(name = "schType", defaultValue = "all") String schType,
 		@RequestParam(name = "kwd", defaultValue = "") String kwd,
 		@RequestParam(name = "harvestDate", defaultValue = "") String harvestDate,
-	    @RequestParam(name="state", defaultValue="1") int state,
+	    @RequestParam(name="state", required=false) String state,
 	    @RequestParam(name="rescuedApply", defaultValue="-1") int rescuedApply,
 	    @RequestParam(name="productNum", defaultValue="-1") long productNum,
 	    @RequestParam(name="varietyNum", defaultValue="-1") long varietyNum,
@@ -76,7 +78,25 @@ public class FarmRegisterController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("schType", schType);
 		map.put("kwd", kwd);
-		map.put("state", state);
+		
+		
+		String stateNorm = state == null ? "" : state.trim();
+        if (!stateNorm.isEmpty()) {
+            if (stateNorm.contains(",")) {
+                List<Integer> stateList = Arrays.stream(stateNorm.split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList()); // (Java 8 호환)
+                map.put("stateList", stateList);
+            } else {
+                try {
+                    map.put("state", Integer.parseInt(stateNorm));
+                } catch (NumberFormatException ignore) {}
+            }
+        }
+        model.addAttribute("state", stateNorm);
+		
 		/*
 	    map.put("rescuedApply", rescuedApply);
 	    map.put("productNum", productNum);

@@ -53,7 +53,7 @@
 							<option value="2" ${state==2?'selected':''}>승인</option>
 							<option value="3" ${state==3?'selected':''}>기각</option>
 							<option value="4" ${state==4?'selected':''}>배송시작</option>
-							<option value="5" ${state==5?'selected':''}>배송완료</option>
+							<option value="5,6" ${param.state=='5,6'?'selected':''}>배송완료</option>
 						</select>
 					</div>
 				</div>

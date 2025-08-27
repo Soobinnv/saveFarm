@@ -32,8 +32,10 @@
 			  <li class="dropdown">
 			    <a href="#"><span>고객센터</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
 			    <ul>
-			      <li><a href="#">공지사항</a></li>
-			      <li><a href="#">문의</a></li>
+			      <li><a href="${pageContext.request.contextPath}/farm/notice/list">공지사항</a></li>
+			      <c:if test="${not empty sessionScope.farm}">			      
+			      	<li><a href="${pageContext.request.contextPath}/farm/inquiry/list">문의</a></li>
+			      </c:if>
 			      <li><a href="${pageContext.request.contextPath}/farm/FAQ/list">자주묻는 질문</a></li>
 			    </ul>
 			  </li>

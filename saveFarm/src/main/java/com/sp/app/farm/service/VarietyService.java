@@ -7,11 +7,11 @@ import java.util.Map;
 import com.sp.app.farm.model.Variety;
 
 public interface VarietyService {
-	public void insertVariety(Variety dto) throws SQLException;
+	public void insertVariety(Variety dto) throws Exception;
 	
-	public void updateVariety(Variety dto) throws SQLException;
+	public void updateVariety(Variety dto) throws Exception;
 	
-	public void deleteVariety(Map<String, Object> map) throws SQLException;
+	public void deleteVariety(Map<String, Object> map) throws Exception;
 	
 	// 혹시 순서 설정위해서 보고 싶을까봐 추가함
 	public Variety findByVarietyNum(Long varietyNum);

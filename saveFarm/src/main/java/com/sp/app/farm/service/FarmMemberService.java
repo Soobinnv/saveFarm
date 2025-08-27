@@ -1,6 +1,5 @@
 package com.sp.app.farm.service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -9,15 +8,15 @@ import com.sp.app.farm.model.Farm;
 public interface FarmMemberService {
 	public Farm loginMember(Map<String, Object> map);
 	
-	public void insertFarm(Farm dto) throws SQLException;
+	public void insertFarm(Farm dto) throws Exception;
 
-	public void updateFarm(Farm dto) throws SQLException;
+	public void updateFarm(Farm dto) throws Exception;
 	// 농가 승인여부
-	public void updateStatus(Farm dto, Long farmNum) throws SQLException;
+	public void updateStatus(Farm dto, Long farmNum) throws Exception;
 	// 비밀번호 재설정
-	public void updatePassword(Farm dto) throws SQLException;
+	public void updatePassword(Farm dto) throws Exception;
 	
-	public void deleteFarm(Map<String, Object> map) throws SQLException;
+	public void deleteFarm(Map<String, Object> map) throws Exception;
 	
 	// 비번 생성
 	public void generatePwd(Farm dto) throws Exception;

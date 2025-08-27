@@ -32,8 +32,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	                "/farm/guide",
 	                
 	                "/farm/faq/**",
-	                "/farm/notice",
-	                "/farm/notice/detail",
+	                "/farm/notice/**",
 	                "/farm/inquiry",
 	                
 	                "/farm/member/login",

@@ -4,6 +4,13 @@
 <mapper namespace="com.sp.app.farm.mapper.SupplyMapper">
 
 <sql id="WhereList">
+	<if test="stateList != null and stateList.size() > 0">
+    	AND s.state IN
+      	<foreach collection="stateList" item="st" open="(" separator="," close=")">
+       		#{st}
+      	</foreach>
+    </if>
+
 	<if test="productNumOnly != null and productNumOnly == 1">
 	  AND productNum IS NOT NULL
 	</if>

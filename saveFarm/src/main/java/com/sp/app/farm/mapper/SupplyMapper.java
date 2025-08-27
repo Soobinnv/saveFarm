@@ -1,13 +1,11 @@
 package com.sp.app.farm.mapper;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.sp.app.farm.model.MyFarmSale;
 import com.sp.app.farm.model.Supply;
 import com.sp.app.farm.model.Variety;
 
@@ -17,11 +15,11 @@ public interface SupplyMapper {
     // 기본 CRUD
     public void insertSupply(Supply dto) throws SQLException;
     public void updateSupply(Supply dto) throws SQLException;
-    public int updateState(Map<String, Object> map) throws SQLException;        // supplyNum / state 등등 여러조건
-    public void updateState1(Long supplyNum) throws SQLException;        // supplyNum 
-    public void updateState2(Long supplyNum) throws SQLException;        // supplyNum / state
-    public void updateRescuedApply(Map<String, Object> map) throws SQLException;        // supplyNum / state
-    public void deleteSupply(Map<String, Object> map) throws SQLException;       // supplyNum 또는 다건
+    public int updateState(Map<String, Object> map) throws SQLException;        
+    public void updateState1(Map<String, Object> map) throws SQLException;     
+    public void updateState2(Map<String, Object> map) throws SQLException;       
+    public void updateRescuedApply(Map<String, Object> map) throws SQLException;        
+    public void deleteSupply(Map<String, Object> map) throws SQLException;      
 
     public List<Variety> listFarmVarieties(Map<String, Object> map);
     
