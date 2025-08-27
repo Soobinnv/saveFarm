@@ -39,10 +39,17 @@
 	</select>
 	
 	<select id="productList" parameterType="long" resultType="com.sp.app.admin.model.PackageManage">
-	    SELECT pi.productNum, pd.productName
+	    SELECT pi.productNum, packageNum ,qty ,pd.productName, unitPrice
 	    FROM packageItem pi
 		LEFT OUTER JOIN ProductDetail pdt ON pi.productNum = pdt.productNum
 		LEFT OUTER JOIN Product pd ON pdt.productNum = pd.productNum
 		where pi.packageNum = #{packageNum}
+	</select>
+	
+	<select id="modalpackageList" parameterType="map" resultType="com.sp.app.admin.model.PackageManage">
+		SELECT p.PRODUCTNUM, PRODUCTNAME, UNIT, pd.UNITPRICE
+		FROM product p
+		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		WHERE PRODUCTCLASSIFICATION = 100
 	</select>
 </mapper>
