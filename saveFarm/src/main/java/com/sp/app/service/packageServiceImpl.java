@@ -34,7 +34,7 @@ public class packageServiceImpl implements packageService {
 			Calendar cal = Calendar.getInstance();
 			String y = String.format("%04d", cal.get(Calendar.YEAR));
 			String m = String.format("%02d", (cal.get(Calendar.MONTH) + 1));
-			String d = String.format("%03d", cal.get(Calendar.DATE) * 7);
+			String d = String.format("%03d", cal.get(Calendar.DATE) * 6);
 
 			String preNumber = y + m + d;
 			String savedPreNumber = "0";
@@ -58,7 +58,7 @@ public class packageServiceImpl implements packageService {
 				}
 			}
 
-			result = preNumber + String.format("%09d", lastNumber);
+			result = preNumber +"1"+String.format("%08d", lastNumber);
 
 			System.out.println(result);
 		} catch (Exception e) {
@@ -119,17 +119,18 @@ public class packageServiceImpl implements packageService {
 		try {
 			dto = mapper.findBySubnum(subNum);
 			
-			 List<Long> productNums = new ArrayList<>();
-			 List<Integer> itemPrices = new ArrayList<>();
-			 List<Integer> counts = new ArrayList<>();
-			
-			
 			PackageOrder packageInfo = mapper.subPackageinfo(dto.getSubNum());
 		    List<PackageOrder> items = mapper.subItemList(dto.getSubNum());
+		    PackageOrder desinfo = mapper.findBysubDes(dto.getMemberId());
 
 		    dto.setHomePackageNum(packageInfo.getHomePackageNum());
 		    dto.setSaladPackageNum(packageInfo.getSaladPackageNum());
+		    
 		    dto.setPackagePrice(packageInfo.getPackagePrice());
+		    dto.setReceiver(desinfo.getReceiver());
+		    dto.setTel(desinfo.getTel());
+		    dto.setZip(desinfo.getZip());
+		    dto.setAddr(desinfo.getAddr());
 			
 		    dto.setProductNums(items.stream().map(PackageOrder::getProductNum).toList());
 	        dto.setItemPrices(items.stream().map(PackageOrder::getItemPrice).toList());
@@ -150,6 +151,7 @@ public class packageServiceImpl implements packageService {
 		        dto.getProductNames().add(productInfo.getProductName());
 	            dto.getMainImageFileNames().add(productInfo.getMainImageFilename());
 	        }
+	        
 		} catch (Exception e) {
 		}
 		

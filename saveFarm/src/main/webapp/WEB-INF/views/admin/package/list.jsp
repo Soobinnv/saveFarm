@@ -175,7 +175,7 @@
 							<td width="110" class="bg-light">번호</td>
 							<td width="110" class="bg-light">제품명</td>
 							<td width="110" class="bg-light">제품단위</td>
-							<td width="110" class="bg-light">가격</td>
+							<td width="110" class="bg-light">수량</td>
 							<td width="110" class="bg-light">선택</td>
 							<td><p class="form-control-plaintext">${dto.loginId}</p></td>
 						</tr>
@@ -183,7 +183,7 @@
 							<td class="bg-light"></td>
 							<td >이름</td>
 							<td >이름</td>
-							<td >이름</td>
+							<td > <input style="max-width:80px;"> </td>
 							<td >
 								<button type="button" class="btn mb-2 btn-secondary" onclick="updateModalDetails();">수정</button>
 							</td>

@@ -91,6 +91,40 @@ public class packageController {
 		
 		return "package/packageCart";
 	}
+	
+	@PostMapping("updatesubInfo")
+	public String updateSubinfo(PackageOrder dto, HttpSession session,final RedirectAttributes reAttr) throws Exception{
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			String prevsubNum = dto.getSubNum();
+			
+			dto.setMemberId(info.getMemberId());
+			packageMapper.updateSubinfo(prevsubNum);
+			
+			packageMapper.deletesubDes(info.getMemberId());
+			
+			dto.setSubNum(packageService.subPackageNumber());
+			dto.setIsExtend(4);
+			
+			packageService.insertPackageOrder(dto);
+
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append(info.getName() + "님 정기결제 정보가 변경되었습니다.<br>");
+			sb.append("주문하신 상품은 매달" + "일에 결제 됩니다 .<br>");
+			sb.append("결제 금액 : <label class='fs-5 fw-bold text-primary'>" + dto.getTotalPay() + "</label>원");
+
+			reAttr.addFlashAttribute("title", "정기 구독 변경");
+			reAttr.addFlashAttribute("message", sb.toString());
+
+			return "redirect:/package/complete";
+			
+		} catch (Exception e) {
+			log.info("updateSubinfo : ",e);
+		}
+		return "redirect:/";
+	}
 
 	@PostMapping("payForm")
 	public String packageSubmit(PackageOrder dto, HttpSession session, final RedirectAttributes reAttr)
@@ -169,12 +203,15 @@ public class packageController {
 	}
 	
 	@PostMapping("quitSubscribe")
-	public String quitSubscribe(String subNum) {
+	public String quitSubscribe(String subNum, HttpSession session) {
 		
 		
 		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			
 			packageMapper.quitSubscribe(subNum);
-			packageMapper.deletesubDes(subNum);
+			packageMapper.deletesubDes(info.getMemberId());
 			
 		} catch (Exception e) {
 			log.info("quitSubscribe: ",e);

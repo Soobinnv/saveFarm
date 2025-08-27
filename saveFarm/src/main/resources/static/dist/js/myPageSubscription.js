@@ -174,23 +174,28 @@ function renderMySubInfoHtml(data) {
           var upv  = unit[m] || 0;
           var line = upv * qv;
 		  var btnText;
+		  var rExists = Number(row.reviewExists || 0);
 		  var subNumHidden = '<input type="hidden" name="subNum" value="'+row.subNum+'">';
 		  var subMonthHidden = '<input type="hidden" name="subMonth" value="'+dto.subMonth+'">';
 		  
-		  if(reviewExists == 0){
-			btnText = '<form method="get" action="'+contextPath+'/package/reviewWriteForm">'
-					+ 	subNumHidden
-					+	subMonthHidden
-					+	'<input type="hidden" name="mode" value="write">'
-					+	'<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰작성하기</button>'
-					+'</form>'
-		  }else{
-			btnText = '<form method="Post" action="'+contextPath+'/package/reviewUpdateForm">'
-					+	subMonthHidden
-					+	subNumHidden
-					+ 	'<input type="hidden" name="mode" value="update">'
-					+	'<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰수정하기</button>'
-					+'</form>'
+		  if (rExists === 0) {
+		    // 리뷰 없음 → 작성
+		    btnText =
+		      '<form method="get" action="' + contextPath + '/package/reviewWriteForm">' +
+		        subNumHidden +
+		        subMonthHidden +
+		        '<input type="hidden" name="mode" value="write">' +
+		        '<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰작성하기</button>' +
+		      '</form>';
+		  } else {
+		    // 리뷰 있음 → 수정
+		    btnText =
+		      '<form method="post" action="' + contextPath + '/package/reviewUpdateForm">' +
+		        subMonthHidden +
+		        subNumHidden +
+		        '<input type="hidden" name="mode" value="update">' +
+		        '<button type="submit" class="mp-sub-btn mp-sub-btn--ghost">리뷰수정하기</button>' +
+		      '</form>';
 		  }
 
           out += ''

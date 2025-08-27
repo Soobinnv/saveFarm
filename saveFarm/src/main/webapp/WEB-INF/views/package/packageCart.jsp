@@ -228,9 +228,9 @@ body{
 
     <!-- 결제일 선택 -->
     <div class="mb-4">
-      <label class="form-label fw-semibold">정기 결제 시작날짜</label>
-      <input type="date" class="form-control" name="billingDate" />
-      <div class="form-text">매월 위 날짜에 자동결제됩니다.</div>
+      <label class="form-label fw-semibold">${empty dto ? '정기 결제 시작날짜' : '결제일 변경'}</label>
+      <input type="date" class="form-control" name="billingDate" value="${dto.payDate}"/>
+      <div class="form-text">매월 위 날짜에 자동결제됩니다. </div>
     </div>
 
     <!-- 결제수단 -->
@@ -267,16 +267,16 @@ body{
     <div class="row g-3">
       <div class="col-md-6">
         <label class="form-label">수령인</label>
-        <input type="text" class="form-control" name="receiverName"/>
+        <input type="text" class="form-control" name="receiverName" value="${dto.receiver}"/>
       </div>
       <div class="col-md-6">
         <label class="form-label">연락처</label>
-        <input type="text" class="form-control" name="receiverPhone" placeholder="010-0000-0000"/>
+        <input type="text" class="form-control" name="receiverPhone" placeholder="010-0000-0000" value="${dto.tel}"/>
       </div>
       <div class="col-12">
         <label class="form-label">주소</label>
-        <input type="text" class="form-control mb-2" name="addr1" placeholder="도로명 주소"/>
-        <input type="text" class="form-control" name="addr2" placeholder="상세 주소"/>
+        <input type="text" class="form-control mb-2" name="addr1" placeholder="도로명 주소" value="${dto.zip}"/>
+        <input type="text" class="form-control" name="addr2" placeholder="상세 주소" value="${dto.addr}"/>
       </div>
     </div>
 
@@ -298,11 +298,13 @@ body{
   <input type="hidden" name="productNums" id="productNums">
   <input type="hidden" name="itemPrices" id="itemPrices">
   <input type="hidden" name="counts" id="counts">
+  <input type="hidden" name="subNum" id="subNum">
+  <input type="hidden" name="subMonth" id="subMonth">
   
   
   <button type="button" class="btn btnGreen btn-lg d-block mx-auto rounded-pill py-3 mt-4"
         style="max-width:680px; width:100%;" onclick="sendOk();">
-  정기구독 결제
+        ${empty dto ? '정기구독 결제' : '정기구독 수정'}
 </button>
 </div>
 </form>
@@ -328,6 +330,21 @@ body{
 	
     if(packagePrice == 38000){
       addPackage('saladPackage');
+    }
+    
+    
+    var cur = '${dto.payMethod}' || ''; // CARD | EASY | ACCOUNT | ''
+    if (cur) {
+      var labelMap = { CARD: '카드 결제', EASY: '간편 결제', ACCOUNT: '계좌 결제' };
+      var label    = labelMap[cur] || '결제수단을 선택하세요';
+
+      // 표시 텍스트
+      var selText = document.querySelector('[data-role="paySelect"] .selected-text');
+      if (selText) selText.textContent = label;
+
+      // 히든 값
+      var hidden = document.getElementById('payMethod');
+      if (hidden) hidden.value = cur;
     }
     
   })();
@@ -506,7 +523,6 @@ body{
   $wrap.find('.pay-menu').addClass('d-none');
   $wrap.find('.pay-trigger').attr('aria-expanded','false');
   
-  console.log('payMethod = '+payMethod);
   
 });
 
@@ -581,12 +597,18 @@ function sendOk(){
   document.getElementById('tel').value      = tel;
   document.getElementById('addr').value     = addr1;
   document.getElementById('zip').value      = addr2;
+  
+  const hasDto = '${not empty dto}' === 'true';
 
-  
-  
-  
-  /* 6) 제출 */
-  f.action = '${pageContext.request.contextPath}/package/payForm';
+  if (hasDto) {
+	  //수정
+    f.action = '${pageContext.request.contextPath}/package/updatesubInfo';
+    document.getElementById('subNum').value   = '${dto.subNum}';
+    document.getElementById('subMonth').value = '${dto.subMonth}';
+  } else {
+	  // 등록
+    f.action = '${pageContext.request.contextPath}/package/payForm';
+  }
   f.method = 'post';
   f.submit();
 }
@@ -673,7 +695,6 @@ function hydrateExtrasFromDTO(dto) {
   $('#packagePrice').val(base);
   $('#totalPay').val(base + extrasSum);
 }
-
 
 </script>
 

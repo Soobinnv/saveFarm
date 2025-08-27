@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-
+import com.sp.app.controller.OrderController;
 import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.mapper.OrderMapper;
 import com.sp.app.mapper.PackageMapper;
@@ -29,10 +29,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MyPageServiceImpl implements MyPageService {
+
+    private final OrderController orderController;
 	private final MyPageMapper mapper;
 	private final OrderMapper orderMapper;
 	private final PackageMapper PackageMapper;
 	private final ProductMapper productMapper;
+
 	
 	@Override
 	public int countPayment(Map<String, Object> map) {
@@ -239,8 +242,8 @@ public class MyPageServiceImpl implements MyPageService {
 			        }
 			    }
 			    
-			    
 			    dto.setReviewExists(mapper.findBysubReview(dto.getSubNum()));
+			    System.out.println("ReviewExists: "+dto.getReviewExists());
 			    
 			}
 			

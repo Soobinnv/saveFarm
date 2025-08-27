@@ -18,10 +18,14 @@ public interface PackageMapper {
 	public void insertsubDestination(PackageOrder dto) throws SQLException;
 	public void updateProductStockDec(PackageOrder dto) throws SQLException;
 	public void quitSubscribe(String subNum) throws SQLException;
-	public void deletesubDes(String subNum) throws SQLException;
+	public void deletesubDes(Long memberId) throws SQLException;
+	public void updatesubDes(PackageOrder dto) throws SQLException;
+	public void updateSubinfo(String subNum) throws SQLException;
+	
 	
 	public PackageOrder subPackageinfo(String subNum) throws SQLException;
 	public PackageOrder findBySubnum(String subNum) throws SQLException;
+	public PackageOrder findBysubDes(Long memberId) throws SQLException;
 	public List<PackageOrder> subItemList(String subNum) throws SQLException;
 	
 	
