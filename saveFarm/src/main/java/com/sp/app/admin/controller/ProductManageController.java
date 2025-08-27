@@ -277,6 +277,31 @@ public class ProductManageController {
 		}
 	}
 	
+	// 납품 상세 데이터
+	@GetMapping("/api/admin/supplies/{supplyNum}")
+	public ResponseEntity<?> getSupplyInfo(
+			@PathVariable(name = "supplyNum") long supplyNum
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			Supply supplyInfo = supplyService.findBySupplyNum(supplyNum);
+			
+			if(supplyInfo == null) {
+				body.put("message", "현재 납품 상세 정보가 없습니다.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
+			}
+			
+			body.put("supplyInfo", supplyInfo);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getSupplyInfo: ", e);
+			body.put("message", "납품 상세 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}	
+	
 	// 납품 상태 변경
 	@PatchMapping("/api/admin/supplies/{supplyNum}")
 	public ResponseEntity<?> updateSuppliesStatus(
@@ -295,7 +320,7 @@ public class ProductManageController {
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
-			log.error("updateProduct: ", e);
+			log.error("updateSuppliesStatus: ", e);
 			body.put("message", "납품 상태 변경 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
@@ -405,7 +430,7 @@ public class ProductManageController {
 			ProductQna productQnaInfo = productQnaService.findByQnaNum(qnaNum);
 			
 			if(productQnaInfo == null) {
-				body.put("message", "현제 상품 문의 상세 정보가 없습니다.");
+				body.put("message", "현재 상품 문의 상세 정보가 없습니다.");
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
 			}
 			

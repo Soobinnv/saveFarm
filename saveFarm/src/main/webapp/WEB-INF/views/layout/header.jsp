@@ -39,45 +39,53 @@
 		</div>
 		<div class="d-none d-lg-flex align-items-end">
 			<ul class="d-flex justify-content-end list-unstyled m-0">
-				<li>
 				<c:choose>
 					<c:when test="${empty sessionScope.member}">
-						<a href="javascript:dialogLogin();" class="mx-3"> <iconify-icon
-									icon="healthicons:person" class="fs-4 loginPerson"></iconify-icon>
-						</a>						
+						<li>
+							<a href="javascript:dialogLogin();" class="mx-3"> <iconify-icon
+										icon="healthicons:person" class="fs-4 loginPerson"></iconify-icon>
+							</a>
+						</li>						
 					</c:when>
 					<c:otherwise>
-						<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
-									icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
-						</a>
+						<li>
+							<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
+										icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
+							</a>
+						</li>
 						<c:choose>
 							<c:when test="${sessionScope.member.userLevel == 99}">
-								<a href="${pageContext.request.contextPath}/admin" class="mx-3"> <iconify-icon
-											icon="uil:setting" class="fs-4 loginPerson"></iconify-icon>
-								</a>
+								<li>
+									<a href="${pageContext.request.contextPath}/admin" class="mx-3"> <iconify-icon
+												icon="uil:setting" class="fs-4 loginPerson"></iconify-icon>
+									</a>
+								</li>
 							</c:when>
 							<c:otherwise>
-								<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
-											icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
-								</a>
+								<li>
+									<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
+												icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
+									</a>
+								</li>
+								<li>
+									<a href="index.html" class="mx-3"> 
+										<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+									</a>
+								</li>
+								<li class="ms-3"> 
+									<a href="${pageContext.request.contextPath}/myShopping/cart">
+										<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
+											<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
+											${sessionScope.member.cartSize}</span>  						
+										</c:if>
+									</a>
+								</li>
 							</c:otherwise>
 						</c:choose>
 					</c:otherwise>
 				</c:choose>
-				</li>
-				<li><a href="index.html" class="mx-3"> 
-				<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
-				</a></li>
 				
-				<li class="ms-3"> 
-					<a href="${pageContext.request.contextPath}/myShopping/cart">
-						<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
-						<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
-							<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
-							${sessionScope.member.cartSize}</span>  						
-						</c:if>
-					</a>
-				</li>
 			</ul>
 
 		</div>

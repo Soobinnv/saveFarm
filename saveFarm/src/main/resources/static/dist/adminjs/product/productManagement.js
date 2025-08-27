@@ -44,7 +44,7 @@ const reviewTabConfig = {
 // - 상세 정보 조회
 const detailViewConfig = {
     'product': { baseUrl: '/api/admin/products/', idAttr: 'productNum', render: renderProductDetailHTML },
-    'supply': { baseUrl: '/api/admin/supplies/', idAttr: 'supplyNum', render: renderProductListHTML },
+    'supply': { baseUrl: '/api/admin/supplies/', idAttr: 'supplyNum', render: renderFarmProductDetailHTML },
     'productQna': { baseUrl: '/api/admin/inquiries/', idAttr: 'qnaNum', render: renderProductQnaDetailHTML },
     'productReview': { baseUrl: '/api/admin/reviews/', idAttr: 'reviewNum', render: renderProductReviewDetailHTML }
 };
@@ -280,6 +280,12 @@ $(function() {
 		
 	});
 	
+	// 커스텀 input(이미지) 이벤트 
+	$('main').on('change', '#mainImage', function() {
+	    const fileName = this.files.length > 0 ? this.files[0].name : '선택된 파일 없음';
+	    $('.custom-file-upload .file-name').text(fileName);
+	});
+	
 	// 문의 답변 수정 버튼 - UI 변경
 	$('main').on('click', '.btn-edit-answer', function(e) {
 		const num = $(e.target).attr('data-num') || 0;
@@ -357,13 +363,23 @@ $(function() {
 	// 상품 등록 폼 버튼
 	$('main').on('click', '#btn-product-insert', function() {
 		
-		const fn = function(data) {
-			const productFormHTML = renderProductFormHTML(data.list)
+		// 카테고리 데이터 가져오기
+		ajaxRequest('/api/admin/varietys', 'get', '', 'json', function(varietyData) {
 			
-			$('main').html(productFormHTML);		
-		}
-		
-		ajaxRequest(`/api/admin/varietys`, 'get', '', 'json', fn);
+			// 납품 데이터 가져오기
+			ajaxRequest('/api/admin/supplies', 'get', {state:5}, 'json', function(supplyData) {
+				
+				const productFormHTML = renderProductFormHTML(varietyData.list, supplyData.list);
+				
+				$('main').html(productFormHTML);		
+				
+				// 카테고리 
+				setupCategorySelection('varietyCategory', 'varietyCategoryList', 'varietyNum');
+				
+				// 카테고리 목록 숨기기
+				$('#varietyCategoryList').hide();
+			});
+		});
 	});
 
 	// 상품 분류에 따른 상품 등록 UI 변경
@@ -404,11 +420,50 @@ $(function() {
 		const fn = function(data) {
 			const $statusDivEL = $(e.target).closest('tr').find('.status-block');
 			
-			// UI - 상태 변경
-			$statusDivEL.html(afterStatus);
+			if($statusDivEL.length === 0) {
+				// 납품 상세 페이지인 경우
+				// -> 리스트 로드
+				loadContent('/api/admin/supplies', renderFarmProductListHTML, {size:10}, 'supplyListPage');
+			} else {
+				// 납품 목록 페이지인 경우
+				// -> UI - 상태 변경
+				$statusDivEL.html(afterStatus);
+			}
+			
 		}
 		
 		ajaxRequest(`/api/admin/supplies/${num}`, 'patch', {supplyNum:num, state:targetState}, 'json', fn);		
+	});
+	
+	// 상품 등록 form - 납품 목록 선택 시 상품 카테고리 자동 갱신
+	$('main').on('change', '.supply-checkbox', function(e) {
+		const varietyNum = $(e.target).attr('data-variety-num');
+		const varietyName = $(e.target).attr('data-variety-name');
+		const $categoryInputEL = $('#varietyCategory');
+		const $hiddenInputEL = $('#varietyNum');
+		
+		if($(e.target).is(':checked')) {
+			// 품종 변경 막기
+			$categoryInputEL.attr('disabled', true);			
+			// UI 품종명 변경
+			$categoryInputEL.val(varietyName);
+			// hidden value 변경
+			$hiddenInputEL.val(varietyNum);
+		} else {	
+			$categoryInputEL.attr('disabled', false);			
+			$categoryInputEL.val('');
+			$hiddenInputEL.val('');
+		}
+		
+	});
+	
+	// 일반 상품 선택 시 카테고리 초기화
+	$('main').on('change', '#productClassification', function(e) {
+		const $categoryInputEL = $('#varietyCategory');
+		const $hiddenInputEL = $('#varietyNum');
+		$categoryInputEL.attr('disabled', false);
+		$categoryInputEL.val('');
+		$hiddenInputEL.val('');
 	});
 	
 	// 리뷰 목록 - 리뷰 상태 변경 버튼
@@ -499,3 +554,75 @@ function getProductData(editRow) {
   };
 }
 
+/**
+ * 제품 카테고리(품종) 검색 및 선택 함수 
+ */
+function setupCategorySelection(categoryId, listId, hiddenInputId) {
+	const searchInputEL = document.getElementById(categoryId);
+	const categoryListEL = document.getElementById(listId);
+	const hiddenInputEL = document.getElementById(hiddenInputId);
+	const listItemsELS = categoryListEL.querySelectorAll('li');
+
+	// 카테고리 선택 시 카테고리 목록 표시/숨김
+	searchInputEL.addEventListener('click', () => {
+		categoryListEL.style.display = categoryListEL.style.display === 'block' ? 'none' : 'block';
+	});
+
+	// 리스트 외부 클릭 시 숨김
+	document.addEventListener('click', (event) => {
+		if (!searchInputEL.contains(event.target) && !categoryListEL.contains(event.target)) {
+			categoryListEL.style.display = 'none';
+		}
+	});
+
+	// 카데고리 리스트 아이템 클릭 시 선택
+	listItemsELS.forEach(item => {
+		item.addEventListener('click', () => {
+			const categoryNo = item.dataset.categoryNo;
+			const categoryName = item.textContent;
+
+			hiddenInputEL.value = categoryNo; // 히든에 번호 저장
+			searchInputEL.value = categoryName; // 검색창에 이름 표시
+			categoryListEL.style.display = 'none'; // 리스트 숨김
+
+			// 유효성 검사 에러 메시지 제거 (선택 시)
+			const errorDiv = document.getElementById(categoryId + 'Error');
+			if (errorDiv) {
+				errorDiv.textContent = '';
+			}
+		});
+	});
+
+	// 검색어를 직접 입력 시 리스트에 있는지 필터링
+	searchInputEL.addEventListener('keyup', (event) => {
+		const searchTerm = searchInputEL.value.trim();
+
+		// 목록을 다시 보이게 함 (검색 시작 시)
+		categoryListEL.style.display = 'block';
+
+		// 모든 리스트 아이템을 순회하며 필터링
+		listItemsELS.forEach(item => {
+			const itemText = item.textContent.trim(); // 리스트 아이템 텍스트
+
+			// 아이템 텍스트에 검색어가 포함되어 있으면
+			if (itemText.includes(searchTerm)) {
+				item.style.display = 'block'; // 해당 아이템 보이기
+			} else {
+				item.style.display = 'none'; // 포함되어 있지 않으면 숨기기
+			}
+
+			// 검색어와 리스트 아이템이 일치하면
+			if (itemText === searchTerm) {
+				// 카테고리 번호 저장
+				hiddenInputEL.value = item.dataset.categoryNo;
+				hiddenInputEL.closest('.form-group').lastElementChild.classList.remove('active');
+			} else {
+				hiddenInputEL.value = '';
+			}
+
+		});
+
+	});
+}
+
+    

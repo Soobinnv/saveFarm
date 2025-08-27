@@ -360,9 +360,10 @@ const createSupplyCheckboxesHTML = function(supplyList) {
 				type="checkbox" 
 				value="${supply.supplyNum}" 
 				id="supply-${supply.supplyNum}" 
-				data-quantity="${supply.supplyQuantity}">
-			<label class="form-check-label" for="supply-${supply.supplyNum}">
-				농가명: [${supply.farmName}] / 납품 수량: ${supply.supplyQuantity} / 납품일: ${supply.harvestDate}
+				data-quantity="${supply.supplyQuantity}"
+				data-variety-num="${supply.varietyNum}"
+				data-variety-name="${supply.varietyName}">
+			<label class="form-check-label" for="supply-${supply.supplyNum}">농가명: [${supply.farmName}] / 품종명: ${supply.varietyName} / 납품 수량: ${supply.supplyQuantity} / 납품일: ${supply.harvestDate}
 			</label>
 		</div>
 	`).join('');
@@ -373,17 +374,13 @@ const createSupplyCheckboxesHTML = function(supplyList) {
  * 신규 상품 등록 폼 HTML 문자열 생성 (조건부 필드 적용)
  * @returns {string} 상품 등록 폼 HTML 문자열
  */
-const renderProductFormHTML = function(categoryList) {
+const renderProductFormHTML = function(categoryList, supplyList) {
+	const hasSupplies = supplyList && supplyList.length > 0;
+	
 	const categoryItemsHTML = categoryList.map(dto => `
-		<li>
-			<a class="dropdown-item" href="#" data-category-no="${dto.varietyNum}">
-				${dto.varietyName}
-			</a>
+		<li data-category-no="${dto.varietyNum}">${dto.varietyName}
 		</li>
 	`).join('');
-	
-	console.log(categoryList);
-	console.log(categoryItemsHTML);
 	
 	const html = `
 	<div class="product-registration-ui card shadow-sm mt-3 mb-3 border-light">
@@ -394,55 +391,54 @@ const renderProductFormHTML = function(categoryList) {
 		</div>
 		<form id="product-form" enctype="multipart/form-data">
 			<div class="card-body p-4">
+				<h5 class="mb-3 fw-bold text-primary">상품 정보</h5>
 				<div class="row g-3 mb-4">
-					<div class="col-md-4">
-						<label for="productName" class="form-label"><strong>상품명</strong></label>
-						<input type="text" class="form-control" id="productName" name="productName" placeholder="상품명을 입력하세요" required>
-					</div>
-					<div class="col-md-4">
-						<label for="productClassification" class="form-label"><strong>상품 분류</strong></label>
-						<select class="form-select" id="productClassification" name="productClassification" required>
-							<option value="" selected disabled>카테고리 선택</option>
-							<option value="100">일반</option>
-							<option value="200">구출 상품</option>
-						</select>
-					</div>
-	                
-	                <div class="col-md-4">
-						<label for="productCategory" class="form-label"><strong>상품 카테고리</strong></label>
-						<div class="dropdown">
-							<button class="btn btn-outline-primary dropdown-toggle w-100" type="button" id="category-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
-								카테고리 선택
-							</button>
-							<ul class="dropdown-menu w-100" aria-labelledby="category-dropdown-btn">
-								${categoryItemsHTML}
-							</ul>
+						<div class="col-md-6">
+							<label for="productName" class="form-label"><strong>상품명</strong></label>
+							<input type="text" class="form-control" id="productName" name="productName" placeholder="상품명을 입력하세요" required>
 						</div>
-						<input type="hidden" id="productCategory" name="productCategory" required>
-					</div>
-	                <div id="farm-info-section" class="d-none">
-						<div class="col-md-12">
-							<label for="farmNum" class="form-label"><strong>농장 번호</strong></label>
-							<input type="number" value="0" class="form-control" id="farmNum" name="farmNum" placeholder="농장 고유 번호를 입력하세요">
+						<div class="col-md-6">
+							<label for="productClassification" class="form-label"><strong>상품 분류</strong></label>
+							<select class="form-select custom-select" id="productClassification" name="productClassification" required>
+							    <option value="" selected disabled>카테고리 선택</option>
+							    <option value="100">일반</option>
+							    <option value="200">구출 상품</option>
+							</select>
 						</div>
-						<div class="col-md-12">
-							<label for="endDate" class="form-label"><strong>판매 종료일</strong></label>
-							<input type="date" class="form-control" id="endDate" name="endDate">
+		                <div id="farm-info-section" class="d-none">
+							<div class="col-md-12 mt-4">
+								<label for="farmNum" class="form-label"><strong>농장 번호</strong></label>
+								<input type="number" value="0" class="form-control" id="farmNum" name="farmNum" placeholder="농장 고유 번호를 입력하세요">
+							</div>
+							<div class="col-md-12 mt-4 mb-4">
+								<label for="endDate" class="form-label"><strong>판매 종료일</strong></label>
+								<input type="date" class="form-control" id="endDate" name="endDate">
+							</div>
+							<div class="col-12">
+								<label class="form-label"><strong>납품 내역 선택</strong></label>
+								<div id="supply-checkbox-list" class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
+									${hasSupplies 
+										? createSupplyCheckboxesHTML(supplyList) 
+										: '<p class="text-muted mb-0">처리할 납품 내역이 없습니다.</p>'
+									}
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="col-12">
-						<label for="mainImage" class="form-label"><strong>대표 이미지</strong></label>
-						<input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*">
-					</div>
-					<div class="col-12">
+						<div class="col-12 mt-4">
+						    <strong>대표 이미지</strong>
+						    <label for="mainImage" class="form-label custom-file-upload mt-3">
+						        <span class="file-upload-button">파일 선택</span>
+						        <span class="file-name">선택된 파일 없음</span>
+						    </label>
+						    <input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*" style="display: none;">
+					    </div>
+					<div class="col-12 mt-4">
 						<label for="productDesc" class="form-label"><strong>상품 설명</strong></label>
 						<textarea class="form-control" id="productDesc" name="productDesc" rows="5" placeholder="상품에 대한 상세 설명을 입력하세요" required></textarea>
 					</div>
 				</div>
-
 				<hr class="my-4">
-
-				<h6 class="mb-3 fw-bold text-secondary">가격 및 재고 정보</h6>
+				<h5 class="mb-3 fw-bold text-primary">가격 및 재고 정보</h5>
 				<div class="row g-3">
 					<div class="col-md-4">
 						<label for="unitPrice" class="form-label"><strong>단위당 가격 (원)</strong></label>
@@ -464,6 +460,20 @@ const renderProductFormHTML = function(categoryList) {
 						<label for="deliveryFee" class="form-label"><strong>배송비 (원)</strong></label>
 						<input type="number" class="form-control" id="deliveryFee" name="deliveryFee" placeholder="기본 배송비" min="0" value="3000" required>
 					</div>
+				</div>
+				<div class="row g-3 mt-4">
+					<div class="form-group col-md-12">
+						<label for="varietyCategory"><strong>상품 카테고리</strong></label>
+						<div class="category-select-wrapper">
+							<input name="varietyIdx" type="text" id="varietyCategory" class="category-search-input" placeholder="품종을 검색 또는 선택 (필수)">
+							<input type="hidden" id="varietyNum" name="varietyNum">
+							<div class="category-list" id="varietyCategoryList">
+								<ul>
+									${categoryItemsHTML}
+								</ul>
+							</div>
+						</div>
+					</div>							
 				</div>
 			</div>
 			<div class="card-footer text-end bg-light">
@@ -559,7 +569,7 @@ const renderProductEditHTML = function(data) {
 }
 
 /**
- * 농가상품 신청 리스트 HTML 문자열 생성
+ * 납품 리스트 HTML 문자열 생성
  * @param {object} item - 페이지 데이터 객체
  * @param {Array<object>} item.list - 농가상품 신청 리스트
  * @param {number} item.dataCount - 총 신청 수
@@ -649,7 +659,7 @@ const renderFarmProductListHTML = function(item, params) {
 }
 
 /**
- * 농가상품 신청 목록 테이블 - tbody HTML 생성
+ * 납품 목록 테이블 - tbody HTML 생성
  * @param {Array<object>} list - 농가상품 신청 데이터 리스트
  * @returns {string} tbody에 렌더링될 HTML 문자열
  */
@@ -702,66 +712,91 @@ const renderFarmProductRows = function(list) {
 };
 
 /**
- * 농가상품 신청 상세 정보 HTML 문자열 생성
+ * 납품 상세 정보 HTML 문자열 생성
+ * @param {object} data - 납품 및 농가 정보 데이터
+ * @param {object} data.supplyInfo - 납품 및 농가 정보 객체
  * @returns {string} 상세 보기용 tr HTML 문자열
  */
-const renderFarmProductDetailHTML = function(item) {
+const renderFarmProductDetailHTML = function(data) {
+	const item = data.supplyInfo;
 	let statusBadge;
-	switch (item.status) {
-		case '승인완료':
-			statusBadge = `<span class="badge badge-pill badge-success">${item.status}</span>`;
+	let statusText;
+
+	switch (item.state) {
+		case 2: // 승인
+			statusBadge = `<span class="badge rounded-pill bg-success">승인완료</span>`;
 			break;
-		case '반려':
-			statusBadge = `<span class="badge badge-pill badge-danger">${item.status}</span>`;
+		case 3: // 기각(반려)
+			statusBadge = `<span class="badge rounded-pill bg-danger">반려</span>`;
 			break;
-		default: 
-			statusBadge = `<span class="badge badge-pill badge-warning">${item.status || '승인대기'}</span>`;
+		case 4: // 납품중
+			statusBadge = `<span class="badge rounded-pill bg-info text-dark">납품 처리중</span>`;
+			break;
+		case 5: // 납품 완료
+			statusBadge = `<span class="badge rounded-pill bg-secondary">납품완료</span>`;
+			break;
+		default: // 승인대기 (1)
+			statusBadge = `<span class="badge rounded-pill bg-warning text-dark">승인대기</span>`;
 			break;
 	}
 
-	const supplyOptionHTML = renderSupplyOptionHTML(item);
-	
-	const html = `
-	<table>
+		let actionButtonsHTML = '';
+		switch(item.state) {
+			case 1: // 승인대기 상태
+				actionButtonsHTML = `
+					<button type="button" data-target-state="2" data-num="${item.supplyNum}" class="btn btn-primary btn-sm supply-update-state">승인</button>&nbsp;
+					<button type="button" data-target-state="3" data-num="${item.supplyNum}" class="btn btn-secondary btn-sm supply-update-state">기각</button>
+				`;
+				break;
+			case 4: // 납품중 상태
+				actionButtonsHTML = `
+					<button type="button" data-target-state="5" data-num="${item.supplyNum}" class="btn btn-primary btn-sm supply-update-state">납품 완료 처리</button>
+				`;
+				break;
+		}
+		
+		const html = `
 		<tr class="farm-product-detail-row" style="background-color: #f8f9fa;">
 			<td colspan="7">
 				<div class="row m-3 p-3 align-items-center">
 					<div class="col-md-3 text-center">
-						<img src="${item.productImg || 'https://placehold.co/200x200/EFEFEF/31343C?text=No+Image'}" 
+						<img src="https://placehold.co/200x200/EFEFEF/31343C?text=No+Image" 
 							 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/31343C?text=Image+Error';"
-							 class="img-fluid rounded border" style="max-height: 200px;" alt="${item.productName} 이미지">
+							 class="img-fluid rounded border" style="max-height: 200px;" alt="${item.varietyName} 이미지">
 					</div>
 					<div class="col-md-9">
 						<div class="d-flex justify-content-between align-items-center mb-2">
-							<h4 class="mb-0">${item.productName}</h4>
+							<h4 class="mb-0">${item.varietyName}</h4>
 							${statusBadge}
 						</div>
-						<p class="text-muted">${item.productDesc || '상세 설명이 없습니다.'}</p>
+						<p class="text-muted">${item.coment || '상세 설명이 없습니다.'}</p>
 						<hr class="my-3">
 						<div class="row">
 							<div class="col-md-6">
-								<p class="mb-2"><strong>농가명:</strong> ${item.farmName}</p>
-								<p class="mb-0"><strong>농가 ID:</strong> ${item.farmUserId}</p>
+								<p class="mb-2"><strong>농가명:</strong> ${item.farmName || '정보 없음'}</p>
+								<p class="mb-0"><strong>농가 ID:</strong> ${item.farmerId || '정보 없음'}</p>
 							</div>
 							<div class="col-md-6">
-								<p class="mb-2"><strong>제시 가격:</strong> ${item.price.toLocaleString()}원</p>
-								<p class="mb-0"><strong>신청일:</strong> ${item.applyDate}</p>
+								<p class="mb-2"><strong>단위 가격:</strong> ${(item.unitPrice || 0).toLocaleString()}원</p>
+								<p class="mb-0"><strong>수확일:</strong> ${item.harvestDate || '미정'}</p>
 							</div>
 						</div>
 						<div class="row mt-3">
-							${supplyOptionHTML}
+							<div class="col-12 d-flex justify-content-end gap-2">
+								${actionButtonsHTML}
+							</div>
 						</div>
 					</div>
 				</div>
 			</td>
 		</tr>
-	</table>
-	`;
-	return html;
+		`;
+		return html;
 }
 
 /**
  * 납품 관리 옵션 버튼 HTML 생성
+ * @param {object} item - 납품 데이터 객체
  * @returns {string} 상세 보기용 tr HTML 문자열
  */
 const renderSupplyOptionHTML = function(item) {
