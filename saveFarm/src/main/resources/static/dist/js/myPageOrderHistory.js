@@ -88,10 +88,6 @@ $(function() {
 		// ajaxRequest 함수는 이미 구현되어 있으므로 그대로 사용합니다.
 		ajaxRequest(url, 'get', params, 'json', fn);
 	});
-	
-	$('#content').on('click', '.btn-review-write', function() {
-		
-	});
 
 });
 

@@ -5,7 +5,7 @@
 // - 메인 탭(상품 리스트, 농가 상품 등)
 const mainTabConfig = {
     'productList': { url: '/api/admin/products', render: renderProductListHTML, pagingMethodName: 'productListPage'},
-    'supplyManagement': { url: '/api/admin/supplies', render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
+    'supplyManagement': { url: '/api/admin/supplies', params: {size:10}, render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
     'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, pagingMethodName: 'inquiryListPage' },
     'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'reviewListPage' }
 };
@@ -21,7 +21,9 @@ const productTabConfig = {
 const supplyTabConfig = {
     'tab-status-all': { url: '/api/admin/supplies', params: {size:10}, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
     'tab-status-unapproved': { url: '/api/admin/supplies', params: {size:10, state: 1 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
-    'tab-status-approved': { url: '/api/admin/supplies', params: {size:10, state: 2 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML }
+    'tab-status-approved': { url: '/api/admin/supplies', params: {size:10, state: 2 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-shipping': { url: '/api/admin/supplies', params: {size:10, state: 4 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML },
+    'tab-status-delivered': { url: '/api/admin/supplies', params: {size:10, state: 5 }, pagingMethodName: 'supplyListPage', render: renderFarmProductListHTML }
 };
 
 // - 상품 문의 하위 탭(전체, 답변대기, 답변완료)
@@ -56,7 +58,7 @@ $(function() {
 		const config = mainTabConfig[navId];
 		
 		if (config) {
-			loadContent(config.url, config.render, '', config.pagingMethodName);
+			loadContent(config.url, config.render, config.params, config.pagingMethodName);
 		}
 	});
 	
@@ -117,6 +119,7 @@ $(function() {
 		const productName = $btnEL.attr('data-name');
 		const unit = $btnEL.attr('data-unit');
 		const stock = $btnEL.attr('data-stock');
+		const varietyNum = $btnEL.attr('data-variety');
 
 		const productInfo = {
 			productNum,
@@ -132,8 +135,8 @@ $(function() {
 		}
 		
 		// 납품 목록 요청
-		ajaxRequest('/api/admin/supplies', 'get', {state: 5}, 'json', fn);
-			// state: 5 - 납품 완료 (재고 등록 전)		
+		ajaxRequest('/api/admin/supplies', 'get', {state: 5, varietyNum: varietyNum}, 'json', fn);
+			// state: 5 - 납품 완료 (재고 등록 전)			
 	});
 	
 	// 재고 수정 버튼 (실사 조정)
@@ -352,8 +355,15 @@ $(function() {
 	});
 	
 	// 상품 등록 폼 버튼
-	$('main').on('click', '#btn-product-insert', function(e) {
-		$('main').html(renderProductFormHTML);		
+	$('main').on('click', '#btn-product-insert', function() {
+		
+		const fn = function(data) {
+			const productFormHTML = renderProductFormHTML(data.list)
+			
+			$('main').html(productFormHTML);		
+		}
+		
+		ajaxRequest(`/api/admin/varietys`, 'get', '', 'json', fn);
 	});
 
 	// 상품 분류에 따른 상품 등록 UI 변경
@@ -367,6 +377,38 @@ $(function() {
             $farmInfoSection.addClass('d-none');
         }
 		
+	});
+	
+	// 납품 목록 - 납품 상태 변경 버튼
+	$('main').on('click', '.supply-update-state', function(e) {
+		const num = $(e.target).attr('data-num') || 0;
+		const targetState = $(e.target).attr('data-target-state') || '';
+		
+		if(targetState === '2') {
+			confirmMsg = '납품을 승인하시겠습니까?';
+			afterStatus = '납품준비중';
+		} else if(targetState === '3') {
+			confirmMsg = '납품을 기각하시겠습니까?';			
+			afterStatus = '기각';
+		} else if(targetState === '5') {
+			confirmMsg = '납품 완료 처리하시겠습니까?';			
+			afterStatus = '납품완료';
+		} else {
+			return false;
+		}
+		
+		if(! confirm(confirmMsg)) {
+			return false;
+		}
+		
+		const fn = function(data) {
+			const $statusDivEL = $(e.target).closest('tr').find('.status-block');
+			
+			// UI - 상태 변경
+			$statusDivEL.html(afterStatus);
+		}
+		
+		ajaxRequest(`/api/admin/supplies/${num}`, 'patch', {supplyNum:num, state:targetState}, 'json', fn);		
 	});
 	
 	// 리뷰 목록 - 리뷰 상태 변경 버튼

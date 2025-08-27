@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sp.app.farm.mapper.SupplyMapper;
+import com.sp.app.farm.mapper.VarietyMapper;
+import com.sp.app.farm.model.Variety;
 import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.Product;
 
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductServiceImpl implements ProductService {
 	private final ProductMapper mapper;
 	private final SupplyMapper supplyMapper;
+	private final VarietyMapper varietyMapper;
 	private final ProductReviewService reviewService;
 	private final WishService wishService;
 	
@@ -341,6 +344,19 @@ public class ProductServiceImpl implements ProductService {
 			log.info("insertProductWithDetails : ", e);
 			throw e;
 		}
+	}
+
+	@Override
+	public List<Variety> getVarietyList() {
+		List<Variety> list = null;
+		
+		try {
+			list = varietyMapper.listAll();
+		} catch (Exception e) {
+			log.info("getVarietyList : ", e);
+		}
+		
+		return list;
 	}
 
 }

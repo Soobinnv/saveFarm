@@ -24,7 +24,6 @@ const pagingManagement = function(methodName, params) {
  */
 function productListPage(page) {
 	const paramsString = $('#dataTables').data('params');
-	
 	// 요청 파라미터 가져오기
 	const params = JSON.parse(paramsString);
 	
@@ -41,7 +40,7 @@ function supplyListPage(page) {
 	const paramsString = $('#dataTables').data('params');
 	const params = JSON.parse(paramsString);
 	
-	let parameter = {pageNo:page,state:params.state};
+	let parameter = {pageNo:page,state:params.state, size:params.size};
 		
 	loadContent('/api/admin/supplies', renderFarmProductListHTML, parameter, 'supplyListPage'); 
 }

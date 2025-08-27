@@ -9,7 +9,7 @@
 	</sql>
 	
 	<sql id="productSelect">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, p.varietyNum,
 			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
@@ -19,7 +19,7 @@
 	</sql>
 	
 	<select id="getProductList" parameterType="map" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, varietyNum,
 			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, NVL2(w.memberId, 1, 0) userWish
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
@@ -54,7 +54,7 @@
 	</select>
 
 	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION,
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, varietyNum,
 			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
@@ -83,10 +83,10 @@
         </selectKey>
         INSERT INTO product (
             PRODUCTNUM, PRODUCTNAME, PRODUCTDESC,
-            DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION
+            DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, varietyNum
         ) VALUES (
             #{productNum}, #{productName}, #{productDesc},
-            #{deliveryFee}, #{mainImageFilename}, #{productClassification}
+            #{deliveryFee}, #{mainImageFilename}, #{productClassification}, #{varietyNum}
         )
     </insert>
 
@@ -119,8 +119,9 @@
         <set>
             <if test="productName != null and productName != ''">PRODUCTNAME = #{productName},</if>
             <if test="productDesc != null and productDesc != ''">PRODUCTDESC = #{productDesc},</if>
-            <if test="deliveryFee != null and deliveryFee != ''">DELIVERYFEE = #{deliveryFee},</if>
+            <if test="deliveryFee != null">DELIVERYFEE = #{deliveryFee},</if>
             <if test="mainImageFilename != null and mainImageFilename != ''">MAINIMAGEFILENAME = #{mainImageFilename},</if>
+            <if test="varietyNum != null">varietyNum = #{varietyNum},</if>
         </set>
         WHERE PRODUCTNUM = #{productNum}
     </update>

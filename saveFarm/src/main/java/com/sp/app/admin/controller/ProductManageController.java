@@ -19,6 +19,7 @@ import com.sp.app.model.SessionInfo;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
 import com.sp.app.farm.model.Supply;
+import com.sp.app.farm.model.Variety;
 import com.sp.app.farm.service.SupplyService;
 import com.sp.app.model.Product;
 import com.sp.app.model.ProductQna;
@@ -101,6 +102,25 @@ public class ProductManageController {
 		} catch (Exception e) {
 			log.error("getProducts: ", e);
 			body.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 제품 분류 데이터
+	@GetMapping("/api/admin/varietys")
+	public ResponseEntity<?> getVarietyList(
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			List<Variety> listFarmVarieties = productService.getVarietyList();
+			
+			body.put("list", listFarmVarieties);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getProductInfo: ", e);
+			body.put("message", "제품 분류 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}
@@ -205,6 +225,7 @@ public class ProductManageController {
 	@GetMapping("/api/admin/supplies")
 	public ResponseEntity<?> getSupplies(
 			@RequestParam(name = "state", required = false) Integer state,
+			@RequestParam(name = "varietyNum", required = false) Integer varietyNum,
 			@RequestParam(name = "size", required = false) Integer size,
 			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
 			@RequestParam(name = "schType", required = false, defaultValue = "all") String schType,
@@ -218,6 +239,7 @@ public class ProductManageController {
 			int dataCount = 0;
 
 			paramMap.put("state", state);
+			paramMap.put("varietyNum", varietyNum);
 			
 			if(size != null) {
 				// 페이징 처리
@@ -251,6 +273,30 @@ public class ProductManageController {
 		} catch (Exception e) {
 			log.error("getSupplies: ", e);
 			body.put("message", "농가 납품 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 납품 상태 변경
+	@PatchMapping("/api/admin/supplies/{supplyNum}")
+	public ResponseEntity<?> updateSuppliesStatus(
+			@PathVariable(name = "supplyNum") long supplyNum,
+			@RequestParam(name = "state") Integer state
+			) {
+		Map<String, Object> body = new HashMap<>();
+		
+		try {
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			paramMap.put("supplyNum", supplyNum);
+			paramMap.put("state", state);
+			
+			supplyService.updateState1(paramMap);
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("updateProduct: ", e);
+			body.put("message", "납품 상태 변경 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

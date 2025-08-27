@@ -17,6 +17,9 @@
 <link rel="stylesheet"
 	href="${pageContext.request.contextPath}/dist/css/productStyle2.css"
 	type="text/css">
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/dist/css/productInfo.css"
+	type="text/css">
 </head>
 <body>
 	<header>
