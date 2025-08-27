@@ -29,8 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MyPageServiceImpl implements MyPageService {
-
-    private final OrderController orderController;
 	private final MyPageMapper mapper;
 	private final OrderMapper orderMapper;
 	private final PackageMapper PackageMapper;
@@ -256,5 +254,28 @@ public class MyPageServiceImpl implements MyPageService {
 		
 		
 		return list;
+	}
+
+	@Override
+	public Payment findByOrderDetailDelivery(Map<String, Object> map) {
+		Payment dto = null;
+		
+		try {
+			dto = Objects.requireNonNull(mapper.findByOrderDetailDelivery(map));
+			
+			if(dto.getOrderState() > 1 && dto.getOrderState() <= 4 ){
+				dto.setInvoiceNumber(dto.getInvoiceNumber());
+				dto.setDeliveryName(dto.getDeliveryName());
+			} else {
+				dto.setInvoiceNumber("발송준비중");
+				dto.setDeliveryName("");
+			}
+			
+		} catch (NullPointerException e) {
+		} catch (Exception e) {
+			log.info("findByOrderDetail : ", e);
+		}
+		
+		return dto;
 	}
 }

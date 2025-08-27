@@ -145,6 +145,26 @@ public class MyPageApiController {
 		
 	}
 	
+	// 주문내역 - 배송조회
+	@GetMapping("/shipmentInfo")
+	public ResponseEntity<?> shipmentInfo(@RequestParam Map<String, Object> paramMap, HttpSession session) {
+	    Map<String, Object> body = new HashMap<>();
+	    try {
+	    	SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			paramMap.put("memberId", info.getMemberId());
+	    	
+	    	Payment dto = mypageService.findByOrderDetailDelivery(paramMap); 
+	        
+	    	body.put("dto", dto);
+	    	return ResponseEntity.ok(body); // 200 OK
+	    } catch (Exception e) {
+	        log.error("shipmentInfo: ", e);
+	        body.put("message", "배송정보를 불러오는 중 오류가 발생했습니다.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+	    }
+	}
+	
 	
 	// 내 활동 - 찜 데이터
 	@GetMapping("/wish")

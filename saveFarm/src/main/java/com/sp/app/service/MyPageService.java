@@ -13,6 +13,7 @@ public interface MyPageService {
 	public List<Payment> listPurchase(Map<String, Object> map);
 	
 	public Payment findByOrderDetail(Map<String, Object> map);
+	public Payment findByOrderDetailDelivery(Map<String, Object> map);
 	public Order findByOrderDelivery(Map<String, Object> map);
 	public void updateOrderDetailState(Map<String, Object> map) throws Exception;
 	public void updateOrderHistory(long orderDetailNum) throws Exception;
