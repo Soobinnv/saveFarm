@@ -51,17 +51,7 @@ $(function() {
 
 		manageReview(orderDetailNum, mode);
 	});
-	
-	// 리뷰 등록 / 수정 form
-	$('#content').on('click', '.btn-review', function() {
-		renderReviewForm();
-	});
-	
-	// 반품 신청 form
-	$('#content').on('click', '.btn-return', function() {
-		renderReturnForm();
-	});
-	
+
 	// 반품 신청
 	$('#content').on('click', '.btn-return-insert', function() {
 		const $form = $(this).closest('#returnForm');
@@ -76,12 +66,7 @@ $(function() {
 		
 		ajaxRequest(url, 'post', params, false, fn, true);
 	});
-	
-	// 환불 신청 form
-	$('#content').on('click', '.btn-refund', function() {		
-		renderRefundForm();
-	});
-	
+
 	// 환불 신청
 	$('#content').on('click', '.btn-refund-insert', function() {
 		const $form = $(this).closest('#refundForm');
@@ -133,6 +118,54 @@ $(function() {
 		
 		manageReview(orderDetailNum, "delete");
 	});
+	
+	// 리뷰 등록 form
+	$('#content').on('click', '.btn-review-write', function() {
+		const $orderItem = $(this).closest('.order-card');
+		
+		const orderDetailObject = {
+			orderDetailNum: $orderItem.data('orderdetailnum'),
+			mainImageFilename: $orderItem.data('mainimagefilename'),
+			productName: $orderItem.data('productname'),
+			orderDate: $orderItem.data('orderdate'),
+			productNum: $orderItem.data('productnum'),
+		}
+		
+		// 등록 - 리뷰 객체 X
+		renderReviewForm(orderDetailObject, null);
+	});
+	
+	// 반품 form
+	$('#content').on('click', '.btn-return-request', function() {
+		const $orderItem = $(this).closest('.order-card');
+		
+		const orderDetailObject = {
+			orderDetailNum: $orderItem.data('orderdetailnum'),
+			mainImageFilename: $orderItem.data('mainimagefilename'),
+			productName: $orderItem.data('productname'),
+			orderDate: $orderItem.data('orderdate'),
+			productNum: $orderItem.data('productnum'),
+		}
+		
+		renderReturnForm(orderDetailObject);
+	});
+	
+	// 환불 form
+	$('#content').on('click', '.btn-cancel-order', function() {
+		const $orderItem = $(this).closest('.order-card');
+		
+		const orderDetailObject = {
+			orderDetailNum: $orderItem.data('orderdetailnum'),
+			mainImageFilename: $orderItem.data('mainimagefilename'),
+			productName: $orderItem.data('productname'),
+			orderDate: $orderItem.data('orderdate'),
+			productNum: $orderItem.data('productnum'),
+		}
+		
+		renderRefundForm(orderDetailObject);
+	});
+	
+	
 });
 
 /**
@@ -344,16 +377,7 @@ const renderMyReviewListHtml = function(data) {
  * @returns {void} #content에 HTML 렌더링
  */
 const renderReviewForm = function(orderDetailObject = null, reviewObject = null) {	
-	// sample data
-	orderDetailObject = {
-		orderDetailNum:2,
-		// 상품 메인 이미지
-		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
-		productName:"햇살농장 유기농 사과 1박스(5kg)",
-		orderDate:"2025-08-16",
-		productNum:1
-	}
-	
+
 	let mode = reviewObject === null ? "insert" : "update";
 	
 	const html = `
@@ -364,7 +388,7 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
 
 		<h4 class="display-8 text-dark">이 상품 어떠셨나요?</h4>
 		<div class="reivew-form-product-info d-flex align-items-center mb-4">
-			<img src="${orderDetailObject.mainImageFilename}" class="reivew-form-product-image me-3">
+			<img src="${contextPath}/uploads/product/${orderDetailObject.mainImageFilename}" class="reivew-form-product-image me-3">
 			<div>
 				<p class="reivew-form-product-name mb-1">${orderDetailObject.productName}</p>
 				<p class="reivew-form-order-date text-muted">주문일자: ${orderDetailObject.orderDate}</p>
@@ -421,16 +445,6 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
  * @returns {void} #content에 HTML 렌더링
  */
 const renderReturnForm = function(orderDetailObject = null) {	
-	// sample data
-	orderDetailObject = {
-		orderDetailNum:4,
-		// 상품 메인 이미지
-		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
-		productName:"햇살농장 유기농 사과 1박스(5kg)",
-		orderDate:"2025-08-16",
-		productNum:1
-	}
-	
 	const html = `
 	<div class="container mt-5">
 	    <div class="card">
@@ -440,7 +454,7 @@ const renderReturnForm = function(orderDetailObject = null) {
 	        <div class="card-body">
 	            <div class="row mb-4 align-items-center">
 	                <div class="col-md-2">
-	                    <img src="${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
+	                    <img src="${contextPath}/uploads/product/${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
 	                </div>
 	                <div class="col-md-10">
 	                    <h5 class="card-title">${orderDetailObject.productName}</h5>
@@ -485,16 +499,6 @@ const renderReturnForm = function(orderDetailObject = null) {
  * @returns {void} #content에 HTML 렌더링
  */
 const renderRefundForm = function(orderDetailObject = null) {	
-	// sample data
-	orderDetailObject = {
-		orderDetailNum:3,
-		// 상품 메인 이미지
-		mainImageFilename: contextPath + "/uploads/product/apple.jpg",
-		productName:"햇살농장 유기농 사과 1박스(5kg)",
-		orderDate:"2025-08-16",
-		productNum:1
-	}
-	
 	const html = `
 	<div class="container mt-5">
 	    <div class="card">
@@ -504,7 +508,7 @@ const renderRefundForm = function(orderDetailObject = null) {
 	        <div class="card-body">
 	            <div class="row mb-4 align-items-center">
 	                <div class="col-md-2">
-	                    <img src="${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
+	                    <img src="${contextPath}/uploads/product/${orderDetailObject.mainImageFilename}" class="img-fluid rounded" alt="상품 이미지">
 	                </div>
 	                <div class="col-md-10">
 	                    <h5 class="card-title">${orderDetailObject.productName}</h5>

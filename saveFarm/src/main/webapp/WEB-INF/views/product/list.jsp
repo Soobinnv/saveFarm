@@ -26,7 +26,7 @@
 	
 	<!-- ================ end banner area ================= -->
 
-	<div class="container-xxl py-5">
+	<div class="container-xxl py-5 mt-5">
 		<div class="container" id="container">
 		<section class="blog-banner-area" id="category">
 		<div class="container h-100">

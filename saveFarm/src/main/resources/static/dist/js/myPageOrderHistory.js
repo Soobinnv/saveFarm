@@ -155,7 +155,13 @@ const renderMyPageMainHtml = function(data) {
       orderHtml += orderGroup.map(item => {
         const orderDate = item.orderDate.substring(0, 10);
         return `
-          <div class="order-card">
+          <div class="order-card"
+		  	data-orderDetailNum = "${item.orderDetailNum}"
+		  	data-mainImageFilename = "${item.mainImageFilename}"
+		  	data-productName = "${item.productName}"
+		  	data-orderDate = "${orderDate}"
+		  	data-productNum = "${item.productNum}"
+		  	>
             <div class="order-topline">
               <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
               <div class="order-menu">
