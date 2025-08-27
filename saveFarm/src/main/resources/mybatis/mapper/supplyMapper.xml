@@ -205,6 +205,10 @@
     <where>
     	<include refid="WhereList"/>
   	</where>
+  	ORDER BY s.supplyNum DESC
+  	<if test="size != null">
+  		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+  	</if>
 </select>
 <!--  -->
 
