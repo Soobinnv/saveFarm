@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
+<c:set var="stateStr" value="${empty state ? (empty param.state ? '1' : param.state) : state}" />
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,17 +51,17 @@
 					<div class="d-flex justify-content-end align-items-center gap-2">
 						<label for="state" class="form-label mb-0">진행상태</label>
 						<select id="state" name="state" class="form-select" style="max-width: 180px;">
-							<option value="1" ${state==1?'selected':''}>신청</option>
-							<option value="2" ${state==2?'selected':''}>승인</option>
-							<option value="3" ${state==3?'selected':''}>기각</option>
-							<option value="4" ${state==4?'selected':''}>배송시작</option>
-							<option value="5,6" ${param.state=='5,6'?'selected':''}>배송완료</option>
+							<option value="1"   ${stateStr eq '1'   ? 'selected' : ''}>신청</option>
+							<option value="2"   ${stateStr eq '2'   ? 'selected' : ''}>승인</option>
+							<option value="3"   ${stateStr eq '3'   ? 'selected' : ''}>기각</option>
+							<option value="4"   ${stateStr eq '4'   ? 'selected' : ''}>배송시작</option>
+							<option value="5,6" ${stateStr eq '5,6' ? 'selected' : ''}>배송완료</option>
 						</select>
 					</div>
 				</div>
 			</div>  
 	    	<form name="searchForm" method="get" action="${pageContext.request.contextPath}/farm/register/list" class="mb-3">
-	    		<input type="hidden" name="state" value="${state}" />
+	    		<input type="hidden" name="state" value="${fn:escapeXml(stateStr)}" />
 	      		<table class="table table-hover">
 					<thead>
 						<tr>
@@ -205,6 +207,7 @@ function searchList() {
 }
 
 // 진행상태 변경 시에도 현재 검색조건 유지하여 재조회
+/* 
 (function () {
   const stateSel = document.getElementById('state');
   if (!stateSel) return;
@@ -219,6 +222,17 @@ function searchList() {
     } catch(e) {}
   });
 })();
+ */
+(function () {
+    const stateSel = document.getElementById('state');
+    if (!stateSel) return;
+    stateSel.value = '${fn:escapeXml(stateStr)}';  // ← 여기
+    stateSel.addEventListener('change', function () {
+      const { f, params } = buildSearchParams();
+      params.delete('page');
+      location.href = f.action + '?' + params.toString();
+    });
+  })();
 
 // 엔터키로도 검색 / 행 클릭 이동
 document.addEventListener('DOMContentLoaded', function () {

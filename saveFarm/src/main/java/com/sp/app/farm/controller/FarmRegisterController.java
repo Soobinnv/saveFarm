@@ -44,6 +44,7 @@ public class FarmRegisterController {
         return "farm/register/main"; // 원하는 뷰
 	}
 	
+/*
 	@GetMapping("list")
 	public String list(
 		@RequestParam(name = "page", defaultValue = "1") int current_page,
@@ -67,11 +68,6 @@ public class FarmRegisterController {
 		int total_page = 0;
 		int dataCount = 0;
 
-		/*
-		if (req.getMethod().equalsIgnoreCase("GET")) { // GET 방식인 경우
-			kwd = myUtil.decodeUrl(kwd);
-		}
-		*/
 		kwd = myUtil.decodeUrl(kwd);
 
 		// 전체 페이지 수
@@ -97,10 +93,6 @@ public class FarmRegisterController {
         }
         model.addAttribute("state", stateNorm);
 		
-		/*
-	    map.put("rescuedApply", rescuedApply);
-	    map.put("productNum", productNum);
-	    */
 	    map.put("varietyNum", varietyNum);
 		
         map.put("farmNum", info.getFarmNum());
@@ -125,17 +117,7 @@ public class FarmRegisterController {
 		List<Supply> list = service.listSupply(map);
 
 		String cp = req.getContextPath();
-		/*
-		String query = "";
-		String listUrl = cp + "/farm/register/list";
-        String articleUrl = cp + "/farm/register/detail?page=" + current_page;
-		if (! kwd.isBlank()) {
-			query = "schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
-			
-			listUrl += "?" + query;
-			articleUrl += "&" + query;
-		}
-		*/
+
 		
 		// 1) 필터 문자열 구성
 		List<String> parts = new ArrayList<>();
@@ -178,6 +160,113 @@ public class FarmRegisterController {
 		}
 	
 		return "farm/register/list";
+	}
+*/
+	@GetMapping("list")
+	public String list(
+	    @RequestParam(name = "page", defaultValue = "1") int current_page,
+	    @RequestParam(name = "schType", defaultValue = "all") String schType,
+	    @RequestParam(name = "kwd", defaultValue = "") String kwd,
+	    @RequestParam(name = "harvestDate", defaultValue = "") String harvestDate,
+	    // ★ state를 문자열로 받기 (예: "5,6")
+	    @RequestParam(name="state", required=false, defaultValue="1") String stateParam,
+	    @RequestParam(name="rescuedApply", defaultValue="-1") int rescuedApply,
+	    @RequestParam(name="productNum", defaultValue="-1") long productNum,
+	    @RequestParam(name="varietyNum", defaultValue="-1") long varietyNum,
+	    Model model,
+	    HttpServletRequest req,
+	    HttpSession session) {
+
+	    try {
+	        SessionInfo info = (SessionInfo) session.getAttribute("farm");
+	        if (info == null) {
+	            return "redirect:/farm/member/login";
+	        }
+
+	        int size = 10;
+	        int total_page = 0;
+	        int dataCount = 0;
+
+	        kwd = myUtil.decodeUrl(kwd);
+
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("schType", schType);
+	        map.put("kwd", kwd);
+	        map.put("varietyNum", varietyNum);
+	        map.put("farmNum", info.getFarmNum());
+
+	        // ★ "5,6" → [5, 6] / "5" → 단일 숫자
+	        String stateNorm = stateParam == null ? "" : stateParam.trim();
+	        if (!stateNorm.isEmpty()) {
+	            if (stateNorm.contains(",")) {
+	                List<Integer> stateList = Arrays.stream(stateNorm.split(","))
+	                        .map(String::trim)
+	                        .filter(s -> !s.isEmpty())
+	                        .map(Integer::parseInt)
+	                        .collect(Collectors.toList()); // (Java 8 호환)
+	                map.put("stateList", stateList);
+	            } else {
+	                try {
+	                    map.put("state", Integer.parseInt(stateNorm));
+	                } catch (NumberFormatException ignore) {}
+	            }
+	        }
+	        model.addAttribute("state", stateNorm); // 선택 유지
+
+	        // 전체 페이지 수
+	        dataCount = service.listSupplyCount(map);
+	        if (dataCount != 0) {
+	            total_page = dataCount / size + (dataCount % size > 0 ? 1 : 0);
+	        }
+
+	        current_page = Math.min(current_page, Math.max(total_page, 1));
+	        int offset = Math.max((current_page - 1) * size, 0);
+
+	        map.put("offset", offset);
+	        map.put("size", size);
+
+	        // 리스트
+	        List<Supply> list = service.listSupply(map);
+
+	        String cp = req.getContextPath();
+
+	        // ★ 필터 문자열 구성 (state는 문자열 그대로 넣어줌)
+	        List<String> parts = new ArrayList<>();
+	        if (!stateNorm.isEmpty()) parts.add("state=" + myUtil.encodeUrl(stateNorm));
+	        if (!kwd.isBlank()) {
+	            parts.add("schType=" + schType);
+	            parts.add("kwd=" + myUtil.encodeUrl(kwd));
+	        }
+	        if (rescuedApply != -1) parts.add("rescuedApply=" + rescuedApply);
+	        if (productNum   != -1) parts.add("productNum="   + productNum);
+	        if (varietyNum   != -1) parts.add("varietyNum="   + varietyNum);
+
+	        String filter = String.join("&", parts);
+
+	        String listUrl = cp + "/farm/register/list" + (filter.isEmpty() ? "" : ("?" + filter));
+	        String articleUrl = cp + "/farm/register/detail";
+
+	        String paging = paginateUtil.paging(current_page, total_page, listUrl);
+
+	        model.addAttribute("list", list);
+	        model.addAttribute("dataCount", dataCount);
+	        model.addAttribute("size", size);
+	        model.addAttribute("total_page", total_page);
+	        model.addAttribute("page", current_page);
+
+	        model.addAttribute("paging", paging);
+	        model.addAttribute("articleUrl", articleUrl);
+
+	        model.addAttribute("schType", schType);
+	        model.addAttribute("kwd", kwd);
+	        model.addAttribute("rescuedApply", rescuedApply);
+	        model.addAttribute("harvestDate", harvestDate);
+
+	    } catch (Exception e) {
+	        log.info("list : ", e);
+	    }
+
+	    return "farm/register/list";
 	}
 	
 	@GetMapping("write")
