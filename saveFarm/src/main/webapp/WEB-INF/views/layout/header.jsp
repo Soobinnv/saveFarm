@@ -44,7 +44,21 @@
 							<a href="javascript:dialogLogin();" class="mx-3"> <iconify-icon
 										icon="healthicons:person" class="fs-4 loginPerson"></iconify-icon>
 							</a>
-						</li>						
+						</li>	
+						<li>
+							<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=wishList" class="mx-3"> 
+								<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+							</a>
+						</li>
+						<li class="ms-3"> 
+							<a href="${pageContext.request.contextPath}/myShopping/cart">
+								<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+								<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
+									<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
+									${sessionScope.member.cartSize}</span>  						
+								</c:if>
+							</a>
+						</li>											
 					</c:when>
 					<c:otherwise>
 						<li>

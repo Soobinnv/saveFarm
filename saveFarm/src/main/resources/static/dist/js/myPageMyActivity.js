@@ -612,7 +612,7 @@ function deleteReview(orderDetailNum, mode) {
 
 
 /**
- * 마이 페이지 - 내 활동 - 1:1 문의
+ * 마이 페이지 - 내 활동 - 나의 문의
  * @param {object} data - 나의 문의 데이터
  * @param {Array<object>} data.list - 내가 문의한 inquiry 객체 배열
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
@@ -621,7 +621,7 @@ const renderMyInquiryListHtml = function(data) {
 	let html = `
 		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
-				<h3 class="display-6 fw-bold text-dark">1:1 문의</h3>
+				<h3 class="display-6 fw-bold text-dark">나의 문의</h3>
 				<p class="text-muted">내가 문의한 내용을 확인하고, 관리자의 답변을 확인할 수 있습니다.</p>
 			</div>			
 	`; 
@@ -655,7 +655,7 @@ const renderMyQnaListHtml = function(data) {
 	let html = `
 		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
-				<h3 class="display-6 fw-bold text-dark">나의 상품 문의</h3>
+				<h3 class="display-6 fw-bold text-dark">상품 문의</h3>
 				<p class="text-muted">내가 문의한 상품을 확인하고, 관리자의 답변을 확인할 수 있습니다.</p>
 			</div>			
 	`; 

@@ -1113,17 +1113,6 @@ a {
 	transform: translate(-50%, -50%)
 }
 
-.blog-banner-area::after {
-	content: "";
-	display: block;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	z-index: -1
-}
-
 .blog-banner-btn {
 	border: 2px solid #384aeb;
 	padding: 10px 45px
@@ -4543,7 +4532,10 @@ a {
 		background-size: contain !important;
 		background-repeat: no-repeat !important;
 		background-position: top center !important;
+		max-height: 310px;
+		
 	}
+
 
 }
 

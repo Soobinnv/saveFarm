@@ -22,18 +22,10 @@
 	<jsp:include page="/WEB-INF/views/layout/header.jsp" />
 </header>
 <main>
-	<!-- ================ start banner area ================= -->
-	
-	<!-- ================ end banner area ================= -->
-
 	<div class="container-xxl py-5 mt-5">
-		<div class="container" id="container">
 		<section class="blog-banner-area" id="category">
-		<div class="container h-100">
-			<div class="blog-banner ">
-			</div>
-		</div>
-	</section>
+		</section>
+		<section class="content-section">
 			<div class="search-bar border rounded-2 border-dark-subtle mb-4">
 				<div id="search-form" class="text-center d-flex align-items-center">
 					<input type="text" class="searchInput form-control border-0 bg-transparent" placeholder="Search Here" />
@@ -41,7 +33,7 @@
 				</div>
 			</div>
 			<section class="lattest-product-area pb-40 category-list m-2">
-					<div class="container">
+					<div class="">
 						<div class="section-intro pb-60px">
 							<p>위험에 빠진 상품을 구출해주세요!</p>
 							<h2>
@@ -52,7 +44,7 @@
 				<div class="row" id="rescuedProductLayout"></div>
 			</section>
 			<section class="lattest-product-area pb-40 category-list m-2">
-					<div class="container">
+					<div class="">
 						<div class="section-intro pb-60px">
 							<p>자연의 맛 그대로, 개성만점 못난이들</p>
 							<h2>
@@ -63,9 +55,8 @@
 				<div class="row content-list" id="productLayout"></div>
 				<div class="sentinel" data-loading="false"></div>
 			</section>
-		</div>
+		</section>
 	</div>
-
 <input type="hidden" id="web-contextPath" value="${pageContext.request.contextPath}">
 </main>
 <footer>

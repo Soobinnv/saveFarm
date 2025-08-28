@@ -36,7 +36,7 @@
         <li>내 활동</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/wish', renderMyWishListHtml);">찜</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/reviews', renderMyReviewListHtml);">나의 리뷰</a></li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/inquirys', renderMyInquiryListHtml);">1:1 문의</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/inquirys', renderMyInquiryListHtml);">나의 문의</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/qnas', renderMyQnaListHtml);">상품 문의</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/faqs', renderFaqListHtml);">FAQ</a></li>
         <li>회원정보</li>
