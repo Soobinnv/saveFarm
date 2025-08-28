@@ -29,5 +29,40 @@
 		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
 		WHERE m1.memberId = #{memberId}
 	</select>
+	
+	<!-- 회원정보 수정 -->
+    <update id="updateMember1" parameterType="com.sp.app.model.Member">
+		UPDATE member1 SET loginId = #{loginId, jdbcType=VARCHAR}, 
+			snsProvider = #{snsProvider, jdbcType=VARCHAR}, snsId = #{snsId, jdbcType=VARCHAR}, 
+			password = #{password}, updateAt = SYSDATE
+		WHERE memberId = #{memberId}
+    </update>
+	
+    <update id="updateMember2" parameterType="com.sp.app.model.Member">
+		UPDATE member2 SET email = #{email}, 
+			birth = TO_DATE(#{birth}, 'YYYY-MM-DD'), 
+			tel = #{tel, jdbcType=VARCHAR}, 
+			profilePhoto = #{profile_photo, jdbcType=VARCHAR}, 
+			zip = #{zip, jdbcType=VARCHAR},
+			addr1 = #{addr1, jdbcType=VARCHAR}, addr2 = #{addr2, jdbcType=VARCHAR},
+			receiveEmail = #{receiveEmail}
+		WHERE memberId = #{memberId}
+    </update>
+
+    <update id="deleteProfilePhoto" parameterType="map">
+		UPDATE member2 SET profilePhoto = ''
+		WHERE memberId = #{memberId}
+    </update>
+
+    <!-- member 테이블 정보 삭제  -->    
+    <delete id="deleteMember1" parameterType="map">
+		DELETE FROM member1
+		WHERE memberId = #{memberId}
+    </delete>
+    
+    <delete id="deleteMember2" parameterType="map">
+		DELETE FROM member2
+		WHERE memberId = #{memberId}
+    </delete>
 
 </mapper>
