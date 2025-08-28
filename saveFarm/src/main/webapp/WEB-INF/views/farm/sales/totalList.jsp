@@ -91,7 +91,180 @@
 
 <script src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
 <script type="text/javascript">
+(function () {
+  const ctx = '${pageContext.request.contextPath}';
 
+  const API_BASE = ctx + '/farm/sales/data'; // /farm/sales/* 의 * 자리에 'data'를 사용
+
+  // DOM
+  const $select = document.getElementById('categoryNum');
+  const $input  = document.getElementById('varietyNameSearch');
+  const $btn    = document.getElementById('btnVarietyNameSearch');
+  const $list   = document.getElementById('likeVarietyName');
+
+  // 차트 인스턴스
+  const vChart = echarts.init(document.getElementById('varietyNameChart'));
+
+  // 라인 차트 옵션
+  function makeLineOption(title, months, seriesName, data) {
+    return {
+      title: { text: title, left: 'center' },
+      tooltip: { trigger: 'axis' },
+      grid: { left: 40, right: 20, top: 60, bottom: 40 },
+      xAxis: { type: 'category', boundaryGap: false, data: months },
+      yAxis: { type: 'value', name: '중량(g)' },
+      toolbox: { feature: { saveAsImage: {}, dataZoom: {} } },
+      dataZoom: [{ type: 'inside' }, { type: 'slider' }],
+      series: [{
+        name: seriesName,
+        type: 'line',
+        smooth: true,
+        areaStyle: {},
+        data
+      }],
+      legend: { data: [seriesName], top: 28 }
+    };
+  }
+
+  // 월별 데이터 조회 (서버는 아래 형식 중 하나로 응답한다고 가정)
+  // { months: [...], legend: [...], series: [{name, data:[...]}] }
+  async function fetchMonthlyByVariety({ varietyNum = null, varietyName = null, rangeMonths = 36 }) {
+    const params = new URLSearchParams();
+    params.set('rangeMonths', rangeMonths); // 서버가 무시해도 무해
+    if (varietyNum) params.set('varietyNum', varietyNum);
+    if (!varietyNum && varietyName) params.set('varietyName', varietyName);
+
+    const url = `${API_BASE}/api/monthly-weight?` + params.toString();
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('데이터 조회 실패');
+    return res.json();
+  }
+
+  // 렌더링 헬퍼
+  function renderSuggestions(items) {
+    $list.innerHTML = '';
+    if (!items || items.length === 0) {
+      $list.classList.remove('d-none');
+      $list.innerHTML = `<div class="list-group-item small text-muted">검색 결과가 없습니다.</div>`;
+      return;
+    }
+    const frag = document.createDocumentFragment();
+    items.forEach(v => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'list-group-item list-group-item-action';
+      btn.dataset.num = v.varietyNum;
+      btn.dataset.name = v.varietyName;
+      btn.textContent = `${v.varietyName} (#${v.varietyNum})`;
+      frag.appendChild(btn);
+    });
+    $list.appendChild(frag);
+    $list.classList.remove('d-none');
+  }
+
+  // 품목명 검색 API (부분일치)
+  async function searchVarieties(q) {
+    // 서버에 /farm/variety/search?q=...&limit=20 형태로 구현되어 있다고 가정 (이전 코드와 동일)
+    const url = `${ctx}/farm/variety/search?q=${encodeURIComponent(q || '')}&limit=20`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('검색 실패');
+    return res.json(); // [{varietyNum, varietyName}, ...]
+  }
+
+  // 선택된 품목으로 차트 갱신
+  async function updateChartBySelection({ varietyNum, varietyName }) {
+    try {
+      const data = await fetchMonthlyByVariety({ varietyNum, varietyName, rangeMonths: 36 });
+      // 서버가 여러 series를 반환하면 일치하는 것만 뽑고, 아니면 첫 번째 사용
+      let seriesName = varietyName;
+      let seriesData = [];
+      if (Array.isArray(data.series) && data.series.length > 0) {
+        let picked = null;
+        if (varietyName) {
+          picked = data.series.find(s => s.name === varietyName);
+        }
+        if (!picked) picked = data.series[0];
+        seriesName = picked.name || seriesName || '선택 품목';
+        seriesData = picked.data || [];
+      }
+      vChart.setOption(makeLineOption(`${seriesName} 월별 판매량`, data.months || [], seriesName, seriesData));
+      vChart.resize();
+    } catch (e) {
+      console.error(e);
+      // 에러 시 간단 안내
+      vChart.clear();
+      vChart.setOption({ title: { text: '데이터를 불러오지 못했습니다.', left: 'center' }});
+    }
+  }
+
+  // 1) 셀렉트 변경 → 해당 품목 차트
+  $select.addEventListener('change', () => {
+    const num = $select.value ? String($select.value) : null;
+    const name = $select.options[$select.selectedIndex]?.text || '';
+    if (num) {
+      $input.value = name; // 검색창에 표시 동기화
+      updateChartBySelection({ varietyNum: num, varietyName: name });
+      // 검색 제안 닫기
+      $list.classList.add('d-none');
+      $list.innerHTML = '';
+    }
+  });
+
+  // 2) 검색 버튼 클릭 → 제안 리스트 표시
+  $btn.addEventListener('click', async () => {
+    try {
+      const q = $input.value.trim();
+      const items = await searchVarieties(q);
+      renderSuggestions(items);
+    } catch (e) { console.error(e); }
+  });
+
+  // Enter키로도 검색
+  $input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') $btn.click();
+  });
+
+  // 3) 제안 리스트에서 선택 → 셀렉트 동기화 + 차트 로드
+  $list.addEventListener('click', (e) => {
+    const item = e.target.closest('.list-group-item-action');
+    if (!item) return;
+    const num  = String(item.dataset.num || '');
+    const name = item.dataset.name || '';
+
+    // 셀렉트에 해당 옵션이 없으면 추가
+    let opt = Array.from($select.options).find(o => o.value === num);
+    if (!opt) {
+      opt = new Option(name, num);
+      $select.add(opt);
+    }
+    $select.value = num;
+    $input.value = name;
+    $list.classList.add('d-none');
+    $list.innerHTML = '';
+
+    updateChartBySelection({ varietyNum: num, varietyName: name });
+  });
+
+  // 4) 바깥 클릭 시 제안 닫기
+  document.addEventListener('click', (e) => {
+    if (!$list.contains(e.target) && e.target !== $input && e.target !== $btn) {
+      $list.classList.add('d-none');
+    }
+  });
+
+  // 5) 초기 진입 시, 셀렉트의 현재 선택으로 한 번 로드
+  window.addEventListener('load', () => {
+    const num = $select.value ? String($select.value) : null;
+    const name = $select.options[$select.selectedIndex]?.text || '';
+    if (num) {
+      $input.value = name;
+      updateChartBySelection({ varietyNum: num, varietyName: name });
+    }
+  });
+
+  // 리사이즈 대응
+  window.addEventListener('resize', () => vChart.resize());
+})();
 </script>
 
 <script type="text/javascript">
