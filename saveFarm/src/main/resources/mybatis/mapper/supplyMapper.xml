@@ -243,7 +243,7 @@
     SELECT
       supplyNum, supplyQuantity, unitQuantity, unitPrice,
       harvestDate, state, rescuedApply, coment, approvedDate,
-      s.farmNum, productNum, s.varietyNum, varietyName, farmerId, farmName
+      s.farmNum, productNum, s.varietyNum, varietyName, farmerId, farmName, farmerName
     FROM supply s
     JOIN farm f ON s.farmNum = f.farmNum
     JOIN variety v ON s.varietyNum = v.varietyNum
