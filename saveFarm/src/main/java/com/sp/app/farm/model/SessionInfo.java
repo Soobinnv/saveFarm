@@ -16,6 +16,7 @@ import lombok.Setter;
 public class SessionInfo {
 	private long farmNum;
 	private String businessNumber;
+	private String farmName;
 	private String farmerId;
 	private String farmerName;
 	private String farmerTel;

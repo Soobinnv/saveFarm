@@ -1,5 +1,5 @@
 package com.sp.app.farm.controller;
-/*
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
-import com.sp.app.model.Inquiry;
-import com.sp.app.model.SessionInfo;
-import com.sp.app.service.InquiryService;
+import com.sp.app.farm.model.Inquiry;
+import com.sp.app.farm.model.SessionInfo;
+import com.sp.app.farm.service.InquiryService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -49,12 +49,12 @@ public class FarmInquiryController {
 			kwd = myUtil.decodeUrl(kwd);
 
 			// 전체 페이지 수
-			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			SessionInfo info = (SessionInfo) session.getAttribute("farm");
 			
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("schType", schType);
 			map.put("kwd", kwd);
-			map.put("member_id", info.getMember_id());
+			map.put("farmNum", info.getFarmNum());
 			
 			dataCount = service.dataCount(map);
 			if (dataCount != 0) {
@@ -74,8 +74,8 @@ public class FarmInquiryController {
 
 			String cp = req.getContextPath();
 			String query = "";
-			String listUrl = cp + "/inquiry/list";
-			String articleUrl = cp + "/inquiry/article?page=" + current_page;
+			String listUrl = cp + "/farm/inquiry/list";
+			String articleUrl = cp + "/farm/inquiry/article?page=" + current_page;
 			if (! kwd.isBlank()) {
 				query = "schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
 
@@ -99,32 +99,32 @@ public class FarmInquiryController {
 			log.info("list : ", e);
 		}
 
-		return "inquiry/list";
+		return "farm/inquiry/list";
 	}
 
 	@GetMapping("write")
 	public String writeForm(Model model) throws Exception {
 		model.addAttribute("mode", "write");
-		return "inquiry/write";
+		return "farm/inquiry/write";
 	}
 
 	@PostMapping("write")
 	public String writeSubmit(Inquiry dto, HttpSession session) throws Exception {
 		
 		try {
-			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			SessionInfo info = (SessionInfo) session.getAttribute("farm");
 			
-			dto.setMember_id(info.getMember_id());
+			dto.setFarmNum(info.getFarmNum());
 			service.insertInquiry(dto);
 		} catch (Exception e) {
 			log.info("writeSubmit : ", e);
 		}
 
-		return "redirect:/inquiry/list";
+		return "redirect:/farm/inquiry/list";
 	}
 
 	@GetMapping("article")
-	public String article(@RequestParam(name = "num") long num,
+	public String article(@RequestParam(name = "inquiryNum") long inquiryNum,
 			@RequestParam(name = "page") String page,
 			@RequestParam(name = "schType", defaultValue = "all") String schType,
 			@RequestParam(name = "kwd", defaultValue = "") String kwd,
@@ -138,23 +138,23 @@ public class FarmInquiryController {
 				query += "&schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
 			}
 			
-			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			SessionInfo info = (SessionInfo) session.getAttribute("farm");
 			
-			Inquiry dto = Objects.requireNonNull(service.findById(num));
-			if (dto.getMember_id() != info.getMember_id()) {
+			Inquiry dto = Objects.requireNonNull(service.findById(inquiryNum));
+			if (dto.getFarmNum() != info.getFarmNum()) {
 				return "redirect:/inquiry/list?" + query;
 			}
 			
-			dto.setQuestion(dto.getQuestion().replaceAll("\n", "<br>"));
+			dto.setSubject(dto.getSubject().replaceAll("\n", "<br>"));
 			if(dto.getAnswer() != null) {
 				dto.setAnswer(dto.getAnswer().replaceAll("\n", "<br>"));
 			}			
 
 			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("member_id", info.getMember_id());
+			map.put("farmNum", info.getFarmNum());
 			map.put("schType", schType);
 			map.put("kwd", kwd);
-			map.put("num", num);
+			map.put("inquiryNum", inquiryNum);
 			Inquiry prevDto = service.findByPrev(map);
 			Inquiry nextDto = service.findByNext(map);			
 			
@@ -167,7 +167,7 @@ public class FarmInquiryController {
 			model.addAttribute("kwd", kwd);
 			model.addAttribute("query", query);
 
-			return "inquiry/article";
+			return "farm/inquiry/article";
 			
 		} catch (NullPointerException e) {
 			log.info("article : ", e);
@@ -175,12 +175,12 @@ public class FarmInquiryController {
 			log.info("article : ", e);
 		}
 		
-		return "redirect:/inquiry/list?" + query;
+		return "redirect:/farm/inquiry/list?" + query;
 
 	}
 
 	@GetMapping("delete")
-	public String delete(@RequestParam(name = "num") long num,
+	public String delete(@RequestParam(name = "inquiryNum") long inquiryNum,
 			@RequestParam(name = "page") String page,
 			@RequestParam(name = "schType", defaultValue = "all") String schType,
 			@RequestParam(name = "kwd", defaultValue = "") String kwd,
@@ -193,12 +193,12 @@ public class FarmInquiryController {
 				query += "&schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
 			}
 
-			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			SessionInfo info = (SessionInfo) session.getAttribute("farm");
 			
-			Inquiry dto = Objects.requireNonNull(service.findById(num));
+			Inquiry dto = Objects.requireNonNull(service.findById(inquiryNum));
 			
-			if (dto.getMember_id() == info.getMember_id()) {
-				service.deleteInquiry(num);
+			if (dto.getFarmNum() == info.getFarmNum()) {
+				service.deleteInquiry(inquiryNum);
 			}
 		} catch (NullPointerException e) {
 			log.info("delete : ", e);
@@ -206,7 +206,7 @@ public class FarmInquiryController {
 			log.info("delete : ", e);
 		}
 
-		return "redirect:/inquiry/list?" + query;
+		return "redirect:/farm/inquiry/list?" + query;
 	}
 }
-*/
+

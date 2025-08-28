@@ -65,7 +65,6 @@
         </otherwise>
       </choose>
     </if>
-
     <if test="rescuedApply != null and rescuedApply != -1">
       AND s.rescuedApply = #{rescuedApply}
     </if>
@@ -244,8 +243,10 @@
     SELECT
       supplyNum, supplyQuantity, unitQuantity, unitPrice,
       harvestDate, state, rescuedApply, coment, approvedDate,
-      farmNum, productNum, varietyNum
-    FROM supply
+      s.farmNum, productNum, s.varietyNum, varietyName, farmerId, farmName
+    FROM supply s
+    JOIN farm f ON s.farmNum = f.farmNum
+    JOIN variety v ON s.varietyNum = v.varietyNum
     WHERE supplyNum = #{supplyNum}
   </select>
 

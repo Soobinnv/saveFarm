@@ -3,6 +3,292 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.farm.mapper.FarmSaleMapper">
 
+
+  <!-- 월별 품목별 총중량(g) — 품목번호/정확명/유사명 필터 + Top N -->
+  <select id="listMonthlyVarietyWeight" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH agg AS (
+      SELECT
+        TO_CHAR(po.orderStateDate, 'YYYY-MM')                 AS monthKey,
+        v.varietyName                                         AS varietyName,
+        SUM(NVL(od.qty,0) * TO_NUMBER(NVL(pd.unit,'0')))      AS totalWeightG
+      FROM productOrder  po
+      JOIN orderDetail   od ON od.orderNum   = po.orderNum
+      JOIN detailState   ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN Product       p  ON p.productNum  = od.productNum
+      JOIN ProductDetail pd ON pd.productNum = od.productNum
+      JOIN variety       v  ON v.varietyNum  = p.varietyNum
+      WHERE ds.detailState = 1
+        AND po.orderStateDate &gt;= TRUNC(TO_DATE(#{startYm}, 'YYYYMM'), 'MM')
+        AND po.orderStateDate &lt;  ADD_MONTHS(TRUNC(TO_DATE(#{endYm},   'YYYYMM'), 'MM'), 1)
+
+        <!-- 품목번호 필터 (옵션) -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <!-- 정확 명칭 필터 (옵션) -->
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <!-- 유사 명칭 필터 (옵션) -->
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+
+      GROUP BY TO_CHAR(po.orderStateDate, 'YYYY-MM'), v.varietyName
+    )
+    SELECT monthKey, varietyName, totalWeightG
+    FROM (
+      SELECT a.*,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY totalWeightG DESC) AS rn
+      FROM agg a
+    ) x
+    WHERE 1=1
+      <if test="topN != null">AND rn &lt;= #{topN}</if>
+    ORDER BY monthKey, totalWeightG DESC
+  </select>
+
+  <!-- 월별 품목별 총금액 — 품목번호/정확명/유사명 필터 + Top N -->
+  <select id="listMonthlyVarietyAmount" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH agg AS (
+      SELECT
+        TO_CHAR(po.orderStateDate, 'YYYY-MM')            AS monthKey,
+        v.varietyName                                    AS varietyName,
+        SUM(NVL(od.qty,0) * NVL(od.salePrice,0))         AS totalAmount
+      FROM productOrder  po
+      JOIN orderDetail   od ON od.orderNum   = po.orderNum
+      JOIN detailState   ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN Product       p  ON p.productNum  = od.productNum
+      JOIN variety       v  ON v.varietyNum  = p.varietyNum
+      WHERE ds.detailState = 1  
+        AND po.orderStateDate &gt;= TRUNC(TO_DATE(#{startYm}, 'YYYYMM'), 'MM')
+        AND po.orderStateDate &lt;  ADD_MONTHS(TRUNC(TO_DATE(#{endYm},   'YYYYMM'), 'MM'), 1)
+
+        <!-- 품목번호 필터 (옵션) -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <!-- 정확 명칭 필터 (옵션) -->
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <!-- 유사 명칭 필터 (옵션) -->
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+
+      GROUP BY TO_CHAR(po.orderStateDate, 'YYYY-MM'), v.varietyName
+    )
+    SELECT monthKey, varietyName, totalAmount
+    FROM (
+      SELECT a.*,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY totalAmount DESC) AS rn
+      FROM agg a
+    ) x
+    WHERE 1=1
+      <if test="topN != null">AND rn &lt;= #{topN}</if>
+    ORDER BY monthKey, totalAmount DESC
+  </select>
+
+  <!-- 하나의 쿼리로 (월/품목별) 총중량 + 총금액을 함께 반환 -->
+  <select id="listMonthlyVarietyWeightAndAmount" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH agg AS (
+      SELECT
+        TO_CHAR(po.orderStateDate, 'YYYY-MM')                 AS monthKey,
+        v.varietyName                                         AS varietyName,
+        SUM(NVL(od.qty,0) * TO_NUMBER(NVL(pd.unit,'0')))      AS totalWeightG,
+        SUM(NVL(od.qty,0) * NVL(od.salePrice,0))              AS totalAmount
+      FROM productOrder  po
+      JOIN orderDetail   od ON od.orderNum   = po.orderNum
+      JOIN detailState   ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN Product       p  ON p.productNum  = od.productNum
+      JOIN ProductDetail pd ON pd.productNum = od.productNum
+      JOIN variety       v  ON v.varietyNum  = p.varietyNum
+      WHERE ds.detailState = 1 
+        AND po.orderStateDate &gt;= TRUNC(TO_DATE(#{startYm}, 'YYYYMM'), 'MM')
+        AND po.orderStateDate &lt;  ADD_MONTHS(TRUNC(TO_DATE(#{endYm},   'YYYYMM'), 'MM'), 1)
+
+        <!-- 품목 필터들 (옵션) -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+
+      GROUP BY TO_CHAR(po.orderStateDate, 'YYYY-MM'), v.varietyName
+    )
+    SELECT monthKey, varietyName, totalWeightG, totalAmount
+    FROM (
+      SELECT a.*,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY totalWeightG DESC) AS weightRn,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY totalAmount DESC)  AS amountRn
+      FROM agg a
+    ) x
+    WHERE 1=1
+      <if test="topN != null">
+        <choose>
+          <when test="rankBy == 'amount'">
+            AND amountRn &lt;= #{topN}
+          </when>
+          <otherwise>
+            AND weightRn &lt;= #{topN}
+          </otherwise>
+        </choose>
+      </if>
+    ORDER BY monthKey,
+      <choose>
+        <when test="rankBy == 'amount'"> totalAmount DESC </when>
+        <otherwise>                      totalWeightG DESC </otherwise>
+      </choose>
+  </select>
+
+  <!-- 달별 · 품목별 평균 별점 (각 달의 합 ÷ 각 달의 개수) -->
+  <select id="listMonthlyAvgStarByVariety" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH base AS (
+      SELECT
+        TO_CHAR(pr.reviewDate, 'YYYY-MM') AS monthKey,
+        v.varietyName                     AS varietyName,
+        pr.star                           AS star
+      FROM productReview  pr
+      JOIN orderDetail    od ON od.orderDetailNum = pr.orderDetailNum
+      JOIN detailState    ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN productOrder   po ON po.orderNum       = od.orderNum
+      JOIN Product        p  ON p.productNum      = od.productNum
+      JOIN variety        v  ON v.varietyNum      = p.varietyNum
+      WHERE ds.detailState = 1 
+        AND pr.reviewDate &gt;= TRUNC(TO_DATE(#{startYm}, 'YYYYMM'), 'MM')
+        AND pr.reviewDate &lt;  ADD_MONTHS(TRUNC(TO_DATE(#{endYm},   'YYYYMM'), 'MM'), 1)
+
+        <!-- 품목 필터 (원하는 조건만 주입) -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+    ),
+    agg AS (
+      SELECT
+        monthKey,
+        varietyName,
+        ROUND(SUM(star) / NULLIF(COUNT(star), 0), 2) AS avgStar,
+        COUNT(star)                                  AS reviewCount
+      FROM base
+      GROUP BY monthKey, varietyName
+    )
+    SELECT monthKey, varietyName, avgStar, reviewCount
+    FROM (
+      SELECT a.*,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY avgStar DESC, reviewCount DESC) AS rn
+      FROM agg a
+    ) x
+    WHERE 1=1
+      <if test="minReviewsPerMonth != null">AND reviewCount &gt;= #{minReviewsPerMonth}</if>
+      <if test="topN != null">AND rn &lt;= #{topN}</if>
+    ORDER BY monthKey, avgStar DESC, reviewCount DESC;
+  </select>
+
+  <!-- 단일 월 – 품목별 평균 별점 (Top N 옵션) -->
+  <select id="getMonthlyAvgStarByVariety" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH base AS (
+      SELECT
+        TO_CHAR(pr.reviewDate, 'YYYY-MM') AS monthKey,
+        v.varietyName                     AS varietyName,
+        pr.star                           AS star
+      FROM productReview  pr
+      JOIN orderDetail    od ON od.orderDetailNum = pr.orderDetailNum
+      JOIN detailState    ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN productOrder   po ON po.orderNum       = od.orderNum
+      JOIN Product        p  ON p.productNum      = od.productNum
+      JOIN variety        v  ON v.varietyNum      = p.varietyNum
+      WHERE ds.detailState = 1  
+        AND TRUNC(pr.reviewDate, 'MM') = TO_DATE(#{ym}, 'YYYYMM')
+
+        <!-- 품목 필터(옵션) -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+    ),
+    agg AS (
+      SELECT
+        monthKey,
+        varietyName,
+        ROUND(SUM(star) / NULLIF(COUNT(star), 0), 2) AS avgStar,
+        COUNT(star)                                  AS reviewCount
+      FROM base
+      GROUP BY monthKey, varietyName
+    )
+    SELECT monthKey, varietyName, avgStar, reviewCount
+    FROM (
+      SELECT a.*,
+             ROW_NUMBER() OVER (PARTITION BY monthKey ORDER BY avgStar DESC, reviewCount DESC) AS rn
+      FROM agg a
+    ) x
+    WHERE 1=1
+      <if test="minReviewsPerMonth != null">AND reviewCount &gt;= #{minReviewsPerMonth}</if>
+      <if test="topN != null">AND rn &lt;= #{topN}</if>
+    ORDER BY monthKey, avgStar DESC, reviewCount DESC;
+  </select>
+
+  <!-- 달별 전체 평균 별점 (월별 전체 평균 별점 (품목 구분 없음)) -->	
+  <select id="listMonthlyAvgStarOverall" parameterType="map" resultType="com.sp.app.farm.model.MonthlyVarietyStats">
+    WITH base AS (
+      SELECT
+        TO_CHAR(pr.reviewDate, 'YYYY-MM') AS monthKey,
+        pr.star                           AS star
+      FROM productReview  pr
+      JOIN orderDetail    od ON od.orderDetailNum = pr.orderDetailNum
+      JOIN detailState    ds ON ds.orderDetailNum = od.orderDetailNum   <!-- 추가 -->
+      JOIN productOrder   po ON po.orderNum       = od.orderNum
+      JOIN Product        p  ON p.productNum      = od.productNum
+      JOIN variety        v  ON v.varietyNum      = p.varietyNum
+      WHERE ds.detailState = 1  
+        AND pr.reviewDate &gt;= TRUNC(TO_DATE(#{startYm}, 'YYYYMM'), 'MM')
+        AND pr.reviewDate &lt;  ADD_MONTHS(TRUNC(TO_DATE(#{endYm},   'YYYYMM'), 'MM'), 1)
+
+        <!-- (옵션) 특정 품목만 월평균을 보고 싶다면 필터 사용 -->
+        <if test="varietyNum != null">
+          AND v.varietyNum = #{varietyNum}
+        </if>
+        <if test="varietyName != null and varietyName != ''">
+          AND v.varietyName = #{varietyName}
+        </if>
+        <if test="varietyNameLike != null and varietyNameLike != ''">
+          AND LOWER(v.varietyName) LIKE '%' || LOWER(#{varietyNameLike}) || '%'
+        </if>
+    ),
+    agg AS (
+      SELECT
+        monthKey,
+        ROUND(SUM(star) / NULLIF(COUNT(star), 0), 2) AS avgStar,
+        COUNT(star)                                  AS reviewCount
+      FROM base
+      GROUP BY monthKey
+    )
+    SELECT monthKey, avgStar, reviewCount
+    FROM agg
+    <if test="minReviewsPerMonth != null">
+    WHERE reviewCount &gt;= #{minReviewsPerMonth}
+    </if>
+    ORDER BY monthKey;
+  </select>
+
+
+
+<!--                                                                                                          - -->
+
 <!-- 내농가 판매 조회 관련 쿼리-->
 
 <!-- 상단 총 벌은 금액 -->
@@ -84,400 +370,5 @@
     GROUP BY v.varietyNum
   )
 </select>
-
-
-
-
-<!-- 전체 총 판매량 : 월별 판매순위 TOP10 (결제완료 기준) -->
-<select id="topMonthlySalesSeries"
-        parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlySalesRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), -11) AS start_dt,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'),  1)  AS end_dt
-    FROM dual
-  ),
-  base AS (
-    SELECT
-      TRUNC(po.orderDate, 'MM') AS ym,
-      od.productNum,
-      SUM(NVL(od.qty,0)) AS totalQty
-    FROM orderDetail od
-    JOIN productOrder po ON po.orderNum = od.orderNum
-    CROSS JOIN M
-    WHERE po.orderDate &gt;= M.start_dt
-      AND po.orderDate &lt;  M.end_dt
-      <choose>
-        <when test="paidStates != null and paidStates.size() &gt; 0">
-          AND po.orderState IN
-          <foreach collection="paidStates" item="st" open="(" close=")" separator=",">
-            #{st}
-          </foreach>
-        </when>
-        <otherwise>
-          AND EXISTS (SELECT 1 FROM payDetail pd WHERE pd.orderNum = po.orderNum)
-          AND NOT EXISTS (
-            SELECT 1 FROM payCancel pc
-            WHERE pc.orderNum = po.orderNum
-              AND NVL(pc.cancelAmount,0) &gt;= NVL(po.totalMoney,0)
-          )
-        </otherwise>
-      </choose>
-    GROUP BY TRUNC(po.orderDate,'MM'), od.productNum
-  ),
-  ranked AS (
-    SELECT
-      TO_CHAR(b.ym, 'YYYY-MM') AS label,
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      b.totalQty,
-      ROW_NUMBER() OVER (
-        PARTITION BY b.ym
-        ORDER BY b.totalQty DESC
-      ) AS rn
-    FROM base b
-    JOIN Product p ON p.productNum = b.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-  )
-  SELECT
-    productNum,
-    productName,
-    varietyNum,
-    varietyName,
-    totalQty,
-    rn,
-    label
-  FROM ranked
-  WHERE rn &lt;= 10
-  ORDER BY label, rn
-</select>
-
-<!-- 전체 총 인기 순위-->
-<select id="topMonthlyRatingSeries"
-        parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlyRatingRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), -11) AS start_dt,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'),  1)  AS end_dt
-    FROM dual
-  ),
-  base AS (
-    SELECT
-      TRUNC(r.reviewDate, 'MM') AS ym,
-      r.productNum,
-      ROUND(AVG(r.star), 2) AS avgStar,
-      COUNT(*) AS reviewCnt
-    FROM productReview r
-    CROSS JOIN M
-    WHERE r.reviewDate &gt;= M.start_dt
-      AND r.reviewDate &lt;  M.end_dt
-    GROUP BY TRUNC(r.reviewDate,'MM'), r.productNum
-    HAVING COUNT(*) &gt;= NVL(#{minReviews}, 1)
-  ),
-  ranked AS (
-    SELECT
-      TO_CHAR(b.ym, 'YYYY-MM') AS label,
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      b.avgStar,
-      b.reviewCnt,
-      ROW_NUMBER() OVER (
-        PARTITION BY b.ym
-        ORDER BY b.avgStar DESC, b.reviewCnt DESC
-      ) AS rn
-    FROM base b
-    JOIN Product p ON p.productNum = b.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-  )
-  SELECT
-    productNum,
-    productName,
-    varietyNum,
-    varietyName,
-    avgStar,
-    reviewCnt,
-    rn,
-    label
-  FROM ranked
-  WHERE rn &lt;= 10
-  ORDER BY label, rn
-</select>
-
-
-
-<!-- 그냥 추가로 넣은거 -->
-<select id="topMonthlySales" parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlySalesRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM') AS start_dt,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), 1) AS end_dt
-    FROM dual
-  ),
-  base AS (
-    SELECT od.productNum, SUM(NVL(od.qty,0)) AS totalQty
-    FROM orderDetail od
-    JOIN productOrder po ON po.orderNum = od.orderNum
-    CROSS JOIN M
-    WHERE po.orderDate &gt;= M.start_dt
-      AND po.orderDate &lt;  M.end_dt
-      <choose>
-        <when test="paidStates != null and paidStates.size() &gt; 0">
-          AND po.orderState IN
-          <foreach collection="paidStates" item="st" open="(" close=")" separator=",">
-            #{st}
-          </foreach>
-        </when>
-        <otherwise>
-          AND EXISTS (SELECT 1 FROM payDetail pd WHERE pd.orderNum = po.orderNum)
-          AND NOT EXISTS (
-            SELECT 1 FROM payCancel pc
-            WHERE pc.orderNum = po.orderNum
-              AND NVL(pc.cancelAmount,0) &gt;= NVL(po.totalMoney,0)
-          )
-        </otherwise>
-      </choose>
-    GROUP BY od.productNum
-  )
-  SELECT *
-  FROM (
-    SELECT
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      b.totalQty,
-      ROW_NUMBER() OVER (ORDER BY b.totalQty DESC) AS rn,
-      TO_CHAR((SELECT start_dt FROM M), 'YYYY-MM') AS label
-    FROM base b
-    JOIN Product p ON p.productNum = b.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-  )
-  WHERE rn &lt;= 10
-  ORDER BY rn
-</select>
-
-<select id="topMonthlyRating" parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlyRatingRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM') AS start_dt,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), 1) AS end_dt
-    FROM dual
-  )
-  SELECT *
-  FROM (
-    SELECT
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      ROUND(AVG(r.star),2) AS avgStar,
-      COUNT(*) AS reviewCnt,
-      ROW_NUMBER() OVER (ORDER BY ROUND(AVG(r.star),2) DESC, COUNT(*) DESC) AS rn,
-      TO_CHAR((SELECT start_dt FROM M), 'YYYY-MM') AS label
-    FROM productReview r
-    CROSS JOIN M
-    JOIN Product p ON p.productNum = r.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-    WHERE r.reviewDate &gt;= M.start_dt
-      AND r.reviewDate &lt;  M.end_dt
-    GROUP BY p.productNum, p.productName, v.varietyNum, v.varietyName
-    HAVING COUNT(*) &gt;= NVL(#{minReviews}, 1)
-  )
-  WHERE rn &lt;= 10
-  ORDER BY rn
-</select>
-
-<select id="topMonthlySalesThisVsLast" parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlySalesRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM') AS this_start,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), 1) AS this_end,
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}-1), 'MM') AS last_start,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}-1), 'MM'), 1) AS last_end
-    FROM dual
-  ),
-  base AS (
-    SELECT
-      CASE
-        WHEN po.orderDate &gt;= (SELECT this_start FROM M) AND po.orderDate &lt; (SELECT this_end FROM M) THEN 'THIS'
-        WHEN po.orderDate &gt;= (SELECT last_start FROM M) AND po.orderDate &lt; (SELECT last_end FROM M) THEN 'LAST'
-      END AS label,
-      od.productNum,
-      SUM(NVL(od.qty,0)) AS totalQty
-    FROM orderDetail od
-    JOIN productOrder po ON po.orderNum = od.orderNum
-    WHERE (
-        (po.orderDate &gt;= (SELECT last_start FROM M) AND po.orderDate &lt; (SELECT last_end FROM M))
-        OR
-        (po.orderDate &gt;= (SELECT this_start FROM M) AND po.orderDate &lt; (SELECT this_end FROM M))
-      )
-      <choose>
-        <when test="paidStates != null and paidStates.size() &gt; 0">
-          AND po.orderState IN
-          <foreach collection="paidStates" item="st" open="(" close=")" separator=",">
-            #{st}
-          </foreach>
-        </when>
-        <otherwise>
-          AND EXISTS (SELECT 1 FROM payDetail pd WHERE pd.orderNum = po.orderNum)
-          AND NOT EXISTS (
-            SELECT 1 FROM payCancel pc
-            WHERE pc.orderNum = po.orderNum
-              AND NVL(pc.cancelAmount,0) &gt;= NVL(po.totalMoney,0)
-          )
-        </otherwise>
-      </choose>
-    GROUP BY
-      CASE
-        WHEN po.orderDate &gt;= (SELECT this_start FROM M) AND po.orderDate &lt; (SELECT this_end FROM M) THEN 'THIS'
-        WHEN po.orderDate &gt;= (SELECT last_start FROM M) AND po.orderDate &lt; (SELECT last_end FROM M) THEN 'LAST'
-      END,
-      od.productNum
-  )
-  SELECT *
-  FROM (
-    SELECT
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      b.totalQty,
-      ROW_NUMBER() OVER (PARTITION BY b.label ORDER BY b.totalQty DESC) AS rn,
-      b.label
-    FROM base b
-    JOIN Product p ON p.productNum = b.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-  )
-  WHERE rn &lt;= 10
-  ORDER BY label, rn
-</select>
-
-<select id="topMonthlyRatingThisVsLast" parameterType="map"
-        resultType="com.sp.app.farm.model.MonthlyRatingRank">
-  WITH product_variety AS (
-    SELECT productNum, varietyNum FROM (
-      SELECT s.productNum, s.varietyNum,
-             ROW_NUMBER() OVER (
-               PARTITION BY s.productNum
-               ORDER BY NVL(s.approvedDate, s.harvestDate) DESC, s.supplyNum DESC
-             ) rn
-      FROM supply s
-    ) WHERE rn = 1
-  ),
-  M AS (
-    SELECT
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM') AS this_start,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}), 'MM'), 1) AS this_end,
-      TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}-1), 'MM') AS last_start,
-      ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, #{m_offset}-1), 'MM'), 1) AS last_end
-    FROM dual
-  ),
-  base AS (
-    SELECT
-      CASE
-        WHEN r.reviewDate &gt;= (SELECT this_start FROM M) AND r.reviewDate &lt; (SELECT this_end FROM M) THEN 'THIS'
-        WHEN r.reviewDate &gt;= (SELECT last_start FROM M) AND r.reviewDate &lt; (SELECT last_end FROM M) THEN 'LAST'
-      END AS label,
-      r.productNum,
-      ROUND(AVG(r.star),2) AS avgStar,
-      COUNT(*) AS reviewCnt
-    FROM productReview r
-    WHERE (
-      (r.reviewDate &gt;= (SELECT last_start FROM M) AND r.reviewDate &lt; (SELECT last_end FROM M))
-      OR
-      (r.reviewDate &gt;= (SELECT this_start FROM M) AND r.reviewDate &lt; (SELECT this_end FROM M))
-    )
-    GROUP BY
-      CASE
-        WHEN r.reviewDate &gt;= (SELECT this_start FROM M) AND r.reviewDate &lt; (SELECT this_end FROM M) THEN 'THIS'
-        WHEN r.reviewDate &gt;= (SELECT last_start FROM M) AND r.reviewDate &lt; (SELECT last_end FROM M) THEN 'LAST'
-      END,
-      r.productNum
-    HAVING COUNT(*) &gt;= NVL(#{minReviews}, 1)
-  )
-  SELECT *
-  FROM (
-    SELECT
-      p.productNum,
-      p.productName,
-      v.varietyNum,
-      v.varietyName,
-      b.avgStar,
-      b.reviewCnt,
-      ROW_NUMBER() OVER (PARTITION BY b.label ORDER BY b.avgStar DESC, b.reviewCnt DESC) AS rn,
-      b.label
-    FROM base b
-    JOIN Product p ON p.productNum = b.productNum
-    LEFT JOIN product_variety pv ON pv.productNum = p.productNum
-    LEFT JOIN variety v         ON v.varietyNum  = pv.varietyNum
-  )
-  WHERE rn &lt;= 10
-  ORDER BY label, rn
-</select>
-
 
 </mapper>

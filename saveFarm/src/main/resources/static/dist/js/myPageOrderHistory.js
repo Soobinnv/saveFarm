@@ -58,28 +58,9 @@ $(function() {
 
 		const fn = function(data) {
 			// 모달에 데이터 채우기
-			$('#shipping-company').text(data.companyName || '정보 없음');
-			$('#tracking-number').text(data.trackingNumber || '정보 없음');
-			
-			const $statusList = $('#shipping-status-list');
-			$statusList.empty(); // 기존 목록 비우기
-
-			if (data.statusHistory && data.statusHistory.length > 0) {
-				data.statusHistory.forEach(item => {
-					const listItem = `
-						<li class="list-group-item d-flex justify-content-between align-items-center">
-							<div>
-								<div class="fw-bold">${item.status}</div>
-								<small class="text-muted">${item.location} | ${item.description}</small>
-							</div>
-							<span class="badge bg-secondary rounded-pill">${item.time}</span>
-						</li>
-					`;
-					$statusList.append(listItem);
-				});
-			} else {
-				$statusList.append('<li class="list-group-item">배송 상태 정보가 없습니다.</li>');
-			}
+			$('#shipping-company').text(data.deliveryCompanyName || '정보 없음');
+			$('#tracking-number').text(data.invoiceNumber || '정보 없음');
+			$('#delivery-state').text(data.orderState || '정보 없음');
 			
 			// 모달 띄우기
 			$('#shipmentTrackingModal').modal('show');
@@ -107,18 +88,14 @@ const renderMyPageMainHtml = function(data) {
       buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
       buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
     } else if (item.orderState === 5) {
-      if (item.reviewWrite === 0 && (item.detailState === 1 || item.detailState === 2)) {
+      if (item.reviewWrite === 0) {
          buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
-      } else if (item.detailState === 0) {
-        buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
+      }
+	  if (item.detailState === 0) {
         buttons.push(`<button type="button" class="btn-ghost btn-return-request" data-orderdetailnum="${item.orderDetailNum}">반품요청</button>`);
         buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
       }
-    } else if (item.detailState === 1 || item.detailState === 2) {
-      if (item.reviewWrite === 0) {
-        buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
-      }
-    }
+	} 
     buttons.push(`<button type="button" class="btn-ghost" onclick="location.href='${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}'">재구매</button>`);
     return buttons.join('');
   };
@@ -233,16 +210,15 @@ const renderMyPageMainHtml = function(data) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+					<div class="mb-3">
+						<strong>배송상태:</strong> <span id="delivery-state"></span>
+					</div>
                     <div class="mb-3">
                         <strong>배송업체:</strong> <span id="shipping-company"></span>
                     </div>
                     <div class="mb-3">
                         <strong>송장번호:</strong> <span id="tracking-number"></span>
                     </div>
-                    <hr>
-                    <h6>배송 상태</h6>
-                    <ul class="list-group list-group-flush" id="shipping-status-list">
-                        </ul>
                 </div>
             </div>
         </div>

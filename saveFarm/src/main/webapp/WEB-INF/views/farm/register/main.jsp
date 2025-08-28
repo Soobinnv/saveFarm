@@ -27,7 +27,7 @@
         <p>납품할 농산물을 등록하고, 신청한 목록을 확인합니다.</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="${pageContext.request.contextPath}/farm/guide">홈</a></li>
+            <li><a href="${pageContext.request.contextPath}/farm">홈</a></li>
             <li class="current">과정</li>
           </ol>
         </nav>

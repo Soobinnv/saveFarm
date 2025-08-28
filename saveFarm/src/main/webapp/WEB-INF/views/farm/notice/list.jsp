@@ -10,7 +10,27 @@
 <jsp:include page="/WEB-INF/views/farm/layout/farmHeaderResources.jsp"/>
 
 <style type="text/css">
+#dataTable-1 thead th{
+  background-color: var(--sf-soft, #E9F5EC) !important;  /* 연한 초록 */
+  color: var(--sf-primary, #116530) !important;          /* 진한 초록 */
+  border-bottom: 2px solid var(--sf-primary, #116530) !important;
+  font-weight: 600;
+}
 
+/* 헤더 안의 링크도 동일 색상 유지 */
+#dataTable-1 thead th a{
+  color: inherit;
+}
+
+/* 행 호버 시 아주 옅은 초록 하이라이트 (기존 디자인 방해 X) */
+#dataTable-1 tbody tr:hover{
+  background-color: rgba(17, 101, 48, 0.06);
+}
+
+/* 표 외곽선 살짝만 강조 (옵션) */
+#dataTable-1{
+  border: 1px solid rgba(17, 101, 48, 0.12);
+}
 </style>
 </head>
 <body class="index-page">
@@ -65,19 +85,17 @@
 				<table class="table datatables" id="dataTable-1">
 				  <thead>
 				    <tr>
-				      <th class="text-center">번호</th>
+				      <th class="text-center" width="130">번호</th>
 				      <th class="text-center">제목</th>
-				      <th class="text-center">작성일</th>
-				      <th class="text-center">조회수</th>
-				      <th class="text-center">첨부파일개수</th>
-				      <th class="text-center">첨부</th>
+				      <th class="text-center" width="150">작성일</th>
+				      <th class="text-center" width="130">조회수</th>
+				      <th class="text-center" width="100">첨부</th>
 				    </tr>
 				  </thead>
 				  <tbody>
 				    <c:forEach var="dto" items="${list}" varStatus="status">
 				      <tr>
-				        <td class="text-center">${dataCount - (page - 1) * size - status.index}</td>
-				        <td class="text-center">
+						 <td class="text-center">${dataCount - (page - 1) * size - status.index}</td>   <td class="text-center">
 				        	<c:url var="articleUrl" value="/farm/notice/article/${dto.noticeNum}">
 							  <c:param name="categoryNum" value="${categoryNum}" />
 							  <c:param name="page" value="${page}" />
@@ -88,16 +106,6 @@
 				        </td>
 				        <td class="text-center"><fmt:formatDate value="${dto.updateDate}" pattern="yyyy-MM-dd"/></td>
 				        <td class="text-center">${dto.hitCount}</td>
-				        <td class="text-center">
-				        	<c:choose>
-				        		<c:when test="${dto.fileCount != 0}">
-				        			${dto.fileCount} 개
-				        		</c:when>
-				        		<c:when test="${dto.fileCount == 0}">
-				        			-
-				        		</c:when>
-				        	</c:choose>
-				        </td>
 				        <td class="text-center">
 							<c:if test="${dto.fileCount != 0}">
 	                           	<a href="${pageContext.request.contextPath}/farm/notice/zipdownload/${dto.noticeNum}" class="text-reset"> <i class="bi bi-download" style="font-size:18px;"></i></a>

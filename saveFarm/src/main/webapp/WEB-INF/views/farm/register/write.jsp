@@ -24,7 +24,7 @@
         </h1>
        <nav class="breadcrumbs">
           <ol>
-            <li><a href="${pageContext.request.contextPath}/farm/register">돌아가기</a></li>
+            <li><a href="${pageContext.request.contextPath}/farm/register/main">돌아가기</a></li>
             <li class="current">신청서 ${mode=='update'?'수정하기':'신청하기'}</li>
           </ol>
         </nav>
@@ -159,7 +159,6 @@
 						<input type="hidden" name="farmNum" value="${dto.farmNum}">
 						<input type="hidden" name="productNum" value="${dto.productNum}">
 						<input type="hidden" name="state" value="${dto.state}">
-						<input type="hidden" name="page" value="${page}">
 						<input type="hidden" name="page"    value="${empty page ? 1 : page}">
 						<input type="hidden" name="schType" value="${empty schType ? 'all' : schType}">
 						<input type="hidden" name="kwd"     value="${empty kwd ? '' : kwd}">

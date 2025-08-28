@@ -6,24 +6,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spring</title>
-<jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/board.css" type="text/css">
+<title>SaveFarm</title>
+<jsp:include page="/WEB-INF/views/farm/layout/farmHeaderResources.jsp"/>
+
+<style type="text/css">
+
+</style>
 </head>
-<body>
+<body class="index-page">
 
 <header>
-	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
+	<jsp:include page="/WEB-INF/views/farm/layout/farmHeader.jsp"/>
 </header>
 
-<main>
-	<!-- Page Title -->
-	<div class="page-title">
-		<div class="container align-items-center" data-aos="fade-up">
-			<h1>1:1 문의</h1>
-			<div class="page-title-underline-accent"></div>
-		</div>
-	</div>
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+      <div class="container position-relative">
+        <h1>1:1 문의</h1>
+        <p>작성해주신 문의 내용에 대해 신속히 답변드리겠습니다.</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="${pageContext.request.contextPath}/farm">홈</a></li>
+            <li class="current">문의</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
     
 	<!-- Page Content -->    
 	<div class="section">
@@ -38,43 +47,27 @@
 					<form name="postForm" action="" method="post">
 						<table class="table write-form">
 							<tr>
-								<td class="col-md-2 bg-light">구 분</td>
-								<td>
-									<div class="row">
-										<div class="col-md-6">
-											<select name="category" class="form-select">
-												<option value="강좌" ${dto.category=="강좌"?"selected":"" }>강좌</option>
-												<option value="결제문의" ${dto.category=="결제문의"?"selected":"" }>결제문의</option>
-												<option value="회원가입" ${dto.category=="회원가입"?"selected":"" }>회원가입</option>
-												<option value="기타문의" ${dto.category=="기타문의"?"selected":"" }>기타문의</option>
-											</select>
-										</div>
-									</div>
-								</td>
-							</tr>
-
-							<tr>
-								<td class="col-md-2 bg-light">제 목</td>
+								<td class="col-md-2 bg-light text-center">문의 제목</td>
 								<td>
 									<input type="text" name="subject" class="form-control" maxlength="100" placeholder="Subject" value="${dto.subject}">
 								</td>
 							</tr>
 
 							<tr>
-								<td class="col-md-2 bg-light">이 름</td>
+								<td class="col-md-2 bg-light text-center">농가 이름</td>
 								<td>
 									<div class="row">
 										<div class="col-md-6">
-											<input type="text" name="name" class="form-control" readonly tabindex="-1" value="${sessionScope.member.name}">
+											<input type="text" name="name" class="form-control" readonly tabindex="-1" value="${sessionScope.farm.farmName}">
 										</div>
 									</div>
 								</td>
 							</tr>
 
 							<tr>
-								<td class="col-md-2 bg-light">내 용</td>
+								<td class="col-md-2 bg-light text-center">내 용</td>
 								<td>
-									<textarea name="question" class="form-control" placeholder="Question">${dto.question}</textarea>
+									<textarea name="content" class="form-control" placeholder="Question">${dto.content}</textarea>
 								</td>
 							</tr>
 						</table>
@@ -82,9 +75,9 @@
 						<div class="text-center">
 							<button type="button" class="btn-accent btn-md" onclick="sendOk();">${mode=='update'?'수정완료':'등록완료'}</button>
 							<button type="reset" class="btn-default btn-md">다시입력</button>
-							<button type="button" class="btn-default btn-md" onclick="location.href='${pageContext.request.contextPath}/inquiry/list';">${mode=='update'?'수정취소':'등록취소'}</button>
+							<button type="button" class="btn-default btn-md" onclick="location.href='${pageContext.request.contextPath}/farm/inquiry/list';">${mode=='update'?'수정취소':'등록취소'}</button>
 							<c:if test="${mode=='update'}">
-								<input type="hidden" name="num" value="${dto.num}">
+								<input type="hidden" name="num" value="${dto.inquiryNum}">
 								<input type="hidden" name="page" value="${page}">
 							</c:if>
 						</div>						
@@ -108,23 +101,23 @@ function sendOk() {
 		return;
 	}
 
-	str = f.question.value.trim();
+	str = f.content.value.trim();
 	if( ! str ) {
 		alert('내용을 입력하세요. ');
 		f.question.focus();
 		return;
 	}
 
-	f.action = '${pageContext.request.contextPath}/inquiry/${mode}';
+	f.action = '${pageContext.request.contextPath}/farm/inquiry/${mode}';
 	f.submit();
 }
 </script>
 
 <footer>
-	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
+	<jsp:include page="/WEB-INF/views/farm/layout/farmFooter.jsp"/>
 </footer>
 
-<jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
+<jsp:include page="/WEB-INF/views/farm/layout/farmFooterResources.jsp"/>
 
 </body>
 </html>
