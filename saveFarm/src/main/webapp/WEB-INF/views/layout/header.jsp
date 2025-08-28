@@ -27,7 +27,7 @@
 					<a href="#" class="nav-link dropdown-toggle headerNavText"
 						data-bs-toggle="dropdown headerNavText">고객센터</a>
 					<div class="dropdown-menu m-0">
-						<a href="blog.html" class="dropdown-item">공지사항</a> <a
+						<a href="${pageContext.request.contextPath}/notice/list" class="dropdown-item">공지사항</a> <a
 							href="feature.html" class="dropdown-item">문의하기</a> <a
 							href="testimonial.html" class="dropdown-item">FAQ</a>
 					</div>
