@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.DashboardManageMapper">
+	
+	<select id="dashboardReturnList" resultType="com.sp.app.model.Return">
+		SELECT returnNum, reqDate, reason, quantity, status, returnDate, r.orderDetailNum, od.salePrice
+		FROM Return r
+		LEFT OUTER JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		WHERE ROWNUM &lt;= 5 and status &lt;= 1
+		ORDER BY reqDate ASC
+	</select>
+	
+	<select id="dashboardRefundList" resultType="com.sp.app.model.Refund">
+		SELECT refundNum, refundAmount, refundDate, refundMethod, status, orderDetailNum
+		FROM refund
+		WHERE ROWNUM &lt;= 5 and status &lt;= 1
+		ORDER BY refundDate ASC
+	</select>
+	
+	
+</mapper>
