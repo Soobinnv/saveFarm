@@ -155,6 +155,12 @@
 		FROM subReview
 		WHERE subNum = #{subNum}
 	</select>
+	
+	<select id="findMysubReview" parameterType="Long" resultType="com.sp.app.model.packageReview">
+		SELECT subNum,subject,content,regDate,star,subMonth
+		FROM subReview
+		LEFTOUTER JOIN 
+	</select>
 
 </mapper>
 	

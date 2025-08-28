@@ -32,7 +32,7 @@
         <li style="margin-left: 10px;"><a href="javascript:void(0);">취소/교환/반품 조회</a></li>
         <li>정기 배송</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subInfo', renderMySubInfoHtml);">정기배송 조회</a></li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="">정기배송 리뷰</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subReview', renderMySubReviewHtml);">정기배송 리뷰</a></li>
         <li>내 활동</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/wish', renderMyWishListHtml);">찜</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/reviews', renderMyReviewListHtml);">나의 리뷰</a></li>
