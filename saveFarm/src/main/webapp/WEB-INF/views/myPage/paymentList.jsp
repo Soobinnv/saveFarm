@@ -40,8 +40,8 @@
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/qnas', renderMyQnaListHtml);">상품 문의</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/faqs', renderFaqListHtml);">FAQ</a></li>
         <li>회원정보</li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">배송지 관리</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">회원정보 수정</a></li>
+		<li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/destination', renderDestinationListHtml);">배송지 정보</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/memberInfo', renderMemberUpdateFormHtml);">회원정보 수정</a></li>
       </ul>
     </aside>
 
