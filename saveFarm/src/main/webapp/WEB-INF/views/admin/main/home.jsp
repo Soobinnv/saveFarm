@@ -62,7 +62,7 @@
 												</c:choose>
 											</tr>
 										</c:forEach>
-										<c:forEach var="i" begin="1" end="${5 - fn:length(refundList)}">
+										<c:forEach var="i" begin="1" end="${5 - fn:length(returnList)}">
 											<tr>
 												<td colspan="5">&nbsp;</td>
 											</tr>

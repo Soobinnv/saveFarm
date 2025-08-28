@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.admin.mapper.DashboardManageMapper">
 	
-	<select id="dashboardReturnList" resultType="com.sp.app.model.Return">
+	<select id="dashboardReturnList" resultType="com.sp.app.admin.model.DashboardManage">
 		SELECT returnNum, reqDate, reason, quantity, status, returnDate, r.orderDetailNum, od.salePrice
 		FROM Return r
 		LEFT OUTER JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
@@ -17,5 +17,17 @@
 		ORDER BY refundDate ASC
 	</select>
 	
-	
+	<select id="dashboardChart" resultType="com.sp.app.admin.model.DashboardManage">	
+		SELECT TO_CHAR(t.orderDate, 'MM') AS orderDate,
+		SUM(t.payment) AS payment
+		FROM (
+		    SELECT DISTINCT po.orderNum, po.orderDate, po.payment, detailState
+		    FROM productOrder po
+		    LEFT JOIN orderDetail od ON po.orderNum = od.orderNum
+		    WHERE po.orderDate &gt;= TO_DATE('20250101', 'YYYYMMDD')
+		      AND po.orderDate &lt; TO_DATE('20260101', 'YYYYMMDD') and od.detailState IN (0, 1, 2)
+		) t
+		GROUP BY TO_CHAR(t.orderDate, 'MM')
+		ORDER BY TO_CHAR(t.orderDate, 'MM')
+	</select>
 </mapper>
