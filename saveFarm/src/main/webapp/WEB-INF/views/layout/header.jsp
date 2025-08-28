@@ -25,12 +25,11 @@
 				<a href="${pageContext.request.contextPath}/package/main" class="nav-item nav-link active headerNavText">패키지</a>
 				<div class="nav-item dropdown">
 					<a href="#" class="nav-link dropdown-toggle headerNavText"
-						data-bs-toggle="dropdown headerNavText">Pages</a>
+						data-bs-toggle="dropdown headerNavText">고객센터</a>
 					<div class="dropdown-menu m-0">
-						<a href="blog.html" class="dropdown-item">Blog Grid</a> <a
-							href="feature.html" class="dropdown-item">Our Features</a> <a
-							href="testimonial.html" class="dropdown-item">Testimonial</a> <a
-							href="404.html" class="dropdown-item">404 Page</a>
+						<a href="blog.html" class="dropdown-item">공지사항</a> <a
+							href="feature.html" class="dropdown-item">문의하기</a> <a
+							href="testimonial.html" class="dropdown-item">FAQ</a>
 					</div>
 				</div>
 				<a href="contact.html" class="nav-item nav-link headerNavText">Contact Us</a>
@@ -63,12 +62,12 @@
 							</c:when>
 							<c:otherwise>
 								<li>
-									<a href="${pageContext.request.contextPath}/myPage/paymentList" class="mx-3"> <iconify-icon
+									<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=myPage" class="mx-3"> <iconify-icon
 												icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
 									</a>
 								</li>
 								<li>
-									<a href="index.html" class="mx-3"> 
+									<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=wishList" class="mx-3"> 
 										<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
 									</a>
 								</li>

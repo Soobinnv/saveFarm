@@ -2,8 +2,19 @@ const contextPath = $('body').data('context-path');
 
 // 처음 페이지 로딩 시
 $(function() {
-	// 마이페이지 메인 불러오기
-	loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
+	const accessType = $('main').attr('data-access-type');
+	
+	switch(accessType) {
+		case "myPage" : 
+			// 마이페이지 메인 불러오기
+			loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
+			break;
+		case "wishList" : 
+			// 내 찜 목록 불러오기
+			loadContent('/api/myPage/wish', renderMyWishListHtml);
+			break;
+	}
+	
 });
 
 /**

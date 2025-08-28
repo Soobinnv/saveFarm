@@ -23,13 +23,13 @@
 <header>
 	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
 </header>
-<main class="container" id="container">
+<main class="container" id="container" data-access-type="${accessType}">
     <aside class="sidebar">
-      <h2 onclick="loadContent('/api/myPage', renderMyPageMainHtml);">MY PAGE</h2>
+      <h2 onclick="loadContent('/api/myPage/paymentList', renderMyPageMainHtml);">MY PAGE</h2>
       <ul>
         <li>주문내역 조회</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/paymentList', renderMyPageMainHtml);" clicked>주문/배송 조회</a></li>
-        <li style="margin-left: 10px;"><a href="${pageContext.request.contextPath}/">취소/교환/반품 조회</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);">취소/교환/반품 조회</a></li>
         <li>정기 배송</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subInfo', renderMySubInfoHtml);">정기배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="">정기배송 리뷰</a></li>
