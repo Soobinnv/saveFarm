@@ -38,7 +38,8 @@
     width: 0 !important;
     overflow: hidden;
   }
-  
+.nav-link {
+}  
 </style>
 
 
