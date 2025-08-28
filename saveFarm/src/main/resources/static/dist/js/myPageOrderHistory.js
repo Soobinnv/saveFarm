@@ -31,8 +31,11 @@ $(document).on('click', '.order-details', function() {
     let orderNum = $(this).attr('data-orderNum');
     let orderDetailNum = $(this).attr('data-orderDetailNum');
 
-	// 파라미터를 객체 형태로 전달하는 것이 더 깔끔하고 안전합니다.
-	let params = { orderNum: orderNum, orderDetailNum: orderDetailNum };
+	let params = { 
+	        orderNum: orderNum, 
+	        orderDetailNum: orderDetailNum,
+	        _: new Date().getTime() // 캐시 방지를 위한 파라미터
+	    };
 	let url = contextPath + '/api/myPage/detailView';
 	
     // 성공 콜백 함수
@@ -107,7 +110,7 @@ const renderMyPageMainHtml = function(data) {
   // 버튼 생성 헬퍼 함수
   const generateActionButtons = (item) => {
     let buttons = [];
-    if (item.orderState === 1) {
+    if (item.orderState === 1 && item.detailState === 0) {
       buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">결제취소</button>`);
     } else if (item.orderState >= 2 && item.orderState <= 4) {
       buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
