@@ -247,11 +247,17 @@ $(function() {
 		const num = $(e.target).attr('data-num');
 		let afterStock = Number($('#stock-after-quantity').val());
 		
+		// let supplyCheckbox = $('.supply-checkbox');
+		
+		// if($checkboxEL.is(':checked')) {
+			
+		// }
+		
 		const fn = function(data) {
 			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
 		}
 				
-		ajaxRequest(`/api/admin/products/${num}`, 'patch', {stockQuantity:afterStock}, 'json', fn);		
+		ajaxRequest(`/api/admin/products/${num}`, 'patch', {stockQuantity:afterStock, supplyNum:supplyNum}, 'json', fn);		
 	});
 	
 	// 상품 등록/변경 저장 버튼

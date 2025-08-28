@@ -2,24 +2,23 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
-<%-- categoryNum이 비어있지 않다면 Long 타입으로 변환하여 numCategoryNum 변수에 저장 --%>
 <c:set var="numCategoryNum" value="${null}" />
 <c:if test="${not empty categoryNum}">
     <c:set var="numCategoryNum" value="${Long.valueOf(categoryNum)}" />
 </c:if>
 
 <div class="card shadow">
-	<div class="card-body" >
+	<div class="card-body" > 
 		<div class="row m-0">
 			<div class="dataTables_info d-flex align-items-center" role="status" aria-live="polite">
 				${dataCount}개 (${page}/${totalPage}페이지)
 			</div>
-			<select class="form-control me-2 col-1" name="schTypeFAQ" id="schTypeFAQSelect" onchange="changeFaqType();">
+			<select class="form-control me-2 ml-1 p-0 col-1" name="schTypeFAQ" id="schTypeFAQSelect" onchange="changeFaqType();">
 			    <option value="memberFAQ" ${schTypeFAQ == 'memberFAQ' ? 'selected' : ''}>회원</option>
 			    <option value="farmFAQ" ${schTypeFAQ == 'farmFAQ' ? 'selected' : ''}>농가</option>
 			</select>
 		</div>		                   
-		<ul class="nav nav-tabs" id="myTab" role="tablist">
+		<ul class="nav nav-tabs mt-1" id="myTab" role="tablist">
 		    <li class="nav-item" role="presentation">
 				<button class="nav-link ${empty categoryNum ? 'active' : ''}" 
 				        id="tab-all" data-toggle="tab" href="#tab-pane" type="button" 
@@ -29,7 +28,7 @@
 		
 		    <c:forEach var="dto" items="${listFAQ}" varStatus="status">
 				<li class="nav-item" role="presentation">
-				    <button class="nav-link ${dto.categoryNum == numCategoryNum ? 'active' : ''}" 
+				    <button class="nav-link ${dto.categoryNum == numCategoryNum ? 'active' : ''}" bg-white
 				           id="tab-${status.count}" data-toggle="tab" href="#tab-pane" 
 				           type="button" role="tab" aria-controls="${dto.categoryNum}" 
 				           aria-selected="false" data-category-num="${dto.categoryNum}" 

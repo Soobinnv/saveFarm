@@ -13,7 +13,7 @@
 	<select id="listPayment" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.memberId, po.orderDate, po.totalMoney, po.payment,
 			po.deliveryCharge, po.orderStateDate, po.orderState, 
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState, 
 			p.productName, p.mainImageFilename, p.productClassification,
 			NVL(r.reviewWrite, 0) reviewWrite
 		FROM productOrder po
@@ -37,7 +37,7 @@
 			po.deliveryCharge, po.orderStateDate, po.orderState, 
 			dc.deliveryCompanyName, 
 			d.invoiceNumber,
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState, 
 			p.productName, p.mainImageFilename,
 			NVL(r.reviewWrite, 0) reviewWrite
 		FROM productOrder po
