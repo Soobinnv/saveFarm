@@ -42,6 +42,10 @@ public class DashboardManage {
     
     private List<MultipartFile> returnImages;
 	
+    // 정기배송
+    private String payDate;
+    private long totalPay;
+    
 	
 	
 }

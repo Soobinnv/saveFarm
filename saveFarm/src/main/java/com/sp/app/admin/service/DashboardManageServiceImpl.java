@@ -57,4 +57,17 @@ public class DashboardManageServiceImpl implements DashboardManageService{
 		return list;
 	}
 
+	@Override
+	public List<DashboardManage> dashboardPackageChart() {
+		List<DashboardManage> list = null;
+		
+		try {
+			list = mapper.dashboardPackageChart();
+		} catch (Exception e) {
+			log.info("dashboardPackageChart : ", e);
+		}
+		
+		return list;
+	}
+
 }

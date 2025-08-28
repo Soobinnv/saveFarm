@@ -11,4 +11,5 @@ public interface DashboardManageService {
 	public List<ReturnManage> dashboardReturnList();
 	
 	public List<DashboardManage> dashboardChart();
+	public List<DashboardManage> dashboardPackageChart();
 }

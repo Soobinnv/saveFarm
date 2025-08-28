@@ -25,9 +25,19 @@
 		    FROM productOrder po
 		    LEFT JOIN orderDetail od ON po.orderNum = od.orderNum
 		    WHERE po.orderDate &gt;= TO_DATE('20250101', 'YYYYMMDD')
-		      AND po.orderDate &lt; TO_DATE('20260101', 'YYYYMMDD') and od.detailState IN (0, 1, 2)
+		      AND po.orderDate &lt; TO_DATE('20260101', 'YYYYMMDD') AND od.detailState IN (0, 1, 2)
 		) t
 		GROUP BY TO_CHAR(t.orderDate, 'MM')
 		ORDER BY TO_CHAR(t.orderDate, 'MM')
 	</select>
+	
+	<select id="dashboardPackageChart" resultType="com.sp.app.admin.model.DashboardManage">
+		SELECT TO_CHAR(s.payDate, 'MM') AS payDate, sum(s.totalPay) AS totalPay
+		FROM subStatus s
+		WHERE payDate IS NOT NULL AND (s.payDate &gt;= TO_DATE('20250101', 'YYYYMMDD')
+		      AND s.payDate &lt; TO_DATE('20260101', 'YYYYMMDD') AND s.isExtend &lt; 4) 
+		GROUP BY TO_CHAR(s.payDate, 'MM')
+		ORDER BY TO_CHAR(s.payDate, 'MM')      
+	</select>
+	
 </mapper>
