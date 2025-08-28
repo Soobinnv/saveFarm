@@ -51,26 +51,51 @@ $(document).on('click', '.order-details', function() {
 // 배송조회 이벤트 핸들러 등록
 $(function() {
 	$('#content').on('click', '.btn-track-shipment', function() {
-		const orderDetailNum = $(this).data('orderdetailnum');
+		const $card = $(this).closest('.order-card');
 		
-		const url = contextPath + '/api/myPage/shipmentInfo';
-		const params = { orderDetailNum: orderDetailNum };
+		let orderNum = $(this).attr('data-orderNum');
+		let orderDetailNum = $(this).attr('data-orderDetailNum');
+		let orderStateInfo = $card.attr('data-orderStateInfo');
+		
+		let url = contextPath + '/api/myPage/shipmentInfo';
+		let params = {  orderNum: orderNum, orderDetailNum: orderDetailNum };
 
 		const fn = function(data) {
 			// 모달에 데이터 채우기
-			$('#shipping-company').text(data.deliveryCompanyName || '정보 없음');
-			$('#tracking-number').text(data.invoiceNumber || '정보 없음');
-			$('#delivery-state').text(data.orderState || '정보 없음');
+			$('#delivery-state').text(orderStateInfo || '정보 없음');
+			$('#shipping-company').text(data.dto.deliveryCompanyName || '정보 없음');
+			$('#tracking-number').text(data.dto.invoiceNumber || '정보 없음');
 			
 			// 모달 띄우기
 			$('#shipmentTrackingModal').modal('show');
 		};
 
-		// ajaxRequest 함수는 이미 구현되어 있으므로 그대로 사용합니다.
 		ajaxRequest(url, 'get', params, 'json', fn);
 	});
 
 });
+
+// 구매확정 이벤트 핸들러 등록
+$(function() {
+	$('#content').on('click', '.btn-confirm-purchase', function() {
+		let orderDetailNum = $(this).attr('data-orderDetailNum');
+				
+		if(!confirm('구매확정을 진행하시겠습니까?')) {
+			return false;
+		}
+
+		const url = contextPath + '/api/myPage/confirmation';
+		const params = { orderDetailNum: orderDetailNum };
+
+		const fn = function(data) {
+			alert('구매확정이 완료되었습니다.');
+			location.reload(); 
+		};
+
+		ajaxRequest(url, "post", params, 'json', fn);
+	});
+});
+
 
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
@@ -86,8 +111,10 @@ const renderMyPageMainHtml = function(data) {
       buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">결제취소</button>`);
     } else if (item.orderState >= 2 && item.orderState <= 4) {
       buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
-      buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
-    } else if (item.orderState === 5) {
+      if(item.detailState === 0) {
+	  	buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
+      }
+	} else if (item.orderState === 5) {
       if (item.reviewWrite === 0) {
          buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
       }
@@ -138,6 +165,8 @@ const renderMyPageMainHtml = function(data) {
 		  	data-productName = "${item.productName}"
 		  	data-orderDate = "${orderDate}"
 		  	data-productNum = "${item.productNum}"
+			data-orderStateInfo = "${item.orderStateInfo}"
+			data-qty = "${item.qty}"
 		  	>
             <div class="order-topline">
               <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
