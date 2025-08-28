@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
-import com.sp.app.controller.OrderController;
 import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.mapper.OrderMapper;
 import com.sp.app.mapper.PackageMapper;
@@ -21,7 +20,6 @@ import com.sp.app.model.Payment;
 import com.sp.app.model.Product;
 import com.sp.app.state.OrderState;
 
-import jakarta.mail.FetchProfile.Item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -146,20 +144,10 @@ public class MyPageServiceImpl implements MyPageService {
 	public void updateOrderDetailState(Map<String, Object> map) throws Exception {
 		try {
 			// orderDetail 테이블 상태 변경
-			mapper.updateOrderState(map);
+			mapper.updateOrderDetailState(map);
 			
 			// detailStateInfo 테이블에 상태 변경 내용 및 날짜 저장
 			mapper.insertDetailStateInfo(map);
-			
-			int detailState = Integer.parseInt(Optional.ofNullable((String)map.get("detailState")).orElse("0"));
-			if(detailState == 1) {
-				// 구매 확정인 경우 적립금 추가
-				long orderDetailNum = Long.parseLong((String)map.get("orderDetailNum"));
-				Long member_id = (Long)map.get("member_id");
-				
-				Order order = orderMapper.findByOrderDetail(orderDetailNum);
-				
-			}
 
 		} catch (Exception e) {
 			log.info("updateOrderDetailState : ", e);
@@ -265,10 +253,10 @@ public class MyPageServiceImpl implements MyPageService {
 			
 			if(dto.getOrderState() > 1 && dto.getOrderState() <= 4 ){
 				dto.setInvoiceNumber(dto.getInvoiceNumber());
-				dto.setDeliveryName(dto.getDeliveryName());
+				dto.setDeliveryCompanyName(dto.getDeliveryCompanyName());
 			} else {
 				dto.setInvoiceNumber("발송준비중");
-				dto.setDeliveryName("");
+				dto.setDeliveryCompanyName("");
 			}
 			
 		} catch (NullPointerException e) {

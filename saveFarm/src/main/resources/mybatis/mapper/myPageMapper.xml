@@ -134,11 +134,17 @@
 		WHERE orderDetailNum = #{orderDetailNum}
 	</update>
 	
+		<!-- 주문상세상태 변경 -->
+	<update id="updateOrderDetailState" parameterType="map">
+		UPDATE orderDetail SET detailState = #{detailState}
+		WHERE orderDetailNum = #{orderDetailNum}
+	</update>
+	
 	<!-- 주문상세 상태 정보 등록 -->
 	<insert id="insertDetailStateInfo" parameterType="map">
-		INSERT INTO detailState(stateNum, orderNum, memberId, detailState, 
+		INSERT INTO detailState(stateNum, orderDetailNum, memberId, detailState, 
 			stateMemo, detailStateDate)
-		VALUES(detailState_seq.NEXTVAL, #{orderNum}, #{memberId}, #{detailState},
+		VALUES(detailState_seq.NEXTVAL, #{orderDetailNum}, #{memberId}, #{detailState},
 			#{stateMemo,jdbcType=VARCHAR}, SYSDATE)
 	</insert>
 	

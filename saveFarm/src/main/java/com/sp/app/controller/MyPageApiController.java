@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -163,6 +164,30 @@ public class MyPageApiController {
 	        body.put("message", "배송정보를 불러오는 중 오류가 발생했습니다.");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 	    }
+	}
+
+	// 구매 확정
+	@PostMapping("confirmation")
+	public ResponseEntity<?> confirmation(@RequestParam Map<String, Object> paramMap,
+			HttpSession session) throws Exception {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			paramMap.put("detailState", "1"); // 구매확정
+			paramMap.put("stateMemo", "구매확정완료");
+			paramMap.put("memberId", info.getMemberId());
+			
+			mypageService.updateOrderDetailState(paramMap);
+			
+			body.put("message", "구매확정이 성공적으로 처리되었습니다.");
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("confirmation: ", e);
+	        body.put("message", "구매확정을 처리하는 중 오류가 발생했습니다.");
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
 	}
 	
 	

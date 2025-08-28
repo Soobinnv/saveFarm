@@ -46,7 +46,7 @@ public class Payment {
 	private String stateProduct;
 
 	private String orderStateDate; // 상태변경일
-	private String deliveryName; // 배송업체
+	private String deliveryCompanyName; // 배송업체
 	private String invoiceNumber; // 송장 번호
 	private long afterDelivery; // 배송완료 후 날짜
 
