@@ -54,7 +54,7 @@ const renderProductListHtml = function(data) {
 	                </div>
 	                <div class="card-body">
 	                    <h4 class="card-product__title mt-1">
-	                        <a href="${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}">${item.productName}&nbsp;${item.unit}</a>
+	                        <a href="${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}">${item.productName}</a>
 	                    </h4>
 						<div class="d-flex align-items-center justify-content-center mt-2">
 							${item.discountRate != 0 
@@ -146,9 +146,9 @@ const renderRescuedProductListHtml = function(data) {
 			                </li>
 			            </ul>
 			        </div>
-			        <div class="card-body">
+			        <div class="card-body">	
 			            <h4 class="card-product__title mt-1">
-			                <a href="${contextPath}/products/${item.productNum}">${item.productName}&nbsp;${item.unit}</a>
+			                <a href="${contextPath}/products/${item.productNum}">${item.productName}</a>
 			            </h4>
 						<div class="d-flex align-items-center justify-content-center mt-2">
 							${item.discountRate != 0 

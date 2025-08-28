@@ -1,9 +1,11 @@
 package com.sp.app.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sp.app.mapper.ReturnMapper;
 import com.sp.app.model.Return;
@@ -15,15 +17,30 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class ReturnServiceImpl implements ReturnService {
-	private final ReturnMapper mapper;
 	
+	private final ReturnMapper mapper;
+	private final MyPageService myPageService;
+	
+	@Transactional
 	@Override
 	public void insertReturn(Return dto, String uploadPath) throws Exception {
 		try {
 			// 상태 : 반품 신청
 			dto.setStatus(0);
-			
 			mapper.insertReturn(dto);
+			
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			paramMap.put("orderDetailNum", dto.getOrderDetailNum());
+			
+			// 주문 상세 상태 - 반품요청 상태로 변경
+			paramMap.put("detailState", 10);
+			paramMap.put("stateMemo", "반품신청");
+			
+			paramMap.put("memberId", dto.getMemberId());
+			
+			myPageService.updateOrderDetailState(paramMap);
+			
 		} catch (Exception e) {
 			log.info("insertReturn : ", e);
 			

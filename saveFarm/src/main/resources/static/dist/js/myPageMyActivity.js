@@ -72,7 +72,7 @@ $(function() {
 		let params = new FormData($form[0]);
 		
 		const fn = function(data) {
-			loadContent('/api/myPage', renderMyPageMainHtml);
+			loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
 		}
 		
 		ajaxRequest(url, 'post', params, false, fn, true);
@@ -87,7 +87,7 @@ $(function() {
 		let params = new FormData($form[0]);
 
 		const fn = function(data) {
-			loadContent('/api/myPage', renderMyPageMainHtml);
+			loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
 		}
 
 		ajaxRequest(url, 'post', params, false, fn, true);
@@ -156,6 +156,7 @@ $(function() {
 			productName: $orderItem.data('productname'),
 			orderDate: $orderItem.data('orderdate'),
 			productNum: $orderItem.data('productnum'),
+			qty: $orderItem.data('qty')
 		}
 		
 		renderReturnForm(orderDetailObject);
@@ -248,17 +249,15 @@ const renderMyWishListHtml = function(data) {
                     </div>
 
                     <div class="col-12 col-md-auto mt-3 mt-md-0">
-                        <div class="d-grid gap-2 d-sm-block">
-						<form name="buyForm">
-							<input type="hidden" name="productNums" id="product-productNum" value="${item.productNum}"> 
-							<input type="hidden" name="buyQtys" id="qty" value="1"> 
-							<input type="hidden" name="units" id="unit" value="${item.unit}">
-								<button class="btn btn-success btn-lg btn-cart" type="button">장바구니 담기</button>
-								<button class="btn btn-success btn-lg btn-buy" type="button">바로 구매</button>
-							</form>
-                        </div>
+						<form name="buyForm" class="d-grid d-md-flex gap-2">
+							<input type="hidden" name="productNums" value="${item.productNum}"> 
+							<input type="hidden" name="buyQtys" value="1"> 
+							<input type="hidden" name="units" value="${item.unit}">
+							<button class="btn btn-outline-success btn-cart" type="button">장바구니</button>
+							<button class="btn btn-success btn-buy" type="button">바로 구매</button>
+						</form>
                     </div>
-                </div>
+                    </div>
             </div>
             <button type="button" class="btn-close position-absolute top-0 end-0 p-3" aria-label="Close"></button>
         </div>
@@ -279,12 +278,7 @@ const renderMyReviewListHtml = function(data) {
 		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
 				<h3 class="display-6 fw-bold text-dark">나의 리뷰</h3>
-				<p class="text-muted">내가 작성한 상품 리뷰를 확인하고 관리할 수 있습니다.</p>
-				<div class="mt-3 d-flex justify-content-center">
-					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-review" type="button">리뷰 작성</button>
-					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-return" type="button">반품 신청</button>
-					<button data-order-detail-num="1" class="btn btn-success btn-lg btn-refund" type="button">환불 신청</button>
-				</div>			
+				<p class="text-muted">내가 작성한 상품 리뷰를 확인하고 관리할 수 있습니다.</p>		
 			</div>
 	`; 
 	
@@ -312,7 +306,7 @@ const renderMyReviewListHtml = function(data) {
 			data-unit = "${item.unit}"
 			data-reviewTitle = "${item.reviewTitle}"
 			data-star = "${item.star}"
-			data-review = "${reviewText}"
+			data-review = "${item.review}"
 			data-reviewImageList = "${JSON.stringify(item.reviewImageList || [])}"
 			data-helpfulCount = "${item.helpfulCount}"
 			>
@@ -481,7 +475,7 @@ const renderReturnForm = function(orderDetailObject = null) {
 	                
 	                <div class="mb-3">
 	                    <label for="quantity" class="form-label fw-bold">반품 수량</label>
-	                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required>
+	                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="${orderDetailObject.qty}" value="1" required>
 	                </div>
 	                
 	                <div class="mb-4">

@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class ProductManageController {
+public class AdminProductController {
 	
 	private final ProductService productService;
 	private final SupplyService supplyService;
@@ -186,13 +186,13 @@ public class ProductManageController {
 	@PatchMapping("/api/admin/products/{productNum}")
 	public ResponseEntity<?> updateProductStock(
 			@PathVariable(name = "productNum") long productNum,
-			@RequestParam(name = "supplyNum", required = false) Long supplyNum,
+			@RequestParam(name = "supplyNums", required = false) List<Long> supplyNums,
 			Product dto
 			) {
 		Map<String, Object> body = new HashMap<>();
 		
 		try {
-			productService.updateProductDetail(dto, supplyNum);
+			productService.updateProductDetail(dto, supplyNums);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {

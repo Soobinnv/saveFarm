@@ -258,17 +258,24 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional
 	@Override
-	public void updateProductDetail(Product dto, Long supplyNum) throws Exception {
+	public void updateProductDetail(Product dto, List<Long> supplyNums) throws Exception {
 		try {
+			// 판매 상품 재고 등록
 			mapper.updateProductDetail(dto);
 			
-			if(supplyNum != null) {
+			if(supplyNums.size() != 0) {
 				Map<String, Object> paramMap = new HashMap<>();
 				
-				// 판매 상품 재고 등록
-				paramMap.put("supplyNum", supplyNum);
+				// 납품 목록 처리
+				// 납품 상태: 납품 완료 -> 재고 추가 상태로 변경
+				// 납품 - 상품 번호: 상품 재고 추가 시 번호 등록 
 				paramMap.put("state", 6);
-				supplyMapper.updateState1(paramMap);				
+				
+				for(long supplyNum : supplyNums) {
+					paramMap.put("supplyNum", supplyNum);
+					paramMap.put("productNum", dto.getProductNum());
+					supplyMapper.updateState1(paramMap);									
+				}				
 			}
 			
 		} catch (Exception e) {

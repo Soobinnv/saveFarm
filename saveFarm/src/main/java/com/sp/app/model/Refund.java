@@ -18,7 +18,7 @@ public class Refund {
     private String refundDate;
     private String refundMethod;
     private long orderDetailNum;
-    // status - 0: 신청, 1: 처리중, 2: 처리 완료
+    // status - 0: 신청, 1: 처리중, 2: 처리 완료, 3: 기각
     private int status;
     
     // 환불 첨부 이미지
@@ -26,4 +26,7 @@ public class Refund {
     private String refundImageFilename;
     
     private List<MultipartFile> refundImages;
+    
+    // 반품 신청 회원 ID
+    private long memberId;
 }

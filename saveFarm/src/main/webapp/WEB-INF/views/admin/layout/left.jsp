@@ -199,28 +199,23 @@
 				<a href="#ui-elements-withdraw"
 					data-toggle="collapse" aria-expanded="false"
 					class="dropdown-toggle nav-link">
-					<i class="fe fe-box fe-16"></i>
-					<span class="ml-3 item-text">주문취소</span>
+					<i class="fe fe-credit-card fe-16"></i>
+					<span class="ml-3 item-text">고객 서비스</span>
 				</a>
 				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-withdraw">
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="">
-							<span class="ml-1 item-text">배송 전 환불</span>
+						<a id="refundList" class="nav-link pl-3" href="">
+							<span class="ml-1 item-text">주문 취소</span>
 						</a>
 					</li>
-					<li class="nav-item">
+					<li id="returnList" class="nav-item">
 						<a class="nav-link pl-3" href="">
-							<span class="ml-1 item-text">배송 후 반품</span>
+							<span class="ml-1 item-text">반품 관리</span>
 						</a>
 					</li>
-					<li class="nav-item">
+					<li id="refundReturnList" class="nav-item">
 						<a class="nav-link pl-3" href="">
-							<span class="ml-1 item-text">판매취소</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link pl-3" href="">
-							<span class="ml-1 item-text">취소리스트</span>
+							<span class="ml-1 item-text">취소/반품 통합 내역</span>
 						</a>
 					</li>
 				</ul>

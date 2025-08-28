@@ -360,6 +360,7 @@ const createSupplyCheckboxesHTML = function(supplyList) {
 				type="checkbox" 
 				value="${supply.supplyNum}" 
 				id="supply-${supply.supplyNum}" 
+				data-num="${supply.supplyNum}"
 				data-quantity="${supply.supplyQuantity}"
 				data-variety-num="${supply.varietyNum}"
 				data-variety-name="${supply.varietyName}">

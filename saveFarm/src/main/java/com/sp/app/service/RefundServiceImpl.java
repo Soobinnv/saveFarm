@@ -1,9 +1,11 @@
 package com.sp.app.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sp.app.mapper.RefundMapper;
 import com.sp.app.model.Refund;
@@ -16,14 +18,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RefundServiceImpl implements RefundService{
 	private final RefundMapper mapper;
+	private final MyPageService myPageService;
 	
+	@Transactional
 	@Override
 	public void insertRefund(Refund dto, String uploadPath) throws Exception {
 		try {
 			// 상태 : 환불 신청
 			dto.setStatus(0);
-			
 			mapper.insertRefund(dto);
+			
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			paramMap.put("orderDetailNum", dto.getOrderDetailNum());
+			
+			// 주문 상세 - 주문 취소 요청 상태로 변경
+			paramMap.put("detailState", 4);
+			paramMap.put("stateMemo", "주문취소요청");
+			
+			paramMap.put("memberId", dto.getMemberId());
+			
+			myPageService.updateOrderDetailState(paramMap);
+			
 		} catch (Exception e) {
 			log.info("insertRefund : ", e);
 			

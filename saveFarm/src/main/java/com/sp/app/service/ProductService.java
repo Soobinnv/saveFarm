@@ -32,7 +32,7 @@ public interface ProductService {
 	public void insertProductWithDetails(Product dto, String uploadPath) throws Exception;
 	
 	public void updateProduct(Product dto, String uploadPath) throws Exception;
-	public void updateProductDetail(Product dto, Long supplyNum) throws Exception;
+	public void updateProductDetail(Product dto, List<Long> supplyNums) throws Exception;
 	public void updateRescuedProduct(Product dto, String uploadPath) throws Exception;
 	
 	public void updateProductWithDetails(Product dto, String uploadPath) throws Exception;

@@ -17,7 +17,7 @@ public class Return {
     private String reqDate;
     private String reason;
     private int quantity;
-    // status - 0: 신청, 1: 처리중, 2: 처리 완료
+    // status - 0: 신청, 1: 처리중, 2: 처리 완료, 3: 기각
     private int status;
     private String returnDate;
     private long orderDetailNum;
@@ -26,5 +26,8 @@ public class Return {
     private long returnImageNum;
     private String returnImageFilename;
     
-    private List<MultipartFile> returnImages;    
+    private List<MultipartFile> returnImages;  
+    
+    // 반품 신청 회원 ID
+    private long memberId;
 }
