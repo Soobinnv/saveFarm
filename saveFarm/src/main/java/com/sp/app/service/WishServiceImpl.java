@@ -32,11 +32,11 @@ public class WishServiceImpl implements WishService{
 	}
 
 	@Override
-	public List<Wish> getWishList(long memberId) {
+	public List<Wish> getWishList(Map<String, Object> map) {
 		List<Wish> list = null;
 		
 		try {
-			list = mapper.getWishList(memberId);
+			list = mapper.getWishList(map);
 			
 			for(Wish dto : list) {
 				int discountedPrice = 0;
@@ -76,5 +76,22 @@ public class WishServiceImpl implements WishService{
 			throw e;
 		}
 	}
+
+	@Override
+	public int getMyWishDataCount(long memberId) {
+		int count = 0;
+		
+		try {
+			count = mapper.getMyWishDataCount(memberId);
+			
+		} catch (Exception e) {
+			log.info("getMyWishDataCount : ", e);
+			
+			throw e;
+		}
+		
+		return count;
+	}
+
 
 }

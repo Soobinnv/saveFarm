@@ -7,7 +7,7 @@
 		VALUES (#{memberId}, #{productNum}, SYSDATE)
 	</insert>
 
-	<select id="getWishList" resultType="com.sp.app.model.Wish" parameterType="Long">
+	<select id="getWishList" resultType="com.sp.app.model.Wish" parameterType="map">
     	SELECT w.memberId, w.productNum, wishDate,
     		p.productName, pd.unit, pd.unitPrice, pd.discountRate, p.deliveryFee, p.mainImageFilename
     	FROM wish w
@@ -15,6 +15,7 @@
     	JOIN productDetail pd ON w.productNum = pd.productNum
 		WHERE w.memberId = #{memberId}
 		ORDER BY wishDate DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 
 	<select id="findByWishId" resultType="com.sp.app.model.Wish" parameterType="map">
@@ -32,4 +33,9 @@
 		</if>
 	</delete>
 
+	<select id="getMyWishDataCount" parameterType="long" resultType="int">
+		SELECT COUNT(*)
+		FROM wish
+		WHERE memberId = #{memberId}
+	</select>
 </mapper>

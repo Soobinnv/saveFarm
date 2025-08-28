@@ -191,14 +191,42 @@ public class MyPageApiController {
 	
 	
 	// 내 활동 - 찜 데이터
-	@GetMapping("/wish")
-	public ResponseEntity<?> getMyWishList(HttpSession session) {
+	@GetMapping("/wishes")
+	public ResponseEntity<?> getMyWishList(HttpSession session,  @RequestParam(name = "pageNo", defaultValue = "1") int current_page) {
 		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> paramMap = new HashMap<>();
+		
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
 			
-			List<Wish> list = wishService.getWishList(info.getMemberId());
+			// 페이징
+			int size = 10;
+			int total_page = 0;
+			int dataCount = 0;
+			
+			dataCount = wishService.getMyWishDataCount(info.getMemberId());
+			total_page = paginateUtil.pageCount(dataCount, size);
+			current_page = Math.min(current_page, total_page);
+			
+			// 리스트에 출력할 데이터를 가져오기
+			int offset = (current_page - 1) * size;
+			if(offset < 0) offset = 0;
+
+			// AJAX 용 페이징
+			String paging = paginateUtil.pagingMethod(current_page, total_page, "wishListPage");
+			
+			paramMap.put("offset", offset);
+			paramMap.put("size", size);
+			paramMap.put("memberId", info.getMemberId());
+			
+			List<Wish> list = wishService.getWishList(paramMap);
+			
 			body.put("list", list);
+			body.put("pageNo", current_page);
+			body.put("replyCount", dataCount);
+			body.put("total_page", total_page);
+			body.put("paging", paging);
+			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getMyWishList: ", e);
@@ -366,7 +394,7 @@ public class MyPageApiController {
 		}
 	}
 	
-	// 내 활동 - 1:1 문의 데이터
+	// 내 활동 - 나의 문의 데이터
 	@GetMapping("/inquirys")
 	public ResponseEntity<?> getMyInquiryList(HttpSession session) {
 		Map<String, Object> body = new HashMap<>();

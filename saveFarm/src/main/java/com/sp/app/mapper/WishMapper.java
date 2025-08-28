@@ -11,7 +11,9 @@ import com.sp.app.model.Wish;
 @Mapper
 public interface WishMapper {
 	public void insertWish(Map<String, Object> map) throws SQLException;
-	public List<Wish> getWishList(long memberId);
+	public List<Wish> getWishList(Map<String, Object> map);
 	public Wish findByWishId(Map<String, Object> map);
 	public void deleteWish(Map<String, Object> map) throws Exception;
+	
+	public int getMyWishDataCount(long memberId);
 }

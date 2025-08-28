@@ -11,7 +11,7 @@ $(function() {
 			break;
 		case "wishList" : 
 			// 내 찜 목록 불러오기
-			loadContent('/api/myPage/wish', renderMyWishListHtml);
+			loadContent('/api/myPage/wishes', renderMyWishListHtml);
 			break;
 	}
 	
@@ -263,6 +263,11 @@ const renderMyWishListHtml = function(data) {
         </div>
 	`).join('');
 	html += `</div></div>`;
+	
+	html += `
+		<div class="myPagePaginate">
+			${data.paging}
+		</div>`
 	
 	return html;
 }
@@ -734,6 +739,15 @@ const renderMyQnaListHtml = function(data) {
 	return html;
 }
 
+
+/**
+ * 마이 페이지 - 내 활동 - 찜 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function wishListPage(page) {
+	let parameter = {pageNo:page};
+	loadContent('/api/myPage/wishes', renderMyWishListHtml, parameter)
+}
 
 /**
  * 마이 페이지 - 내 활동 - 상품 문의 페이징 처리
