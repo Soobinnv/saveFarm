@@ -68,5 +68,46 @@ function reviewListPage(page) {
 	
 	let parameter = {pageNo:page,reviewBlock:params.reviewBlock};
 	
-	loadContent('/api/admin/reviews', renderProductReviewListHTML, parameter, 'qnaListPage');
+	loadContent('/api/admin/reviews', renderProductReviewListHTML, parameter, 'reviewListPage');
 }
+
+/**
+ * 관리자 페이지 - 고객 서비스 - 환불 리스트 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function refundListPage(page) {
+	const paramsString = $('#dataTables').data('params');
+	// 요청 파라미터 가져오기
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,type:"refund"};
+	
+	loadContent('/api/admin/claims', renderRefundListHTML, parameter, 'refundListPage'); 
+}
+
+/**
+ * 관리자 페이지 - 고객 서비스 - 반품 리스트 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function returnListPage(page) {
+	const paramsString = $('#dataTables').data('params');
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page,type:"return"};
+		
+	loadContent('/api/admin/claims', renderReturnListHTML, parameter, 'returnListPage'); 
+}
+
+/**
+ * 관리자 페이지 - 고객 서비스 - 전체 클레임 리스트 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function allClaimListPage(page) {
+	const paramsString = $('#dataTables').data('params');
+	const params = JSON.parse(paramsString);
+	
+	let parameter = {pageNo:page};
+	
+	loadContent('/api/admin/claims', renderAllClaimListHTML, parameter, 'allClaimListPage');
+}
+

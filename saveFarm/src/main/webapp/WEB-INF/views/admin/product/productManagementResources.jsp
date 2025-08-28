@@ -5,11 +5,11 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/admincss/product/adminProductManagement.css">
 <input type="hidden" id="web-contextPath" value="${pageContext.request.contextPath}">
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/productManagementService.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/customerManagementService.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/claimManagementService.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/productManagementRenderer.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/customerManagementRenderer.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/claimManagementRenderer.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/js/paging.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/pagingManagement.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/commonEventHandler.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/productManagement.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/customerManagement.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/dist/adminjs/product/claimManagement.js"></script>

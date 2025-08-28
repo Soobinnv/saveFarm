@@ -9,7 +9,7 @@ const mainTabConfig = {
     'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'reviewListPage' },
     'refund': { url: '/api/admin/claims', params: {type:"refund"}, render: renderRefundListHTML, pagingMethodName: 'refundListPage' },
     'return': { url: '/api/admin/claims', params: {type:"return"}, render: renderReturnListHTML, pagingMethodName: 'returnListPage' },
-    'refundReturn': { url: '/api/admin/claims', render: renderRefundReturnListHTML, pagingMethodName: 'refundReturnListPage' }
+    'refundReturn': { url: '/api/admin/claims', render: renderAllClaimListHTML, pagingMethodName: 'allClaimListPage' }
 };
 
 // - 상품 리스트 하위 탭(전체, 일반, 구출)
