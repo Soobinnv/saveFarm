@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.sp.app.admin.model.DashboardManage;
+import com.sp.app.admin.model.ReturnManage;
 import com.sp.app.admin.service.DashboardManageService;
 import com.sp.app.model.Refund;
-import com.sp.app.model.Return;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,7 @@ public class HomeManageController {
 		
 		try {
 			List<Refund> refundList = service.dashboardRefundList();
-			List<Return> returnList = service.dashboardReturnList();
+			List<ReturnManage> returnList = service.dashboardReturnList();
 			
 			model.addAttribute("refundList", refundList);
 			model.addAttribute("returnList", returnList);
@@ -45,16 +46,19 @@ public class HomeManageController {
 	@GetMapping("/chart")
     public Map<String, Object> getChartData() throws Exception {
         
+		List<DashboardManage> list = service.dashboardChart();
+		
         List<String> categories = new ArrayList<>();
-        List<Integer> dataValues = new ArrayList<>();
+        List<Long> dataValues = new ArrayList<>();
         
-        categories.add("1월");
-        categories.add("2월");
-        categories.add("3월");
         
-        dataValues.add(125000);
-        dataValues.add(250000);
-        dataValues.add(150000);
+        for(DashboardManage item : list) {
+        	int month = Integer.parseInt(item.getOrderDate());
+        	
+        	categories.add(month + "월");
+        	dataValues.add(item.getPayment());
+        	
+        }
         
         Map<String, Object> chartData = new HashMap<>();
         chartData.put("categories", categories);
