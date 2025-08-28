@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sp.app.mapper.UserNoticeMapper">
+<mapper namespace="com.sp.app.mapper.NoticeMapper">
 	<sql id="where-list">
 		<if test="schType=='all' ">
 			<![CDATA[
@@ -25,18 +25,18 @@
 	</sql>
 	
 	<!-- 공지글 리스트 -->
-	<select id="listNoticeTop" resultType="com.sp.app.model.Notice">
-		SELECT n.noticeNum, notice, subject, hitCount, 
+	<select id="listNoticeTop" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT n.num, notice, subject, hitCount, 
 				TO_CHAR(regDate, 'YYYY-MM-DD') regDate,
 				TO_CHAR(n.updateDate, 'YYYY-MM-DD') updateDate,
 				NVL(fileCount, 0) fileCount
 		FROM notice n
 		LEFT OUTER JOIN (
-			SELECT noticeNum, COUNT(*) fileCount
-			FROM notiFile
-			GROUP BY noticeNum
-		) f ON n.noticeNum = f.noticeNum
-		WHERE notice = 1 AND showNotice = 1 AND categoryNum = 1
+			SELECT num, COUNT(*) fileCount
+			FROM noticeFile
+			GROUP BY num
+		) f ON n.num = f.num
+		WHERE notice = 1 AND showNotice = 1
 		ORDER BY updateDate DESC
 	</select>
 	
@@ -46,7 +46,7 @@
 		FROM notice n
 		JOIN member2 m ON n.memberId = m.memberId
 		<where>
-			showNotice = 1 AND categoryNum = 1
+			showNotice = 1
 			<if test="kwd != null and kwd != ''  ">
 				AND <include refid="where-list"/>
 			</if>
@@ -54,17 +54,17 @@
 	</select>
 	
 	<!-- 리스트 -->
-	<select id="listNotice" parameterType="map" resultType="com.sp.app.model.Notice">
-		SELECT n.noticeNum, notice, subject, hitCount, 
+	<select id="listNotice" parameterType="map" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT n.num, notice, subject, hitCount, 
 			   regDate, n.updateDate, NVL(fileCount, 0) fileCount
 		FROM notice n
 		LEFT OUTER JOIN (
-			SELECT noticeNum, COUNT(*) fileCount
-			FROM notiFile
-			GROUP BY noticeNum
-		) f ON n.noticeNum = f.noticeNum
+			SELECT num, COUNT(*) fileCount
+			FROM noticeFile
+			GROUP BY num
+		) f ON n.num = f.num
 		<where>
-			showNotice = 1 AND categoryNum = 1
+			showNotice = 1
 			<if test="kwd != null and kwd != ''">
 				AND <include refid="where-list"/>
 			</if>
@@ -74,27 +74,27 @@
 	</select>
 
     <!-- 글보기 -->
-    <select id="findById" parameterType="Long" resultType="com.sp.app.model.Notice">
-		SELECT noticeNum, subject, content, 
+    <select id="findById" parameterType="Long" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT num, subject, content, 
 			TO_CHAR(regDate, 'YYYY-MM-DD HH24:MI:SS') reg_date, 
 			TO_CHAR(n.updateDate, 'YYYY-MM-DD HH24:MI:SS') updateDate, 
 			hitCount, notice, showNotice
 		FROM notice n
-		WHERE noticeNum = #{noticeNum} AND showNotice = 1
+		WHERE num = #{num} AND showNotice = 1
 	</select>
 
 	<!-- 조회수 증가 -->
 	<update id="updateHitCount" parameterType="Long">
 		UPDATE notice SET hitCount = hitCount + 1
-		WHERE noticeNum = #{noticeNum}
+		WHERE num = #{num}
 	</update>
 
 	<!-- 이전글 -->
-	<select id="findByPrev" parameterType="map" resultType="com.sp.app.model.Notice">
-		SELECT noticeNum, subject
+	<select id="findByPrev" parameterType="map" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT num, subject
 		FROM notice n
 		<where>
-			showNotice = 1 AND categoryNum = 1
+			showNotice = 1
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
@@ -105,11 +105,11 @@
     </select>
 
     <!-- 다음글 -->
-    <select id="findByNext" parameterType="map" resultType="com.sp.app.model.Notice">
-		SELECT noticeNum, subject
+    <select id="findByNext" parameterType="map" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT num, subject
 		FROM notice n
 		<where>
-			showNotice = 1 AND categoryNum = 1
+			showNotice = 1
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
@@ -119,15 +119,15 @@
 		FETCH FIRST 1 ROWS ONLY
     </select>
     
-	<select id="listNoticeFile" parameterType="Long" resultType="com.sp.app.model.Notice">
-		SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
-		FROM notiFile
-		WHERE noticeNum = #{noticeNum} 
+	<select id="listNoticeFile" parameterType="Long" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT fileNum, num, saveFilename, originalFilename, fileSize
+		FROM noticeFile
+		WHERE num = #{num} 
 	</select>
 	
-	<select id="findByFileId" parameterType="Long" resultType="com.sp.app.model.Notice">
-		SELECT fileNum, noticeNum, saveFilename, originalFilename, fileSize
-		FROM notiFile
+	<select id="findByFileId" parameterType="Long" resultType="com.sp.app.admin.model.NoticeManage">
+		SELECT fileNum, num, saveFilename, originalFilename, fileSize
+		FROM noticeFile
 	    WHERE fileNum = #{fileNum}      
 	</select>
 </mapper>

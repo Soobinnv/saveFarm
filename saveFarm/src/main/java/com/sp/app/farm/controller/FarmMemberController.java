@@ -65,6 +65,7 @@ public class FarmMemberController {
 
 	    SessionInfo info = SessionInfo.builder()
 	        .farmNum(farmNum)
+	        .farmName(dto.getFarmName())
 	        .businessNumber(dto.getBusinessNumber())
 	        .farmerId(dto.getFarmerId())
 	        .farmerName(dto.getFarmerName())

@@ -6,24 +6,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spring</title>
-<jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/board.css" type="text/css">
+<title>SaveFarm</title>
+<jsp:include page="/WEB-INF/views/farm/layout/farmHeaderResources.jsp"/>
+
+<style type="text/css">
+
+</style>
 </head>
-<body>
+<body class="index-page">
 
 <header>
-	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
+	<jsp:include page="/WEB-INF/views/farm/layout/farmHeader.jsp"/>
 </header>
 
-<main>
-	<!-- Page Title -->
-	<div class="page-title">
-		<div class="container align-items-center" data-aos="fade-up">
-			<h1>1:1 문의</h1>
-			<div class="page-title-underline-accent"></div>
-		</div>
-	</div>
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+      <div class="container position-relative">
+        <h1>1:1 문의</h1>
+        <p>작성해주신 문의 내용 및 관리자의 답변을 확인해보세요.</p>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="${pageContext.request.contextPath}/farm">홈</a></li>
+            <li class="current">문의</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
     
 	<!-- Page Content -->    
 	<div class="section">
@@ -45,29 +54,16 @@
 						</div>
 
 						<div class="col-md-2 text-center bg-light border-bottom p-2">
-							카테고리
-						</div>
-						<div class="col-md-4 border-bottom p-2">
-							${dto.category}
-						</div>
-						<div class="col-md-2 text-center bg-light border-bottom p-2">
-							이 름
-						</div>
-						<div class="col-md-4 border-bottom p-2">
-							${dto.name}
-						</div>
-
-						<div class="col-md-2 text-center bg-light border-bottom p-2">
 							문의일자
 						</div>
 						<div class="col-md-4 border-bottom p-2">
-							${dto.reg_date}
+							${dto.regDate}
 						</div>
 						<div class="col-md-2 text-center bg-light border-bottom p-2">
 							처리결과
 						</div>
 						<div class="col-md-4 border-bottom p-2">
-							${(empty dto.answer_date)?"답변대기":"답변완료"}
+							${dto.processResult == 0 ? "답변대기":"답변완료"}
 						</div>
 					
 						<div class="col-md-12 border-bottom mh-px-150">
@@ -76,7 +72,7 @@
 									내 용
 								</div>
 								<div class="col-md-10 p-2 h-100">
-									${dto.question}
+									${dto.content}
 								</div>
 							</div>
 						</div>
@@ -96,7 +92,7 @@
 								답변일자
 							</div>
 							<div class="col-md-4 border-top border-bottom p-2">
-								${dto.answer_date}
+								${dto.answerDate}
 							</div>
 							
 							<div class="col-md-12 border-bottom mh-px-150">
@@ -121,16 +117,16 @@
 								<button type="button" class="btn-default" disabled>이전글</button>
 							</c:if>
 							<c:if test="${not empty prevDto}">
-								<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/inquiry/article?${query}&num=${prevDto.num}';">이전글</button>
+								<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/farm/inquiry/article?${query}&inquiryNum=${prevDto.inquiryNum}';">이전글</button>
 							</c:if>
 							<c:if test="${empty nextDto}">
 								<button type="button" class="btn-default" disabled>다음글</button>
 							</c:if>
 							<c:if test="${not empty nextDto}">
-								<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/inquiry/article?${query}&num=${nextDto.num}';">다음글</button>
+								<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/farm/inquiry/article?${query}&inquiryNum=${nextDto.inquiryNum}';">다음글</button>
 							</c:if>
 
-							<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/inquiry/list?${query}';">리스트</button>
+							<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/farm/inquiry/list?${query}';">리스트</button>
 						</div>
 					</div>
 
@@ -143,18 +139,18 @@
 <script type="text/javascript">
 function deleteOk() {
 	if(confirm('문의를 삭제 하시겠습니까 ?')) {
-		let params = 'num=${dto.num}&${query}';
-		let url = '${pageContext.request.contextPath}/inquiry/delete?' + params;
+		let params = 'inquiryNum=${dto.inquiryNum}&${query}';
+		let url = '${pageContext.request.contextPath}/farm/inquiry/delete?' + params;
 		location.href = url;
 	}
 }
 </script>
 
 <footer>
-	<jsp:include page="/WEB-INF/views/layout/footer.jsp"/>
+	<jsp:include page="/WEB-INF/views/farm/layout/farmFooter.jsp"/>
 </footer>
 
-<jsp:include page="/WEB-INF/views/layout/footerResources.jsp"/>
+<jsp:include page="/WEB-INF/views/farm/layout/farmFooterResources.jsp"/>
 
 </body>
 </html>

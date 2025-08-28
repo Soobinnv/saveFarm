@@ -2,36 +2,43 @@
 
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.sp.app.mapper.InquiryMapper">
+<mapper namespace="com.sp.app.farm.mapper.InquiryMapper">
 	<insert id="insertInquiry" parameterType="com.sp.app.farm.model.Inquiry">
-		INSERT INTO inquiry(num, member_id, category, subject, question, reg_date)
-		VALUES (inquiry_seq.NEXTVAL,#{member_id}, #{category}, #{subject}, 
-					#{question}, SYSDATE)
+		INSERT INTO inquiry(inquiryNum, subject, content, regDate, answer, answerDate, processResult, memberId, farmNum, answerId)
+		VALUES (inquiry_seq.NEXTVAL, #{subject}, #{content}, SYSDATE, 
+			#{answer, jdbcType=VARCHAR}, #{answerDate, jdbcType=DATE}, 0, 
+			#{memberId, jdbcType=NUMERIC}, #{farmNum, jdbcType=NUMERIC}, #{answerId, jdbcType=NUMERIC})
 	</insert>
 
 	<sql id="where-list">
-		<choose>
-			<when test="schType == 'all' ">
-			   ( INSTR(subject, #{kwd}) &gt; 0
-		          OR INSTR(question, #{kwd}) &gt; 0 )
-			</when>
-			<when test="schType == 'reg_date' ">
-			   ( INSTR(TO_CHAR(i.reg_date, 'YYYYMMDD'), #{kwd}) &gt; 0
-		          OR TO_CHAR(i.reg_date, 'YYYY-MM-DD') = #{kwd} )
-			</when>
-			<otherwise>
-			    INSTR(${schType}, #{kwd}) &gt; 0
-			</otherwise>
-		</choose>		
+		<if test="kwd != null and kwd.trim() != ''">
+			<choose>
+				<when test="schType == 'all' ">
+				   ( INSTR(subject, #{kwd}) &gt; 0
+			          OR INSTR(content, #{kwd}) &gt; 0
+			          OR INSTR(answer, #{kwd}) &gt; 0 )
+				</when>
+				<when test="schType == 'regDate' ">
+				   ( INSTR(TO_CHAR(regDate, 'YYYYMMDD'), #{kwd}) &gt; 0
+			          OR TO_CHAR(regDate, 'YYYY-MM-DD') = #{kwd} )
+				</when>
+				<when test="schType == 'subject' ">
+				   ( INSTR(subject, #{kwd}) &gt; 0)
+				</when>
+				<when test="schType == 'content' ">
+				   ( INSTR(content, #{kwd}) &gt; 0)
+				</when>
+			</choose>	
+		</if>	
 	</sql>
 
 	<!-- 글개수 -->
 	<select id="dataCount" parameterType="map" resultType="Integer">
 		SELECT NVL(COUNT(*), 0)
 		FROM inquiry i
-		JOIN member2 m ON i.member_id = m.member_id
+		JOIN farm f ON i.farmNum = f.farmNum
 		<where>
-			i.member_id = #{member_id}
+			i.farmNum = #{farmNum}
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
@@ -40,65 +47,67 @@
 
 	<!-- 글리스트 -->
     <select id="listInquiry" parameterType="map" resultType="com.sp.app.farm.model.Inquiry">
-		SELECT num, i.member_id, name, category, subject,
-			   TO_CHAR(reg_date, 'YYYY-MM-DD') reg_date, answer_date
+		SELECT inquiryNum, subject, content, f.farmNum, farmName, processResult,
+			   TO_CHAR(regDate, 'YYYY-MM-DD') regDate, TO_CHAR(answerDate, 'YYYY-MM-DD') answerDate
 		FROM inquiry i
-		JOIN member2 m ON i.member_id = m.member_id
+		JOIN farm f ON i.farmNum = f.farmNum
 		<where>
-			i.member_id = #{member_id}
+			i.farmNum = #{farmNum}
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
 		</where>   
-		ORDER BY num DESC
+		ORDER BY inquiryNum DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
     
 	<!-- 글보기 -->
 	<select id="findById" resultType="com.sp.app.farm.model.Inquiry" parameterType="Long">
-		SELECT num, i.member_id, m.name, category, subject, question, 
-				reg_date, a.name answerName, answer, answer_date
+		SELECT inquiryNum, subject, content, processResult,TO_CHAR(regDate, 'YYYY-MM-DD') regDate,
+			f.farmNum, farmName,
+			name, answer, TO_CHAR(answerDate, 'YYYY-MM-DD') answerDate
 		FROM inquiry i
-		JOIN member2 m ON i.member_id = m.member_id
-		LEFT OUTER JOIN member2 a ON i.answer_id = a.member_id
-		WHERE num = #{num}
+		JOIN farm f ON i.farmNum = f.farmNum
+		LEFT JOIN member1 m1 ON i.memberId = m1.memberId
+		LEFT JOIN member2 m2 ON m1.memberId = m2.memberId
+		WHERE inquiryNum = #{inquiryNum}
 	</select>
 
 	<!-- 이전글 -->
 	<select id="findByPrev" parameterType="map" resultType="com.sp.app.farm.model.Inquiry">
-		SELECT num, subject
+		SELECT inquiryNum, subject
 		FROM inquiry i
-		JOIN member2 m ON i.member_id = m.member_id
+		JOIN farm f ON i.farmNum = f.farmNum
 		<where>
-			i.member_id = #{member_id}
+			i.farmNum = #{farmNum}
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
-			AND (num &gt; #{num})
+			AND (inquiryNum &gt; #{inquiryNum})
 		</where>
-		ORDER BY num ASC
+		ORDER BY inquiryNum ASC
 		FETCH FIRST 1 ROWS ONLY
 	</select>
 
 	<!-- 다음글 -->
 	<select id="findByNext" parameterType="map" resultType="com.sp.app.farm.model.Inquiry">
-		SELECT num, subject
+		SELECT inquiryNum, subject
 		FROM inquiry i
-		JOIN member2 m ON i.member_id = m.member_id
+		JOIN farm f ON i.farmNum = f.farmNum
 		<where>
-			i.member_id = #{member_id}
+			i.farmNum = #{farmNum}
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
-			AND (num &lt; #{num})
+			AND (inquiryNum &lt; #{inquiryNum})
 		</where>
-		ORDER BY num DESC
+		ORDER BY inquiryNum DESC
 		FETCH FIRST 1 ROWS ONLY
 	</select>
 
 	<!-- 삭제 -->
 	<delete id="deleteInquiry" parameterType="Long">
 		DELETE FROM inquiry
-		WHERE num = #{num}
+		WHERE inquiryNum = #{inquiryNum}
 	</delete>
 </mapper>

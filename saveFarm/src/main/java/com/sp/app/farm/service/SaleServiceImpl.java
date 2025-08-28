@@ -7,8 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.sp.app.farm.mapper.FarmSaleMapper;
-import com.sp.app.farm.model.MonthlyRatingRank;
-import com.sp.app.farm.model.MonthlySalesRank;
+import com.sp.app.farm.model.MonthlyVarietyStats;
 import com.sp.app.farm.model.MyFarmSale;
 
 import lombok.RequiredArgsConstructor;
@@ -65,84 +64,82 @@ public class SaleServiceImpl implements SaleService {
 	}
 
 	@Override
-	public List<MonthlySalesRank> topMonthlySalesSeries(Map<String, Object> map) {
-		List<MonthlySalesRank> list = null;
+	public List<MonthlyVarietyStats> listMonthlyVarietyWeight(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlySalesSeries(map);
+			list = mapper.listMonthlyVarietyWeight(map);
 		} catch (Exception e) {
-			log.info("topMonthlySalesSeries : ", e);
+			log.info("listMonthlyVarietyWeight : ", e);
 		}
 		
 		return list;
 	}
 
 	@Override
-	public List<MonthlyRatingRank> topMonthlyRatingSeries(Map<String, Object> map) {
-		List<MonthlyRatingRank> list = null;
+	public List<MonthlyVarietyStats> listMonthlyVarietyAmount(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlyRatingSeries(map);
+			list = mapper.listMonthlyVarietyAmount(map);
 		} catch (Exception e) {
-			log.info("topMonthlyRatingSeries : ", e);
+			log.info("listMonthlyVarietyAmount : ", e);
 		}
 		
 		return list;
 	}
 
 	@Override
-	public List<MonthlySalesRank> topMonthlySales(Map<String, Object> map) {
-		List<MonthlySalesRank> list = null;
+	public List<MonthlyVarietyStats> listMonthlyVarietyWeightAndAmount(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlySales(map);
+			list = mapper.listMonthlyVarietyWeightAndAmount(map);
 		} catch (Exception e) {
-			log.info("topMonthlySales : ", e);
+			log.info("listMonthlyVarietyWeightAndAmount : ", e);
 		}
 		
 		return list;
 	}
 
 	@Override
-	public List<MonthlyRatingRank> topMonthlyRating(Map<String, Object> map) {
-		List<MonthlyRatingRank> list = null;
+	public List<MonthlyVarietyStats> listMonthlyAvgStarByVariety(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlyRating(map);
+			list = mapper.listMonthlyAvgStarByVariety(map);
 		} catch (Exception e) {
-			log.info("topMonthlyRating : ", e);
+			log.info("listMonthlyAvgStarByVariety : ", e);
 		}
 		
 		return list;
 	}
 
 	@Override
-	public List<MonthlySalesRank> topMonthlySalesThisVsLast(Map<String, Object> map) {
-		List<MonthlySalesRank> list = null;
+	public List<MonthlyVarietyStats> getMonthlyAvgStarByVariety(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlySalesThisVsLast(map);
+			list = mapper.getMonthlyAvgStarByVariety(map);
 		} catch (Exception e) {
-			log.info("topMonthlySalesThisVsLast : ", e);
+			log.info("getMonthlyAvgStarByVariety : ", e);
 		}
 		
 		return list;
 	}
 
 	@Override
-	public List<MonthlyRatingRank> topMonthlyRatingThisVsLast(Map<String, Object> map) {
-		List<MonthlyRatingRank> list = null;
+	public List<MonthlyVarietyStats> listMonthlyAvgStarOverall(Map<String, Object> map) {
+		List<MonthlyVarietyStats> list = null;
 		
 		try {
-			list = mapper.topMonthlyRatingThisVsLast(map);
+			list = mapper.listMonthlyAvgStarOverall(map);
 		} catch (Exception e) {
-			log.info("topMonthlyRatingThisVsLast : ", e);
+			log.info("listMonthlyAvgStarOverall : ", e);
 		}
 		
 		return list;
 	}
-	
-	
 
 }
 

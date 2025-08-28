@@ -232,57 +232,6 @@ function updateStatusOk(page) {
 	$('#memberStatusDetailesDialogModal').modal('hide');
 }
 
-function memberAnalysis() {
-	// 연령별 어낼러시스(분석) - echarts bar
-	let out;
-	out = `
-		<div class="row gy-4 mt-2">
-			<div class="col-md-4">
-				<h6 class="text-center">연령대별 회원수</h6>
-				<div id="barchart-container" style="height: 370px;"></div>
-			</div>
-		</div>
-	`;
-	
-	$('#nav-tabContent').empty();
-	$('#nav-tabContent').html(out);
-
-	let url = '${pageContext.request.contextPath}/admin/member/memberAgeSection';
-	$.getJSON(url, function(data){
-		let titles = [];
-		let values = [];
-		
-		for(let item of data.list) {
-			titles.push(item.SECTION);
-			values.push(item.COUNT);
-		}
-		
-		const chartDom = document.querySelector('#barchart-container');
-		let myChart = echarts.init(chartDom);
-		let option;
-		
-		option = {
-			tooltip: {
-				trigger: 'item'
-			},
-			xAxis: {
-				type: 'category',
-				data: titles
-			},
-			yAxis: {
-				type: 'value'
-			},
-			series: [
-				{
-					data: values,
-					type: 'bar'
-				}
-			]
-		};
-				
-		option && myChart.setOption(option);
-	});
-}
 </script>
 
 <footer>
