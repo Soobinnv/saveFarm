@@ -31,8 +31,11 @@ $(document).on('click', '.order-details', function() {
     let orderNum = $(this).attr('data-orderNum');
     let orderDetailNum = $(this).attr('data-orderDetailNum');
 
-	// 파라미터를 객체 형태로 전달하는 것이 더 깔끔하고 안전합니다.
-	let params = { orderNum: orderNum, orderDetailNum: orderDetailNum };
+	let params = { 
+	        orderNum: orderNum, 
+	        orderDetailNum: orderDetailNum,
+	        _: new Date().getTime() // 캐시 방지를 위한 파라미터
+	    };
 	let url = contextPath + '/api/myPage/detailView';
 	
     // 성공 콜백 함수
@@ -50,27 +53,49 @@ $(document).on('click', '.order-details', function() {
 
 // 배송조회 이벤트 핸들러 등록
 $(function() {
-	$('#content').on('click', '.btn-track-shipment', function() {
-		const orderDetailNum = $(this).data('orderdetailnum');
-		
-		const url = contextPath + '/api/myPage/shipmentInfo';
+    $('#content').on('click', '.btn-track-shipment', function() {
+        const $card = $(this).closest('.order-card');
+
+        const orderNum = $card.data('ordernum');
+        const orderDetailNum = $card.data('orderdetailnum');
+        const orderStateInfo = $card.data('orderstateinfo');
+
+        const url = contextPath + '/api/myPage/shipmentInfo';
+        const params = {  orderNum: orderNum, orderDetailNum: orderDetailNum };
+
+        const fn = function(data) {
+            const trackingHtml = renderShipmentTrackingHtml(data, orderStateInfo);
+
+            $('.shipment-tracking-view').html(trackingHtml);
+
+            $('#shipmentTrackingModal').modal('show');
+        };
+
+        ajaxRequest(url, 'get', params, 'json', fn);
+    });
+});
+
+// 구매확정 이벤트 핸들러 등록
+$(function() {
+	$('#content').on('click', '.btn-confirm-purchase', function() {
+		let orderDetailNum = $(this).attr('data-orderDetailNum');
+				
+		if(!confirm('구매확정을 진행하시겠습니까?')) {
+			return false;
+		}
+
+		const url = contextPath + '/api/myPage/confirmation';
 		const params = { orderDetailNum: orderDetailNum };
 
 		const fn = function(data) {
-			// 모달에 데이터 채우기
-			$('#shipping-company').text(data.deliveryCompanyName || '정보 없음');
-			$('#tracking-number').text(data.invoiceNumber || '정보 없음');
-			$('#delivery-state').text(data.orderState || '정보 없음');
-			
-			// 모달 띄우기
-			$('#shipmentTrackingModal').modal('show');
+			alert('구매확정이 완료되었습니다.');
+			location.reload(); 
 		};
 
-		// ajaxRequest 함수는 이미 구현되어 있으므로 그대로 사용합니다.
-		ajaxRequest(url, 'get', params, 'json', fn);
+		ajaxRequest(url, "post", params, 'json', fn);
 	});
-
 });
+
 
 /**
  * 마이 페이지 - 메인 HTML 문자열 생성
@@ -82,12 +107,14 @@ const renderMyPageMainHtml = function(data) {
   // 버튼 생성 헬퍼 함수
   const generateActionButtons = (item) => {
     let buttons = [];
-    if (item.orderState === 1) {
+    if (item.orderState === 1 && item.detailState === 0) {
       buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">결제취소</button>`);
     } else if (item.orderState >= 2 && item.orderState <= 4) {
       buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
-      buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
-    } else if (item.orderState === 5) {
+      if(item.detailState === 0) {
+	  	buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
+      }
+	} else if (item.orderState === 5) {
       if (item.reviewWrite === 0) {
          buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
       }
@@ -138,6 +165,8 @@ const renderMyPageMainHtml = function(data) {
 		  	data-productName = "${item.productName}"
 		  	data-orderDate = "${orderDate}"
 		  	data-productNum = "${item.productNum}"
+			data-orderStateInfo = "${item.orderStateInfo}"
+			data-qty = "${item.qty}"
 		  	>
             <div class="order-topline">
               <div class="text-black-50 fw-semibold">${item.orderStateInfo ?? "주문상태"}</div>
@@ -191,7 +220,7 @@ const renderMyPageMainHtml = function(data) {
     <div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header modal-header-custom">
                     <h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -205,21 +234,11 @@ const renderMyPageMainHtml = function(data) {
     <div class="modal fade" id="shipmentTrackingModal" tabindex="-1" aria-labelledby="shipmentTrackingModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header modal-header-custom">
                     <h5 class="modal-title" id="shipmentTrackingModalLabel">배송조회</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-					<div class="mb-3">
-						<strong>배송상태:</strong> <span id="delivery-state"></span>
-					</div>
-                    <div class="mb-3">
-                        <strong>배송업체:</strong> <span id="shipping-company"></span>
-                    </div>
-                    <div class="mb-3">
-                        <strong>송장번호:</strong> <span id="tracking-number"></span>
-                    </div>
-                </div>
+				<div class="modal-body shipment-tracking-view"></div>
             </div>
         </div>
     </div>
@@ -318,11 +337,36 @@ const renderOrderDetailHtml = function(data) {
         </table>
     `;
 
-    html += `<script>
-        $('#orderDetailViewDialogModal').on('shown.bs.modal', function () {
-            $(this).find('.modal-header').addClass('modal-header-custom');
-        });
-    </script>`;
+    return html;
+};
+
+/**
+ * 마이 페이지 - 배송조회 정보 HTML 문자열 생성
+ * @param {object} data - 배송조회 API 응답 데이터
+ * @param {string} orderStateInfo - 주문 상태 정보 문자열
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderShipmentTrackingHtml = function(data, orderStateInfo) {
+    const deliveryCompany = data.dto ? data.dto.deliveryCompanyName : '정보 없음';
+    const invoiceNumber = data.dto ? data.dto.invoiceNumber : '정보 없음';
+
+    let html = `
+        <h6 class="section-title">배송 정보</h6>
+        <table class="table table-bordered mb-1">
+            <tr>
+                <td class="table-light-green" style="width:100px;">배송상태</td>
+                <td>${orderStateInfo || '정보 없음'}</td>
+            </tr>
+            <tr>
+                <td class="table-light-green">배송업체</td>
+                <td>${deliveryCompany}</td>
+            </tr>
+            <tr>
+                <td class="table-light-green">송장번호</td>
+                <td>${invoiceNumber}</td>
+            </tr>
+        </table>
+    `;
 
     return html;
 };

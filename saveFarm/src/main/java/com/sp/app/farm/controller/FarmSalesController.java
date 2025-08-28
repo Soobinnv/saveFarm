@@ -1,6 +1,8 @@
 package com.sp.app.farm.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
+import com.sp.app.farm.model.MonthlyVarietyStats;
 import com.sp.app.farm.model.MyFarmSale;
 import com.sp.app.farm.model.SessionInfo;
 import com.sp.app.farm.model.Supply;
@@ -33,22 +36,54 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping(value = "/farm/sales/*")
 public class FarmSalesController {
 
-	private final SupplyServiceImpl SupplyService;
+	private final SupplyServiceImpl supplyService;
 	private final VarietyServiceImpl varietyService;
 	private final PaginateUtil paginateUtil;
 	private final MyUtil myUtil;
-	private final SaleServiceImpl SaleService;
+	private final SaleServiceImpl saleService;
 	
 	@GetMapping("totalList")
-	public String totalList(){
+	public String totalList(Model model) {
+	    try {
+	        Map<String, Object> param = new HashMap<>();
+
+	        // 조회 시점 기준 yyyyMM (예: 202507)
+	        String endYm = java.time.LocalDate.now()
+	                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMM"));
+
+	        param.put("startYm", "190001"); // 판매 시작부터로 간주(아주 이른 년월)
+	        param.put("endYm", endYm);      // 현재 달까지
+	        param.put("topN", 10);          // 상위 10개
+
+	        // 기존 쿼리 재사용: 월/품목별 집계 후 각 월 TopN인데,
+	        // start~end 한 구간이 길어도 '이번달까지' 범위니까 OK (월별 partiton)
+	        // "전체 구간 누적 Top10"이 절대적으로 필요하면 별도 쿼리가 맞지만,
+	        // 현재는 월별 TopN 중 최근 달 데이터가 화면에 오도록 사용.
+	        // (필요시 추후 누적용 쿼리로 교체 가능)
+	        java.util.List<com.sp.app.farm.model.MonthlyVarietyStats> list =
+	                saleService.listMonthlyVarietyWeight(param);
+
+	        model.addAttribute("monthlyVarietyList", list);
+
+	        // 품목 선택 박스가 있다면 같이 내려둠(없으면 생략)
+	        // model.addAttribute("varietyList", varietyService.listAll());
+
+	    } catch (Exception e) {
+	        log.error("totalList error:", e);
+	    }
+	    return "farm/sales/totalList";
+	}
+	
+	@GetMapping("incomeList")
+	public String incomeList(){
 		
 		try {
 			
 		} catch (Exception e) {
-			log.info("totalList : ", e);
+			log.info("incomeList : ", e);
 		}
 	
-		return "farm/sale/totalList";
+		return "farm/sales/incomeList";
 	}
 	
 	@GetMapping("starList")
@@ -60,7 +95,7 @@ public class FarmSalesController {
 			log.info("starList : ", e);
 		}
 	
-		return "farm/sale/starList";
+		return "farm/sales/starList";
 	}
 
 	@GetMapping("myFarmList")
@@ -78,27 +113,30 @@ public class FarmSalesController {
 	        // 1) 세션 가드
 	        SessionInfo info = (SessionInfo) session.getAttribute("farm");
 	        if (info == null) {
-	            return "redirect:/member/login";
+	            return "redirect:/farm/member/login";
 	        }
+	        
 	        final long farmNum = info.getFarmNum();
 
-	        // 2) 파라미터 정리
+	      
 	        final int size = 10; // 행(테이블) 페이지 크기
+	        
 	        kwd = myUtil.decodeUrl(kwd == null ? "" : kwd.trim());
 	        schType = (schType == null || schType.isBlank()) ? "varietyName" : schType;
 
-	        // -------------------------
-	        // A. Supply(행 단위) 페이징
-	        // -------------------------
+	        // 1. Supply(행 단위) 페이징
 	        Map<String, Object> map = new HashMap<>();
+	        
 	        map.put("farmNum", farmNum);
 	        map.put("schType", schType);
 	        map.put("kwd", kwd);
+	        
 	        if (state != null) map.put("state", state);
 	        if (varietyNum > 0) map.put("varietyNum", varietyNum);
+	        
 	        map.put("productNumOnly", 1); // 승인건만(서비스/매퍼 해석)
 
-	        int dataCount = SupplyService.listSupplyCount(map);
+	        int dataCount = supplyService.listSupplyCount(map);
 	        int total_page = (dataCount + (size - 1)) / size;
 	        if (total_page == 0) total_page = 1;
 
@@ -108,11 +146,9 @@ public class FarmSalesController {
 	        map.put("offset", offset);
 	        map.put("size", size);
 
-	        List<Supply> supplyList = SupplyService.listSupply(map);
+	        List<Supply> supplyList = supplyService.listSupply(map);
 
-	        // -------------------------
-	        // B. 품목별 집계(saleList) 페이징 (별도 카운트 사용)
-	        // -------------------------
+	        // 2. 품목별 집계(saleList) 페이징 (별도 카운트 사용)
 	        Map<String, Object> saleMap = new HashMap<>();
 	        saleMap.put("farmNum", farmNum);
 	        saleMap.put("schType", schType);
@@ -121,43 +157,47 @@ public class FarmSalesController {
 	        if (varietyNum > 0) saleMap.put("varietyNum", varietyNum);
 	        saleMap.put("productNumOnly", 1); 
 
-	        // 집계 전용 카운트
-	        int saleCount = SaleService.myFarmListByVarietyCount(saleMap);
+	        // 3. 집계 전용 카운트
+	        int saleCount = saleService.myFarmListByVarietyCount(saleMap);
 
 	        final int salePageSize = 10; // 카드도 10개씩
 	        int sale_total_page = (saleCount + (salePageSize - 1)) / salePageSize;
 	        if (sale_total_page == 0) sale_total_page = 1;
 
-	        // 같은 page 파라미터를 쓰되, 집계 기준으로 보정
+	        // 4. 같은 page 파라미터를 쓰되, 집계 기준으로 보정
 	        int sale_page = Math.max(1, Math.min(current_page, sale_total_page));
 	        int sale_offset = (sale_page - 1) * salePageSize;
 
 	        saleMap.put("offset", sale_offset);
 	        saleMap.put("size", salePageSize);
 
-	        List<MyFarmSale> saleList = SaleService.myFarmListByVariety(saleMap);
+	        List<MyFarmSale> saleList = saleService.myFarmListByVariety(saleMap);
 
-	        // 상단 요약(현재 페이지의 카드 합계; 전체 합계가 필요하면 별도 쿼리 사용)
+	        // 5. 상단 요약(현재 페이지의 카드 합계; 전체 합계가 필요하면 별도 쿼리 사용)
 	        BigDecimal totalQty = BigDecimal.ZERO;
 	        BigDecimal totalVarietyEarning = BigDecimal.ZERO;
+	        
 	        for (MyFarmSale dto : saleList) {
 	            if (dto.getTotalQty() != null) totalQty = totalQty.add(dto.getTotalQty());
 	            if (dto.getTotalVarietyEarning() != null) totalVarietyEarning = totalVarietyEarning.add(dto.getTotalVarietyEarning());
 	        }
 
-	        // 전체 누적 매출(납품완료+승인 기준)
-	        BigDecimal totalEarning = SaleService.myFarmTotalEarning(farmNum);
+	        // 6. 전체 누적 매출(납품완료+승인 기준)
+	        BigDecimal totalEarning = saleService.myFarmTotalEarning(farmNum);
 	        if (totalEarning == null) totalEarning = BigDecimal.ZERO;
 
-	        // 7) 페이징 URL (행 테이블 기준)
+	        // 7. 페이징 URL (행 테이블 기준)
 	        String cp = req.getContextPath();
 	        String baseUrl = cp + "/farm/sales/myFarmList";
+	        
 	        List<String> parts = new ArrayList<>();
 	        parts.add("size=" + size);
 	        parts.add("schType=" + myUtil.encodeUrl(schType));
 	        parts.add("kwd=" + myUtil.encodeUrl(kwd));
+	        
 	        if (state != null)  parts.add("state=" + state);
 	        if (varietyNum > 0) parts.add("varietyNum=" + varietyNum);
+	        
 	        String listUrl = baseUrl + "?" + String.join("&", parts);
 	        String paging = paginateUtil.paging(page, total_page, listUrl);
 
@@ -165,9 +205,9 @@ public class FarmSalesController {
 	        Map<String,Object> varietyMap = new HashMap<>();
 	        varietyMap.put("farmNum", farmNum);
 	        varietyMap.put("productNumOnly", 1);
-	        List<Variety> varietyList = SupplyService.listFarmVarieties(varietyMap);
+	        List<Variety> varietyList = supplyService.listFarmVarieties(varietyMap);
 
-	        // 8) 모델
+	        // 8. 모델
 	        model.addAttribute("supplyList", supplyList);      // 테이블(행)
 	        model.addAttribute("saleList", saleList);          // 카드(집계)
 

@@ -24,9 +24,10 @@
 			    <li class="dropdown">
 				    <a href="#"><span>판매 성과 분석</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
 				    <ul>
-				      <li><a href="${pageContext.request.contextPath}/farm/sales/totalList">판매흐름</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/totalList">판매순위</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/incomeList">수입순위</a></li>
 				      <li><a href="${pageContext.request.contextPath}/farm/sales/starList">인기순위</a></li>
-				      <li><a href="${pageContext.request.contextPath}/farm/sales/myFarmList">농장관리</a></li>
+				      <li><a href="${pageContext.request.contextPath}/farm/sales/myFarmList">내 농장관리</a></li>
 				    </ul>
 			  </c:if>
 			  <li class="dropdown">

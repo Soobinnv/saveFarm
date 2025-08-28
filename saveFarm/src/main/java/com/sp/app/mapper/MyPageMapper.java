@@ -21,6 +21,7 @@ public interface MyPageMapper {
 	public Payment findByOrderDetailDelivery(Map<String, Object> map);
 	public Order findByOrderDelivery(Map<String, Object> map);
 	public void updateOrderState(Map<String, Object> map) throws SQLException;
+	public void updateOrderDetailState(Map<String, Object> map) throws SQLException;
 	public void updateOrderHistory(long orderDetailNum) throws SQLException;
 
 	// 주문상세 상태 등록

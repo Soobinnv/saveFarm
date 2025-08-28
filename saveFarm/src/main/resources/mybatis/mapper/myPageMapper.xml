@@ -60,9 +60,9 @@
 	<!-- 구매 상세 정보 -->
 	<select id="findByOrderDetail" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
-			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			po.deliveryCharge, po.orderStateDate, po.orderState, 
 			pd.payMethod, pd.cardName, pd.applyDate, 
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState, 
 			p.productName
 		FROM productOrder po
 		JOIN payDetail pd ON po.orderNum = pd.orderNum
@@ -74,10 +74,10 @@
 	<!-- 배송된 구매 상세 정보 -->
 	<select id="findByOrderDetailDelivery" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
-			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			po.deliveryCharge, po.orderStateDate, po.orderState, 
 			dc.deliveryCompanyName, d.invoiceNumber,
 			pd.payMethod, pd.cardName, pd.applyDate, 
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState, 
 			p.productName
 		FROM productOrder po
 		JOIN payDetail pd ON po.orderNum = pd.orderNum
@@ -91,8 +91,8 @@
 	<!-- 구매번호에 대한 구매 리스트 -->
 	<select id="listPurchase" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
-			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			po.deliveryCharge, po.orderStateDate, po.orderState, 
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState, 
 			p.productName, p.mainImageFilename
 		FROM productOrder po
 		JOIN orderDetail od ON po.orderNum = od.orderNum
@@ -103,9 +103,9 @@
 	<!-- 구매번호에 대한 배송된 구매 리스트 -->
 	<select id="listPurchaseDelivery" parameterType="map" resultType="com.sp.app.model.Payment">
 		SELECT po.orderNum, po.orderDate, po.totalMoney, po.payment,
-			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState,
+			po.deliveryCharge, po.orderStateDate, po.orderState, po.orderState, 
 			dc.deliveryName, d.invoiceNumber,
-			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney,
+			od.orderDetailNum, od.productNum, od.qty, od.salePrice, od.productMoney, od.detailState,
 			p.productName, p.mainImageFilename
 		FROM productOrder po
 		JOIN orderDetail od ON po.orderNum = od.orderNum
@@ -134,11 +134,17 @@
 		WHERE orderDetailNum = #{orderDetailNum}
 	</update>
 	
+		<!-- 주문상세상태 변경 -->
+	<update id="updateOrderDetailState" parameterType="map">
+		UPDATE orderDetail SET detailState = #{detailState}
+		WHERE orderDetailNum = #{orderDetailNum}
+	</update>
+	
 	<!-- 주문상세 상태 정보 등록 -->
 	<insert id="insertDetailStateInfo" parameterType="map">
-		INSERT INTO detailState(stateNum, orderNum, memberId, detailState, 
+		INSERT INTO detailState(stateNum, orderDetailNum, memberId, detailState, 
 			stateMemo, detailStateDate)
-		VALUES(detailState_seq.NEXTVAL, #{orderNum}, #{memberId}, #{detailState},
+		VALUES(detailState_seq.NEXTVAL, #{orderDetailNum}, #{memberId}, #{detailState},
 			#{stateMemo,jdbcType=VARCHAR}, SYSDATE)
 	</insert>
 	

@@ -8,14 +8,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Inquiry {
-	private long num;
-	private Long member_id;
-	private String name;
-	private String category;
+	private long inquiryNum;
 	private String subject;
-	private String question;
-	private String reg_date;
-	private String answerName;
+	private String content;
+	private String regDate;
 	private String answer;
-	private String answer_date;
+	private String answerDate;
+	private int processResult;
+	private Long memberId;
+	private Long farmNum;
+	private Long answerId;
 }

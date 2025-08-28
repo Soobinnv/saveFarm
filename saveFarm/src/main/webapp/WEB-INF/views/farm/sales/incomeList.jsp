@@ -23,8 +23,8 @@
     <!-- Page Title -->
     <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/registerTitle3.webp);">
       <div class="container position-relative">
-        <h1>인기리뷰 차트</h1>
-        <p>높은 별점을 받은 납품에 대한 정보를 그래프로 보실 수 있습니다.</p>
+        <h1>높은수익 차트</h1>
+        <p>가장 많은 수익금을 가져다준 납품에 대한 정보를 그래프로 보실 수 있습니다.</p>
         <nav class="breadcrumbs">
           <ol>
             <li><a href="${pageContext.request.contextPath}/farm">돌아가기</a></li>

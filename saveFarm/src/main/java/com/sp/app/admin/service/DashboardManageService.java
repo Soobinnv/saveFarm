@@ -2,10 +2,13 @@ package com.sp.app.admin.service;
 
 import java.util.List;
 
+import com.sp.app.admin.model.DashboardManage;
+import com.sp.app.admin.model.ReturnManage;
 import com.sp.app.model.Refund;
-import com.sp.app.model.Return;
 
 public interface DashboardManageService {
 	public List<Refund> dashboardRefundList();
-	public List<Return> dashboardReturnList();
+	public List<ReturnManage> dashboardReturnList();
+	
+	public List<DashboardManage> dashboardChart();
 }

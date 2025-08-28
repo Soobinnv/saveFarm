@@ -19,6 +19,7 @@ public class Supply {
 	private String coment;
 
 	private Long farmNum;
+	private String farmerId;
 	private Long productNum;
 	private Long varietyNum;
 	
