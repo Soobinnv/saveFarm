@@ -159,7 +159,7 @@
   </update>
 
   <update id="updateState1" parameterType="map">
-    UPDATE supply SET state = #{state}
+    UPDATE supply SET state = #{state}, productNum = #{productNum}
     WHERE supplyNum = #{supplyNum}
   </update>
 
