@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.admin.mapper.ClaimManageMapper">
+	<sql id="where-list">
+		<if test="status != null">
+			<choose>
+				<when test="status == 0">
+					AND status = 0
+				</when>
+				<when test="status == 1">
+					AND status = 1
+				</when>
+				<when test="status == 2">
+					AND status = 2
+				</when>
+			</choose>
+		</if>
+	</sql>
+	
+	<select id="getClaimList" parameterType="map" resultType="com.sp.app.admin.model.Claim">
+    SELECT *
+    FROM (
+        -- 반품 조회 쿼리
+        SELECT
+            '반품' AS "listType",        -- 1. 타입: '반품'으로 고정
+            returnNum AS "num",          -- 2. 고유번호
+            reqDate AS "sortDate",       -- 3. 정렬 기준 날짜 (요청일)
+            reason AS "detail1",         -- 4. 상세 내용 1 (사유)
+            TO_CHAR(quantity) AS "detail2", -- 5. 상세 내용 2 (수량)
+            returnDate AS "processDate", -- 6. 처리 완료일 (반품 완료일)
+            r.orderDetailNum,            -- 7. 주문 상세 번호
+            status,                      -- 8. 상태
+            od.memberId                  -- 9. 회원 ID
+        FROM return r  -- ※ 테이블명을 return으로 수정했습니다.
+        JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+        JOIN member m ON od.memberId = m.memberId
+        <where>
+            <include refid="where-list"/>
+        </where>
+
+        UNION ALL
+
+        -- 환불 조회 쿼리
+        SELECT
+            '환불' AS "listType",        -- 1. 타입: '환불'으로 고정
+            refundNum AS "num",          -- 2. 고유번호
+            refundDate AS "sortDate",    -- 3. 정렬 기준 날짜 (환불일)
+            TO_CHAR(refundAmount) AS "detail1", -- 4. 상세 내용 1 (환불액)
+            refundMethod AS "detail2",   -- 5. 상세 내용 2 (환불 방법)
+            NULL AS "processDate",       -- 6. 처리 완료일 (환불에는 없으므로 NULL)
+            r.orderDetailNum,            -- 7. 주문 상세 번호
+            status,                      -- 8. 상태
+            od.memberId                  -- 9. 회원 ID
+        FROM refund r
+        JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+        JOIN member m ON od.memberId = m.memberId
+        <where>
+            <include refid="where-list"/>
+        </where>
+    ) combined_list
+    ORDER BY "sortDate" DESC, "num" DESC -- 최신 날짜순으로 정렬
+    OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+
+</mapper>

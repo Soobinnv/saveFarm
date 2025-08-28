@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.sp.app.admin.mapper.ClaimManageMapper;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.mapper.RefundMapper;
 import com.sp.app.mapper.ReturnMapper;
-import com.sp.app.model.Return;
 import com.sp.app.service.RefundService;
 import com.sp.app.service.ReturnService;
 
@@ -23,6 +23,7 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 	
 	private RefundMapper refundMapper;
 	private ReturnMapper returnMapper;
+	private ClaimManageMapper claimManageMapper;
 	private ReturnService returnService;
 	private RefundService refundService;
 	private final PaginateUtil paginateUtil;
@@ -61,10 +62,13 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 					break;
 				}
 				case null: {
+					dataCount = claimManageMapper.getDataCount(paramMap);
+					total_page = paginateUtil.pageCount(dataCount, size);
 					
 					int offset = (current_page - 1) * size;
 					if(offset < 0) offset = 0;
 					
+					list = claimManageMapper.getClaimList(paramMap);
 					break;
 				}
 				default:

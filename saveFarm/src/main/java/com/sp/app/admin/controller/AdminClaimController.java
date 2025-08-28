@@ -21,13 +21,11 @@ public class AdminClaimController {
 	
 	private final AdminClaimService claimService;
 	
-	// 상품 리스트 데이터
+	// 클레임 리스트 데이터
 	@GetMapping("/api/admin/claims")
-	public ResponseEntity<?> getProducts(
+	public ResponseEntity<?> getClaimList(
 			@RequestParam(name = "type", required = false) String type,
-			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
-			@RequestParam(name = "schType", required = false, defaultValue = "all") String schType,
-			@RequestParam(name = "kwd", required = false, defaultValue = "") String kwd
+			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page
 		) {
 		Map<String, Object> body = new HashMap<>();
 		try {			
@@ -43,9 +41,6 @@ public class AdminClaimController {
 			paramMap.put("dataCount", dataCount);
 			paramMap.put("current_page", current_page);
 			
-			paramMap.put("schType", schType);
-			paramMap.put("kwd", kwd);
-			
 			paramMap.put("type", type);
 
 			Map<String, Object> ListAndPaging = claimService.getClaimListAndPaging(paramMap); 
@@ -57,13 +52,10 @@ public class AdminClaimController {
 			body.put("total_page", ListAndPaging.get("total_page"));
 			body.put("page", ListAndPaging.get("current_page"));
 			
-			body.put("schType", schType);
-			body.put("kwd", kwd);
-			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getProducts: ", e);
-			body.put("message", "상품 정보를 불러오는 중 오류가 발생했습니다.");
+			body.put("message", "클레임 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

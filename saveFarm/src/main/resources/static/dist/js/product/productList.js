@@ -3,7 +3,7 @@
 // 이벤트 핸들러 등록
 $(function() {
 	// 상품 이미지 링크
-	$('#container').on('click', '.product-main-image', function() {
+	$('.content-section').on('click', '.product-main-image', function() {
 		const productNum = $(this).closest('.card').data('product-num');
 		const classifyCode = Number($(this).closest('.card').data('classify-code'));
 				
@@ -11,7 +11,7 @@ $(function() {
 	});
 	
 	// 상품 상세
-	$('#container').on('click', '.btn-product-info', function() {
+	$('.content-section').on('click', '.btn-product-info', function() {
 		const productNum = $(this).closest('.card').data('product-num');
 		const classifyCode = $(this).closest('.card').data('classify-code');
 		
@@ -19,14 +19,14 @@ $(function() {
 	});
 	
 	// 찜 등록 / 수정
-	$('#container').on('click', '.btn-wish-save', function() {
+	$('.content-section').on('click', '.btn-wish-save', function() {
 		const productNum = $(this).closest('.card').data('product-num');
 		
 		updateWish(productNum, this);
 	});
 	
 	// 장바구니
-	$('#container').on('click', '.btn-cart', function() {
+	$('.content-section').on('click', '.btn-cart', function() {
 		sendOk('cart', this);
 	});
 	
