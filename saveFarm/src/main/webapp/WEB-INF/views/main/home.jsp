@@ -63,6 +63,7 @@ body {
 	background: linear-gradient(180deg, rgba(0, 0, 0, .25),
 		rgba(0, 0, 0, .35)) !important;
 	padding: 0 16px !important;
+	height: 450px;
 }
 
 .hero-title {
@@ -392,6 +393,9 @@ body {
 	#header-carousel .carousel-item img {
 		height: 420px !important;
 	}
+	.carousel-caption{
+		height: 420px !important;
+	}
 	.regular-banner {
 		min-height: 380px !important;
 		background-position: 60% center !important;
@@ -411,6 +415,10 @@ body {
 	#header-carousel .carousel-item img {
 		height: 320px !important;
 	}
+	.carousel-caption{
+		height: 320px !important;
+	}
+	
 	.rescue-grid {
 		grid-template-columns: repeat(2, 1fr) !important;
 	}
@@ -428,6 +436,34 @@ body {
 	.reg-title {
 		font-size: 26px !important;
 	}
+	
+	.menu .tab-content img {
+    	transition: .5s;
+	}
+
+	.menu .tab-content img:hover {
+    	opacity: .7;
+	}
+	
+	/* === Hover 효과 (이미지 살짝 확대/투명도) === */
+.tab-content .position-relative img {
+  transition: transform .4s ease, opacity .4s ease;
+}
+.tab-content .position-relative:hover img {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+/* === WOW 없이 간단한 fadeIn 대체(선택) === */
+/* WOW.js + animate.css를 쓰고 있다면 이 부분은 제외하세요 */
+.fadeIn {
+  animation: fadeIn .6s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+	
 }
 </style>
 </head>
@@ -447,7 +483,7 @@ body {
 					<img class="w-100"
 						src="${pageContext.request.contextPath}/dist/images/main_2.jpg"
 						alt="hero">
-					<div class="carousel-caption" style="height: 450px;">
+					<div class="carousel-caption">
 						<div class="text-center">
 							<h1 class="display-5 hero-title">지속 가능한 식탁을 만듭니다</h1>
 							<div class="hero-sub">남겨지는 농산물 없이, 더 공정하고 투명하게.</div>
@@ -458,7 +494,7 @@ body {
 					<img class="w-100"
 						src="${pageContext.request.contextPath}/dist/images/main_3.jpeg"
 						alt="hero">
-					<div class="carousel-caption" style="height: 450px;">
+					<div class="carousel-caption">
 						<div class="text-center">
 							<h1 class="display-5 hero-title">농가의 수고가 소비자의 기쁨이 되도록</h1>
 							<div class="hero-sub">현장 검증, 정직한 가격, 친환경 포장으로 연결합니다.</div>
@@ -543,6 +579,7 @@ body {
 			</div>
 		</div>
 	</div>
+	
 	<!-- ===== 구출 상품 띠 ===== -->
 	<div class="wrap" style="margin-top: 100px;">
 		<section class="rescue-band">

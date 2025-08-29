@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
+import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
@@ -27,6 +28,7 @@ import com.sp.app.model.Refund;
 import com.sp.app.model.Return;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
+import com.sp.app.model.packageReview;
 import com.sp.app.service.MyPageService;
 import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
@@ -53,6 +55,7 @@ public class MyPageApiController {
 	private final StorageService storageService;
 	private final ReturnService returnService;
 	private final RefundService refundService;
+	private final MyPageMapper mypageMapper;
 	
 	private String productReviewUploadPath;
 	
@@ -473,7 +476,7 @@ public class MyPageApiController {
 	
 	// 구독중인 정보
 	@GetMapping("/subInfo")
-	public ResponseEntity<?> subInfo(@RequestParam Map<String, Object> paramMap,HttpSession session, Model model) throws Exception{
+	public ResponseEntity<?> subInfo(@RequestParam Map<String, Object> paramMap,HttpSession session) throws Exception{
 		Map<String, Object> body = new HashMap<>();
 		try {
 			SessionInfo info = (SessionInfo)session.getAttribute("member");
@@ -496,6 +499,27 @@ public class MyPageApiController {
 		
 	}
 	
+	
+	@GetMapping("/subReview")
+	public ResponseEntity<?> mysubReview(@RequestParam Map<String, Object> paramMap,HttpSession session) throws Exception{
+		Map<String, Object> body = new HashMap<>();
+		
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			List<packageReview> list = mypageService.listmyReview(info.getMemberId());
+			
+			
+			body.put("list", list);
+			
+			return ResponseEntity.ok(body);
+		} catch (Exception e) {
+			log.error("mysubReview: ", e);
+			body.put("message", "나의 구독 리뷰 - 상세정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); 
+		}
+	}
 
 
 }

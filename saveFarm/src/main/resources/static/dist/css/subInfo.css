@@ -57,3 +57,130 @@
 }
 .mp-sub-cta:hover { filter: brightness(0.95); }
 .mp-sub-empty-desc { color: #888; margin: 18px 0; }
+
+
+/* 컨테이너 */
+.mp-reviews { padding: 16px 12px; }
+.mp-title   { font-size: 20px; font-weight: 700; margin: 0 0 12px; }
+
+/* 빈 상태 */
+.mp-empty {
+  padding: 40px 16px;
+  border: 1px dashed #d8e0ea;
+  border-radius: 10px;
+  text-align: center;
+  color: #637081;
+  background: #f7fafc;
+}
+
+/* 리스트 */
+.mp-review-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 카드 */
+.mp-review {
+  background: #fff;
+  border: 1px solid #e6edf4;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 헤더: 배지 + 별점 */
+.mp-review__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mp-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: #eef8f2;
+  color: #0f8d53;
+  border: 1px solid #cfeedd;
+}
+.mp-stars { font-size: 14px; color: #ffb400; }
+
+/* 이미지 썸네일 */
+.mp-review__images {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.mp-review__images img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+.mp-review__images img:hover {
+  transform: scale(1.05);
+}
+
+/* 본문: 제목/내용 */
+.mp-review__subject {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #0f172a;
+}
+.mp-review__content {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* 푸터: 날짜 + 버튼 */
+.mp-review__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.mp-date {
+  font-size: 12px;
+  color: #748094;
+}
+
+/* 버튼 */
+.mp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: .15s ease;
+}
+.mp-btn--ghost {
+  background: transparent;
+  color: #15b86d;
+  border-color: #cfeedd;
+}
+.mp-btn--ghost:hover {
+  background: #e9f6ef;
+  color: #0f8d53;
+}
+
+/* 반응형 (넓은 화면에서는 두 열) */
+@media (min-width: 900px) {
+  .mp-review-list { grid-template-columns: 1fr 1fr; }
+}
+

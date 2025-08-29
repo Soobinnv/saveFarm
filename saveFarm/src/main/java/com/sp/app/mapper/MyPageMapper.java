@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.sp.app.model.Order;
 import com.sp.app.model.Payment;
+import com.sp.app.model.packageReview;
 
 @Mapper
 public interface MyPageMapper {
@@ -30,4 +31,7 @@ public interface MyPageMapper {
 	
 	// 패키지 리뷰 작성 여부
 	public int findBysubReview(String subNum) throws SQLException;
+	
+	// 패키지 리뷰 리스트
+	public List<packageReview> findMysubReview(long memberId) throws SQLException;
 }
