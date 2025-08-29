@@ -45,7 +45,8 @@
 		SELECT COUNT(*)
 		FROM return r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-		JOIN member m ON od.memberId = m.memberId
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member1 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>
@@ -61,10 +62,11 @@
 	
 	<select id="getReturnList" parameterType="map" resultType="com.sp.app.model.Return">
 		SELECT RETURNNUM, REQDATE, REASON, QUANTITY, RETURNDATE, r.ORDERDETAILNUM, STATUS,
-			od.memberId
+			po.memberId
 		FROM refund r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-		JOIN member m ON od.memberId = m.memberId
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member1 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>

@@ -7,9 +7,9 @@ const mainTabConfig = {
     'supplyManagement': { url: '/api/admin/supplies', params: {size:10}, render: renderFarmProductListHTML, pagingMethodName: 'supplyListPage' },
     'productQna': { url: '/api/admin/inquiries', render: renderProductQnaListHTML, pagingMethodName: 'inquiryListPage' },
     'productReview': { url: '/api/admin/reviews', render: renderProductReviewListHTML, pagingMethodName: 'reviewListPage' },
-    'refund': { url: '/api/admin/claims', params: {type:"refund"}, render: renderRefundListHTML, pagingMethodName: 'refundListPage' },
-    'return': { url: '/api/admin/claims', params: {type:"return"}, render: renderReturnListHTML, pagingMethodName: 'returnListPage' },
-    'refundReturn': { url: '/api/admin/claims', render: renderAllClaimListHTML, pagingMethodName: 'allClaimListPage' }
+    'refundList': { url: '/api/admin/claims', params: {type:"refund"}, render: renderRefundListHTML, pagingMethodName: 'refundListPage' },
+    'returnList': { url: '/api/admin/claims', params: {type:"return"}, render: renderReturnListHTML, pagingMethodName: 'returnListPage' },
+    'refundReturnList': { url: '/api/admin/claims', render: renderAllClaimListHTML, pagingMethodName: 'allClaimListPage' }
 };
 
 // - 상품 리스트 하위 탭(전체, 일반, 구출)
@@ -56,10 +56,13 @@ const detailViewConfig = {
 
 // 이벤트 핸들러 등록
 $(function() {
-	// 사이드바 상품 관리 - 상품 리스트 / 농가 상품 등록 / 상품 문의 / 상품 리뷰 tab
-	$('#ui-elements-product').on('click', '.nav-link', function() {
+	// 사이드바 tab
+	$('ul.list-unstyled').on('click', '.nav-link', function() {
 		const navId = $(this).attr('id');
 		const config = mainTabConfig[navId];
+		
+		console.log(navId)
+		console.log(config)
 		
 		if (config) {
 			loadContent(config.url, config.render, config.params, config.pagingMethodName);
@@ -83,6 +86,15 @@ $(function() {
 		        config = reviewTabConfig[navId];
 		        break;
 		    case 'qna-card':
+		        config = qnaTabConfig[navId];
+		        break;
+		    case 'return-card':
+		        config = qnaTabConfig[navId];
+		        break;
+		    case 'refund-card':
+		        config = qnaTabConfig[navId];
+		        break;
+		    case 'claim-card':
 		        config = qnaTabConfig[navId];
 		        break;
 		    default:

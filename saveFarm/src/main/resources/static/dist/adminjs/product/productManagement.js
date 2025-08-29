@@ -521,4 +521,16 @@ function setupCategorySelection(categoryId, listId, hiddenInputId) {
 	});
 }
 
-    
+/**
+ * 문자열이 긴 경우 '...' 처리 함수
+ * @param {string} text - 원본 문자열
+ * @param {number} maxLength - 최대 길이
+ * @returns {string} 줄임 처리된 문자열
+ */
+const truncateText = function(text, maxLength) {
+    if (!text) return "";
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+    return text;
+};   
