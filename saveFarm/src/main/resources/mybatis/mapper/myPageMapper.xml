@@ -157,9 +157,15 @@
 	</select>
 	
 	<select id="findMysubReview" parameterType="Long" resultType="com.sp.app.model.packageReview">
-		SELECT subNum,subject,content,regDate,star,subMonth
-		FROM subReview
-		LEFTOUTER JOIN 
+		SELECT sr.subNum, sr.subject, sr.content,TO_CHAR(sr.regDate, 'YYYY-MM-DD') AS regDate ,sr.star,si.imageFilename,ss.subMonth
+		FROM subReview sr
+		LEFT OUTER JOIN subStatus ss ON sr.subNum = ss.subNum
+		LEFT OUTER JOIN (
+			SELECT subNum, LISTAGG(imageFilename, ',') WITHIN GROUP(ORDER BY imageNum) imageFilename 
+            FROM subImage
+            GROUP BY subNum	
+		) si ON si.subNum = sr.subNum
+		WHERE ss.isExtend IN(1,2,3) AND ss.memberId = #{memberId}
 	</select>
 
 </mapper>

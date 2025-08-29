@@ -18,6 +18,7 @@ import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
 import com.sp.app.model.Product;
+import com.sp.app.model.packageReview;
 import com.sp.app.state.OrderState;
 
 import lombok.RequiredArgsConstructor;
@@ -265,5 +266,28 @@ public class MyPageServiceImpl implements MyPageService {
 		}
 		
 		return dto;
+	}
+
+	@Override
+	public List<packageReview> listmyReview(long memberId) throws Exception {
+		List<packageReview> list = null;
+		
+		try {
+			list = mapper.findMysubReview(memberId);
+			
+			for(packageReview dto : list) {
+				if(dto.getImageFilename() != null) {
+					dto.setListFilename(dto.getImageFilename().split(","));
+				}
+				
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			
+			
+		} catch (Exception e) {
+			log.info("listmyReview : ",e );
+		}
+		
+		return list;
 	}
 }

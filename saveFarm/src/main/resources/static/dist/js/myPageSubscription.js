@@ -242,3 +242,91 @@ function renderMySubInfoHtml(data) {
   // 상단 + 하단 반환
   return infoHtml + historyHtml;
 }
+
+
+function _esc(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function _cut(s, n) {
+  s = s || '';
+  return s.length > n ? s.slice(0, n) + '…' : s;
+}
+
+function _ymd(d) {
+  if (!d) return '';
+  return String(d).slice(0, 10);
+}
+
+function _stars(n) {
+  n = Number(n) || 0;
+  const full = '★'.repeat(Math.min(5, Math.max(0, n)));
+  const empty = '☆'.repeat(5 - full.length);
+  return full + empty;
+}
+
+function openReviewDetail(subNum, subMonth) {
+  const url = `${contextPath}/package/reviewUpdateForm?subNum=${encodeURIComponent(subNum)}&mode=update&subMonth=${encodeURIComponent(subMonth || 0)}`;
+  window.location.href = url;
+}
+
+function renderMySubReviewHtml(data) {
+  const list = (data && data.list) ? data.list : [];
+
+  let html = '';
+  html += '<section class="mp-reviews">';
+  html += '  <h3 class="mp-title">정기배송 리뷰</h3>';
+
+  if (!list.length) {
+    html += '  <div class="mp-empty">작성한 정기배송 리뷰가 없습니다.</div>';
+    html += '</section>';
+    return html;
+  }
+
+  html += '  <ul class="mp-review-list">';
+  list.forEach(r => {
+    const subNum   = r.subNum;
+    const subject  = _esc(r.subject);
+    const content  = _cut(_esc(String(r.content || '').replace(/<[^>]+>/g, '')), 140);
+    const regDate  = _ymd(r.regDate);
+    const star     = Number(r.star) || 0;
+    const subMonth = r.subMonth || 0;
+    const images   = Array.isArray(r.listFilename) ? r.listFilename : [];
+
+    html += '    <li class="mp-review">';
+    html += '      <div class="mp-review__head">';
+    html += `        <span class="mp-badge">구독 ${_esc(subMonth)}개월차</span>`;
+    html += `        <span class="mp-stars" aria-label="별점 ${star}점">${_stars(star)}</span>`;
+    html += '      </div>';
+
+    // 이미지 영역
+    if (images.length > 0) {
+      html += '      <div class="mp-review__images">';
+      images.forEach(fn => {
+        html += `  <img src="${contextPath}/uploads/PackageReview/${_esc(fn)}" alt="리뷰 이미지">`;
+      });
+      html += '      </div>';
+    }
+
+    html += '      <div class="mp-review__body">';
+    html += `        <h4 class="mp-review__subject">${subject || '제목 없음'}</h4>`;
+    html += `        <p class="mp-review__content">${content || '내용 없음'}</p>`;
+    html += '      </div>';
+
+    html += '      <div class="mp-review__foot">';
+    html += `        <time class="mp-date">${_esc(regDate)}</time>`;
+    html += `        <button class="mp-btn mp-btn--ghost" type="button" onclick="openReviewDetail('${_esc(subNum)}','${_esc(subMonth)}')">수정</button>`;
+    html += '      </div>';
+    html += '    </li>';
+  });
+  html += '  </ul>';
+  html += '</section>';
+
+  return html;
+}

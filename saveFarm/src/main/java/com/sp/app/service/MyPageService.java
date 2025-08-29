@@ -6,6 +6,7 @@ import java.util.Map;
 import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
+import com.sp.app.model.packageReview;
 
 public interface MyPageService {
 	public int countPayment(Map<String, Object> map);
@@ -19,4 +20,6 @@ public interface MyPageService {
 	public void updateOrderHistory(long orderDetailNum) throws Exception;
 	
 	public List<PackageOrder> findMySubinfo(long memberId) throws Exception;
+	
+	public List<packageReview> listmyReview(long memberId) throws Exception;
 }
