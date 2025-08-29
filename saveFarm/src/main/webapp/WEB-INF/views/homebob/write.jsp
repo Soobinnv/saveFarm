@@ -118,7 +118,7 @@ window.addEventListener('DOMContentLoaded', evt => {
                 alert('이미지는 최소 한 장 이상 등록되어야 합니다.');
                 return false;
             }
-            
+             
             if (!confirm('선택한 파일을 삭제 하시겠습니까?')) {
                 return false;
             }
