@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sp.app.mapper.HomeBobMapper">
+	<select id="homeBobSeq" resultType="Long">
+		SELECT homeBob_seq.NEXTVAL
+		FROM dual
+	</select>
+	
+	<insert id="insertHomeBob" parameterType="com.sp.app.model.HomeBob">
+		INSERT INTO homeBob(num, memberId, subject, content, regDate)
+		VALUES(#{num}, #{memberId}, #{subject}, #{content}, SYSDATE)
+	</insert>
+
+	<sql id="where-list">
+		<choose>
+			<when test="schType == 'all'">
+			( INSTR(subject, #{kwd}) &gt; 0
+				OR INSTR(content, #{kwd}) &gt; 0 )
+			</when>	
+		</choose>
+	</sql>
+	
+	<!-- 데이터개수  -->
+	<select id="dataCount" parameterType="map" resultType="Integer">
+		SELECT NVL(COUNT(*), 0)
+		FROM HomeBob
+		<where>
+			<if test="kwd != null and kwd!=''  ">
+				AND <include refid="where-list"/>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 리스트 -->
+	<select id="listHomeBob" parameterType="map" resultType="com.sp.app.model.HomeBob">
+		SELECT h.num, memberId, subject, imageFilename
+		FROM homeBob h
+		LEFT OUTER JOIN (
+			SELECT fileNum, num, imageFilename FROM (
+				SELECT fileNum, num, imageFilename, 
+					ROW_NUMBER() OVER(PARTITION BY num ORDER BY fileNum ASC) rank
+				 FROM homeBobFile
+			) WHERE rank = 1
+		) i ON h.num = i.num
+		<where>
+			<if test="kwd != null and kwd != ''">
+				AND <include refid="where-list"/>
+			</if>
+		</where>
+		ORDER BY num DESC
+		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	 </select>
+
+    <!-- 글보기 -->
+    <select id="findById" parameterType="Long" resultType="com.sp.app.model.HomeBob">
+		SELECT num, h.memberId, name, subject, content, TO_CHAR(regDate,'YYYY-MM-DD') regDate
+		FROM homeBob h
+		JOIN member2 m ON h.memberId = m.memberId
+		WHERE num = #{num}
+	</select>
+
+	<!-- 이전글 -->
+	<select id="findByPrev" parameterType="map" resultType="com.sp.app.model.HomeBob">
+		SELECT num, subject
+		FROM homeBob
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (num &gt; #{num})
+		</where>
+		ORDER BY num ASC
+		FETCH FIRST 1 ROWS ONLY
+    </select>
+
+    <!-- 다음글 -->
+    <select id="findByNext" parameterType="map" resultType="com.sp.app.model.HomeBob">
+		SELECT num, subject
+		FROM homeBob
+		<where>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (num &lt; #{num})
+		</where>
+		ORDER BY num DESC
+		FETCH FIRST 1 ROWS ONLY
+    </select>
+    
+	<!-- 수정 -->
+	<update id="updateHomeBob" parameterType="com.sp.app.model.HomeBob">
+		UPDATE homeBob SET subject = #{subject}, content = #{content}
+		WHERE num = #{num}
+	</update>
+    
+	<!-- 삭제 -->
+	<delete id="deleteHomeBob" parameterType="Long">
+		DELETE FROM homeBob
+		WHERE num = #{num}
+	</delete>
+	
+	<!-- 파일 -->
+	<insert id="insertHomeBobFile" parameterType="com.sp.app.model.HomeBob">
+		INSERT INTO homeBobFile(fileNum, num, imageFilename, fileSize)
+		VALUES (homeBobFile_seq.NEXTVAL, #{num}, #{imageFilename}, #{fileSize})
+	</insert>
+	
+	<select id="listHomeBobFile" parameterType="Long" resultType="com.sp.app.model.HomeBob">
+		SELECT fileNum, num, imageFilename, fileSize
+		FROM homeBobFile
+		WHERE num = #{num}
+	</select>
+	
+	<select id="findByFileId" parameterType="Long" resultType="com.sp.app.model.HomeBob">
+		SELECT fileNum, num, imageFilename, fileSize
+		FROM homeBobFile
+	    WHERE fileNum = #{fileNum}      
+	</select>
+	
+	<delete id="deleteHomeBobFile" parameterType="map">
+		DELETE FROM homeBobFile
+		WHERE ${field} = #{num}
+	</delete>
+</mapper>
