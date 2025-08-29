@@ -51,7 +51,7 @@
 							</ul>
 						</li>
 						<li class="dropdown">
-							<a href="#"><span>마이페이지</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+							<a href="${pageContext.request.contextPath}/farm/crops/list"><span>마이페이지</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
 							<ul>
 								<li><a href="${pageContext.request.contextPath}/farm/member/update">정보수정</a></li>
 								<li><a href="${pageContext.request.contextPath}/farm/delivery/list">배송 관리</a></li>

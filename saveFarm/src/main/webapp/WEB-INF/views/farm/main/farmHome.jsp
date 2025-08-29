@@ -33,11 +33,22 @@
 	          <div class="col-lg-11"><span class="hero-subtitle text-uppercase" data-aos="fade-up" data-aos-delay="0">농민을 위한 실용적인 판매 솔루션</span>
 	            <h1 class="hero-title mb-3" data-aos="fade-up" data-aos-delay="100">못난이 농산물도,<br>제값 받는 길이 있습니다</h1>
 	            <p class="hero-description mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="200">농가 전용 판매 플랫폼에서, 재고는 줄이고 소득은 올리세요. 소규모 농가부터 대형 농장까지, 누구나 쉽게 시작할 수 있습니다.</p>
-	            <div class="cta d-flex gap-2 mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="300"><a class="btn btn-primary" href="${pageContext.request.contextPath}/farm/member/login"> 농장 열기 </a><a class="btn btn-white-outline" href="${pageContext.request.contextPath}/farm/guide">이용 가이드 
-	                <svg class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-	                  <path d="M7 7h10v10"></path>
-	                  <path d="M7 17 17 7"></path>
-	                </svg></a></div>
+	            <div class="cta d-flex gap-2 mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="300">
+		            <c:choose>
+		            	<c:when test="${empty sessionScope.farm}">
+			            	<a class="btn btn-primary" href="${pageContext.request.contextPath}/farm/member/login"> 농장 열기 </a>
+		            	</c:when>
+		            	<c:when test="${not empty sessionScope.farm}">
+			            	<a class="btn btn-primary" href="${pageContext.request.contextPath}/farm/crops/list"> 농장재고 관리 </a>
+		            	</c:when>
+		            </c:choose>
+		            <a class="btn btn-white-outline" href="${pageContext.request.contextPath}/farm/guide">이용 가이드 
+		                <svg class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		                  <path d="M7 7h10v10"></path>
+		                  <path d="M7 17 17 7"></path>
+		                </svg>
+	                </a>
+                </div>
 	            <div class="logos mb-4" data-aos="fade-up" data-aos-delay="400"><span class="logos-title text-uppercase mb-4 d-block">전국 농가가 함께하는 믿을 수 있는 플랫폼</span>
 	              <div class="logos-images d-flex gap-4 align-items-center"></div>
 	            </div>
@@ -177,7 +188,14 @@
 	              <span>간편 신청으로 바로 시작 가능</span>
 	            </li>
 	          </ul>
-	          <div class="mt-4"><a class="btn" href="${pageContext.request.contextPath}/farm/login">입점 신청하기</a></div>
+			<c:choose>
+				<c:when test="${empty sessionScope.farm}">
+					<div class="mt-4"><a class="btn" href="${pageContext.request.contextPath}/farm/login">입점 신청하기</a></div>
+				</c:when>
+				<c:when test="${not empty sessionScope.farm}">
+					<div class="mt-4"><a class="btn" href="${pageContext.request.contextPath}/farm/sales/totalList">납품 등록하기</a></div>
+				</c:when>
+			</c:choose>
 	        </div>
 	      </div>
 	
@@ -202,7 +220,16 @@
 	                  <span>폐기 부담 완화 및 농가 손실 최소화</span>
 	                </li>
 	              </ul>
-	              <div class="mt-4"><a class="btn btn-white hover-outline" href="#">긴급 구조 신청하기</a></div>
+	              <div class="mt-4">
+              		<c:choose>
+						<c:when test="${empty sessionScope.farm}">
+			              	<a class="btn btn-white hover-outline" href="${pageContext.request.contextPath}/farm/login">긴급 구조 신청하기</a>
+						</c:when>
+						<c:when test="${not empty sessionScope.farm}">
+			              	<a class="btn btn-white hover-outline" href="${pageContext.request.contextPath}/farm/sales/totalList">긴급 구조 신청하기</a>
+						</c:when>
+					</c:choose>
+              	</div>
 	            </div>
 	            <div class="col-md-6 pricing-features d-none d-md-block">
 	              <img src="${pageContext.request.contextPath}/dist/farm/farmMain/images/mainTitle3.png" alt="긴급 구조 상품예시" class="img-fluid rounded-4 shadow-sm">

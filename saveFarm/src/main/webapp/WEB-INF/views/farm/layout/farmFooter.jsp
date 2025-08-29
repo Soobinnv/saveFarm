@@ -6,21 +6,16 @@
 	<div class="footer-top">
 		<div class="container">
 			<div class="row gy-4">
-				<div class="col-lg-3 col-md-3 footer-about">
+				<div class="${empty sessionScope.farm ? 'col-lg-3 col-md-3' : 'col-lg-2 col-md-2'} footer-about">
 					<a href="index.html" class="logo d-flex align-items-center">
 						<span class="sitename">SaveFarm</span>
 					</a>
-					<div class="${empty sessionScope.farm ? 'col-lg-3 col-md-3' : 'col-lg-2 col-md-2'} footer-about">
-					    <a href="index.html" class="logo d-flex align-items-center">
-					        <span class="sitename">SaveFarm</span>
-					    </a>
-					    <div class="footer-contact pt-3">
-					        <p>월드컵북로 21 풍성빌딩</p>
-					        <p>서울특별시, S.L. 04001</p>
-					        <p class="mt-3"><strong>대표번호 :</strong> <span>0507-1371-8548</span></p>
-					        <p><strong>이메일 :</strong> <span>SaveFarm@gmail.com</span></p>
-					    </div>
-					</div>
+				    <div class="footer-contact pt-3">
+				        <p>월드컵북로 21 풍성빌딩</p>
+				        <p>서울특별시, S.L. 04001</p>
+				        <p class="mt-3"><strong>대표번호 :</strong> <span>0507-1371-8548</span></p>
+				        <p><strong>이메일 :</strong> <span>SaveFarm@gmail.com</span></p>
+				    </div>
 				</div>
 				
 				<c:choose>
