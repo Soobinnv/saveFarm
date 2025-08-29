@@ -21,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AdminClaimServiceImpl implements AdminClaimService {
 	
-	private RefundMapper refundMapper;
-	private ReturnMapper returnMapper;
-	private ClaimManageMapper claimManageMapper;
-	private ReturnService returnService;
-	private RefundService refundService;
+	private final RefundMapper refundMapper;
+	private final ReturnMapper returnMapper;
+	private final ClaimManageMapper claimManageMapper;
+	private final ReturnService returnService;
+	private final RefundService refundService;
 	private final PaginateUtil paginateUtil;
 	
 	@Override
@@ -48,6 +48,8 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 					int offset = (current_page - 1) * size;
 					if(offset < 0) offset = 0;
 					
+					paramMap.put("offset", offset);
+					
 					list = returnMapper.getReturnList(paramMap);
 					break;
 				}
@@ -58,15 +60,20 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 					int offset = (current_page - 1) * size;
 					if(offset < 0) offset = 0;
 					
+					paramMap.put("offset", offset);
+					
 					list = refundMapper.getRefundList(paramMap);
 					break;
 				}
+				// 통합 리스트
 				case null: {
 					dataCount = claimManageMapper.getDataCount(paramMap);
 					total_page = paginateUtil.pageCount(dataCount, size);
 					
 					int offset = (current_page - 1) * size;
 					if(offset < 0) offset = 0;
+					
+					paramMap.put("offset", offset);
 					
 					list = claimManageMapper.getClaimList(paramMap);
 					break;

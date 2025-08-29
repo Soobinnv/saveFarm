@@ -589,3 +589,17 @@ h1.mb-1 {
     background-color: #16a085;
     color: white;
 }
+
+.mainHeader nav {
+	height: 130px !important;
+}
+
+.headerNavText {	
+	font: bold !important;
+	font-size: 20px !important;
+}
+
+.logo a img {
+	width: 120px !important;
+	height: 120px !important;
+}

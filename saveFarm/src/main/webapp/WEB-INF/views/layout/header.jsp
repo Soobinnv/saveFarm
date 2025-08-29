@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
 <!-- Navbar Start -->
-<div class="container-fluid fixed-top px-0 wow fadeIn"
+<div class="container-fluid fixed-top px-0 wow fadeIn mainHeader"
 	data-wow-delay="0.1s">
 	<nav
 		class="navbar navbar-expand-lg navbar-light py-lg-0 px-lg-5 wow fadeIn d-flex justify-content-between headerNavbar"
@@ -42,17 +42,17 @@
 					<c:when test="${empty sessionScope.member}">
 						<li>
 							<a href="javascript:dialogLogin();" class="mx-3"> <iconify-icon
-										icon="healthicons:person" class="fs-4 loginPerson"></iconify-icon>
+										icon="healthicons:person" class="fs-4 loginPerson" width="35" height="35"></iconify-icon>
 							</a>
 						</li>	
 						<li>
 							<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=wishList" class="mx-3"> 
-								<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+								<iconify-icon icon="mdi:heart" class="fs-4" width="35" height="35"></iconify-icon>
 							</a>
 						</li>
 						<li class="ms-3"> 
 							<a href="${pageContext.request.contextPath}/myShopping/cart">
-								<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+								<iconify-icon icon="mdi:cart" class="fs-4 position-relative" width="35" height="35"></iconify-icon>
 								<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
 									<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
 									${sessionScope.member.cartSize}</span>  						
@@ -63,31 +63,31 @@
 					<c:otherwise>
 						<li>
 							<a href="${pageContext.request.contextPath}/member/logout" class="mx-3"> <iconify-icon
-										icon="majesticons:door-exit" class="fs-4 loginPerson"></iconify-icon>
+										icon="majesticons:door-exit" class="fs-4 loginPerson" width="35" height="35"></iconify-icon>
 							</a>
 						</li>
 						<c:choose>
 							<c:when test="${sessionScope.member.userLevel == 99}">
 								<li>
 									<a href="${pageContext.request.contextPath}/admin" class="mx-3"> <iconify-icon
-												icon="uil:setting" class="fs-4 loginPerson"></iconify-icon>
+												icon="uil:setting" class="fs-4 loginPerson" width="35" height="35"></iconify-icon>
 									</a>
 								</li>
 							</c:when>
 							<c:otherwise>
 								<li>
 									<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=myPage" class="mx-3"> <iconify-icon
-												icon="ion:home" class="fs-4 loginPerson"></iconify-icon>
+												icon="ion:home" class="fs-4 loginPerson" width="35" height="35"></iconify-icon>
 									</a>
 								</li>
 								<li>
 									<a href="${pageContext.request.contextPath}/myPage/paymentList?accessType=wishList" class="mx-3"> 
-										<iconify-icon icon="mdi:heart" class="fs-4"></iconify-icon>
+										<iconify-icon icon="mdi:heart" class="fs-4" width="35" height="35"></iconify-icon>
 									</a>
 								</li>
 								<li class="ms-3"> 
 									<a href="${pageContext.request.contextPath}/myShopping/cart">
-										<iconify-icon icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
+										<iconify-icon width="35" height="35" icon="mdi:cart" class="fs-4 position-relative"></iconify-icon>
 										<c:if test="${not empty sessionScope.member && sessionScope.member.cartSize != 0}">
 											<span class="position-absolute translate-middle badge rounded-circle pt-2 cartPlus">
 											${sessionScope.member.cartSize}</span>  						

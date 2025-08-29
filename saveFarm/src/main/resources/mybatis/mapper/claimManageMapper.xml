@@ -21,47 +21,70 @@
 	<select id="getClaimList" parameterType="map" resultType="com.sp.app.admin.model.Claim">
     SELECT *
     FROM (
-        -- 반품 조회 쿼리
         SELECT
-            '반품' AS "listType",        -- 1. 타입: '반품'으로 고정
-            returnNum AS "num",          -- 2. 고유번호
-            reqDate AS "sortDate",       -- 3. 정렬 기준 날짜 (요청일)
-            reason AS "detail1",         -- 4. 상세 내용 1 (사유)
-            TO_CHAR(quantity) AS "detail2", -- 5. 상세 내용 2 (수량)
-            returnDate AS "processDate", -- 6. 처리 완료일 (반품 완료일)
-            r.orderDetailNum,            -- 7. 주문 상세 번호
-            status,                      -- 8. 상태
-            od.memberId                  -- 9. 회원 ID
-        FROM return r  -- ※ 테이블명을 return으로 수정했습니다.
+            'return' AS "listType",      
+            returnNum AS "num",      
+            reqDate,     
+            reason AS "detail1",        
+            TO_CHAR(quantity) AS "detail2", 
+            returnDate AS "processDate",
+            r.orderDetailNum,           
+            status,              
+            po.memberId             
+        FROM return r 
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-        JOIN member m ON od.memberId = m.memberId
+        JOIN productOrder po ON od.orderNum = po.orderNum
+        JOIN member1 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>
 
         UNION ALL
 
-        -- 환불 조회 쿼리
         SELECT
-            '환불' AS "listType",        -- 1. 타입: '환불'으로 고정
-            refundNum AS "num",          -- 2. 고유번호
-            refundDate AS "sortDate",    -- 3. 정렬 기준 날짜 (환불일)
-            TO_CHAR(refundAmount) AS "detail1", -- 4. 상세 내용 1 (환불액)
-            refundMethod AS "detail2",   -- 5. 상세 내용 2 (환불 방법)
-            NULL AS "processDate",       -- 6. 처리 완료일 (환불에는 없으므로 NULL)
-            r.orderDetailNum,            -- 7. 주문 상세 번호
-            status,                      -- 8. 상태
-            od.memberId                  -- 9. 회원 ID
+            'refund' AS "listType",   
+            refundNum AS "num",       
+            reqDate,  
+            TO_CHAR(refundAmount) AS "detail1", 
+            refundMethod AS "detail2",  
+            refundDate AS "processDate",       
+            r.orderDetailNum,           
+            status,                    
+            po.memberId                
         FROM refund r
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-        JOIN member m ON od.memberId = m.memberId
+        JOIN productOrder po ON od.orderNum = po.orderNum
+        JOIN member1 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>
     ) combined_list
-    ORDER BY "sortDate" DESC, "num" DESC -- 최신 날짜순으로 정렬
+    ORDER BY reqDate DESC, "num" DESC
     OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
+    <select id="getDataCount" parameterType="map" resultType="int">
+    SELECT COUNT(*)
+    FROM (
+        SELECT returnNum
+        FROM return r
+        JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+        JOIN productOrder po ON od.orderNum = po.orderNum
+        JOIN member1 m ON po.memberId = m.memberId
+        <where>
+            <include refid="where-list"/>
+        </where>
 
+        UNION ALL
+
+        SELECT refundNum
+        FROM refund r
+        JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+        JOIN productOrder po ON od.orderNum = po.orderNum
+        JOIN member1 m ON po.memberId = m.memberId
+        <where>
+            <include refid="where-list"/>
+        </where>
+    ) combined_list
+</select>
 </mapper>

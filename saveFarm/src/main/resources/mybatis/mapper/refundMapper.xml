@@ -41,7 +41,8 @@
 		SELECT COUNT(*)
 		FROM refund r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-		JOIN member m ON od.memberId = m.memberId
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member1 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>
@@ -49,10 +50,11 @@
 
 	<select id="getRefundList" parameterType="map" resultType="com.sp.app.model.Refund">
 		SELECT refundNum, refundAmount, TO_CHAR(refundDate, 'YYYY-MM-DD') refundDate,
-			   refundMethod, r.orderDetailNum, status, od.memberId
+			   refundMethod, r.orderDetailNum, status, po.memberId
 		FROM refund r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
-		JOIN member m ON od.memberId = m.memberId
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member1 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>
