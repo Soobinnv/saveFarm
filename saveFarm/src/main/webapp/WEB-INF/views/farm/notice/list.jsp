@@ -41,7 +41,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/noticeTitle.webp);">
       <div class="container position-relative">
         <h1>공지사항</h1>
         <p>가입서류, 유통, 상품등록 등 각종 가이드라인에 대한 공지를 알려드리는 페이지입니다.</p>
@@ -120,27 +120,34 @@
 				  ${dataCount == 0 ? "등록된 게시글이 없습니다" : paging}
 				</div>
 				
-				<div class="row mt-3">
-				  <div class="col-md-3">
-				    <button type="button" class="btn-default"
+				<div class="row mt-3 align-items-center">
+					<div class="col-auto">
+				    	<button type="button" class="btn-default"
 				            onclick="location.href='${pageContext.request.contextPath}/farm/notice/list'"
 				            title="새로고침"><i class="bi bi-arrow-clockwise"></i></button>
-				  </div>
-				  <div class="col-md-6 text-center">
-				    <select name="schType">
-				      <option value="all"      ${schType == 'all'      ? 'selected' : ''}>제목+내용</option>
-				      <option value="reg_date" ${schType == 'reg_date' ? 'selected' : ''}>작성일</option>
-				      <option value="subject"  ${schType == 'subject'  ? 'selected' : ''}>제목</option>
-				      <option value="content"  ${schType == 'content'  ? 'selected' : ''}>내용</option>
-				    </select>
-				    <input type="text" name="kwd" value="${kwd}">
-				    <button type="button" class="btn-default" onclick="searchList();"><i class="bi bi-search"></i></button>
-				  </div>
+					</div>
+				
+					<div class="col d-flex justify-content-center">
+						<div class="d-inline-flex align-items-stretch flex-nowrap gap-2">
+					    	<select name="schType">
+					        	<option value="all"      ${schType == 'all'      ? 'selected' : ''}>제목+내용</option>
+						        <option value="reg_date" ${schType == 'reg_date' ? 'selected' : ''}>작성일</option>
+						        <option value="subject"  ${schType == 'subject'  ? 'selected' : ''}>제목</option>
+						        <option value="content"  ${schType == 'content'  ? 'selected' : ''}>내용</option>
+					      	</select>
+							<input type="text" name="kwd" value="${kwd}" placeholder="검색어 입력">
+							<button type="button" class="btn-default" onclick="searchList();"><i class="bi bi-search"></i></button>
+					    </div>
+					</div>
+	
+					<div class="col-auto d-none d-md-block">
+						<button type="button" class="btn-default invisible" tabindex="-1"><i class="bi bi-arrow-clockwise"></i></button>
+					</div>
 				</div>
-				</form>
-			</div>
+			</form>
 		</div>
-	</section><!-- /Comment Form Section -->
+	</div>
+</section><!-- /Comment Form Section -->
     
 </main>
 

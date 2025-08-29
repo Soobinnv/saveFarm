@@ -292,13 +292,21 @@
 <!-- 내농가 판매 조회 관련 쿼리-->
 
 <!-- 상단 총 벌은 금액 -->
-<select id="myFarmTotalEarning" parameterType="Long"  resultType="java.math.BigDecimal">
-	SELECT NVL(SUM( NVL(s.supplyQuantity,0) / NULLIF(NVL(s.unitQuantity,1), 0) * NVL(s.unitPrice,0)), 0) AS totalEarning
-	FROM supply s
-	WHERE s.farmNum = #{farmNum}
-    AND s.state = 5
+<select id="myFarmTotalEarning" parameterType="map" resultType="java.math.BigDecimal">
+  SELECT NVL(SUM(
+    TO_NUMBER(NVL(s.supplyQuantity,0))
+    / NULLIF(TO_NUMBER(NVL(s.unitQuantity,1)), 0)
+    * TO_NUMBER(NVL(s.unitPrice,0))
+  ), 0) AS totalEarning
+  FROM supply s
+  WHERE s.farmNum = #{farmNum}
+    AND s.state &gt;= 5
     AND s.approvedDate IS NOT NULL
+    <if test="productNumOnly != null and productNumOnly == 1">
+      AND s.productNum IS NOT NULL
+    </if>
 </select>
+
 
 <!-- 품종별 리스트 -->
 <select id="myFarmListByVariety" parameterType="map"
@@ -306,15 +314,17 @@
   SELECT
     v.varietyNum,
     v.varietyName,
-    SUM(NVL(s.supplyQuantity, 0)) AS totalQty,
+    SUM(TO_NUMBER(NVL(s.supplyQuantity, 0))) AS totalQty,
     NVL(SUM(
-      NVL(s.supplyQuantity,0) / NULLIF(NVL(s.unitQuantity,1), 0) * NVL(s.unitPrice,0)
+      TO_NUMBER(NVL(s.supplyQuantity,0))
+      / NULLIF(TO_NUMBER(NVL(s.unitQuantity,1)), 0)
+      * TO_NUMBER(NVL(s.unitPrice,0))
     ), 0) AS totalVarietyEarning
   FROM supply s
   JOIN variety v ON v.varietyNum = s.varietyNum
   <where>
     s.farmNum = #{farmNum}
-    AND s.state = 5
+    AND s.state &gt;= 5
     AND s.approvedDate IS NOT NULL
     <if test="productNumOnly != null and productNumOnly == 1">
       AND s.productNum IS NOT NULL
@@ -322,7 +332,6 @@
     <if test="varietyNum != null and varietyNum &gt; 0">
       AND s.varietyNum = #{varietyNum}
     </if>
-
     <if test="kwd != null and kwd != ''">
       <choose>
         <when test="schType == 'varietyName'">
@@ -347,7 +356,7 @@
     JOIN variety v ON v.varietyNum = s.varietyNum
     <where>
       s.farmNum = #{farmNum}
-      AND s.state = 5
+      AND s.state &gt;= 5
       AND s.approvedDate IS NOT NULL
       <if test="productNumOnly != null and productNumOnly == 1">
         AND s.productNum IS NOT NULL
@@ -355,7 +364,6 @@
       <if test="varietyNum != null and varietyNum &gt; 0">
         AND s.varietyNum = #{varietyNum}
       </if>
-
       <if test="kwd != null and kwd != ''">
         <choose>
           <when test="schType == 'varietyName'">
@@ -370,5 +378,6 @@
     GROUP BY v.varietyNum
   )
 </select>
+
 
 </mapper>

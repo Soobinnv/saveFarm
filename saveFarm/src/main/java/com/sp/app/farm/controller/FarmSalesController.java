@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping(value = "/farm/sales/*")
+@RequestMapping({"/farm/sales", "/farm/sales/*"})
 public class FarmSalesController {
 
 	private final SupplyServiceImpl supplyService;
@@ -43,30 +43,67 @@ public class FarmSalesController {
 	private final SaleServiceImpl saleService;
 	
 	@GetMapping("totalList")
-	public String totalList(Model model) {
+	public String totalList(
+			@RequestParam(value = "varietyNum",  required = false) Long varietyNum,
+	        @RequestParam(value = "varietyName", required = false) String varietyName,
+	        Model model) {
 	    try {
-	        Map<String, Object> param = new HashMap<>();
+	    	// 1. 상단 TOP10 차트
+	        Map<String, Object> topParam = new HashMap<>();
+	        String endYmAll = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+	        topParam.put("startYm", "190001");  // 시작부터
+	        topParam.put("endYm",   endYmAll);  // 현재달까지
+	        topParam.put("topN",    10);        // 월별 Top10
 
-	        // 조회 시점 기준 yyyyMM (예: 202507)
-	        String endYm = java.time.LocalDate.now()
-	                .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMM"));
+	        List<MonthlyVarietyStats> monthlyVarietyList = saleService.listMonthlyVarietyWeight(topParam);
+	        model.addAttribute("monthlyVarietyList", monthlyVarietyList);
 
-	        param.put("startYm", "190001"); // 판매 시작부터로 간주(아주 이른 년월)
-	        param.put("endYm", endYm);      // 현재 달까지
-	        param.put("topN", 10);          // 상위 10개
+	        // 2. 하단 라인차트: 선택 품목의 "최근 3년(36개월)", 현재달 포함
+	        LocalDate nowMonth = LocalDate.now().withDayOfMonth(1); // 이번달 1일
+	        final int monthsCount = 36;                         // 36개월
+	        LocalDate start = nowMonth.minusMonths(monthsCount - 1); // 35개월 전(포함)
 
-	        // 기존 쿼리 재사용: 월/품목별 집계 후 각 월 TopN인데,
-	        // start~end 한 구간이 길어도 '이번달까지' 범위니까 OK (월별 partiton)
-	        // "전체 구간 누적 Top10"이 절대적으로 필요하면 별도 쿼리가 맞지만,
-	        // 현재는 월별 TopN 중 최근 달 데이터가 화면에 오도록 사용.
-	        // (필요시 추후 누적용 쿼리로 교체 가능)
-	        java.util.List<com.sp.app.farm.model.MonthlyVarietyStats> list =
-	                saleService.listMonthlyVarietyWeight(param);
+	        DateTimeFormatter ym     = DateTimeFormatter.ofPattern("yyyyMM");
+	        DateTimeFormatter ymDash = DateTimeFormatter.ofPattern("yyyy-MM");
 
-	        model.addAttribute("monthlyVarietyList", list);
+	        // === 기본 품목 결정 (요청 파라미터 없을 때) ===
+	        // 드롭다운 목록을 먼저 받아서 기본 품목 고름 (샤인머스캣 우선, 없으면 첫 번째)
+	        List<Variety> varietyList = varietyService.listAll();
+	        if ((varietyNum == null) && (varietyName == null || varietyName.isBlank())) {
+	            Variety def = varietyList.stream()
+	                    .filter(v -> v.getVarietyName() != null && v.getVarietyName().contains("샤인머스캣"))
+	                    .findFirst()
+	                    .orElse(varietyList.isEmpty() ? null : varietyList.get(0));
+	            if (def != null) {
+	                varietyNum  = def.getVarietyNum();
+	                varietyName = def.getVarietyName();
+	            }
+	        }
+	        
+	        // 3. 쿼리 파라미터 구성 (기본값이 정해진 상태)
+	        Map<String, Object> p = new HashMap<>();
+	        p.put("startYm", start.format(ym));
+	        p.put("endYm",   nowMonth.format(ym));
+	        if (varietyNum != null) p.put("varietyNum", varietyNum);
+	        if (varietyName != null && !varietyName.isBlank()) p.put("varietyName", varietyName);
 
-	        // 품목 선택 박스가 있다면 같이 내려둠(없으면 생략)
-	        // model.addAttribute("varietyList", varietyService.listAll());
+	        // 4. 시리즈 데이터 조회
+	        // 결과: monthKey(YYYY-MM), varietyName, totalWeightG
+	        List<MonthlyVarietyStats> seriesRows = saleService.listMonthlyVarietyWeight(p);
+	        model.addAttribute("seriesRows", seriesRows);
+
+	        // 5. x축 36개월 라벨
+	        // x축용 36개월 라벨 (YYYY-MM)
+	        List<String> months = new ArrayList<>(monthsCount);
+	        for (int i = 0; i < monthsCount; i++) {
+	            months.add(start.plusMonths(i).format(ymDash));
+	        }
+	        model.addAttribute("months", months);
+
+	        // 6. 드롭다운/선택값 모델
+	        model.addAttribute("varietyList", varietyList);
+	        model.addAttribute("varietyNum", varietyNum);
+	        model.addAttribute("varietyName", varietyName);
 
 	    } catch (Exception e) {
 	        log.error("totalList error:", e);
@@ -74,10 +111,68 @@ public class FarmSalesController {
 	    return "farm/sales/totalList";
 	}
 	
+	
 	@GetMapping("incomeList")
-	public String incomeList(){
-		
-		try {
+	public String incomeList(
+			@RequestParam(value = "varietyNum",  required = false) Long varietyNum,
+	        @RequestParam(value = "varietyName", required = false) String varietyName,
+	        Model model) {
+	    try {
+	    	// 1. 상단 TOP10 차트
+	        Map<String, Object> topParam = new HashMap<>();
+	        String endYmAll = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+	        topParam.put("startYm", "190001");  // 시작부터
+	        topParam.put("endYm",   endYmAll);  // 현재달까지
+	        topParam.put("topN",    10);        // 월별 Top10
+
+	        List<MonthlyVarietyStats> monthlyVarietyList = saleService.listMonthlyVarietyAmount(topParam);
+	        model.addAttribute("monthlyVarietyList", monthlyVarietyList);
+
+	        // 2. 하단 라인차트: 선택 품목의 "최근 3년(36개월)", 현재달 포함
+	        LocalDate nowMonth = LocalDate.now().withDayOfMonth(1); // 이번달 1일
+	        final int monthsCount = 36;                         // 36개월
+	        LocalDate start = nowMonth.minusMonths(monthsCount - 1); // 35개월 전(포함)
+
+	        DateTimeFormatter ym     = DateTimeFormatter.ofPattern("yyyyMM");
+	        DateTimeFormatter ymDash = DateTimeFormatter.ofPattern("yyyy-MM");
+
+	        // === 기본 품목 결정 (요청 파라미터 없을 때) ===
+	        // 드롭다운 목록을 먼저 받아서 기본 품목 고름 (샤인머스캣 우선, 없으면 첫 번째)
+	        List<Variety> varietyList = varietyService.listAll();
+	        if ((varietyNum == null) && (varietyName == null || varietyName.isBlank())) {
+	            Variety def = varietyList.stream()
+	                    .filter(v -> v.getVarietyName() != null && v.getVarietyName().contains("샤인머스캣"))
+	                    .findFirst()
+	                    .orElse(varietyList.isEmpty() ? null : varietyList.get(0));
+	            if (def != null) {
+	                varietyNum  = def.getVarietyNum();
+	                varietyName = def.getVarietyName();
+	            }
+	        }
+	        
+	        // 3. 쿼리 파라미터 구성 (기본값이 정해진 상태)
+	        Map<String, Object> p = new HashMap<>();
+	        p.put("startYm", start.format(ym));
+	        p.put("endYm",   nowMonth.format(ym));
+	        if (varietyNum != null) p.put("varietyNum", varietyNum);
+	        if (varietyName != null && !varietyName.isBlank()) p.put("varietyName", varietyName);
+
+	        // 4. 시리즈 데이터 조회 (36개월 라인)
+	        List<MonthlyVarietyStats> seriesRows = saleService.listMonthlyVarietyAmount(p);
+	        model.addAttribute("seriesRows", seriesRows);
+
+	        // 5. x축 36개월 라벨
+	        // x축용 36개월 라벨 (YYYY-MM)
+	        List<String> months = new ArrayList<>(monthsCount);
+	        for (int i = 0; i < monthsCount; i++) {
+	            months.add(start.plusMonths(i).format(ymDash));
+	        }
+	        model.addAttribute("months", months);
+
+	        // 6. 드롭다운/선택값 모델
+	        model.addAttribute("varietyList", varietyList);
+	        model.addAttribute("varietyNum", varietyNum);
+	        model.addAttribute("varietyName", varietyName);
 			
 		} catch (Exception e) {
 			log.info("incomeList : ", e);
@@ -87,9 +182,68 @@ public class FarmSalesController {
 	}
 	
 	@GetMapping("starList")
-	public String starList(){
-		
-		try {
+	public String starList(
+			@RequestParam(value = "varietyNum",  required = false) Long varietyNum,
+	        @RequestParam(value = "varietyName", required = false) String varietyName,
+	        Model model) {
+	    try {
+	    	// 1. 상단 TOP10 차트
+	        Map<String, Object> topParam = new HashMap<>();
+	        String endYmAll = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+	        topParam.put("startYm", "190001");  // 시작부터
+	        topParam.put("endYm",   endYmAll);  // 현재달까지
+	        topParam.put("topN",    10);        // 월별 Top10
+
+	        topParam.put("minReviewsPerMonth", 3);
+	        
+	        List<MonthlyVarietyStats> monthlyVarietyList = saleService.listMonthlyAvgStarByVariety(topParam);
+	        model.addAttribute("monthlyVarietyList", monthlyVarietyList);
+
+	        // 2. 하단 라인차트: 선택 품목의 "최근 3년(36개월)", 현재달 포함
+	        LocalDate nowMonth = LocalDate.now().withDayOfMonth(1); // 이번달 1일
+	        final int monthsCount = 36;                         // 36개월
+	        LocalDate start = nowMonth.minusMonths(monthsCount - 1); // 35개월 전(포함)
+
+	        DateTimeFormatter ym     = DateTimeFormatter.ofPattern("yyyyMM");
+	        DateTimeFormatter ymDash = DateTimeFormatter.ofPattern("yyyy-MM");
+
+	        // === 기본 품목 결정 (요청 파라미터 없을 때) ===
+	        // 드롭다운 목록을 먼저 받아서 기본 품목 고름 (샤인머스캣 우선, 없으면 첫 번째)
+	        List<Variety> varietyList = varietyService.listAll();
+	        if ((varietyNum == null) && (varietyName == null || varietyName.isBlank())) {
+	            Variety def = varietyList.stream()
+	                    .filter(v -> v.getVarietyName() != null && v.getVarietyName().contains("샤인머스캣"))
+	                    .findFirst()
+	                    .orElse(varietyList.isEmpty() ? null : varietyList.get(0));
+	            if (def != null) {
+	                varietyNum  = def.getVarietyNum();
+	                varietyName = def.getVarietyName();
+	            }
+	        }
+	        
+	        // 3. 쿼리 파라미터 구성 (기본값이 정해진 상태)
+	        Map<String, Object> p = new HashMap<>();
+	        p.put("startYm", start.format(ym));
+	        p.put("endYm",   nowMonth.format(ym));
+	        if (varietyNum != null) p.put("varietyNum", varietyNum);
+	        if (varietyName != null && !varietyName.isBlank()) p.put("varietyName", varietyName);
+
+	        // 4. 시리즈 데이터 조회 (36개월 라인)
+	        List<MonthlyVarietyStats> seriesRows = saleService.listMonthlyAvgStarByVariety(p);
+	        model.addAttribute("seriesRows", seriesRows);
+
+	        // 5. x축 36개월 라벨
+	        // x축용 36개월 라벨 (YYYY-MM)
+	        List<String> months = new ArrayList<>(monthsCount);
+	        for (int i = 0; i < monthsCount; i++) {
+	            months.add(start.plusMonths(i).format(ymDash));
+	        }
+	        model.addAttribute("months", months);
+
+	        // 6. 드롭다운/선택값 모델
+	        model.addAttribute("varietyList", varietyList);
+	        model.addAttribute("varietyNum", varietyNum);
+	        model.addAttribute("varietyName", varietyName);
 			
 		} catch (Exception e) {
 			log.info("starList : ", e);
@@ -183,7 +337,10 @@ public class FarmSalesController {
 	        }
 
 	        // 6. 전체 누적 매출(납품완료+승인 기준)
-	        BigDecimal totalEarning = saleService.myFarmTotalEarning(farmNum);
+	        Map<String, Object> totalMap = new HashMap<>();
+	        totalMap.put("farmNum", farmNum);
+	        totalMap.put("productNumOnly", 1); // 리스트/카드와 동일 기준으로 합치려면 유지
+	        BigDecimal totalEarning = saleService.myFarmTotalEarning(totalMap);
 	        if (totalEarning == null) totalEarning = BigDecimal.ZERO;
 
 	        // 7. 페이징 URL (행 테이블 기준)
@@ -240,119 +397,5 @@ public class FarmSalesController {
 	    }
 	    return "farm/sales/myFarmList";
 	}
-
-	
-	/*
-	@GetMapping("myFarmList")
-	public String myFarmList(
-	        @RequestParam(name = "page", defaultValue = "1") int current_page,
-	        @RequestParam(name = "schType", defaultValue = "varietyName") String schType,
-	        @RequestParam(name = "kwd", defaultValue = "") String kwd,
-	        @RequestParam(name = "state", required = false) Integer state,
-	        @RequestParam(name = "varietyNum", defaultValue = "-1") long varietyNum,
-	        Model model,
-	        HttpServletRequest req,
-	        HttpSession session) {
-
-	    try {
-	        // 1) 세션 가드
-	        SessionInfo info = (SessionInfo) session.getAttribute("farm");
-	        if (info == null) {
-	            return "redirect:/member/login";
-	        }
-	        final long farmNum = info.getFarmNum();
-
-	        // 2) 파라미터 정리
-	        final int size = 10;
-	        kwd = myUtil.decodeUrl(kwd == null ? "" : kwd.trim());
-	        schType = (schType == null || schType.isBlank()) ? "varietyName" : schType;
-
-	        // 3) 공통 필터 맵
-	        Map<String, Object> map = new HashMap<>();
-	        map.put("farmNum", farmNum);
-	        map.put("schType", schType);
-	        map.put("kwd", kwd);
-	        if (state != null) map.put("state", state);
-	        if (varietyNum > 0) map.put("varietyNum", varietyNum);
-	        map.put("productNumOnly", 1); // 승인건만
-
-	        // 4) Supply 기준 카운트/페이징
-	        int dataCount = SupplyService.listSupplyCount(map);
-	        int total_page = (dataCount + (size - 1)) / size;
-	        if (total_page == 0) total_page = 1;
-	        if (current_page < 1) current_page = 1;
-	        if (current_page > total_page) current_page = total_page;
-
-	        int offset = (current_page - 1) * size;
-	        if (offset < 0) offset = 0;
-	        map.put("offset", offset);
-	        map.put("size", size);
-
-	        // 5) 행단위 목록(Supply)
-	        List<Supply> supplyList = SupplyService.listSupply(map);
-
-	        // 6) 상단 합계는 MyFarmSale 집계로
-	        //    (같은 필터맵 재사용: approvedOnly, varietyNum, kwd 등 동일하게 적용)
-
-	        List<MyFarmSale> saleList = SaleService.myFarmListByVariety(map); 
-
-	        BigDecimal totalQty = BigDecimal.ZERO;
-	        BigDecimal totalVarietyEarning = BigDecimal.ZERO;
-	        for (MyFarmSale dto : saleList) {
-	            if (dto.getTotalQty() != null)
-	                totalQty = totalQty.add(dto.getTotalQty());
-	            if (dto.getTotalVarietyEarning() != null)
-	                totalVarietyEarning = totalVarietyEarning.add(dto.getTotalVarietyEarning());
-	        }
-
-	        // (선택) 전체 누적 매출액(승인건 기준) — 기존 집계 쿼리 재사용
-	        BigDecimal totalEarning = SaleService.myFarmTotalEarning(farmNum);
-	        if (totalEarning == null) totalEarning = BigDecimal.ZERO;
-
-	        // 7) 페이징 URL
-	        String cp = req.getContextPath();
-	        String baseUrl = cp + "/farm/sales/myFarmList";
-
-	        List<String> parts = new ArrayList<>();
-	        parts.add("size=" + size);
-	        parts.add("schType=" + myUtil.encodeUrl(schType));
-	        parts.add("kwd=" + myUtil.encodeUrl(kwd));
-	        if (state != null)  parts.add("state=" + state);
-	        if (varietyNum > 0) parts.add("varietyNum=" + varietyNum);
-
-	        String listUrl = baseUrl + "?" + String.join("&", parts);
-	        String paging = paginateUtil.paging(current_page, total_page, listUrl);
-
-	        Map<String,Object> varietyMap = new HashMap<>();
-	        varietyMap.put("farmNum", farmNum);
-	        varietyMap.put("productNumOnly", 1); // 승인건만 보여주고 싶을 때
-
-	        List<Variety> varietyList = SupplyService.listFarmVarieties(varietyMap);
-	        model.addAttribute("varietyList", varietyList);
-	        
-	        // 8) 모델
-	        model.addAttribute("supplyList", supplyList);              // 테이블은 Supply
-	        model.addAttribute("saleList", saleList);            // (필요하면 화면에 추가 섹션으로)
-	        model.addAttribute("totalQty", totalQty);            // 상단 요약(집계 합계)
-	        model.addAttribute("totalVarietyEarning", totalVarietyEarning);
-	        model.addAttribute("totalEarning", totalEarning);    // 전체 누적
-
-	        model.addAttribute("dataCount", dataCount);
-	        model.addAttribute("size", size);
-	        model.addAttribute("page", current_page);
-	        model.addAttribute("total_page", total_page);
-	        model.addAttribute("paging", paging);
-
-	        model.addAttribute("schType", schType);
-	        model.addAttribute("kwd", kwd);
-	        model.addAttribute("state", state);
-	        model.addAttribute("varietyNum", varietyNum);
-
-	    } catch (Exception e) {
-	        log.error("myFarmList :", e);
-	    }
-	    return "farm/sales/myFarmList";
-	}
-*/
 	
 }

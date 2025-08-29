@@ -75,7 +75,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/faqTitle.webp);">
       <div class="container position-relative">
         <h1>자주묻는 질문</h1>
         <p>저희 서비스를 이용하시면서 많이 필요로 하시는 질문을 정리했습니다.</p>

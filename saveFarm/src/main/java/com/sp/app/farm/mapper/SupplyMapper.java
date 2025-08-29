@@ -14,6 +14,7 @@ import com.sp.app.farm.model.Variety;
 public interface SupplyMapper {
     // 기본 CRUD
     public void insertSupply(Supply dto) throws SQLException;
+    public void insertCrops(Supply dto) throws SQLException;
     public void updateSupply(Supply dto) throws SQLException;
     public int updateState(Map<String, Object> map) throws SQLException;        
     public void updateState1(Map<String, Object> map) throws SQLException;     
@@ -36,6 +37,8 @@ public interface SupplyMapper {
     // 특정 농가의 납품목록
     public List<Supply> listByFarm(Long farmNum);
 	public int farmSupplyListCount(Long farmNum);
+	public List<Supply> listByFarm(Map<String, Object> map);
+	public int farmSupplyListCount(Map<String, Object> map);
 	
 	// 승인여부 대상 조회용
 	public List<Supply> listByState(int state);

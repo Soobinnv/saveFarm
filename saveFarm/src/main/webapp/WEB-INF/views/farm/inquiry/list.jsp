@@ -58,7 +58,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/inquiryTitle2.webp);">
       <div class="container position-relative">
         <h1>1:1 문의</h1>
         <p>사용 중 불편·문의 사항을 보내 주세요. 신속하고 정확하게 안내드립니다.</p>
@@ -141,7 +141,7 @@
 									<option value="subject" ${schType=="subject"?"selected":""}>제목</option>
 									<option value="content" ${schType=="content"?"selected":""}>내용</option>
 								</select>
-								<input type="text" name="kwd" value="${kwd}">
+								<input type="text" name="kwd" value="${kwd}" placeholder="검색어 입력">
 								<button type="button" class="btn-default" onclick="searchList();"><i class="bi bi-search"></i></button>
 							</form>
 						</div>

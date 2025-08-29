@@ -21,12 +21,12 @@ public class SaleServiceImpl implements SaleService {
 	private final FarmSaleMapper mapper;
 
 	@Override
-	public BigDecimal myFarmTotalEarning(Long farmNum) {
+	public BigDecimal myFarmTotalEarning(Map<String, Object> map) {
 		BigDecimal count = BigDecimal.ZERO;
 		
 		try {
-			if(mapper.myFarmTotalEarning(farmNum) != BigDecimal.ZERO) {			
-				count = mapper.myFarmTotalEarning(farmNum);
+			if(mapper.myFarmTotalEarning(map) != BigDecimal.ZERO) {			
+				count = mapper.myFarmTotalEarning(map);
 			}
 		} catch (Exception e) {
 			log.info("myFarmTotalEarning : ", e);

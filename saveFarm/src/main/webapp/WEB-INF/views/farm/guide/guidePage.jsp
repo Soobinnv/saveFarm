@@ -27,7 +27,7 @@
         <p>가입부터 소비자 배송까지, 간편하고 믿을 수 있는 유통 과정을 안내합니다.</p>
         <nav class="breadcrumbs">
           <ol>
-            <li><a href="${pageContext.request.contextPath}/farm/guide">홈</a></li>
+            <li><a href="${pageContext.request.contextPath}/farm">홈</a></li>
             <li class="current">과정</li>
           </ol>
         </nav>
@@ -57,7 +57,7 @@
               <li>입점부터 배송까지 원스톱 지원</li>
             </ul>
 
-            <p><a href="#" class="btn-cta">지금 바로 시작하기</a></p>
+            <p><a href="${pageContext.request.contextPath}/farm/member/login" class="btn-cta">지금 바로 시작하기</a></p>
           </div>
         </div>
       </div>

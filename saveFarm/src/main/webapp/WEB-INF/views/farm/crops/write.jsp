@@ -5,8 +5,11 @@
 
    <section id="comment-form" class="comment-form section">
 	<div class="container">
-	    <form id="insertForm" name="insertForm" method="post" action="${pageContext.request.contextPath}/farm/myFarm/list" enctype="application/x-www-form-urlencoded">
-	      <h4>${mode=='update'?'재고관리 수정':'재고관리 작성'}</h4>
+	    <form id="insertForm" name="insertForm" method="post" action="${pageContext.request.contextPath}/farm/crops/${mode}" enctype="application/x-www-form-urlencoded">
+		  <c:if test="${not empty _csrf}">
+		    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+		  </c:if>
+	      <h4>${mode=='update'?'수정':'작성'}</h4>
 	      <p>가지고 계신 농산물을 편리하게 보기 위해 기록하는 페이지입니다.* </p>
 	      <table class="table write-form">
 				<tr>
@@ -41,7 +44,7 @@
 				</tr>
 
 				<tr>
-					<td class="col-md-2 bg-light align-middle">총 납품량</td>
+					<td class="col-md-2 bg-light align-middle">총 재고량</td>
 					<td colspan="2">
 				      <div class="row g-2 align-items-center">
 				        <div class="col-md-7">
@@ -53,35 +56,6 @@
 				      </div>
 				    </td>
 				</tr>
-			
-				<tr>
-					<td class="col-md-2 bg-light align-middle">판매단위</td>
-					<td colspan="2">
-				      <div class="row g-2 align-items-center">
-				        <div class="col-md-7">
-				          <input type="text" name="unitQuantity" class="form-control" maxlength="100" placeholder="납품단위별 양을 입력해주세요." value="${dto.unitQuantity}">
-				        </div>
-				        <div class="col-md-5 align-items-center">
-				         	<h6>단위 무게의 단위는 g* 입니다.</h6>
-				        </div>
-				      </div>
-				    </td>
-				</tr>
-				
-				<tr>
-					<td class="col-md-2 bg-light align-middle">단위당 금액</td>
-					<td colspan="2">
-				      <div class="row g-2 align-items-center">
-				        <div class="col-md-7">
-				          <input type="text" name="unitPrice" class="form-control" maxlength="100" placeholder="단위별 금액을 입력해주세요." value="${dto.unitPrice}">
-				        </div>
-				        <div class="col-md-5 align-items-center">
-				         	<h6>금액의 단위는 1원* 입니다.</h6>
-				        </div>
-				      </div>
-				    </td>
-				</tr>
-				
 				<tr>
 					<td class="col-md-2 bg-light align-middle">수확날짜</td>
 					<td colspan="2">
@@ -92,49 +66,38 @@
 				      </div>
 				    </td>
 				</tr>
-				
-				<tr>
-					<td class="col-md-2 bg-light align-middle">긴급구출상품신청</td>
-					<td colspan="2">
-				      <div class="row g-2 align-items-center">
-				        <div class="col-md-7">
-				          	<input type="hidden" name="rescuedApply" value="0" />
-				        </div>
-				      </div>
-				    </td>
-				</tr>
 			</table>
 	
 			
 			<div class="sf-actions">
-				<c:if test="${mode=='update' && dto.state == 1}">
-					<button type="button" class="sf-btn sf-btn-danger" onclick="deleteOk();">삭제하기</button>
-				</c:if>
-				
-				<button type="button" class="sf-btn btn-primary" onclick="sendOk();">
-					${mode=='update'?'수정완료':'신청완료'}
-				</button>
-				
-				<c:if test="${mode=='write'}">
-					<button type="button" class="sf-btn sf-btn-outline" onclick="location.href='${pageContext.request.contextPath}/farm/register/main'">
-				  		신청취소
+			<!-- 
+				<c:if test="${mode=='update'}">
+					<button type="button" class="sf-btn sf-btn-danger" onclick="deleteOk();">
+						삭제하기
 					</button>
 				</c:if>
+			 -->	
+				<button type="button" class="sf-btn btn-primary" onclick="sendOk();">
+					${mode=='update'?'수정완료':'작성완료'}
+				</button>
+
 				
 				<c:if test="${mode=='update'}">
 			       	<button type="button" class="btn btn-primary" style="background-color: white; color: black; border: 1px solid #116530;"
-       					onclick="location.href='${pageContext.request.contextPath}/farm/register/detail?supplyNum=${dto.supplyNum}&back=${back}'">
+       					onclick="location.href='${pageContext.request.contextPath}/farm/crops/list'">
  						수정취소
 					</button>
+					
 					<input type="hidden" name="supplyNum" value="${dto.supplyNum}">
 					<input type="hidden" name="farmNum" value="${dto.farmNum}">
 					<input type="hidden" name="productNum" value="${dto.productNum}">
 					<input type="hidden" name="state" value="${dto.state}">
-					<input type="hidden" name="page" value="${page}">
 					<input type="hidden" name="page"    value="${empty page ? 1 : page}">
 					<input type="hidden" name="schType" value="${empty schType ? 'all' : schType}">
 					<input type="hidden" name="kwd"     value="${empty kwd ? '' : kwd}">
 					
+					<input type="hidden" name="unitQuantity" value="0">
+					<input type="hidden" name="unitPrice" value="0">
 					<input type="hidden" name="rescuedApply" value="0" />
 				</c:if>
 			</div>

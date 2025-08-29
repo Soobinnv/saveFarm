@@ -163,6 +163,7 @@
 						<input type="hidden" name="schType" value="${empty schType ? 'all' : schType}">
 						<input type="hidden" name="kwd"     value="${empty kwd ? '' : kwd}">
 					</c:if>
+						<input type="hidden" name="state" value="1">
 				</div>
 		    </form>
 		</div>

@@ -21,7 +21,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/inquiryTitle2.webp);">
       <div class="container position-relative">
         <h1>1:1 문의</h1>
         <p>작성해주신 문의 내용 및 관리자의 답변을 확인해보세요.</p>

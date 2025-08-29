@@ -20,7 +20,7 @@
 </header>
 
 <main class="main">
-	<div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/registerTitle3.webp);">
+	<div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/totalListTitle.webp);">
 		<div class="container position-relative">
 			<h1>판매인기 차트</h1>
 			<p>많이 판매되는 납품에 대한 정보를 그래프로 보실 수 있습니다.</p>
@@ -51,7 +51,7 @@
 				</div>
 			</div> 
 	    	
-			<div class="container my-4">
+			<div class="container-fluid my-4">
 				<div class="card shadow border-0 mb-5">
 					<div class="card-header bg-white border-0 pb-2 pt-5 px-4">
 						<div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -60,7 +60,7 @@
 								<p class="text-muted small mb-0">3년(36개월) 기준 월간 판매량 추세를 확인하세요.</p>
 							</div>
 						
-							<div class="d-flex align-items-center gap-2 flex-nowrap">
+							<form id="varietyForm" class="d-flex align-items-center gap-2 flex-nowrap" method="get" action="${pageContext.request.contextPath}/farm/sales/totalList">
 								<label for="categoryNum" class="form-label mb-0 me-2 text-nowrap" style="white-space:nowrap;">품목명</label>
 								<select id="categoryNum" name="categoryNum" class="form-select form-select-sm" style="width: 220px;">
 									<c:forEach var="v" items="${varietyList}">
@@ -69,13 +69,14 @@
 								</select>
 								<input id="varietyNameSearch" type="search" class="form-control" placeholder="품목명 검색" style="width: 500px;">
 								<button id="btnVarietyNameSearch" class="btn btn-outline-success" type="button" style="width: 150px;">검색</button>
-							</div>
+								<input type="hidden" name="varietyName" id="hfVarietyName">
+							</form>
 						</div>
-						<div id="likeVarietyName" class="list-group mt-2 d-none" style="max-width: 600px; max-height: 260px; overflow: auto;"></div>			
+						<div id="likeVarietyName" class="list-group mt-2 d-none" style="width: 360px; max-height: 260px; overflow: auto;"></div>		
 			
-						<div class="card-body pt-3">
-							<div id="varietyNameChart" class="w-100" style="height:380px;"></div>
-						</div>
+						<div class="card-body pt-3" style="width:100%; max-width:1200px; margin:0 auto;">
+  <div id="varietyNameChart" style="width:100%; height:500px;"></div>
+</div>
 					</div>
 				</div>
 			</div>  			
@@ -90,182 +91,7 @@
 <jsp:include page="/WEB-INF/views/farm/layout/farmFooterResources.jsp"/>
 
 <script src="https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-<script type="text/javascript">
-(function () {
-  const ctx = '${pageContext.request.contextPath}';
 
-  const API_BASE = ctx + '/farm/sales/data'; // /farm/sales/* 의 * 자리에 'data'를 사용
-
-  // DOM
-  const $select = document.getElementById('categoryNum');
-  const $input  = document.getElementById('varietyNameSearch');
-  const $btn    = document.getElementById('btnVarietyNameSearch');
-  const $list   = document.getElementById('likeVarietyName');
-
-  // 차트 인스턴스
-  const vChart = echarts.init(document.getElementById('varietyNameChart'));
-
-  // 라인 차트 옵션
-  function makeLineOption(title, months, seriesName, data) {
-    return {
-      title: { text: title, left: 'center' },
-      tooltip: { trigger: 'axis' },
-      grid: { left: 40, right: 20, top: 60, bottom: 40 },
-      xAxis: { type: 'category', boundaryGap: false, data: months },
-      yAxis: { type: 'value', name: '중량(g)' },
-      toolbox: { feature: { saveAsImage: {}, dataZoom: {} } },
-      dataZoom: [{ type: 'inside' }, { type: 'slider' }],
-      series: [{
-        name: seriesName,
-        type: 'line',
-        smooth: true,
-        areaStyle: {},
-        data
-      }],
-      legend: { data: [seriesName], top: 28 }
-    };
-  }
-
-  // 월별 데이터 조회 (서버는 아래 형식 중 하나로 응답한다고 가정)
-  // { months: [...], legend: [...], series: [{name, data:[...]}] }
-  async function fetchMonthlyByVariety({ varietyNum = null, varietyName = null, rangeMonths = 36 }) {
-    const params = new URLSearchParams();
-    params.set('rangeMonths', rangeMonths); // 서버가 무시해도 무해
-    if (varietyNum) params.set('varietyNum', varietyNum);
-    if (!varietyNum && varietyName) params.set('varietyName', varietyName);
-
-    const url = `${API_BASE}/api/monthly-weight?` + params.toString();
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) throw new Error('데이터 조회 실패');
-    return res.json();
-  }
-
-  // 렌더링 헬퍼
-  function renderSuggestions(items) {
-    $list.innerHTML = '';
-    if (!items || items.length === 0) {
-      $list.classList.remove('d-none');
-      $list.innerHTML = `<div class="list-group-item small text-muted">검색 결과가 없습니다.</div>`;
-      return;
-    }
-    const frag = document.createDocumentFragment();
-    items.forEach(v => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'list-group-item list-group-item-action';
-      btn.dataset.num = v.varietyNum;
-      btn.dataset.name = v.varietyName;
-      btn.textContent = `${v.varietyName} (#${v.varietyNum})`;
-      frag.appendChild(btn);
-    });
-    $list.appendChild(frag);
-    $list.classList.remove('d-none');
-  }
-
-  // 품목명 검색 API (부분일치)
-  async function searchVarieties(q) {
-    // 서버에 /farm/variety/search?q=...&limit=20 형태로 구현되어 있다고 가정 (이전 코드와 동일)
-    const url = `${ctx}/farm/variety/search?q=${encodeURIComponent(q || '')}&limit=20`;
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-    if (!res.ok) throw new Error('검색 실패');
-    return res.json(); // [{varietyNum, varietyName}, ...]
-  }
-
-  // 선택된 품목으로 차트 갱신
-  async function updateChartBySelection({ varietyNum, varietyName }) {
-    try {
-      const data = await fetchMonthlyByVariety({ varietyNum, varietyName, rangeMonths: 36 });
-      // 서버가 여러 series를 반환하면 일치하는 것만 뽑고, 아니면 첫 번째 사용
-      let seriesName = varietyName;
-      let seriesData = [];
-      if (Array.isArray(data.series) && data.series.length > 0) {
-        let picked = null;
-        if (varietyName) {
-          picked = data.series.find(s => s.name === varietyName);
-        }
-        if (!picked) picked = data.series[0];
-        seriesName = picked.name || seriesName || '선택 품목';
-        seriesData = picked.data || [];
-      }
-      vChart.setOption(makeLineOption(`${seriesName} 월별 판매량`, data.months || [], seriesName, seriesData));
-      vChart.resize();
-    } catch (e) {
-      console.error(e);
-      // 에러 시 간단 안내
-      vChart.clear();
-      vChart.setOption({ title: { text: '데이터를 불러오지 못했습니다.', left: 'center' }});
-    }
-  }
-
-  // 1) 셀렉트 변경 → 해당 품목 차트
-  $select.addEventListener('change', () => {
-    const num = $select.value ? String($select.value) : null;
-    const name = $select.options[$select.selectedIndex]?.text || '';
-    if (num) {
-      $input.value = name; // 검색창에 표시 동기화
-      updateChartBySelection({ varietyNum: num, varietyName: name });
-      // 검색 제안 닫기
-      $list.classList.add('d-none');
-      $list.innerHTML = '';
-    }
-  });
-
-  // 2) 검색 버튼 클릭 → 제안 리스트 표시
-  $btn.addEventListener('click', async () => {
-    try {
-      const q = $input.value.trim();
-      const items = await searchVarieties(q);
-      renderSuggestions(items);
-    } catch (e) { console.error(e); }
-  });
-
-  // Enter키로도 검색
-  $input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') $btn.click();
-  });
-
-  // 3) 제안 리스트에서 선택 → 셀렉트 동기화 + 차트 로드
-  $list.addEventListener('click', (e) => {
-    const item = e.target.closest('.list-group-item-action');
-    if (!item) return;
-    const num  = String(item.dataset.num || '');
-    const name = item.dataset.name || '';
-
-    // 셀렉트에 해당 옵션이 없으면 추가
-    let opt = Array.from($select.options).find(o => o.value === num);
-    if (!opt) {
-      opt = new Option(name, num);
-      $select.add(opt);
-    }
-    $select.value = num;
-    $input.value = name;
-    $list.classList.add('d-none');
-    $list.innerHTML = '';
-
-    updateChartBySelection({ varietyNum: num, varietyName: name });
-  });
-
-  // 4) 바깥 클릭 시 제안 닫기
-  document.addEventListener('click', (e) => {
-    if (!$list.contains(e.target) && e.target !== $input && e.target !== $btn) {
-      $list.classList.add('d-none');
-    }
-  });
-
-  // 5) 초기 진입 시, 셀렉트의 현재 선택으로 한 번 로드
-  window.addEventListener('load', () => {
-    const num = $select.value ? String($select.value) : null;
-    const name = $select.options[$select.selectedIndex]?.text || '';
-    if (num) {
-      $input.value = name;
-      updateChartBySelection({ varietyNum: num, varietyName: name });
-    }
-  });
-
-  // 리사이즈 대응
-  window.addEventListener('resize', () => vChart.resize());
-})();
-</script>
 
 <script type="text/javascript">
 // 1) 서버 데이터 -> JS 배열 (단위 g)
@@ -315,9 +141,12 @@ for (var j=0; j<labels.length; j++){
   source.push([ toScore(amt), amt, labels[j] ]);
 }
 
-// 6) x축 고정 설정: 0 ~ 10000, 간격 1000 (총 10칸, 눈금 11개)
-var step = 1000;       // ★ 간격(500으로 바꾸면 max도 아래에서 자동 5000)
-var maxAxis = step * 10; // ★ 끝값(1000->10000, 500->5000)
+//6) x축 유동 설정(최소 10,000g 보장 + 10% 여유)
+var dataMax = amounts.length ? Math.max.apply(null, amounts) : 0;
+var floorMax = 10000;  // 최소 상한(원하면 0으로 바꿔도 됨)
+var headroom = 1.1;    // 10% 여유
+var niceMax = Math.max(floorMax, Math.ceil((dataMax * headroom) / 1000) * 1000);
+var niceInterval = Math.max(1000, Math.round(niceMax / 10)); // 대략 10등분
 
 // 7) 차트
 var chart = echarts.init(document.getElementById('top10Chart'));
@@ -329,8 +158,8 @@ var option = {
     type: 'value',
     name: '판매량(g)',
     min: 0,
-    max: maxAxis,        // 0 ~ 10000
-    interval: step,      // 1000 단위로 눈금/격자 생성
+    max: niceMax,
+	interval: niceInterval,      // 1000 단위로 눈금/격자 생성
     axisTick:  { show: true },
     splitLine: { show: true, lineStyle: { color: '#e0e0e0' } }, // 격자선 보이게
     axisLabel: {
@@ -368,6 +197,294 @@ var option = {
 chart.setOption(option);
 window.addEventListener('resize', function(){ chart.resize(); });
 </script>
+
+<script type="text/javascript">
+/* ====== 서버 모델 -> JS 변수 ====== */
+// months: ["YYYY-MM", ...] 36개, 현재달 포함
+var MONTHS = [
+  <c:forEach var="m" items="${months}" varStatus="st">
+    '${m}'<c:if test="${!st.last}">,</c:if>
+  </c:forEach>
+];
+
+// seriesRows: [{monthKey:'YYYY-MM', varietyName:'...', totalWeightG:12345}, ...]
+var SERIES_ROWS = [
+  <c:forEach var="r" items="${seriesRows}" varStatus="st">
+    { monthKey: '${r.monthKey}', totalWeightG: ${(r.totalWeightG!=null)?r.totalWeightG:0} }<c:if test="${!st.last}">,</c:if>
+  </c:forEach>
+];
+
+// 드롭다운/검색용 품목 목록 (API 없이 클라에서 필터링)
+var VARIETY_LIST = [
+  <c:forEach var="v" items="${varietyList}" varStatus="st">
+    { varietyNum: '${v.varietyNum}', varietyName: '${v.varietyName}' }<c:if test="${!st.last}">,</c:if>
+  </c:forEach>
+];
+
+/* ====== 공통 DOM ====== */
+const ctx = '${pageContext.request.contextPath}';
+const $select = document.getElementById('categoryNum');
+const $input  = document.getElementById('varietyNameSearch');
+const $btn    = document.getElementById('btnVarietyNameSearch');
+const $list   = document.getElementById('likeVarietyName');
+
+/* ====== 선택 변경 시: API 없이 페이지 리로드로 서버 렌더 ====== */
+function goWith(params) {
+  const q = new URLSearchParams(params).toString();
+  location.href = ctx + '/farm/sales/totalList' + (q ? ('?' + q) : '');
+}
+
+if ($select) {
+  $select.addEventListener('change', function(){
+    if (this.value) goWith({ varietyNum: this.value });
+  });
+}
+
+/* ====== 검색: 클라이언트 필터 & 선택 시 이동 ====== */
+function renderSuggest(items){
+  if (!items || items.length === 0) {
+    $list.classList.remove('d-none');
+    $list.innerHTML = '<div class="list-group-item small text-muted">결과가 없습니다</div>';
+    return;
+  }
+  $list.classList.remove('d-none');
+  $list.innerHTML = items.map(v => (
+	  '<button type="button" class="list-group-item list-group-item-action" '+
+	  'data-num="'+ v.varietyNum +'" data-name="'+ v.varietyName.replace(/"/g,'&quot;') +'">'+
+	  v.varietyName +'</button>'
+	)).join('');
+}
+
+function runSearch(){
+  const q = ($input?.value || '').trim().toLowerCase();
+  if (!q) { $list.classList.add('d-none'); $list.innerHTML=''; return; }
+  const matched = VARIETY_LIST.filter(v => v.varietyName.toLowerCase().includes(q));
+  renderSuggest(matched.slice(0, 20));
+}
+
+if ($btn && $input && $list) {
+  $btn.addEventListener('click', runSearch);
+  $input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ runSearch(); }});
+  $list.addEventListener('click', (e)=>{
+    const item = e.target.closest('.list-group-item-action');
+    if (!item) return;
+    const num = item.getAttribute('data-num');
+    goWith({ varietyNum: num }); // 선택 시 해당 품목으로 서버 렌더
+  });
+}
+
+/* ====== 아래 차트: 축-break + 브러시 확대(피쉬아이 느낌) ====== */
+/* 1) 데이터: MONTHS(카테고리) -> x축 숫자 인덱스로 매핑 */
+var valueByMonth = {};
+for (var i=0;i<SERIES_ROWS.length;i++){
+  valueByMonth[SERIES_ROWS[i].monthKey] = Number(SERIES_ROWS[i].totalWeightG||0);
+}
+var seriesData = MONTHS.map(function(m, idx){
+  return [idx, valueByMonth[m] || 0]; // [x(index), y]
+});
+
+/* 2) 차트 인스턴스 */
+var myChart = echarts.init(document.getElementById('varietyNameChart'));
+
+/* 3) 예제의 상수/스타일 */
+var GRID_TOP = 120;
+var GRID_BOTTOM = 80;
+var GRID_LEFT = 60;
+var GRID_RIGHT = 60;
+var Y_DATA_ROUND_PRECISION = 0;
+var _breakAreaStyle = {
+  expandOnClick: false,
+  zigzagZ: 200,
+  zigzagAmplitude: 0,
+  itemStyle: { borderColor: '#777', opacity: 0 }
+};
+
+/* 4) 옵션 (x축은 value축에 인덱스 라벨러로 월 표시) */
+var option = {
+  title: {
+    text: '월별 판매량 (선택 품목)',
+    subtext: '드래그-브러시로 구간 확대 / Reset 버튼으로 원상회복',
+    left: 'center',
+    top: 20,
+    textStyle: { fontSize: 20 },
+    subtextStyle: { color: '#175ce5', fontSize: 15, fontWeight: 'bold' },
+    itemGap: 6
+  },
+  grid: { top: GRID_TOP, bottom: GRID_BOTTOM, left: GRID_LEFT, right: GRID_RIGHT },
+  tooltip: {
+    trigger: 'axis',
+    valueFormatter: (v)=> (Number(v||0).toLocaleString() + ' g'),
+    axisPointer: { type: 'line' }
+  },
+  legend: {},
+  grid: { top: GRID_TOP, bottom: GRID_BOTTOM, left: GRID_LEFT, right: GRID_RIGHT },
+  xAxis: [{
+	  type: 'value',
+	  min: 0,
+	  max: Math.max(0, MONTHS.length - 1),
+
+	  // ✅ 매달(0,1,2,...)마다 눈금 강제
+	  interval: 1,
+
+	  // ✅ 라벨: 1월은 두 줄(YY\n01), 나머지는 MM
+	  axisLabel: {
+	    hideOverlap: false,
+	    lineHeight: 16,
+	    padding: [2, 0, 0, 0],
+	    formatter: function (v) {
+	      // 정수 tick 에서만 라벨 노출
+	      if (Math.abs(v - Math.round(v)) > 1e-6) return '';
+	      var i = Math.round(v);
+	      if (i < 0 || i >= MONTHS.length) return '';
+
+	      var s  = MONTHS[i];       // "YYYY-MM"
+	      var yy = s.slice(0, 4);   // "YY"
+	      var mm = s.slice(5, 7);   // "MM"
+
+	      return (mm === '01') ? (yy + '\n' + mm) : mm;
+	    }
+	  },
+
+	  // 눈금도 라벨과 맞춰서 1개월 단위
+	  axisTick: { show: true, alignWithLabel: true },
+
+	  splitLine: { show: false },
+	  breakArea: _breakAreaStyle
+	}],
+  yAxis: [{
+    type: 'value',
+    axisTick: { show: true },
+    axisLabel: {
+      formatter: function(v){ return Number(v||0).toLocaleString() + ' g'; }
+    },
+    breakArea: _breakAreaStyle
+  }],
+  series: [{
+    type: 'line',
+    name: '총중량(g)',
+    symbol: 'circle',
+    showSymbol: false,
+    symbolSize: 5,
+    data: seriesData,
+    lineStyle: { width: 2 },
+    areaStyle: { opacity: 0.08 }
+  }]
+};
+
+myChart.setOption(option);
+window.addEventListener('resize', function(){ myChart.resize(); });
+
+/* 5) 브러시 상호작용(축-break) 그대로 이식 */
+function initAxisBreakInteraction() {
+  var _brushingEl = null;
+
+  myChart.on('click', function (params) {
+    if (params.name === 'clearAxisBreakBtn') {
+      var option = { xAxis: { breaks: [] }, yAxis: { breaks: [] } };
+      addClearButtonUpdateOption(option, false);
+      myChart.setOption(option);
+    }
+  });
+
+  function addClearButtonUpdateOption(option, show) {
+	  option.graphic = [{
+	    type: 'group',
+	    left: '80%',           // ← 오른쪽으로 빼기 (퍼센트라 반응형)
+	    top:  GRID_TOP - 10,   // ← 그리드 상단 바로 아래
+	    z: 10,
+	    children: [
+	      {
+	        type: 'rect',
+	        name: 'clearAxisBreakBtn',
+	        ignore: !show,
+	        shape: { r: 6, width: 80, height: 30 },
+	        style: { fill: '#eee', stroke: '#999', lineWidth: 1 }
+	      },
+	      {
+	        type: 'text',
+	        ignore: !show,
+	        left: 10, top: 7,
+	        style: { text: 'Reset', fontSize: 14, fontWeight: 'bold', fill: '#333' }
+	      }
+	    ]
+	  }];
+	}
+
+  myChart.getZr().on('mousedown', function (params) {
+    _brushingEl = new echarts.graphic.Rect({
+      shape: { x: params.offsetX, y: params.offsetY },
+      style: { stroke: 'none', fill: '#ccc' },
+      ignore: true
+    });
+    myChart.getZr().add(_brushingEl);
+  });
+
+  myChart.getZr().on('mousemove', function (params) {
+    if (!_brushingEl) return;
+    var initX = _brushingEl.shape.x;
+    var initY = _brushingEl.shape.y;
+    var currPoint = [params.offsetX, params.offsetY];
+    _brushingEl.setShape('width',  currPoint[0] - initX);
+    _brushingEl.setShape('height', currPoint[1] - initY);
+    _brushingEl.ignore = false;
+  });
+
+  document.addEventListener('mouseup', function (params) {
+    if (!_brushingEl) return;
+    var initX = _brushingEl.shape.x;
+    var initY = _brushingEl.shape.y;
+    var currPoint = [params.offsetX, params.offsetY];
+    var xPixelSpan = Math.abs(currPoint[0] - initX);
+    var yPixelSpan = Math.abs(currPoint[1] - initY);
+    if (xPixelSpan > 2 && yPixelSpan > 2) {
+      updateAxisBreak(myChart, [initX, initY], currPoint, xPixelSpan, yPixelSpan);
+    }
+    myChart.getZr().remove(_brushingEl);
+    _brushingEl = null;
+  });
+
+  function updateAxisBreak(myChart, initXY, currPoint, xPixelSpan, yPixelSpan) {
+    var dataXY0 = myChart.convertFromPixel({ gridIndex: 0 }, initXY);
+    var dataXY1 = myChart.convertFromPixel({ gridIndex: 0 }, currPoint);
+
+    function makeDataRange(v0, v1) {
+      var dataRange = [roundXYValue(v0), roundXYValue(v1)];
+      if (dataRange[0] > dataRange[1]) dataRange.reverse();
+      return dataRange;
+    }
+    var xDataRange = makeDataRange(dataXY0[0], dataXY1[0]);
+    var yDataRange = makeDataRange(dataXY0[1], dataXY1[1]);
+
+    var xySpan = getXYAxisPixelSpan(myChart);
+    var xGapPercentStr = (xPixelSpan / xySpan[0]) * 100 + '%';
+    var yGapPercentStr = (yPixelSpan / xySpan[1]) * 100 + '%';
+
+    function makeOption(xGapPercentStr, yGapPercentStr) {
+      return {
+        xAxis: { breaks: [{ start: xDataRange[0], end: xDataRange[1], gap: xGapPercentStr }] },
+        yAxis: { breaks: [{ start: yDataRange[0], end: yDataRange[1], gap: yGapPercentStr }] }
+      };
+    }
+
+    myChart.setOption(makeOption(xGapPercentStr, yGapPercentStr));
+    setTimeout(function(){
+      var option = makeOption('80%', '80%');
+      addClearButtonUpdateOption(option, true);
+      myChart.setOption(option);
+    }, 0);
+  }
+
+  function getXYAxisPixelSpan(myChart) {
+    return [
+      myChart.getWidth()  - GRID_LEFT - GRID_RIGHT,
+      myChart.getHeight() - GRID_BOTTOM - GRID_TOP
+    ];
+  }
+}
+function roundXYValue(val) { return +(+val).toFixed(Y_DATA_ROUND_PRECISION); }
+setTimeout(initAxisBreakInteraction, 0);
+</script>
+
 
 </body>
 </html>

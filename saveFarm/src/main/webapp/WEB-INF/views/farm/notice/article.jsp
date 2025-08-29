@@ -77,7 +77,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/noticeTitle.webp);">
       <div class="container position-relative">
         <h1>공지사항</h1>
         <p>가입서류, 유통, 상품등록 등 각종 가이드라인에 대한 공지를 알려드리는 페이지입니다.</p>

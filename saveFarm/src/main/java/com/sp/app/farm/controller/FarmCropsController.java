@@ -23,6 +23,7 @@ import com.sp.app.farm.service.SupplyServiceImpl;
 import com.sp.app.farm.service.VarietyServiceImpl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,179 +38,178 @@ public class FarmCropsController {
 	private final VarietyServiceImpl varietyService;
 	private final PaginateUtil paginateUtil;
 	private final MyUtil myUtil;
-
-	/*
-	@GetMapping("main")
-    public String cropsMain(Model model) {
-        return "farm/myFarm/main"; // 원하는 뷰
-	}
-	*/
 	
 	@GetMapping("list")
 	public String listFrom(
-		@RequestParam(name = "page", defaultValue = "1") int current_page,
-		@RequestParam(name = "schType", defaultValue = "all") String schType,
-		@RequestParam(name = "kwd", defaultValue = "") String kwd,
-		@RequestParam(name = "harvestDate", defaultValue = "") String harvestDate,
-	    @RequestParam(name="state", defaultValue="1") int state,
-	    @RequestParam(name="rescuedApply", defaultValue="-1") int rescuedApply,
-	    @RequestParam(name="productNum", defaultValue="-1") long productNum,
-	    @RequestParam(name="varietyNum", defaultValue="-1") long varietyNum,
-		Model model,
-		HttpServletRequest req,
-		HttpSession session) {
-	try {
-		SessionInfo info = (SessionInfo) session.getAttribute("farm");
-		if (info == null) {
-		    return "redirect:/farm/member/login"; // 페이지 요청 규칙
-		}
-		
-		int size = 10;
-		int total_page = 0;
-		int dataCount = 0;
+	        @RequestParam(name = "page", defaultValue = "1") int current_page,
+	        @RequestParam(name = "schType", defaultValue = "all") String schType,
+	        @RequestParam(name = "kwd", defaultValue = "") String kwd,
+	        @RequestParam(name = "harvestDate", defaultValue = "") String harvestDate,
+	        @RequestParam(name = "state", defaultValue = "0") int state,
+	        @RequestParam(name = "rescuedApply", defaultValue = "-1") int rescuedApply,
+	        @RequestParam(name = "productNum", defaultValue = "-1") long productNum,
+	        @RequestParam(name = "varietyNum", defaultValue = "-1") long varietyNum,
+	        Model model,
+	        HttpServletRequest req,
+	        HttpSession session) {
 
-		/*
-		if (req.getMethod().equalsIgnoreCase("GET")) { // GET 방식인 경우
-			kwd = myUtil.decodeUrl(kwd);
-		}
-		*/
-		kwd = myUtil.decodeUrl(kwd);
+	    try {
+	        SessionInfo info = (SessionInfo) session.getAttribute("farm");
+	        if (info == null) {
+	            return "redirect:/farm/member/login";
+	        }
 
-		// 전체 페이지 수
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("schType", schType);
-		map.put("kwd", kwd);
-		map.put("state", state);
-		/*
-	    map.put("rescuedApply", rescuedApply);
-	    map.put("productNum", productNum);
-	    */
-	    map.put("varietyNum", varietyNum);
-		
-        map.put("farmNum", info.getFarmNum());
-		
-		dataCount = service.listSupplyCount(map);
-		if (dataCount != 0) {
-			total_page = dataCount / size + (dataCount % size > 0 ? 1 : 0);
-		}
-		
-		// 다른 사람이 자료를 삭제하여 전체 페이지수가 변화 된 경우
-		current_page = Math.min(current_page, total_page);
+	        final int size = 10;
 
-		// 리스트에 출력할 데이터를 가져오기
-		int offset = (current_page - 1) * size;
-		if(offset < 0) offset = 0;
+	        kwd = myUtil.decodeUrl(kwd == null ? "" : kwd.trim());
 
-		map.put("offset", offset);
-		map.put("size", size);
-		map.put("state", state);
+	        // --- 공통 파라미터 맵 구성 ---
+	        Map<String, Object> map = new HashMap<>();
+	        map.put("farmNum", info.getFarmNum());
+	        map.put("schType", schType);
+	        map.put("kwd", kwd);
+	        map.put("state", state);               // state=0 포함(WhereList에서 -1만 전체)
+	        map.put("rescuedApply", rescuedApply);
+	        map.put("productNum", productNum);
+	        map.put("varietyNum", varietyNum);
 
-		// 글 리스트
-		List<Supply> list = service.listSupply(map);
+	        // harvestDate 단일 값을 날짜범위로 매핑(WhereList: fromDate/toDate 사용)
+	        if (harvestDate != null && !harvestDate.isBlank()) {
+	            map.put("fromDate", harvestDate);
+	            map.put("toDate",   harvestDate);
+	        }
 
-		String cp = req.getContextPath();
-		
-		// 1) 필터 문자열 구성
-		List<String> parts = new ArrayList<>();
-		parts.add("state=" + state); // ← 꼭 포함
-		if (!kwd.isBlank()) {
-		    parts.add("schType=" + schType);
-		    parts.add("kwd=" + myUtil.encodeUrl(kwd));
-		}
-		if (rescuedApply != -1) parts.add("rescuedApply=" + rescuedApply);
-		if (productNum   != -1) parts.add("productNum="   + productNum);
-		if (varietyNum   != -1) parts.add("varietyNum="   + varietyNum);
+	        // --- ★ LEFT JOIN 버전 카운트/리스트 호출 (다른 화면 영향 X) ---
+	        int dataCount = service.farmSupplyListCount(map); // LEFT JOIN
+	        int total_page = (dataCount + size - 1) / size;
 
-		String filter = String.join("&", parts);
+	        // 페이지 보정: 최소 1
+	        if (total_page == 0) {
+	            current_page = 1;
+	        } else {
+	            current_page = Math.min(Math.max(current_page, 1), total_page);
+	        }
 
-		// 2) 페이징용 base URL (필터만 포함, page는 paginateUtil이 붙임)
-		String listUrl = cp + "/farm/crops/list" + (filter.isEmpty() ? "" : ("?" + filter));
-		
-		//3) 상세로 가는 base URL (PK만 전달)
-		String articleUrl = cp + "/farm/crops/detail";
-		
-		String paging = paginateUtil.paging(current_page, total_page, listUrl);	
-		
-		model.addAttribute("list", list);
-		model.addAttribute("dataCount", dataCount);
-		model.addAttribute("size", size);
-		model.addAttribute("total_page", total_page);
-		model.addAttribute("page", current_page);
-		
-		model.addAttribute("paging", paging);
-		model.addAttribute("articleUrl", articleUrl);
-		
-		model.addAttribute("schType", schType);
-		model.addAttribute("kwd", kwd);
-		model.addAttribute("state", state);
-		model.addAttribute("rescuedApply", rescuedApply);
-		model.addAttribute("harvestDate", harvestDate);
-		
-		} catch (Exception e) {
-			log.info("list : ", e);
-		}
-	
-		return "farm/crops/list";
+	        int offset = (current_page - 1) * size;
+	        map.put("offset", offset);
+	        map.put("size",   size);
+
+	        List<Supply> list = service.listByFarm(map);      // LEFT JOIN
+
+	        // --- 페이징 URL 구성(필터 유지) ---
+	        String cp = req.getContextPath();
+	        List<String> parts = new ArrayList<>();
+	        parts.add("state=" + state);
+	        if (!kwd.isBlank()) {
+	            parts.add("schType=" + schType);
+	            parts.add("kwd=" + myUtil.encodeUrl(kwd));
+	        }
+	        if (rescuedApply != -1) parts.add("rescuedApply=" + rescuedApply);
+	        if (productNum   != -1) parts.add("productNum="   + productNum);
+	        if (varietyNum   != -1) parts.add("varietyNum="   + varietyNum);
+	        if (!harvestDate.isBlank()) parts.add("harvestDate=" + harvestDate);
+
+	        String filter   = String.join("&", parts);
+	        String listUrl  = cp + "/farm/crops/list" + (filter.isEmpty() ? "" : ("?" + filter));
+	        String paging   = paginateUtil.paging(current_page, total_page, listUrl);
+	        String articleUrl = cp + "/farm/crops/detail";
+
+	        // --- 모델 바인딩 ---
+	        model.addAttribute("list", list);
+	        model.addAttribute("dataCount", dataCount);
+	        model.addAttribute("size", size);
+	        model.addAttribute("total_page", total_page);
+	        model.addAttribute("page", current_page);
+
+	        model.addAttribute("paging", paging);
+	        model.addAttribute("articleUrl", articleUrl);
+
+	        model.addAttribute("schType", schType);
+	        model.addAttribute("kwd", kwd);
+	        model.addAttribute("state", state);
+	        model.addAttribute("rescuedApply", rescuedApply);
+	        model.addAttribute("harvestDate", harvestDate);
+	        model.addAttribute("productNum", productNum);
+	        model.addAttribute("varietyNum", varietyNum);
+
+	    } catch (Exception e) {
+	        log.error("list error", e);
+	    }
+
+	    return "farm/crops/list";
 	}
 	
 	@PostMapping("list")
 	public String listsubmit(
-	        @RequestParam(name = "targetState", defaultValue = "-1") int targetState,
-	        @RequestParam(name = "supplyNums", required = false) List<Long> supplyNums,
-	        @RequestParam(name = "page", defaultValue = "1") int current_page,
-	        @RequestParam(name = "schType", defaultValue = "all") String schType,
-	        @RequestParam(name = "kwd", defaultValue = "") String kwd,
-	        @RequestParam(name = "state", defaultValue = "2") int viewState, // 현재 화면 드롭다운 상태
+	        // ★ 폼에서 보내는 이름과 일치시킴: targetState
+	        @RequestParam(name = "targetState", required = false) Integer targetState,
+	        @RequestParam(name = "supplyNums",    required = false) List<Long> supplyNums,
+
+	        // 화면 유지용
+	        @RequestParam(name = "page",      defaultValue = "1")  int current_page,
+	        @RequestParam(name = "schType",   defaultValue = "all") String schType,
+	        @RequestParam(name = "kwd",       defaultValue = "")    String kwd,
+	        // 드롭다운으로 보고 있던 "현재 화면의 상태값" (필터)
+	        @RequestParam(name = "state",     defaultValue = "0")   int viewState,
+	        @RequestParam(name = "rescuedApply", defaultValue = "-1") int rescuedApply,
+	        @RequestParam(name = "productNum",   defaultValue = "-1") long productNum,
+	        @RequestParam(name = "varietyNum",   defaultValue = "-1") long varietyNum,
+	        @RequestParam(name = "harvestDate",  defaultValue = "")  String harvestDate,
+
 	        HttpSession session,
-	        Model model,
-	        final RedirectAttributes reAttr ) {
+	        RedirectAttributes reAttr) {
+
 	    SessionInfo info = (SessionInfo) session.getAttribute("farm");
 	    if (info == null) return "redirect:/farm/member/login";
 
-	    // 1) 체크박스 선택 + 목표상태가 있을 때만 일괄 상태 변경
-	    if (targetState != -1 && supplyNums != null && !supplyNums.isEmpty()) {
+	    // 1) 일괄 상태변경: targetState + 체크된 항목이 있을 때만 실행
+	    if (targetState != null && supplyNums != null && !supplyNums.isEmpty()) {
 	        Map<String, Object> map = new HashMap<>();
-	        map.put("farmNum", info.getFarmNum()); // 본인 농가 것만
-	        map.put("state", targetState);
-	        map.put("supplyNums", supplyNums);     // IN 절로 사용
+	        map.put("farmNum", info.getFarmNum()); // 본인 농가 건만
+	        map.put("state",   targetState);       // ★ mapper는 'state' 키로 받음
+	        map.put("supplyNums", supplyNums);     // IN 절
 
 	        int affected = service.updateState(map);
 
-	        // 안내 메시지(선택사항: 필요 없으면 주석)
 	        if (affected != supplyNums.size()) {
 	            reAttr.addFlashAttribute("warn",
 	                "요청 " + supplyNums.size() + "건 중 " + affected + "건만 변경되었습니다.");
 	        } else {
 	            reAttr.addFlashAttribute("msg", affected + "건 상태 변경 완료");
 	        }
-
-	        // 보고 있던 필터(상태/검색) 유지해서 목록으로
-	        reAttr.addAttribute("state", viewState);
-	        if (kwd != null && !kwd.isBlank()) {
-	            reAttr.addAttribute("schType", schType);
-	            reAttr.addAttribute("kwd", kwd);
-	        }
-	        reAttr.addAttribute("page", current_page);
-
-	        return "redirect:/farm/crops/clist";
 	    }
 
-	    // 2) 배치 변경 조건이 아니면, 그냥 목록으로 되돌림(필터 유지)
-	    reAttr.addAttribute("state", viewState);
+	    // 2) 보고 있던 필터/페이지 유지하여 목록으로 복귀
+	    reAttr.addAttribute("state", viewState); // ★ 화면 필터용 state
 	    if (kwd != null && !kwd.isBlank()) {
 	        reAttr.addAttribute("schType", schType);
 	        reAttr.addAttribute("kwd", kwd);
 	    }
+	    if (rescuedApply != -1) reAttr.addAttribute("rescuedApply", rescuedApply);
+	    if (productNum   != -1) reAttr.addAttribute("productNum",   productNum);
+	    if (varietyNum   != -1) reAttr.addAttribute("varietyNum",   varietyNum);
+	    if (harvestDate  != null && !harvestDate.isBlank()) {
+	        reAttr.addAttribute("harvestDate", harvestDate);
+	    }
 	    reAttr.addAttribute("page", current_page);
 
+	    // ★ 오타 수정: clist → list
 	    return "redirect:/farm/crops/list";
 	}
 	
 	@GetMapping("write")
-	public String writeForm(Model model) {
+	public String writeForm(
+			@RequestParam(name="modal", required=false, defaultValue="0") int modal,
+			Model model, 
+			HttpSession session) {
+		SessionInfo info = (SessionInfo) session.getAttribute("farm");
+        if (info == null) return "redirect:/farm/member/login";
+		
 		List<Variety> varieties = varietyService.listAll();
 		model.addAttribute("varieties", varieties);
 		model.addAttribute("mode", "write");
+		
+		if (modal == 1) return "farm/crops/write";
 		
 		return "farm/crops/write";
 	}
@@ -224,8 +224,9 @@ public class FarmCropsController {
 			if (info == null) return "redirect:/farm/member/login";
 			dto.setRescuedApply(rescuedApply);
 			dto.setFarmNum(info.getFarmNum());
+			dto.setState(0);
 			
-			service.insertSupply(dto);
+			service.insertCrops(dto);
 			
 		} catch (Exception e) {
 			log.info("writeSubmit : ", e);
@@ -239,121 +240,136 @@ public class FarmCropsController {
 	@GetMapping("detail")
 	public String detail(
 			@RequestParam(name = "supplyNum") long supplyNum,
-			@RequestParam(name="back", defaultValue="register") String back,
-	        Model model,
-	        HttpSession session) throws Exception {
-
-		try {
+			@RequestParam(name = "modal", defaultValue = "0") int modal,
+			Model model,
+			HttpSession session,
+			HttpServletResponse resp) {
+	    try {
 	        SessionInfo info = (SessionInfo) session.getAttribute("farm");
-	        if (info == null) return "redirect:/farm/member/login";
+	        if (info == null) {
+	            // 모달 요청이면 상태코드만 내려서 fetch가 로그인 이동 처리하게 함
+	            if (modal == 1) {
+	                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+	                return null;
+	            }
+	            return "redirect:/farm/member/login";
+	        }
 
 	        Supply dto = service.findBySupplyNum(supplyNum);
 	        if (dto == null || dto.getFarmNum() != info.getFarmNum()) {
-	            return "redirect:/farm/register/list";
+	            if (modal == 1) {
+	                resp.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+	                return null;
+	            }
+	            return "redirect:/farm/crops/list";
 	        }
-	        
-	        String varietyName = varietyService.findByVarietyNum(dto.getVarietyNum()).getVarietyName();
+
+	        String varietyName = varietyService
+	                .findByVarietyNum(dto.getVarietyNum())
+	                .getVarietyName();
 
 	        model.addAttribute("dto", dto);
 	        model.addAttribute("varietyName", varietyName);
-	        
-	        // 리스트에서 돌아가는 리스트 주소위해
-	        model.addAttribute("back", back);
-	        return "farm/register/detail";
+
+	        // modal=1 이면 부분 뷰(헤더/푸터/<!DOCTYPE> 없는 JSP)
+	        return "farm/crops/detail";
+
 	    } catch (Exception e) {
-	        log.info("detail :", e);
+	        log.error("detail error: supplyNum={}, modal={}", supplyNum, modal, e);
+	        if (modal == 1) {
+	            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500
+	            return null;
+	        }
 	        return "redirect:/farm/crops/list";
 	    }
 	}
 	
 	@GetMapping("update")
-	public String updateForm(
-			@RequestParam(name = "supplyNum") long supplyNum,
-			@RequestParam(name="back", defaultValue="register") String back,
-			Model model,
-			HttpSession session) throws Exception {
-		try {
-			SessionInfo info = (SessionInfo) session.getAttribute("farm");
-			
-			Supply dto = Objects.requireNonNull(service.findBySupplyNum(supplyNum));
-			
-			if (info == null) {
-		        return "redirect:/farm/member/login";
-		    }
-			if (dto.getFarmNum() != info.getFarmNum()) {
-				return "redirect:/farm/crops/list?";
-			}
-			
-			String varietyName = varietyService.findByVarietyNum(dto.getVarietyNum()).getVarietyName();
-			List<Variety> varieties = varietyService.listAll();
-			
-			model.addAttribute("dto", dto);
-			model.addAttribute("mode", "update");
-			
-			model.addAttribute("varietyName", varietyName);
-			model.addAttribute("varieties", varieties);
-			
-			// 리스트에서 돌아가는 리스트 주소위해
-	        model.addAttribute("back", back);
-	        
-			return "farm/crops/write";
-			
-		} catch (NullPointerException e) {
-		} catch (Exception e) {
-			log.info("updateForm : ", e);
-		}
-		
-		return "redirect:/farm/myFarm/cropsList?";
-	}
+    public String updateForm(@RequestParam(name="supplyNum") long supplyNum,
+                             Model model,
+                             HttpSession session) {
+        try {
+            SessionInfo info = (SessionInfo) session.getAttribute("farm");
+            if (info == null) return "redirect:/farm/member/login";
 
-	@PostMapping("update")
-	public String updateSubmit(
-			@RequestParam(name="rescuedApply", defaultValue = "0") int rescuedApply,
-			Supply dto,
-			@RequestParam(name = "page") String page) throws Exception {
-		try {
-			dto.setRescuedApply(rescuedApply);
-			service.updateSupply(dto);		
-		} catch (Exception e) {
-			log.info("updateSubmit : ", e);
-		}
+            Supply dto = Objects.requireNonNull(service.findBySupplyNum(supplyNum));
+            if (dto.getFarmNum() != info.getFarmNum()) {
+                return "redirect:/farm/crops/list";
+            }
 
-		return "redirect:/farm/crops/list?page=" + page;
-	}
+            List<Variety> varieties = varietyService.listAll();
+            String varietyName = varietyService.findByVarietyNum(dto.getVarietyNum()).getVarietyName();
 
-	@PostMapping("delete")
-	public String delete(@RequestParam(name = "supplyNum") long supplyNum,
-			@RequestParam(name = "schType", defaultValue = "all") String schType,
-			@RequestParam(name = "kwd", defaultValue = "") String kwd,
-			@RequestParam(name = "state", defaultValue = "0") int state,
-			HttpSession session) throws Exception {
-		
-		try {
-			SessionInfo info = (SessionInfo) session.getAttribute("farm");
-			Supply dto = Objects.requireNonNull(service.findBySupplyNum(supplyNum));
-			
-			if (dto.getFarmNum() != info.getFarmNum()) {
-				return "redirect:/farm/register/list";
-			}
-			
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("supplyNum", supplyNum);
-			map.put("state", state);
-			
-			service.deleteSupply(map);
-			
-		} catch (Exception e) {
-			log.info("delete : ", e);
-		}
+            model.addAttribute("dto", dto);
+            model.addAttribute("mode", "update");
+            model.addAttribute("varieties", varieties);
+            model.addAttribute("varietyName", varietyName);
 
-		return "redirect:/farm/crops/list";
-	}
-	
-	/*
-	@PostMapping("changeState")
-	public String changeState(@RequestParam int farmNum, @RequestParam String state) {
-	    service.changeFarmState(farmNum, state);
-	}
-	*/
-	
+            return "farm/crops/write"; 
+        } catch (Exception e) {
+            log.error("updateForm: ", e);
+        }
+        return "redirect:/farm/crops/list";
+    }
+
+
+    @PostMapping("update")
+    public String updateSubmit(@RequestParam(name="rescuedApply", defaultValue="0") int rescuedApply,
+                               Supply dto,
+                               @RequestParam(name="page", defaultValue="1") String page,
+                               HttpSession session) {
+        try {
+            SessionInfo info = (SessionInfo) session.getAttribute("farm");
+            if (info == null) return "redirect:/farm/member/login";
+
+            dto.setRescuedApply(rescuedApply);
+            service.updateSupply(dto);
+        } catch (Exception e) {
+            log.error("updateSubmit: ", e);
+        }
+        return "redirect:/farm/crops/list?page=" + page;
+    }
+
+    @PostMapping("delete")
+    public String delete(@RequestParam(name="supplyNum") long supplyNum,
+			             @RequestParam(name="page",    defaultValue="1")  int page,
+                         @RequestParam(name="state", defaultValue="0") int state,
+                         @RequestParam(name="schType", defaultValue="all") String schType,
+                         @RequestParam(name="kwd", defaultValue="") String kwd,
+                         Model model,
+                         HttpSession session,
+                         RedirectAttributes reAttr) {
+        try {
+            SessionInfo info = (SessionInfo) session.getAttribute("farm");
+            if (info == null) return "redirect:/farm/member/login";
+
+            Supply dto = Objects.requireNonNull(service.findBySupplyNum(supplyNum));
+            if (dto.getFarmNum() != info.getFarmNum()) {
+                return "redirect:/farm/crops/list";
+            }
+
+            String varietyName = varietyService.findByVarietyNum(dto.getVarietyNum()).getVarietyName();
+            model.addAttribute("dto", dto);
+            model.addAttribute("varietyName", varietyName);
+            
+            Map<String, Object> map = new HashMap<>();
+            map.put("supplyNum", supplyNum);
+            map.put("farmNum", info.getFarmNum());
+            
+            service.deleteSupply(map);
+
+            reAttr.addFlashAttribute("msg", "삭제되었습니다.");
+        } catch (Exception e) {
+            log.error("delete: ", e);
+            reAttr.addFlashAttribute("warn", "삭제 중 오류가 발생했습니다.");
+        }
+
+        // 필터 유지
+        reAttr.addAttribute("state", state);
+        if (kwd != null && !kwd.isBlank()) {
+            reAttr.addAttribute("schType", schType);
+            reAttr.addAttribute("kwd", kwd);
+        }
+        return "redirect:/farm/crops/list";
+    }	
 }

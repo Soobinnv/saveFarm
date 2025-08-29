@@ -22,7 +22,7 @@
 
 <main class="main">
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/registerTitle3.webp);">
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/myFarmTitle.webp);">
       <div class="container position-relative">
         <h1>내 농가 매출 관리</h1>
         <p>납품목록에 따른 판매량과 금액을 확인할 수 있습니다.</p>
@@ -41,9 +41,13 @@
 			<div class="row g-2 align-items-end mb-3">
 				
 				<div class="col-md-12" style="padding: 50px 0 20px 0;">
-					<h3>지금까지 총 납품한 금액</h3>
-					<form action="">
+					<h3 class="border-start border-4 border-success ps-2 ms-1">
+						총 납품 금액 / 순수익
+					</h3>
+					<form class="col-md-3 text-center">
 						<fmt:formatNumber value="${totalEarning}" type="currency" currencySymbol="₩"/>
+						 &nbsp; /  &nbsp;
+						 <fmt:formatNumber value="${totalEarning / 100 * 15}" type="currency" currencySymbol="₩"/>
 					</form>
 				</div>
 				
@@ -89,24 +93,26 @@
 				            <div class="p-3 border rounded-3 h-100">
 				              <div class="d-flex justify-content-between">
 				                <strong>${vo.varietyName}</strong>
-				                <c:if test="${vo.varietyNum != -1}">
-				                  <a class="small"
-				                     href="${pageContext.request.contextPath}/farm/sales/myFarmList?varietyNum=${vo.varietyNum}&schType=${schType}&kwd=${kwd}">
-				                    해당 품목만 보기
-				                  </a>
-				                </c:if>
+				                
 				              </div>
 				
 				              <div class="mt-2">
-				                총 납품한 양:
+				                총 납품한 양 : &nbsp;
 				                <strong>
-				                  <fmt:formatNumber value="${empty vo.totalQty ? 0 : vo.totalQty}" pattern="#,##0.###"/>
+				                  <fmt:formatNumber value="${empty vo.totalQty ? 0 : vo.totalQty}" pattern="#,##0.###"/> g
 				                </strong>
 				              </div>
 				              <div>
-				                총 납품 금액:
+				                총 납품 금액 : &nbsp;
 				                <strong>
 				                  <fmt:formatNumber value="${empty vo.totalVarietyEarning ? 0 : vo.totalVarietyEarning}"
+				                                    type="currency" currencySymbol="₩"/>
+				                </strong>
+				              </div>
+				              <div>
+				                총 수익 금액 : &nbsp;
+				                <strong>
+				                  <fmt:formatNumber value="${empty vo.totalVarietyEarning ? 0 : (vo.totalVarietyEarning / 100 * 15) }"
 				                                    type="currency" currencySymbol="₩"/>
 				                </strong>
 				              </div>

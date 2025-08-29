@@ -144,18 +144,23 @@
 	    	</form>
 	    	
 	    	<div class="row mt-3">
-				<div class="col-md-2">
+				<div class="col-md-2 ">
 					<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/farm/delivery/list';" title="새로고침"><i class="bi bi-arrow-clockwise"></i></button>
 				</div>
-				<div class="col-md-8 text-center">
-					<select name="schType">
-						<option value="varietyName" ${schType=="varietyName"?"selected":""}>제품명</option>
-						<option value="rescuedApply" ${schType=="rescuedApply"?"selected":""}>긴급구출여부</option>
-						<option value="coment" ${schType=="coment"?"selected":""}>'기타'로 작성한 제품명</option>
-					</select>
-					<input type="text" name="kwd" value="${kwd}">
-					<button type="button" class="btn-default" onclick="searchList();"><i class="bi bi-search"></i></button>
+				<div class="col d-flex justify-content-center">
+					<div class="d-inline-flex align-items-stretch flex-nowrap gap-2">
+						<select name="schType">
+							<option value="varietyName" ${schType=="varietyName"?"selected":""}>제품명</option>
+							<option value="rescuedApply" ${schType=="rescuedApply"?"selected":""}>긴급구출여부</option>
+							<option value="coment" ${schType=="coment"?"selected":""}>'기타'로 작성한 제품명</option>
+						</select>
+						<input type="text" name="kwd" value="${kwd}"
+							class="form-control form-control-sm border border-1 border-secondary-subtle bg-body"
+	           				placeholder="검색어 입력" style="max-width: 220px;">
+						<button type="button" class="btn-default" onclick="searchList();"><i class="bi bi-search"></i></button>
+					</div>
 				</div>
+				
 				<c:if test="${state==2 || state==4}">			
 					<div class="col-md-2">
 						<button type="button" class="btn-default" onclick="changeOk()" title="일괄배송변경">일괄변경</button>

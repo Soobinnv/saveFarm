@@ -8,7 +8,7 @@ import com.sp.app.farm.model.MonthlyVarietyStats;
 import com.sp.app.farm.model.MyFarmSale;
 
 public interface SaleService {
-	public BigDecimal myFarmTotalEarning(Long farmNum);
+	public BigDecimal myFarmTotalEarning(Map<String, Object> map);
 
     public List<MyFarmSale> myFarmListByVariety(Map<String, Object> map);
     public int myFarmListByVarietyCount(Map<String, Object> map);

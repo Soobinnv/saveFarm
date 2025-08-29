@@ -315,6 +315,39 @@ public class SupplyServiceImpl implements SupplyService {
 			return list;
 	}
 
+	@Override
+	public List<Supply> listByFarm(Map<String, Object> map) {
+		List<Supply> list = null;
+		try {
+			list = mapper.listByFarm(map);
+	    } catch (Exception e) {
+	        log.info("listByFarm : ", e);
+	    }
+		return list;
+	}
+
+	@Override
+	public int farmSupplyListCount(Map<String, Object> map) {
+		int count = 0;
+		try {
+			if(mapper.farmSupplyListCount(map) != 0) {				
+				count = mapper.farmSupplyListCount(map);
+			}
+	    } catch (Exception e) {
+	        log.info("farmSupplyListCount : ", e);
+	    }
+		return count;
+	}
+
+	@Override
+	public void insertCrops(Supply dto) throws Exception {
+		try {
+	        mapper.insertSupply(dto);
+	    } catch (Exception e) {
+	        log.info("insertCrops : ", e);
+	    }
+	}
+
 
 }
 

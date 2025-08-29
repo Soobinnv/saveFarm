@@ -93,7 +93,7 @@
     VALUES
     (
       supply_seq.NEXTVAL, #{supplyQuantity}, #{unitQuantity}, #{unitPrice},
-      #{harvestDate}, 1, #{rescuedApply}, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
+      #{harvestDate}, #{state}, #{rescuedApply}, #{coment, jdbcType=VARCHAR}, #{approvedDate, jdbcType=DATE},
       #{farmNum}, #{productNum, jdbcType=NUMERIC}, #{varietyNum}
     )
   </insert>
@@ -174,8 +174,8 @@
 
   <!-- DELETE -->
   <delete id="deleteSupply" parameterType="map">
-    DELETE FROM supply
-    WHERE supplyNum = #{supplyNum}
+	DELETE FROM supply
+	WHERE supplyNum = #{supplyNum} AND farmNum   = #{farmNum}
   </delete>
 
   <!-- 셀렉트들 -->

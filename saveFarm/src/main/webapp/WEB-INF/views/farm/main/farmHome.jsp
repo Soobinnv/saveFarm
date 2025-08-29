@@ -32,8 +32,8 @@
 	        <div class="row">
 	          <div class="col-lg-11"><span class="hero-subtitle text-uppercase" data-aos="fade-up" data-aos-delay="0">농민을 위한 실용적인 판매 솔루션</span>
 	            <h1 class="hero-title mb-3" data-aos="fade-up" data-aos-delay="100">못난이 농산물도,<br>제값 받는 길이 있습니다</h1>
-	            <p class="hero-description mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="200">농가 전용 판매 플랫폼에서, 재고는 줄이고 소득은 올리세요. 소규모 농가부터 대형 농장까지, 누구나 쉽게 시작할 수 있습니다."</p>
-	            <div class="cta d-flex gap-2 mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="300"><a class="btn" href="#">농장 열기</a><a class="btn btn-white-outline" href="#">문의하기 
+	            <p class="hero-description mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="200">농가 전용 판매 플랫폼에서, 재고는 줄이고 소득은 올리세요. 소규모 농가부터 대형 농장까지, 누구나 쉽게 시작할 수 있습니다.</p>
+	            <div class="cta d-flex gap-2 mb-4 mb-lg-5" data-aos="fade-up" data-aos-delay="300"><a class="btn btn-primary" href="${pageContext.request.contextPath}/farm/member/login"> 농장 열기 </a><a class="btn btn-white-outline" href="${pageContext.request.contextPath}/farm/guide">이용 가이드 
 	                <svg class="lucide lucide-arrow-up-right" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 	                  <path d="M7 7h10v10"></path>
 	                  <path d="M7 17 17 7"></path>
@@ -159,7 +159,7 @@
 	    </div>
 	    <div class="row">
 	      <!-- 왼쪽 카드: 참여 방식 -->
-	      <div class="col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="300">
+	      <div class="col-md-4 mb-4 mb-md-0 " data-aos="fade-up" data-aos-delay="300" style="border:2px solid #116530 !important; border-radius: 12px; background-color: #F3FBF7;">
 	        <div class="p-5 rounded-4 price-table h-100 participate">
 	          <h3><i class="bi bi-shop me-2"></i> 농가회원 참여 방식</h3>
 	          <p>그램 단위 공동 판매로, 누구나 손쉽게 입점할 수 있어요.</p>

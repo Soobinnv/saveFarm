@@ -16,7 +16,7 @@ public interface FarmSaleMapper {
      * - 조건: supply.state=5 AND approvedDate IS NOT NULL AND farmNum=?
      * - 반환: SUM(supplyQuantity / unitQuantity * unitPrice)
      */
-    public BigDecimal myFarmTotalEarning(Long farmNum);
+    public BigDecimal myFarmTotalEarning(Map<String, Object> map);
 
     /**
      * 품종별 리스트 (페이징)

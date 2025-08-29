@@ -9,6 +9,7 @@ import com.sp.app.farm.model.Variety;
 public interface SupplyService {
     // 기본 CRUD
     public void insertSupply(Supply dto) throws Exception;
+    public void insertCrops(Supply dto) throws Exception;
     public void updateSupply(Supply dto) throws Exception;
     public int updateState(Map<String, Object> map) throws Exception;        // supplyNum, state
     public void updateState1(Map<String, Object> mapm) throws Exception;        // supplyNum
@@ -31,6 +32,8 @@ public interface SupplyService {
     // 특정 농가의 납품목록
     public List<Supply> listByFarm(Long farmNum);
 	public int farmSupplyListCount(Long farmNum);
+	public List<Supply> listByFarm(Map<String, Object> map);
+	public int farmSupplyListCount(Map<String, Object> map);
 	
 	// 승인여부 대상 조회용
 	public List<Supply> listByState(int state);
