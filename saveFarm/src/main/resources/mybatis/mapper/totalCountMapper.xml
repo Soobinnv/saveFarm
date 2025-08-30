@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sp.app.mapper.TotalCountMapper">
+
+  <select id="getSiteTotalsAllTime" resultType="com.sp.app.model.TotalCount">
+    SELECT
+      NVL(SUM(NVL(od.qty,0) * NVL(pd.unit_g, 0)), 0)     AS totalWeightG,
+      NVL(SUM(NVL(od.qty,0) * NVL(od.salePrice,0)), 0)   AS totalAmount
+    FROM orderDetail od
+    JOIN productOrder po
+      ON po.orderNum = od.orderNum
+    LEFT JOIN (
+      SELECT productNum, MAX(TO_NUMBER(NVL(unit,'0'))) AS unit_g
+      FROM ProductDetail
+      GROUP BY productNum
+    ) pd
+      ON pd.productNum = od.productNum
+    WHERE EXISTS (
+      SELECT 1
+      FROM detailState ds
+      WHERE ds.orderDetailNum = od.orderDetailNum
+        AND ds.detailState = 1
+    )
+  </select>
+  
+  <select id="countFarm" resultType="com.sp.app.model.TotalCount">
+    SELECT COUNT(*) AS farmCount
+    FROM farm
+    WHERE status = 3
+  </select>
+
+</mapper>
