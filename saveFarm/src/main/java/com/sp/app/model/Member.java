@@ -30,7 +30,7 @@ public class Member {
 	private String addr1;
 	private String addr2;
 	private String email;
-	private int receive_email;
+	private int receiveEmail;
 	private String ipAddr;
 	
 	private MultipartFile selectFile;
