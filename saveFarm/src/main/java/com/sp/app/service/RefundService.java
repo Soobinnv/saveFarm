@@ -13,6 +13,7 @@ public interface RefundService {
 	
 	public List<Refund> getRefundList(Map<String, Object> map);	
 	public List<Refund> getMyRefundList(Map<String, Object> map);	
+	public Refund getRefundInfo(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyRefundDataCount(long memberId);
 }

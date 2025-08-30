@@ -15,6 +15,7 @@ public class Refund {
 	// 환불 정보
 	private long refundNum;
     private int refundAmount;
+    private String reqDate;
     private String refundDate;
     private String refundMethod;
     private long orderDetailNum;
@@ -29,4 +30,5 @@ public class Refund {
     
     // 반품 신청 회원 ID
     private long memberId;
+    private String email;
 }

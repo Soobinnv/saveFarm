@@ -141,4 +141,19 @@ public class RefundServiceImpl implements RefundService{
 		return count;
 	}
 
+	@Override
+	public Refund getRefundInfo(Map<String, Object> map) {
+		Refund dto = null;
+		
+		try {
+			dto = mapper.getRefundInfo(map);
+		} catch (Exception e) {
+			log.info("getRefundInfo : ", e);
+			
+			throw e;
+		}
+		
+		return dto;
+	}
+
 }

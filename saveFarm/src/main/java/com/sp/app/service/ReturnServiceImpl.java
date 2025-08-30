@@ -143,4 +143,19 @@ public class ReturnServiceImpl implements ReturnService {
 		return count;
 	}
 
+	@Override
+	public Return getReturnInfo(Map<String, Object> map) {
+		Return dto = null;
+		
+		try {
+			dto = mapper.getReturnInfo(map);
+		} catch (Exception e) {
+			log.info("getReturnInfo : ", e);
+			
+			throw e;
+		}
+		
+		return dto;
+	}
+
 }

@@ -2,13 +2,6 @@
  * 환불 리스트 HTML 문자열 생성
  * @param {object} item - 환불 데이터 객체 (서버 응답)
  * @param {object} params - 요청 파라미터
- * @param {Array<object>} item.list - 환불 리스트
- * @param {number} item.dataCount - 총 환불내역 수
- * @param {number} item.size - 페이지 당 상품 수
- * @param {number} item.page - 현재 페이지 번호
- * @param {number} item.total_page - 총 페이지 수
- * @param {string} [item.schType="all"] - 검색 타입
- * @param {string} [item.kwd=""] - 검색 키워드
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderRefundListHTML = function(item, params) {
@@ -22,7 +15,7 @@ const renderRefundListHTML = function(item, params) {
 	<div class="container-fluid">
 	  <div class="row justify-content-center">
 	    <div class="col-12">
-	      <h2 class="mb-2 page-title mr-2">상품 리스트</h2>
+	      <h2 class="mb-2 page-title mr-2">환불 / 취소 관리</h2>
 	      <div class="row my-4">
 	        <div class="col-md-12">
 	          <div class="card shadow">
@@ -41,26 +34,28 @@ const renderRefundListHTML = function(item, params) {
 	     		  </div>
 	              <ul class="nav nav-tabs" id="myTab" role="tablist">
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === '' || typeof params.classifyCode === 'undefined' 
-								? 'active' : ''}" id="tab-product-all" type="button" role="tab">전체상품</button>
+					      <button class="nav-link ${params.status === '' || typeof params.status === 'undefined' ? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === 100 ? 'active' : ''}" id="tab-product-normal" type="button" role="tab">일반상품</button>
+					      <button class="nav-link ${params.status === 0 ? 'active' : ''}" id="tab-status-pending" type="button" role="tab">접수</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === 200 ? 'active' : ''}" id="tab-product-rescued" type="button" role="tab">구출상품</button>
+					      <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
+					  </li>
+					  <li class="nav-item" role="presentation">
+					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
 					  </li>
 				  </ul>
-	              <table data-type="product" class="table datatables" id="contentTable">
+	              <table data-type="refund" class="table datatables" id="contentTable">
 	                <thead>
 	                  <tr>
-	                    <th>상품번호</th>
-	                    <th>상품명</th>
-						<th>가격</th>
-						<th>재고</th>
-	                    <th>상품분류</th>
-	                    <th>종료일</th>
-	                    <th>변경</th>
+	                    <th>환불번호</th>
+	                    <th>신청자 E-mail</th>
+						<th>환불금액</th>
+						<th>환불수단</th>
+	                    <th>신청일</th>
+	                    <th>처리일</th>
+	                    <th>상태</th>
 	                  </tr>
 	                </thead>
 	                <tbody>
@@ -71,11 +66,6 @@ const renderRefundListHTML = function(item, params) {
                     <div class="col-sm-12 col-md-12 page-navigation">
                     </div>
                   </div>
-                  <div class="row d-flex justify-content-end"">
-                    <div class="col-sm-12 col-md-2 d-flex justify-content-end">
-                        <button type="button" class="btn mb-2 mr-1 btn-outline-primary" id="btn-product-insert">상품등록</button>
-                    </div>
-				  </div
 	            </div>
 	          </div>
 	        </div>
@@ -94,74 +84,37 @@ const renderRefundListHTML = function(item, params) {
  */
 const renderRefundRows = function(list) {
     if (!list || list.length === 0) {
-        return `<tr><td colspan="7" class="text-center">표시할 상품이 없습니다.</td></tr>`;
+        return `<tr><td colspan="7" class="text-center">표시할 환불 내역이 없습니다.</td></tr>`;
     }
 
     return list.map(item => {
-        let classificationText = '';
-        switch (item.productClassification) {
-            case 100: classificationText = '일반상품'; break;
-            case 200: classificationText = '구출상품'; break;
-            case 300: classificationText = '세이프팜특가'; break;
-            default: classificationText = '미분류';
+        // 'status' 값에 따라 상태 텍스트 결정
+        let statusText = '접수';
+        if (item.status === 1) {
+            statusText = '처리중';
+        } else if (item.status === 2) {
+            statusText = '완료';
         }
-
-		let endDate = item.endDate;
-		
-		if(item.endDate === null) {
-			endDate = '-';
-		}
 		
         return `
-          <tr data-product-num="${item.productNum}">
-            <td>${item.productNum}</td>
-            <td>${item.productName}</td>
-            <td>${item.unitPrice}원</td>
-            <td>${item.stockQuantity}</td>
-            <td>${classificationText}</td>
-            <td>${endDate}</td>
-            <td>
-              <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="text-muted sr-only">Action</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a 
-				data-num="${item.productNum}" 
-				data-name="${item.productName}" 
-				data-unit="${item.unit}" 
-				data-stock="${item.stockQuantity}"  
-				data-variety="${item.varietyNum}"  
-					class="dropdown-item stock-insert-btn" 
-					href="javascript:void(0);"
-					>재고등록</a>
-                <a 
-				data-num="${item.productNum}" 
-				data-name="${item.productName}" 
-				data-unit="${item.unit}" 
-				data-stock="${item.stockQuantity}"  
-					class="dropdown-item stock-edit-btn" 
-					href="javascript:void(0);"
-					>재고수정</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
-              </div>
-            </td>
+          <tr data-num="${item.refundNum}">
+            <td>${item.refundNum}</td>
+            <td>${item.email}</td>
+            <td>${(item.refundAmount || 0).toLocaleString()}원</td>
+            <td>${item.refundMethod || '-'}</td>
+            <td>${item.reqDate || '-'}</td>
+            <td>${item.refundDate || '-'}</td>
+            <td>${statusText}</td>
           </tr>
         `;
     }).join(''); 
 };
 
+
 /**
  * 반품 리스트 HTML 문자열 생성
  * @param {object} item - 반품 데이터 객체 (서버 응답)
  * @param {object} params - 요청 파라미터
- * @param {Array<object>} item.list - 반품 리스트
- * @param {number} item.dataCount - 총 반품내역 수
- * @param {number} item.size - 페이지 당 상품 수
- * @param {number} item.page - 현재 페이지 번호
- * @param {number} item.total_page - 총 페이지 수
- * @param {string} [item.schType="all"] - 검색 타입
- * @param {string} [item.kwd=""] - 검색 키워드
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderReturnListHTML = function(item, params) {
@@ -175,7 +128,7 @@ const renderReturnListHTML = function(item, params) {
 	<div class="container-fluid">
 	  <div class="row justify-content-center">
 	    <div class="col-12">
-	      <h2 class="mb-2 page-title mr-2">상품 리스트</h2>
+	      <h2 class="mb-2 page-title mr-2">반품 및 교환 관리</h2>
 	      <div class="row my-4">
 	        <div class="col-md-12">
 	          <div class="card shadow">
@@ -194,26 +147,28 @@ const renderReturnListHTML = function(item, params) {
 	     		  </div>
 	              <ul class="nav nav-tabs" id="myTab" role="tablist">
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === '' || typeof params.classifyCode === 'undefined' 
-								? 'active' : ''}" id="tab-product-all" type="button" role="tab">전체상품</button>
+					      <button class="nav-link ${params.status === '' || typeof params.status === 'undefined' ? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === 100 ? 'active' : ''}" id="tab-product-normal" type="button" role="tab">일반상품</button>
+					      <button class="nav-link ${params.status === 0 ? 'active' : ''}" id="tab-status-pending" type="button" role="tab">접수</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.classifyCode === 200 ? 'active' : ''}" id="tab-product-rescued" type="button" role="tab">구출상품</button>
+					      <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
+					  </li>
+					  <li class="nav-item" role="presentation">
+					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
 					  </li>
 				  </ul>
-	              <table data-type="product" class="table datatables" id="contentTable">
+	              <table data-type="return" class="table datatables" id="contentTable">
 	                <thead>
 	                  <tr>
-	                    <th>상품번호</th>
-	                    <th>상품명</th>
-						<th>가격</th>
-						<th>재고</th>
-	                    <th>상품분류</th>
-	                    <th>종료일</th>
-	                    <th>변경</th>
+	                    <th>반품번호</th>
+	                    <th>신청자 E-mail</th>
+						<th>반품사유</th>
+						<th>수량</th>
+						<th>신청일</th>
+						<th>반품일</th>
+	                    <th>상태</th>
 	                  </tr>
 	                </thead>
 	                <tbody>
@@ -224,11 +179,6 @@ const renderReturnListHTML = function(item, params) {
                     <div class="col-sm-12 col-md-12 page-navigation">
                     </div>
                   </div>
-                  <div class="row d-flex justify-content-end"">
-                    <div class="col-sm-12 col-md-2 d-flex justify-content-end">
-                        <button type="button" class="btn mb-2 mr-1 btn-outline-primary" id="btn-product-insert">상품등록</button>
-                    </div>
-				  </div
 	            </div>
 	          </div>
 	        </div>
@@ -247,62 +197,32 @@ const renderReturnListHTML = function(item, params) {
  */
 const renderReturnRows = function(list) {
     if (!list || list.length === 0) {
-        return `<tr><td colspan="7" class="text-center">표시할 상품이 없습니다.</td></tr>`;
+        return `<tr><td colspan="7" class="text-center">표시할 반품 내역이 없습니다.</td></tr>`;
     }
 
     return list.map(item => {
-        let classificationText = '';
-        switch (item.productClassification) {
-            case 100: classificationText = '일반상품'; break;
-            case 200: classificationText = '구출상품'; break;
-            case 300: classificationText = '세이프팜특가'; break;
-            default: classificationText = '미분류';
+        // 'status' 값에 따라 상태 텍스트 결정
+        let statusText = '접수';
+        if (item.status === 1) {
+            statusText = '처리중';
+        } else if (item.status === 2) {
+            statusText = '완료';
         }
-
-		let endDate = item.endDate;
-		
-		if(item.endDate === null) {
-			endDate = '-';
-		}
 		
         return `
-          <tr data-product-num="${item.productNum}">
-            <td>${item.productNum}</td>
-            <td>${item.productName}</td>
-            <td>${item.unitPrice}원</td>
-            <td>${item.stockQuantity}</td>
-            <td>${classificationText}</td>
-            <td>${endDate}</td>
-            <td>
-              <button class="btn btn-sm dropdown-toggle more-horizontal" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="text-muted sr-only">Action</span>
-              </button>
-              <div class="dropdown-menu dropdown-menu-right">
-                <a 
-				data-num="${item.productNum}" 
-				data-name="${item.productName}" 
-				data-unit="${item.unit}" 
-				data-stock="${item.stockQuantity}"  
-				data-variety="${item.varietyNum}"  
-					class="dropdown-item stock-insert-btn" 
-					href="javascript:void(0);"
-					>재고등록</a>
-                <a 
-				data-num="${item.productNum}" 
-				data-name="${item.productName}" 
-				data-unit="${item.unit}" 
-				data-stock="${item.stockQuantity}"  
-					class="dropdown-item stock-edit-btn" 
-					href="javascript:void(0);"
-					>재고수정</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
-              </div>
-            </td>
+          <tr data-num="${item.returnNum}">
+            <td>${item.returnNum}</td>
+            <td>${item.email}</td>
+            <td>${item.reason || '-'}</td>
+            <td>${item.quantity}개</td>
+            <td>${item.reqDate || '-'}</td>
+            <td>${item.returnDate || '-'}</td>
+            <td>${statusText}</td>
           </tr>
         `;
     }).join(''); 
 };
+
 
 /**
  * 전체 클레임 리스트 HTML 문자열 생성
@@ -352,17 +272,17 @@ const renderAllClaimListHTML = function(item, params) {
 					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
 					  </li>
 				  </ul>
-	              <table data-type="claim" class="table datatables" id="contentTable">
+	              <table data-type="claim" class="table datatables" id="claimContentTable">
 	                <thead>
 	                  <tr>
 	                    <th>구분</th>
 	                    <th>신청번호</th>
-						<th>신청일</th>
-						<th>신청자 ID</th>
+						<th>신청자 E-mail</th>
 	                    <th>상세내용1</th>
 	                    <th>상세내용2</th>
+						<th>신청일</th>
+						<th>처리일</th>
 	                    <th>상태</th>
-						<th>처리</th>
 	                  </tr>
 	                </thead>
 	                <tbody>
@@ -398,8 +318,8 @@ const renderAllClaimRows = function(list) {
 
     return list.map(item => {
         const typeBadge = item.listType === 'return'
-            ? `<span class="badge badge-pill badge-warning">반품</span>`
-            : `<span class="badge badge-pill badge-info">환불</span>`;
+            ? `<span>반품 및 교환</span>`
+            : `<span>환불 / 취소</span>`;
         
         let statusText = '접수';
         if (item.status === 1) {
@@ -422,20 +342,193 @@ const renderAllClaimRows = function(list) {
           <tr data-num="${item.num}" data-type="${item.listType}">
             <td>${typeBadge}</td>
             <td>${item.num}</td>
-            <td>${item.reqDate}</td>
-            <td>${item.memberId}</td>
+            <td>${item.email}</td>
             <td>${detail1Text}</td>
             <td>${detail2Text}</td>
+            <td>${item.reqDate || '-'}</td>
+            <td>${item.processDate || '-'}</td>
             <td>${statusText}</td>
-            <td>
-              <button 
-                  data-num="${item.num}" 
-                  data-type="${item.listType}" 
-                  class="btn btn-sm btn-outline-secondary claim-detail-btn">
-                  상세
-              </button>
-            </td>
           </tr>
         `;
     }).join(''); 
 };
+
+/**
+ * 환불 상세 정보 관리 HTML 문자열 생성
+ * @param {object} data - 환불 데이터
+ * @param {object} data.info - 환불 데이터 객체
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderRefundHTML = function(data) {
+	if (!data || !data.info) {
+		return '<div class="alert alert-danger">환불 정보를 불러오는데 실패했습니다.</div>';
+	}
+
+	const info = data.info;
+
+	let statusText = '';
+	switch (info.status) {
+		case 0:
+			statusText = '환불 요청';
+			break;
+		case 1:
+			statusText = '처리중';
+			break;
+		case 2:
+			statusText = '환불완료';
+			break;
+		default:
+			statusText = '기각';
+	}
+
+	const refundDate = info.refundDate ? info.refundDate : '처리 전';
+
+	const actionButtons = info.status === 0 ? `
+		<button type="button" class="btn btn-primary" onclick="updateRefundStatus(${info.refundNum}, 1);">환불 승인</button>&nbsp;&nbsp;
+		<button type="button" class="btn btn-danger" onclick="updateRefundStatus(${info.refundNum}, 2);">기각</button>
+	` : '';
+
+	const html = `
+		<div class="card shadow-sm">
+			<div class="card-header bg-light">
+				<h5 class="card-title mb-0">환불 상세 정보</h5>
+			</div>
+			<div class="card-body p-4">
+				<table class="table table-bordered align-middle">
+					<colgroup>
+						<col style="width: 20%; background-color: #f8f9fa;">
+						<col style="width: 30%;">
+						<col style="width: 20%; background-color: #f8f9fa;">
+						<col style="width: 30%;">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th class="text-center">환불 번호</th>
+							<td>${info.refundNum}</td>
+							<th class="text-center">처리 상태</th>
+							<td><span>${statusText}</span></td>
+						</tr>
+						<tr>
+							<th class="text-center">요청 회원</th>
+							<td>회원번호: ${info.memberId} (${info.email})</td>
+							<th class="text-center">주문 상세 번호</th>
+							<td>${info.orderDetailNum}</td>
+						</tr>
+						<tr>
+							<th class="text-center">요청일</th>
+							<td>${info.reqDate}</td>
+							<th class="text-center">처리 완료일</th>
+							<td>${refundDate}</td>
+						</tr>
+						<tr>
+							<th class="text-center">환불 금액</th>
+							<td class="fw-bold">${info.refundAmount}원</td>
+							<th class="text-center">환불 수단</th>
+							<td>${info.refundMethod}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			${actionButtons ? `
+			<div class="card-footer text-end py-3">
+				<div class="d-flex justify-content-end gap-2">
+					${actionButtons}
+				</div>
+			</div>
+			` : ''}
+		</div>
+	`;
+
+	return html;
+}
+
+/**
+ * 반품 상세 정보 관리 HTML 문자열 생성
+ * @param {object} data - 반품 데이터
+ * @param {object} data.info - 반품 데이터 객체
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderReturnHTML = function(data) {
+	if (!data || !data.info) {
+		return '<div class="alert alert-danger">반품 정보를 불러오는데 실패했습니다.</div>';
+	}
+
+	const info = data.info;
+
+	let statusText = '';
+	switch (info.status) {
+		case 0:
+			statusText = '반품 요청';
+			break;
+		case 1:
+			statusText = '수거중';
+			break;
+		case 2:
+			statusText = '반품 완료';
+			break;
+		default: 
+			statusText = '반품 불가';
+			break;
+	}
+
+	const returnDate = info.returnDate ? info.returnDate : '처리 전';
+
+	const actionButtons = info.status === 0 ? `
+		<button type="button" class="btn btn-primary" onclick="updateReturnStatus(${info.returnNum}, 1);">반품 승인</button>&nbsp;&nbsp;
+		<button type="button" class="btn btn-danger" onclick="updateReturnStatus(${info.returnNum}, 3);">반품 불가</button>
+	` : '';
+
+	const html = `
+		<div class="card shadow-sm mt-4">
+			<div class="card-header bg-light">
+				<h5 class="card-title mb-0">반품 상세 정보</h5>
+			</div>
+			<div class="card-body p-4">
+				<table class="table table-bordered align-middle">
+					<colgroup>
+						<col style="width: 20%; background-color: #f8f9fa;">
+						<col style="width: 30%;">
+						<col style="width: 20%; background-color: #f8f9fa;">
+						<col style="width: 30%;">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th class="text-center">반품 번호</th>
+							<td>${info.returnNum}</td>
+							<th class="text-center">처리 상태</th>
+							<td><span>${statusText}</span></td>
+						</tr>
+						<tr>
+							<th class="text-center">요청 회원</th>
+							<td>${info.memberId} (${info.email})</td>
+							<th class="text-center">주문 상세 번호</th>
+							<td>${info.orderDetailNum}</td>
+						</tr>
+						<tr>
+							<th class="text-center">요청일</th>
+							<td>${info.reqDate}</td>
+							<th class="text-center">처리 완료일</th>
+							<td>${returnDate}</td>
+						</tr>
+						<tr>
+							<th class="text-center">반품 수량</th>
+							<td>${info.quantity}개</td>
+							<th class="text-center">반품 사유</th>
+							<td>${info.reason}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			${actionButtons ? `
+			<div class="card-footer text-end py-3">
+				<div class="d-flex justify-content-end gap-2">
+					${actionButtons}
+				</div>
+			</div>
+			` : ''}
+		</div>
+	`;
+	
+	return html;
+}
+

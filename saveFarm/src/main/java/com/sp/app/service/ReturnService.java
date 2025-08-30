@@ -13,6 +13,7 @@ public interface ReturnService {
 	
 	public List<Return> getReturnList(Map<String, Object> map);	
 	public List<Return> getMyReturnList(Map<String, Object> map);	
+	public Return getReturnInfo(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyReturnDataCount(long memberId);
 }

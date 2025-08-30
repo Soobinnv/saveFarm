@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 import com.sp.app.admin.mapper.ClaimManageMapper;
+import com.sp.app.admin.model.Claim;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.mapper.RefundMapper;
 import com.sp.app.mapper.ReturnMapper;
@@ -95,6 +96,33 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 		}
 		
 		return ListAndPaging;
+	}
+
+	@Override
+	public Claim getClaimInfo(Map<String, Object> paramMap) {
+		Claim dto = new Claim();
+		
+		try {
+			String type = (String) paramMap.get("type");
+			
+			switch (type) {
+				case "return": {
+					dto.setReturnObj(returnMapper.getReturnInfo(paramMap));
+					break;
+				}
+				case "refund": {
+					dto.setRefundObj(refundMapper.getRefundInfo(paramMap));
+					break;
+				}
+				default:
+					return null;
+			}
+		} catch (Exception e) {
+			log.info("getClaimInfo: ", e);
+			throw e;
+		}
+		
+		return dto;
 	}
 
 }

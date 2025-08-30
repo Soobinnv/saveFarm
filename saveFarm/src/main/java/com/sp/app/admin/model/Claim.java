@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sp.app.model.Refund;
+import com.sp.app.model.Return;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +24,7 @@ public class Claim {
 	private String listType;
 	private long num;
 	// 등록 날짜
-	private String sortDate;
+	private String reqDate;
 	private String detail1;
 	private String detail2;
 	private String processDate;
@@ -30,6 +33,7 @@ public class Claim {
     private int status;
     // 신청 회원 ID
     private long returnMemberId;
+    private String email;
 	
     // 환불 첨부 이미지
     private long refundImageNum;
@@ -42,5 +46,10 @@ public class Claim {
     private String returnImageFilename;
     
     private List<MultipartFile> returnImages; 
+    
+    // 반품 정보
+    private Return returnObj;
+    // 환불 정보
+    private Refund refundObj;
     
 }

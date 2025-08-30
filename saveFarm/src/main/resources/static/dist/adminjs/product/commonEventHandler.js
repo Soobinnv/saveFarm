@@ -49,9 +49,8 @@ const detailViewConfig = {
     'supply': { baseUrl: '/api/admin/supplies/', idAttr: 'supplyNum', render: renderFarmProductDetailHTML },
     'productQna': { baseUrl: '/api/admin/inquiries/', idAttr: 'qnaNum', render: renderProductQnaDetailHTML },
     'productReview': { baseUrl: '/api/admin/reviews/', idAttr: 'reviewNum', render: renderProductReviewDetailHTML },
-    'refund': { baseUrl: '/api/admin/reviews/', idAttr: 'reviewNum', render: renderProductReviewDetailHTML },
-    'return': { baseUrl: '/api/admin/reviews/', idAttr: 'reviewNum', render: renderProductReviewDetailHTML },
-    'refundReturn': { baseUrl: '/api/admin/reviews/', idAttr: 'reviewNum', render: renderProductReviewDetailHTML },
+    'refund': { baseUrl: '/api/admin/claims/', idAttr: 'num', params: {type:"refund"}, render: renderRefundHTML },
+    'return': { baseUrl: '/api/admin/claims/', idAttr: 'num', params: {type:"return"}, render: renderReturnHTML },
 };
 
 // 이벤트 핸들러 등록
@@ -60,9 +59,6 @@ $(function() {
 	$('ul.list-unstyled').on('click', '.nav-link', function() {
 		const navId = $(this).attr('id');
 		const config = mainTabConfig[navId];
-		
-		console.log(navId)
-		console.log(config)
 		
 		if (config) {
 			loadContent(config.url, config.render, config.params, config.pagingMethodName);
@@ -115,6 +111,7 @@ $(function() {
 		}
 		 
 		const tableType = $('#contentTable').data('type');
+		
 		const config = detailViewConfig[tableType];
 		
 		if (config) {
@@ -124,7 +121,11 @@ $(function() {
 				const entityId = $(this).data(config.idAttr);
 				url += entityId;
 			}
-			loadContent(url, config.render, '');
+			
+			const params = config.params ? config.params : '';
+			
+			
+			loadContent(url, config.render, params);
 		}
 	});
 });
