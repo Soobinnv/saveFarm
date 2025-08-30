@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
 import com.sp.app.mapper.MyPageMapper;
+import com.sp.app.model.Member;
 import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
 import com.sp.app.model.Payment;
@@ -29,6 +30,7 @@ import com.sp.app.model.Return;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
 import com.sp.app.model.packageReview;
+import com.sp.app.service.MemberService;
 import com.sp.app.service.MyPageService;
 import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
@@ -55,13 +57,18 @@ public class MyPageApiController {
 	private final StorageService storageService;
 	private final ReturnService returnService;
 	private final RefundService refundService;
-	private final MyPageMapper mypageMapper;
+	private final MemberService memberService;
 	
 	private String productReviewUploadPath;
+	// 프로필 사진 업로드 경로 변수
+	private String profilePhotoUploadPath; 
+	
+	
 	
 	@PostConstruct
 	public void init() {
 		productReviewUploadPath = this.storageService.getRealPath("/uploads/productReview");		
+		this.profilePhotoUploadPath = this.storageService.getRealPath("/uploads/member/profile");
 	}	
 	
 	// 마이페이지 - 메인 데이터(결제내역)
@@ -189,6 +196,129 @@ public class MyPageApiController {
 			log.error("confirmation: ", e);
 	        body.put("message", "구매확정을 처리하는 중 오류가 발생했습니다.");
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}
+	
+	
+	// 회원정보 수정
+	@GetMapping("/memberInfo")
+	public ResponseEntity<?> getMemberInfo(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				body.put("message", "로그인이 필요합니다.");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body); // 401
+			}
+
+			// MemberService의 findById를 사용해 회원 정보를 조회합니다.
+			Member dto = memberService.findById(info.getMemberId());
+			
+			if (dto == null) {
+				body.put("message", "회원 정보를 찾을 수 없습니다.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
+			}
+			
+			// API 응답 시 비밀번호는 제외하고 전달합니다.
+			dto.setPassword(null);
+
+			body.put("dto", dto);
+			return ResponseEntity.ok(body); // 200 OK
+
+		} catch (Exception e) {
+			log.error("getMemberInfo: ", e);
+			body.put("message", "회원 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+
+	@PostMapping("/memberInfo")
+	public ResponseEntity<?> updateMemberInfo(Member dto, HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				body.put("message", "로그인이 필요합니다.");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body); // 401
+			}
+			
+			// 중요: 현재 세션의 사용자 ID로 DTO를 설정하여 다른 사용자의 정보 수정을 방지합니다.
+			dto.setMemberId(info.getMemberId());
+
+			// MemberService의 updateMember 메서드를 호출합니다.
+			memberService.updateMember(dto, profilePhotoUploadPath);
+
+			// 세션 정보도 갱신합니다 (예: 이름이 변경된 경우).
+			info.setName(dto.getPassword());
+
+			body.put("message", "회원 정보가 성공적으로 수정되었습니다.");
+			return ResponseEntity.ok(body); // 200 OK
+
+		} catch (Exception e) {
+			log.error("updateMemberInfo: ", e);
+			body.put("message", "회원 정보 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+
+
+	@PostMapping("/checkPwd")
+	public ResponseEntity<?> checkPassword(@RequestParam String userPwd, HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				body.put("message", "로그인이 필요합니다.");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+			}
+
+			Member member = memberService.findById(info.getMemberId());
+
+			// ※ 중요: 이 코드는 비밀번호가 평문으로 저장된 경우에만 동작합니다.
+			// 실제 서비스에서는 BCryptPasswordEncoder와 같은 암호화 라이브러리를 사용하여
+			// passwordEncoder.matches(userPwd, member.getUserPwd()) 형태로 비교해야 합니다.
+			boolean isPasswordCorrect = (member != null && userPwd.equals(member.getPassword()));
+
+			body.put("success", isPasswordCorrect);
+			if (!isPasswordCorrect) {
+				body.put("message", "비밀번호가 일치하지 않습니다.");
+			}
+			
+			return ResponseEntity.ok(body);
+
+		} catch (Exception e) {
+			log.error("checkPassword: ", e);
+			body.put("message", "비밀번호 확인 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}
+	
+
+	@PostMapping("/updatePwd")
+	public ResponseEntity<?> updatePassword(@RequestParam String newPwd, HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {
+				body.put("message", "로그인이 필요합니다.");
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+			}
+			
+			Member dto = new Member();
+			dto.setMemberId(info.getMemberId());
+			dto.setPassword(newPwd); // ※ 중요: 서비스 단에서 암호화 후 업데이트해야 합니다.
+			
+			// 비밀번호만 변경하는 서비스가 없으므로 updateMember를 활용합니다.
+			// 프로필 사진은 변경하지 않으므로 uploadPath는 null을 전달해도 무방합니다.
+			memberService.updateMember(dto, null);
+			
+			body.put("message", "비밀번호가 성공적으로 변경되었습니다.");
+			return ResponseEntity.ok(body);
+
+		} catch (Exception e) {
+			log.error("updatePassword: ", e);
+			body.put("message", "비밀번호 변경 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 		}
 	}
 	

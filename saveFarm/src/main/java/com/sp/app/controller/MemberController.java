@@ -59,6 +59,9 @@ public class MemberController {
 		map.put("loginId", loginId);
 		map.put("password", password);
 		
+		System.out.println(loginId);
+		System.out.println(password);
+		
 		Member dto = service.loginMember(map);
 		if (dto == null) {
 			model.addAttribute("message", "아이디 또는 패스워드가 일치하지 않습니다.");
@@ -86,8 +89,10 @@ public class MemberController {
 		session.removeAttribute("preLoginURI");
 		if (uri == null) {
 			uri = "redirect:/";
+			System.out.println("312313");
 		} else {
 			uri = "redirect:" + uri;
+			System.out.println("엥엥");
 		}
 
 		return uri;

@@ -31,4 +31,8 @@ public class Refund {
     // 반품 신청 회원 ID
     private long memberId;
     private String email;
+    
+    // 환불 가능 수량
+    private int claimableQuantity;
+    
 }

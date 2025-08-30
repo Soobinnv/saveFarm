@@ -93,8 +93,8 @@ public class MemberServiceImpl implements MemberService {
 
 			throw e;
 		}
-	}
-
+	}	
+	
 	@Transactional(rollbackFor = { Exception.class })
 	@Override
 	public void updateMember(Member dto, String uploadPath) throws Exception {

@@ -238,3 +238,15 @@
     color: #333;
     border: 1px solid #ccc;
 }
+
+/* 프로필 사진 이미지 크기 조절 */
+.img-avatar.profile-small {
+    width: 80px;
+    height: 80px;
+    object-fit: cover; /* 이미지가 찌그러지지 않도록 설정 */
+}
+
+/* 프로필 사진 업로드 섹션의 간격 조절 */
+.photo-upload-section {
+    padding-bottom: 1rem !important; /* 아래쪽 여백 줄이기 */
+}

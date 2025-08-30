@@ -42,7 +42,7 @@
 		UPDATE member2 SET email = #{email}, 
 			birth = TO_DATE(#{birth}, 'YYYY-MM-DD'), 
 			tel = #{tel, jdbcType=VARCHAR}, 
-			profilePhoto = #{profile_photo, jdbcType=VARCHAR}, 
+			profilePhoto = #{profilePhoto, jdbcType=VARCHAR}, 
 			zip = #{zip, jdbcType=VARCHAR},
 			addr1 = #{addr1, jdbcType=VARCHAR}, addr2 = #{addr2, jdbcType=VARCHAR},
 			receiveEmail = #{receiveEmail}

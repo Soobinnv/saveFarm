@@ -1,6 +1,35 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt"%>
+<style>
+	/* 체크박스 기본 스타일 */
+	.form-check-input {
+	    width: 1em !important;
+	    height: 1em !important;
+	    margin-top: 0.25em !important;
+	    vertical-align: top !important;
+	    background-color: #fff !important;
+	    border: 1px solid #dee2e6 !important;
+	    appearance: none !important;  
+	    border-radius: 0.25em !important;
+	}
+
+	/* 체크박스 선택(:checked) 시 스타일 */
+	.form-check-input:checked {
+	    background-color: #02b350 !important; 
+	    border-color: #02b350 !important;
+	}
+
+	.form-check-input:checked[type=checkbox] {
+	    /* 체크 표시 SVG 아이콘 */
+	    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e") !important;
+	}
+
+	/* 체크박스와 라벨 사이 간격 */
+	.form-check-label {
+	    margin-left: 0.5em !important;
+	}
+</style>
 <!-- Navbar Start -->
 <div class="container-fluid fixed-top px-0 wow fadeIn mainHeader"
 	data-wow-delay="0.1s">
@@ -123,7 +152,7 @@
 							<p class="form-control-plaintext">로그인</p>
 						</div>
 						<div class="mt-0">
-							<input type="text" name="loginId" class="form-control"
+							<input id="modalLoginIdInput" type="text" name="loginId" class="form-control"
 								placeholder="아이디">
 						</div>
 						<div>
@@ -167,14 +196,21 @@
 </div>
 
 <!-- Login Modal -->
-<script type="text/javascript">
+<script type="text/javascript">	
 	function dialogLogin() {
 		$('form[name=modalLoginForm] input[name=loginId]').val('');
 		$('form[name=modalLoginForm] input[name=password]').val('');
 
+		const savedId = localStorage.getItem("savedLoginId");
+		
+		if (savedId) {
+			$('#modalLoginIdInput').val(savedId);
+			document.getElementById("rememberMeModal").checked = true;
+		}
+		
 		$('#loginModal').modal('show');
 
-		$('form[name=modalLoginForm] input[name=login_id]').focus();
+		$('form[name=modalLoginForm] input[name=loginId]').focus();
 	}
 
 	function sendModalLogin() {

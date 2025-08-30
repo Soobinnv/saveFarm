@@ -48,7 +48,6 @@
 		                </td>
 		                <td>
 		                	<p class="product-title p-1 mb-0 left">${dto.productName}</p>
-		                    <p class="product-qty p-1 mb-0 left"> ${dto.unit} </p>
 		                    <input type="hidden" name="productNums" value="${dto.productNum}">
 		                </td>
 		                <td>
