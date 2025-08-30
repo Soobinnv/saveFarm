@@ -23,7 +23,7 @@
     <!-- Page Title -->
     <div class="page-title dark-background" data-aos="fade" style="background-image: url(${pageContext.request.contextPath}/dist/farm/header_footer/img/guideTitle.webp);">
       <div class="container position-relative">
-        <h1>납품 신청 및 유통과정</h1>
+        <h1> 유통과정</h1>
         <p>가입부터 소비자 배송까지, 간편하고 믿을 수 있는 유통 과정을 안내합니다.</p>
         <nav class="breadcrumbs">
           <ol>

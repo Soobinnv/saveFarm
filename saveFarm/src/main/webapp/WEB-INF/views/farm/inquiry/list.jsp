@@ -97,7 +97,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<c:forEach var="dto" items="${list}">
+							<c:forEach var="dto" items="${list}"  varStatus="status">
 								<tr data-href="${articleUrl}&inquiryNum=${dto.inquiryNum}">
 									<td class="text-center">${dataCount - (page - 1) * size - status.index}</td>
 									<td class="text-center">

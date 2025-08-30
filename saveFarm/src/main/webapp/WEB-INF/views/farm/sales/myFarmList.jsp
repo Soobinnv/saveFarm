@@ -152,7 +152,7 @@
 							<th class="text-center">납품총량</th>
 							<th class="text-center">판매단위</th>
 							<th class="text-center">단위금액</th>
-							<th class="text-center">코멘트</th>
+							<th class="text-center">기타 품명</th>
 						</tr>
 					 </thead>
 				  	<tbody>

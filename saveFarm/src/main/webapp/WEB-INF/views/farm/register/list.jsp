@@ -72,7 +72,7 @@
 							<th class="text-center">단위금액</th>
 							<th class="text-center">수확날짜</th>
 							<th class="text-center">긴급구출</th>
-							<th class="text-center">코멘트</th>
+							<th class="text-center">기타 품명</th>
 						</tr>
 					 </thead>
 				  	<tbody>

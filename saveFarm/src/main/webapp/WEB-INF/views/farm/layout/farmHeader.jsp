@@ -29,7 +29,6 @@
 					<ul>
 						<li><a href="${pageContext.request.contextPath}/farm" class="active">홈</a></li>
 						<li><a href="${pageContext.request.contextPath}/farm/guide">이용 가이드</a></li>
-						<li><a href="#">사용 예시</a></li>
 						<li><a href="${pageContext.request.contextPath}/farm/register/main">납품관리</a></li>
 						<li class="dropdown">
 							<a href="${pageContext.request.contextPath}/farm/sales/totalList"><span>판매성과 분석</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>

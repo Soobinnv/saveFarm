@@ -25,7 +25,6 @@
 							<ul>
 								<li><a href="${pageContext.request.contextPath}/farm">홈</a></li>
 						        <li><a href="${pageContext.request.contextPath}/farm/guide">이용가이드</a></li>
-						        <li><a href="#">사용 예시</a></li>
 							</ul>
 						</div>
 						
