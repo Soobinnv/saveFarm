@@ -46,7 +46,7 @@
 		FROM return r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
-		JOIN member1 m ON po.memberId = m.memberId
+		JOIN member2 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>
@@ -60,28 +60,42 @@
 		WHERE po.memberId = #{memberId}
 	</select>
 	
-	<select id="getReturnList" parameterType="map" resultType="com.sp.app.model.Return">
-		SELECT RETURNNUM, REQDATE, REASON, QUANTITY, RETURNDATE, r.ORDERDETAILNUM, STATUS,
-			po.memberId
-		FROM refund r
+	<select id="getReturnInfo" parameterType="map" resultType="com.sp.app.model.Return">
+		SELECT RETURNNUM, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate, REASON, QUANTITY, TO_CHAR(RETURNDATE, 'YYYY-MM-DD HH24:MI') RETURNDATE, r.ORDERDETAILNUM, STATUS,
+			po.memberId, email
+		FROM return r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
-		JOIN member1 m ON po.memberId = m.memberId
+		JOIN member2 m ON po.memberId = m.memberId
+		<where>
+			RETURNNUM = #{num}
+			<include refid="where-list"/>
+		</where>
+	</select>
+	
+	<select id="getReturnList" parameterType="map" resultType="com.sp.app.model.Return">
+		SELECT RETURNNUM, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate, REASON, QUANTITY, TO_CHAR(RETURNDATE, 'YYYY-MM-DD HH24:MI') RETURNDATE, r.ORDERDETAILNUM, STATUS,
+			po.memberId, email
+		FROM return r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member2 m ON po.memberId = m.memberId
 		<where>
 			<include refid="where-list"/>
 		</where>
-		ORDER BY refundNum DESC
+		ORDER BY REQDATE DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 	
 	<select id="getMyReturnList" parameterType="map" resultType="com.sp.app.model.Return">
-		SELECT RETURNNUM, REQDATE, REASON, QUANTITY, RETURNDATE, r.ORDERDETAILNUM, STATUS,
-			od.memberId
-		FROM refund r
+		SELECT RETURNNUM, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate, REASON, QUANTITY, TO_CHAR(RETURNDATE, 'YYYY-MM-DD HH24:MI') RETURNDATE, r.ORDERDETAILNUM, STATUS,
+			po.memberId, email
+		FROM return r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
+		JOIN member2 m ON po.memberId = m.memberId
 		WHERE po.memberId = #{memberId}
-		ORDER BY refundNum DESC
+		ORDER BY REQDATE DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
 </mapper>

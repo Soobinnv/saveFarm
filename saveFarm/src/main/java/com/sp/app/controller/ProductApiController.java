@@ -134,7 +134,7 @@ public class ProductApiController {
 			Product productInfo = service.getProductWithDetails(productNum, classifyCode, memberId);
 			
 			if(productInfo == null) {
-				body.put("message", "현제 상품의 상세 정보가 없습니다.");
+				body.put("message", "현재 상품의 상세 정보가 없습니다.");
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
 			}
 			

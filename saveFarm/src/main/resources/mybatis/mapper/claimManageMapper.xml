@@ -24,17 +24,17 @@
         SELECT
             'return' AS "listType",      
             returnNum AS "num",      
-            reqDate,     
+            TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate,     
             reason AS "detail1",        
             TO_CHAR(quantity) AS "detail2", 
-            returnDate AS "processDate",
+            TO_CHAR(returnDate, 'YYYY-MM-DD HH24:MI') AS "processDate",
             r.orderDetailNum,           
             status,              
-            po.memberId             
+            po.memberId, email             
         FROM return r 
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
         JOIN productOrder po ON od.orderNum = po.orderNum
-        JOIN member1 m ON po.memberId = m.memberId
+        JOIN member2 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>
@@ -44,17 +44,17 @@
         SELECT
             'refund' AS "listType",   
             refundNum AS "num",       
-            reqDate,  
+            TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate,  
             TO_CHAR(refundAmount) AS "detail1", 
             refundMethod AS "detail2",  
-            refundDate AS "processDate",       
+            TO_CHAR(refundDate, 'YYYY-MM-DD HH24:MI') AS "processDate",       
             r.orderDetailNum,           
             status,                    
-            po.memberId                
+            po.memberId, email             
         FROM refund r
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
         JOIN productOrder po ON od.orderNum = po.orderNum
-        JOIN member1 m ON po.memberId = m.memberId
+        JOIN member2 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>
@@ -70,7 +70,7 @@
         FROM return r
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
         JOIN productOrder po ON od.orderNum = po.orderNum
-        JOIN member1 m ON po.memberId = m.memberId
+        JOIN member2 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>
@@ -81,7 +81,7 @@
         FROM refund r
         JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
         JOIN productOrder po ON od.orderNum = po.orderNum
-        JOIN member1 m ON po.memberId = m.memberId
+        JOIN member2 m ON po.memberId = m.memberId
         <where>
             <include refid="where-list"/>
         </where>

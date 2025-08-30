@@ -30,4 +30,5 @@ public class Return {
     
     // 반품 신청 회원 ID
     private long memberId;
+    private String email;
 }
