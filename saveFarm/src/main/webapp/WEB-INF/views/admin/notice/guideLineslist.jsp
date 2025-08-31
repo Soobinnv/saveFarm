@@ -131,6 +131,12 @@ function loadGuideContent(classifyValue) {
     });
 }
 
+$('#myTab .nav-link').on('click', function() {
+	  $('#myTab .nav-link').removeClass('active'); // 기존 active 제거
+	  $(this).addClass('active'); // 클릭한 버튼에 active 추가
+	});
+
+
 //검색 키워드 입력란에서 엔터를 누른 경우 서버 전송 막기 
 window.addEventListener('DOMContentLoaded', () => {
 	const inputEL = document.querySelector('form input[name=kwd]'); 

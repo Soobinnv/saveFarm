@@ -20,7 +20,7 @@
 		</div>		                   
 		<ul class="nav nav-tabs mt-1" id="myTab" role="tablist">
 		    <li class="nav-item" role="presentation">
-				<button class="nav-link ${empty categoryNum ? 'active' : ''}" 
+				<button class="nav-link ${empty categoryNum ? 'active' : ''} bg-white" 
 				        id="tab-all" data-toggle="tab" href="#tab-pane" type="button" 
 				        role="tab" aria-controls="all" aria-selected="true" 
 				        onclick="loadCategory('');">전체</button>

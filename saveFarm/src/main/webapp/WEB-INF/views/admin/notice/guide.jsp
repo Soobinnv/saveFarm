@@ -14,7 +14,7 @@
 						</li>
 						<c:forEach var="dto" items="${guide}">
 							<li class="nav-item" role="presentation">
-								<button class="nav-link" id="tab-${dto.classify}" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="${dto.classify}" aria-selected="false" value="${dto.classify}">${dto.categoryName}</button>
+								<button class="nav-link ${dto.classify == classify ? 'active' : ''}" id="tab${dto.classify}" data-toggle="tab" href="#tab-pane" type="button" role="tab" aria-controls="${dto.classify}" aria-selected="false" value="${dto.classify}">${dto.categoryName}</button>
 							</li>
 						</c:forEach>
 					  </ul>
@@ -85,3 +85,4 @@
 								</form>
                     </div>
                   </div>
+                  
