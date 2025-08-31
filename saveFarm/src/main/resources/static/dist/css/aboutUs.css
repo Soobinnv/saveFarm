@@ -1,0 +1,201 @@
+
+/* --- 기본 스타일 및 초기화 --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    line-height: 1.7;
+    color: #333;
+    background-color: #fdfdfd;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c5e1a; /* 포인트 컬러 (짙은 녹색) */
+    line-height: 1.3;
+}
+
+/* --- 헤더: 히어로 섹션 --- */
+.hero-section {
+    height: 60vh;
+    background-image: url('https://images.unsplash.com/photo-1445217143695-467124038776?q=80&w=2070&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+
+/* --- 메인 콘텐츠 섹션 공통 스타일 --- */
+section {
+    padding: 100px 0;
+}
+
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+.content-wrapper .image-box img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.content-wrapper .text-box h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #444;
+}
+
+.content-wrapper .text-box p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+/* --- 문제 제기 섹션 --- */
+.problem-section {
+    background-color: #fff;
+}
+
+.problem-section .text-box {
+    flex: 1;
+}
+.problem-section .image-box {
+    flex: 1;
+}
+
+/* --- 해결책 섹션 --- */
+.solution-section {
+    background-color: #f4f8f2; /* 연한 녹색 배경 */
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    text-align: center;
+}
+
+.card {
+    background-color: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background-color: #2c5e1a;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 25px;
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* --- CTA 섹션 --- */
+.cta-section {
+    background-color: #fff;
+}
+
+.cta-section .text-box {
+    flex: 1.2; /* 텍스트에 조금 더 비중 */
+}
+
+.cta-section .image-box {
+    flex: 0.8;
+}
+
+.cta-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 15px 35px;
+    background-color: #e67e22; /* 포인트 컬러 (주황) */
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.cta-button:hover {
+    background-color: #d35400;
+    transform: translateY(-3px);
+}
+
+/* --- 반응형 웹 디자인 --- */
+@media (max-width: 992px) {
+    .section-title h2 { font-size: 2rem; }
+    .hero-section h1 { font-size: 2.2rem; }
+    
+    .content-wrapper {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    /* CTA 섹션은 모바일에서 이미지-텍스트 순서 변경 */
+    .cta-section .content-wrapper {
+        flex-direction: column-reverse;
+    }
+}s
