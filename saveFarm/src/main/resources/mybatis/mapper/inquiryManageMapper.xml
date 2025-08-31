@@ -45,11 +45,13 @@
 	</select>
 	
 	<select id="listInquiry" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
-		SELECT i.inquiryNum, i.subject, i.content, i.regDate, i.answerId, i.answer, i.answerDate, i.farmNum, i.memberId, m2.name, m1.userLevel, f.farmName
+		SELECT i.inquiryNum, i.subject, i.content, i.regDate, i.answerId, m4.name AS answerName, i.answer, i.answerDate, i.farmNum, i.memberId, m2.name, m1.userLevel, f.farmName, i.processResult
 		FROM inquiry i
-		LEFT OUTER JOIN member1 m1 ON i.answerId = m1.memberId
-		LEFT OUTER JOIN member2 m2 ON m1.memberId = m2.memberId
-		LEFT OUTER JOIN farm f ON i.farmNum = f.farmNum
+		LEFT JOIN member1 m1 ON i.memberId = m1.memberId
+		LEFT JOIN member2 m2 ON m1.memberId = m2.memberId
+		LEFT JOIN member1 m3 ON i.answerId = m3.memberId
+		LEFT JOIN member2 m4 ON i.answerId = m4.memberId
+		LEFT JOIN farm f ON i.farmNum = f.farmNum
 		<where>
 			<include refid="itemId-list"/>
 			<if test="kwd != null and kwd != '' ">
@@ -59,5 +61,75 @@
 		ORDER BY i.regDate DESC, i.inquiryNum DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
 	</select>
+	
+	<!-- 글보기 -->
+	<select id="findById" resultType="com.sp.app.admin.model.InquiryManage" parameterType="Long">
+		SELECT inquiryNum, i.memberId, m2.name, NVL(m1.loginId, m1.snsId) loginId, f.farmerId,
+				subject, content, regDate, 
+				answerId, m4.name answerName, 
+				NVL(m3.loginId, m3.snsId) loginAnswer, f.farmName, 
+				answer, answerDate
+		FROM inquiry i
+		LEFT JOIN member1 m1 ON i.memberId = m1.memberId
+		LEFT JOIN member2 m2 ON m1.memberId = m2.memberId
+		LEFT JOIN member1 m3 ON i.answerId = m3.memberId
+		LEFT JOIN member2 m4 ON i.answerId = m4.memberId
+		LEFT JOIN farm f ON i.farmNum = f.farmNum
+		<where>
+			<include refid="itemId-list"/>
+			AND i.inquiryNum = #{inquiryNum}
+		</where>
+	</select>
+
+	<!-- 이전글 -->
+	<select id="findByPrev" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
+		SELECT inquiryNum, subject
+		FROM inquiry i
+		JOIN member2 m ON i.memberId = m.memberId
+		<where>
+			<include refid="itemId-list"/>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (inquiryNum &gt; #{inquiryNum})
+		</where>
+		ORDER BY inquiryNum ASC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 다음글 -->
+	<select id="findByNext" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
+		SELECT inquiryNum, subject
+		FROM inquiry i
+		JOIN member2 m ON i.memberId = m.memberId
+		<where>
+			<include refid="itemId-list"/>
+			<if test="kwd != null and kwd != '' ">
+				AND <include refid="where-list"/>
+			</if>
+			AND (inquiryNum &gt; #{inquiryNum})
+		</where>
+		ORDER BY inquiryNum DESC
+		FETCH FIRST 1 ROWS ONLY
+	</select>
+
+	<!-- 답변 달기 -->
+	<update id="updateAnswer" parameterType="com.sp.app.admin.model.InquiryManage">
+		UPDATE inquiry SET answerId = #{answerId}, answer = #{answer}, 
+				answerDate = SYSDATE, processResult = 2
+		WHERE inquiryNum = #{inquiryNum}
+	</update>
+      
+	<update id="deleteAnswer" parameterType="Long">
+		UPDATE inquiry SET answerId = NULL, answer = NULL, answerDate = NULL
+		WHERE inquiryNum = #{inquiryNum}
+	</update>
+	      
+	<!-- 삭제 -->
+	<delete id="deleteInquiry" parameterType="Long">
+		DELETE FROM inquiry
+		WHERE inquiryNum = #{inquiryNum}
+	</delete>
+	
 	
 </mapper>

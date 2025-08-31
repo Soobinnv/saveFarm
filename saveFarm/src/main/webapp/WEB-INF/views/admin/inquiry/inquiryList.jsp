@@ -100,14 +100,23 @@
                             <td>${dataCount - (page - 1) * size - status.index}</td>
                             <td>${dto.inquiryNum}</td>
                             <td>
-                            	<a href="" class="text-secondary">${dto.subject}</a>
+                            	<a class="text-secondary" href="${articleUrl}&inquiryNum=${dto.inquiryNum}">${dto.subject}</a>
                             </td>
-                            <td>${dto.name}</td>
+                            <td>
+                            	<c:choose>
+                            		<c:when test="${itemId == 100}">
+                            			${dto.name}
+                            		</c:when>
+                            		<c:when test="${itemId == 200}">
+                            			${dto.farmName}
+                            		</c:when>
+                            	</c:choose>
+                            </td>
                             <td>${dto.regDate}</td>
                             <td>
 							  <c:choose>
 							    <c:when test="${dto.answerId == 0}"></c:when>
-							    <c:otherwise>${dto.answerId}</c:otherwise>
+							    <c:otherwise>${dto.answerName}</c:otherwise>
 							  </c:choose>
 							</td>
                             <td>${dto.answerDate}</td>

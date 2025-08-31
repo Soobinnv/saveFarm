@@ -41,4 +41,79 @@ public class InquiryManageServiceImpl implements InquiryManageService {
 		return list;
 	}
 
+	@Override
+	public InquiryManage findById(long inquiryNum) {
+		InquiryManage dto = null;
+
+		try {
+			dto = mapper.findById(inquiryNum);
+		} catch (Exception e) {
+			log.info("findById : ", e);
+		}
+
+		return dto;
+	}
+
+	@Override
+	public InquiryManage findByPrev(Map<String, Object> map) {
+		InquiryManage dto = null;
+
+		try {
+			dto = mapper.findByPrev(map);
+		} catch (Exception e) {
+			log.info("findByPrev : ", e);
+		}
+
+		return dto;
+	}
+
+	@Override
+	public InquiryManage findByNext(Map<String, Object> map) {
+		InquiryManage dto = null;
+
+		try {
+			dto = mapper.findByNext(map);
+		} catch (Exception e) {
+			log.info("findByNext : ", e);
+		}
+
+		return dto;
+	}
+
+	@Override
+	public void updateAnswer(InquiryManage dto) throws Exception {
+		try {
+			mapper.updateAnswer(dto);
+		} catch (Exception e) {
+			log.info("updateAnswer : ", e);
+			
+			throw e;
+		}
+		
+	}
+
+	@Override
+	public void deleteAnswer(long inquiryNum) throws Exception {
+		try {
+			mapper.deleteAnswer(inquiryNum);
+		} catch (Exception e) {
+			log.info("deleteAnswer : ", e);
+			
+			throw e;
+		}
+		
+	}
+
+	@Override
+	public void deleteInquiry(long inquiryNum) throws Exception {
+		try {
+			mapper.deleteInquiry(inquiryNum);
+		} catch (Exception e) {
+			log.info("deleteInquiry : ", e);
+			
+			throw e;
+		}
+		
+	}
+
 }
