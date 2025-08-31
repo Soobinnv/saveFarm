@@ -7,8 +7,10 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sp.app.admin.model.PackageManage;
 import com.sp.app.admin.service.PackageManageService;
@@ -54,11 +56,29 @@ public class packageManageController {
 		return "admin/package/list";
 	}
 	
-	@GetMapping("details")
+	@PostMapping("packageProduct")
+	public String packageProduct (@RequestParam (name = "packageNum") long packageNum,Model model) {
+		
+		
+		List<PackageManage> list = service.productList(packageNum);
+		model.addAttribute("list", list);
+		model.addAttribute("packageNum", packageNum); 
+		
+		return "admin/package/details";
+	}
+	
+	
+	@PostMapping("details")
 	public String handlePackageDetails(
 			HttpServletRequest req,
+			@RequestParam("packageNum") long packageNum,
 			Model model) {
 		
+		
+		List<PackageManage> list = service.modalpackageList();
+		
+		model.addAttribute("list", list);
+		model.addAttribute("packageNum", packageNum);
 		return "admin/package/details";
 	}
 	

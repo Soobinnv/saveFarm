@@ -23,8 +23,6 @@
 		</where>
 	</select>
 	
-	
-	
 	<select id="packageList" parameterType="map" resultType="com.sp.app.admin.model.PackageManage">
 		SELECT p.packageNum, p.packageName, p.price, p.content
 		FROM package p
@@ -46,10 +44,11 @@
 		where pi.packageNum = #{packageNum}
 	</select>
 	
-	<select id="modalpackageList" parameterType="map" resultType="com.sp.app.admin.model.PackageManage">
+	<select id="modalpackageList" resultType="com.sp.app.admin.model.PackageManage">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, UNIT, pd.UNITPRICE
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		WHERE PRODUCTCLASSIFICATION = 100
 	</select>
+	
 </mapper>

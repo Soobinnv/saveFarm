@@ -61,6 +61,8 @@ public class PackageManage {
 	private String zip;
 	private String addr;
 	
+	private int unitPrice;
+	
 	
 	// 상품 Product
 	private long productNum;

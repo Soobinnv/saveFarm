@@ -47,10 +47,10 @@ public class PackageManageServiceImpl implements PackageManageService{
 	}
 	
 	@Override
-	public List<PackageManage> modalpackageList(Map<String, Object> map) {
+	public List<PackageManage> modalpackageList() {
 		List<PackageManage> list = null;
 		try {
-			list = mapper.modalpackageList(map);
+			list = mapper.modalpackageList();
 			
 		} catch (Exception e) {
 			log.info("packageList : ", e);
