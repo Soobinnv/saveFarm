@@ -46,7 +46,7 @@
 	</select>
 	
 	<select id="faqList" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
-	    SELECT f.faqNum, f.categoryNum, cf.categoryName, cf.classify, m.name, f.memberId, f.subject, f.content, f.regDate 
+	    SELECT f.faqNum, f.categoryNum, cf.categoryName, cf.classify, m.name, f.memberId, f.subject, f.content, TO_CHAR(f.regDate,'YYYY-MM-DD') regDate 
 	    FROM FAQ f
 	    LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
 	    LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  

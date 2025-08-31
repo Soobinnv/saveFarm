@@ -13,10 +13,7 @@
 			<div class="dataTables_info d-flex align-items-center" role="status" aria-live="polite">
 				${dataCount}개 (${page}/${totalPage}페이지)
 			</div>
-			<select class="form-control me-2 ml-1 p-0 col-1" name="schTypeFAQ" id="schTypeFAQSelect" onchange="changeFaqType();">
-			    <option value="memberFAQ" ${schTypeFAQ == 'memberFAQ' ? 'selected' : ''}>회원</option>
-			    <option value="farmFAQ" ${schTypeFAQ == 'farmFAQ' ? 'selected' : ''}>농가</option>
-			</select>
+			
 		</div>		                   
 		<ul class="nav nav-tabs mt-1" id="myTab" role="tablist">
 		    <li class="nav-item" role="presentation">
@@ -47,7 +44,6 @@
 								<th class="col-5">제목</th>
 								<th class="col-1">작성자</th>
 								<th class="col-2">작성일</th>
-								<th class="col-1">구분</th> 
 							</tr>
 						</thead>
 						<tbody>
@@ -62,13 +58,6 @@
 									</td>
 									<td>${dto.name}</td>
 									<td>${dto.regDate}</td>
-									<td>
-										<c:choose>
-											<c:when test="${dto.classify == 1}">회원</c:when>
-											<c:when test="${dto.classify == 2}">농가</c:when>
-											<c:otherwise>기타</c:otherwise>
-										</c:choose>
-									</td>
 								</tr>
 								
 								<tr id="collapse${status.index}" class="collapse">
@@ -78,37 +67,31 @@
 										${dto.content}
 									</td>
 									<td colspan="2"></td>
-									<td>
-										<button class="btn btn p-0" type="button" onclick="updateFAQ(this, ${page});">수정</button> | 
-										<button class="btn btn p-0" type="button" onclick="deleteFAQ(${dto.faqNum});">삭제</button>
-										<input type="hidden" name="faqNum" value="${dto.faqNum}">
-                           			</td>
+									<td></td>
 								</tr>
 							</c:forEach> 
 						</tbody>
 					</table>
-					<div class="row justify-content-center">
-						${paging}
+					<div class="row">
+						<div class="col-5"></div>
+						<div class="col-auto justify-content-center">
+							${paging}
+						</div>
 					</div>	
 				</div>		
 			</div>
 		</div>
-		<div class="row">
-			<div class="col-sm-12 col-md-3"></div>
-			<div class="col-sm-12 col-md-6 d-flex justify-content-center flex-column text-center"> 
-				<div class="d-flex justify-content-center align-items-center mb-3"> 
-					<button type="button" class="fe fe-rotate-ccw btn btn-outline-primary me-2 mr-1" onclick="resetSearch();"></button>
-					<select class="form-control me-2 col-2" name="schType" id="searchType"> 
-						<option value="all" ${schType == 'all' ? 'selected' : ''}>검색</option>
-					</select>
-					<input type="text" class="form-control me-2 mr-1 col-3" name="kwd" id="keyword" value="${kwd}" placeholder="Search"> 
-					<button type="button" class="btn btn-outline-primary" onclick="searchList();">검색</button>
-				</div>
-			</div>
-			<div class="col-sm-12 col-md-3 d-flex justify-content-end align-items-start">
-				<button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/FAQManage';">FAQ 카테고리 관리</button>
-				<button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/write';">질문 등록</button>
-			</div>
-		</div>
+		<div class="row justify-content-center">
+            <div class="col-md-auto "> 
+                <div class="d-flex justify-content-center align-items-center mb-3"> 
+                    <button type="button" class="btn btn-outline-success me-2 mr-1 col-auto" onclick="resetSearch();">초기화</button>
+                    <select class="form-control me-2 col" name="schType" id="searchType"> 
+                        <option value="all" ${schType == 'all' ? 'selected' : ''}>검색</option>
+                    </select>
+                    <input type="text" class="form-control me-2 mr-1 col" name="kwd" id="keyword" value="${kwd}" placeholder="Search"> 
+                    <button type="button" class="btn btn-outline-success col-auto" onclick="searchList();">검색</button>
+                </div>
+            </div>
+        </div>
 	</div>				
 </div>
