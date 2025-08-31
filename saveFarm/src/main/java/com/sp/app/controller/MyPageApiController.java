@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,8 +31,10 @@ import com.sp.app.model.Return;
 import com.sp.app.model.SessionInfo;
 import com.sp.app.model.Wish;
 import com.sp.app.model.packageReview;
+import com.sp.app.model.Destination;
 import com.sp.app.service.MemberService;
 import com.sp.app.service.MyPageService;
+import com.sp.app.service.MyShoppingService;
 import com.sp.app.service.ProductQnaService;
 import com.sp.app.service.ProductReviewService;
 import com.sp.app.service.RefundService;
@@ -58,6 +61,7 @@ public class MyPageApiController {
 	private final ReturnService returnService;
 	private final RefundService refundService;
 	private final MemberService memberService;
+	private final MyShoppingService myShoppingService;
 	
 	private String productReviewUploadPath;
 	// 프로필 사진 업로드 경로 변수
@@ -322,6 +326,84 @@ public class MyPageApiController {
 		}
 	}
 	
+	// 배송지
+	@GetMapping("/destinations")
+	public ResponseEntity<?> listDestination(HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			List<Destination> list = myShoppingService.listDestination(info.getMemberId());
+			body.put("list", list);
+			return ResponseEntity.ok(body);
+		} catch (Exception e) {
+			log.error("listDestination: ", e);
+			body.put("message", "배송지 목록을 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}
+
+	@PostMapping("/destinations")
+	public ResponseEntity<?> insertDestination(@RequestBody Destination dto, HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			dto.setMemberId(info.getMemberId()); // 세션 정보로 사용자 ID 설정
+			
+			myShoppingService.insertDestination(dto);
+			
+			body.put("message", "배송지가 성공적으로 추가되었습니다.");
+			return ResponseEntity.status(HttpStatus.CREATED).body(body); // 201 Created
+		} catch (Exception e) {
+			log.error("insertDestination: ", e);
+			body.put("message", "배송지 추가 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}
+
+	@PutMapping("/destinations/{destinationNum}")
+	public ResponseEntity<?> updateDestination(
+			@PathVariable("destinationNum") long destinationNum, 
+			@RequestBody Destination dto, 
+			HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			dto.setMemberId(info.getMemberId());
+			dto.setDestinationNum(destinationNum);
+			
+			log.info("수정할 배송지 정보: {}", dto.toString());
+			
+			myShoppingService.updateDestination(dto);
+			
+			body.put("message", "배송지가 성공적으로 수정되었습니다.");
+			return ResponseEntity.ok(body);
+		} catch (Exception e) {
+			log.error("updateDestination: ", e);
+			body.put("message", "배송지 수정 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}
+
+	@DeleteMapping("/destinations/{destinationNum}")
+	public ResponseEntity<?> deleteDestination(@PathVariable("destinationNum") long destinationNum, HttpSession session) {
+		Map<String, Object> body = new HashMap<>();
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			Map<String, Object> map = new HashMap<>();
+			map.put("memberId", info.getMemberId());
+			map.put("destinationNum", destinationNum);
+			
+			myShoppingService.deleteDestination(map);
+			
+			body.put("message", "배송지가 삭제되었습니다.");
+			return ResponseEntity.ok(body);
+		} catch (Exception e) {
+			log.error("deleteDestination: ", e);
+			body.put("message", "배송지 삭제 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+		}
+	}	
 	
 	// 내 활동 - 찜 데이터
 	@GetMapping("/wishes")

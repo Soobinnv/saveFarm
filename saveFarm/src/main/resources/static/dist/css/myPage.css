@@ -250,3 +250,228 @@
 .photo-upload-section {
     padding-bottom: 1rem !important; /* 아래쪽 여백 줄이기 */
 }
+
+/* =================================================================
+   배송지 관리 페이지 스타일 (신규 추가)
+   ================================================================= */
+
+/* 섹션 전체 컨테이너 */
+.destination-section {
+    padding: 10px;
+}
+
+/* 배송지 관리 제목 영역 (회원정보 수정과 통일) */
+.destination-section .section-title {
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.destination-section .section-title h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 새 배송지 추가 버튼 - 초록색으로 변경 */
+.destination-section .btn-primary {
+    background-color: #039a63;
+    border-color: #039a63;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.destination-section .btn-primary:hover {
+    background-color: #027a4f;
+}
+
+/* 배송지 목록을 감싸는 컨테이너 */
+.destination-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* 카드 사이의 간격 */
+}
+
+/* 개별 배송지 카드 디자인 */
+.destination-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    background-color: #fff;
+    transition: box-shadow 0.2s ease-in-out;
+}
+.destination-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 카드 헤더 (배송지명, 기본 배송지 뱃지) */
+.destination-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.destination-card .card-header strong {
+    font-size: 1.1rem;
+    color: #333;
+}
+.destination-card .badge {
+    padding: 0.4em 0.7em;
+    font-size: 0.8rem;
+}
+
+/* 카드 본문 (상세 정보) */
+.destination-card .card-body {
+    padding: 1.25rem;
+    line-height: 1.8;
+}
+.destination-card .card-body p {
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-size: 0.95rem;
+}
+.destination-card .card-body p:last-child {
+    margin-bottom: 0;
+}
+.destination-card .card-body .label {
+    display: inline-block;
+    width: 70px; /* 라벨 너비 고정으로 정렬 효과 */
+    font-weight: 500;
+    color: #333;
+}
+
+
+/* 카드 푸터 (수정/삭제 버튼 영역) */
+.destination-card .card-footer {
+    padding: 1rem 1.25rem;
+    background-color: #fff;   /* 흰색으로 변경 */
+    text-align: right;
+    border-top: 1px solid #e9ecef;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+.destination-card .card-footer .btn-secondary,
+.destination-card .card-footer .btn-danger {
+    padding: 0.375rem 0.85rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.destination-card .card-footer .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: 1px solid #6c757d;
+}
+.destination-card .card-footer .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: 1px solid #dc3545;
+    margin-left: 0.5rem;
+}
+
+/* 배송지 모달 스타일 */
+#destinationModal .modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+#destinationModal .modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+#destinationModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+#destinationModal .btn-close {
+    font-size: 1.1rem;
+}
+
+#destinationModal .modal-body {
+    padding: 1.5rem;
+}
+#destinationModal .modal-body .form-label {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+#destinationModal .modal-body input.form-control {
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+#destinationModal .modal-body input.form-control:focus {
+    border-color: #039a63;
+    box-shadow: 0 0 0 3px rgba(3,154,99,0.15);
+    outline: none;
+}
+
+#destinationModal .phone-input {
+    max-width: 90px;   /* 칸 너비 줄이기 */
+    display: inline-block;
+    text-align: center;
+}
+
+/* 구분자 (-) 스타일 */
+#destinationModal .input-group-text {
+    background: transparent;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0 4px;
+}
+
+#destinationModal .btn-outline-secondary {
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+#destinationModal .form-check {
+    margin-top: 1rem;
+}
+#destinationModal .form-check-label {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+#destinationModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+#destinationModal .modal-footer .btn {
+    border-radius: 6px;
+    padding: 0.55rem 1.2rem;
+    font-weight: 500;
+}
+#destinationModal .modal-footer .btn-secondary {
+    background-color: #e9ecef;
+    border: none;
+    color: #333;
+}
+#destinationModal .modal-footer .btn-secondary:hover {
+    background-color: #dcdfe2;
+}
+#destinationModal .modal-footer .btn-primary {
+    background-color: #039a63;
+    border: none;
+}
+#destinationModal .modal-footer .btn-primary:hover {
+    background-color: #027a4f;
+}
+
+

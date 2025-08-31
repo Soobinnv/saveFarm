@@ -88,7 +88,7 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 			
 			if(dto.getDefaultDest() == 1) {
 				Map<String, Object> map = new HashMap<>();
-				map.put("member_id", dto.getMemberId());
+				map.put("memberId", dto.getMemberId());
 				map.put("defaultDest", 0);
 				mapper.updateDefaultDestination(map);
 			}
@@ -141,25 +141,24 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 		return list;
 	}
 
+	// in MyShoppingServiceImpl.java
+
 	@Override
 	public void updateDestination(Destination dto) throws Exception {
-		try {
-			String tel = dto.getTel1() + "-" + dto.getTel2() + "-" + dto.getTel3();
-			dto.setTel(tel);
-			
-			if(dto.getDefaultDest() == 1) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("member_id", dto.getMemberId());
-				map.put("defaultDest", 0);
-				mapper.updateDefaultDestination(map);
-			}
-			
-			mapper.updateDestination(dto);
-		} catch (Exception e) {
-			log.info("updateDestination : ", e);
-			
-			throw e;
-		}
+	    try {
+	    	
+	        if(dto.getDefaultDest() == 1) {
+	            Map<String, Object> map = new HashMap<>();
+	            map.put("memberId", dto.getMemberId());
+	            map.put("defaultDest", 0);
+	            mapper.updateDefaultDestination(map);
+	        }
+	        
+	        mapper.updateDestination(dto);
+	    } catch (Exception e) {
+	        log.info("updateDestination : ", e); // log.info 보다 log.error가 더 적합합니다.
+	        throw e;
+	    }
 	}
 
 	@Override
