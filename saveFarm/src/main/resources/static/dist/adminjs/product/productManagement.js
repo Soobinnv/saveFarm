@@ -152,6 +152,11 @@ $(function() {
 	
 	// 상품 등록/변경 저장 버튼
 	$('main').on('click', '.product-save-btn, #save-product-btn', function(e) {
+		
+		if(! validateProductForm()) {
+			return false;
+		}
+		
 		const num = $(e.target).attr('data-num') || 0;
 		const currentRow = $(e.target).closest('.product-edit-row');
 		
@@ -170,6 +175,11 @@ $(function() {
 			ajaxRequest(`/api/admin/products`, method, params, 'json', fn, true, 'multipart');	
 		} else if(method === 'put') {
 			params = getProductData(currentRow);		
+			
+			if(params.productDesc.length > 1300) {
+				alert('상품 설명은 1300자 이상 작성할 수 없습니다.')
+				return false;
+			}
 			
 			ajaxRequest(`/api/admin/products/${num}`, method, params, 'json', fn);	
 		}
@@ -332,7 +342,7 @@ $(function() {
 	});
 	
 	// 상품 등록 form - 납품 목록 선택 시 상품 카테고리 자동 갱신
-	$('main').on('change', '.supply-checkbox', function(e) {
+	$('main').on('change', '.supply-input', function(e) {
 		const varietyNum = $(e.target).attr('data-variety-num');
 		const varietyName = $(e.target).attr('data-variety-name');
 		const $categoryInputEL = $('#varietyCategory');
@@ -534,3 +544,113 @@ const truncateText = function(text, maxLength) {
     }
     return text;
 };   
+
+/**
+ * 신규 상품 등록 폼 유효성 검사
+ * @returns {boolean} 유효성 검사 통과 시 true, 실패 시 false
+ */
+const validateProductForm = function() {
+	const productName = $('#productName').val().trim();
+	if (!productName) {
+		alert('상품명을 입력하세요.');
+		$('#productName').focus();
+		return false;
+	}
+
+	const productClassification = $('#productClassification').val();
+	if (!productClassification) {
+		alert('상품 분류를 선택하세요.');
+		$('#productClassification').focus();
+		return false;
+	}
+
+	// 대표 이미지 파일 선택 여부 확인
+	if ($('#mainImage')[0].files.length === 0) {
+		alert('대표 이미지를 등록해주세요.');
+		$('label[for="mainImage"]').focus();
+		return false;
+	}
+
+	// 상품 설명 길이 검사 (1300자 제한)
+	const productDesc = $('#productDesc').val().trim();
+	if (!productDesc) {
+		alert('상품 설명을 입력하세요.');
+		$('#productDesc').focus();
+		return false;
+	}
+	if (productDesc.length > 1300) {
+		alert('상품 설명은 1,300자 이하로 입력해주세요.');
+		$('#productDesc').focus();
+		return false;
+	}
+
+	// 2. 가격 및 재고 정보 검사
+	const unitPrice = $('#unitPrice').val();
+	if (unitPrice === '' || unitPrice < 0) {
+		alert('단위당 가격을 올바르게 입력하세요.');
+		$('#unitPrice').focus();
+		return false;
+	}
+
+	const discountRate = $('#discountRate').val();
+	if (discountRate === '' || discountRate < 0 || discountRate > 100) {
+		alert('할인율은 0에서 100 사이의 숫자로 입력하세요.');
+		$('#discountRate').focus();
+		return false;
+	}
+
+	const unit = $('#unit').val().trim();
+	if (!unit) {
+		alert('판매 단위를 입력하세요.');
+		$('#unit').focus();
+		return false;
+	}
+
+	const deliveryFee = $('#deliveryFee').val();
+	if (deliveryFee === '' || deliveryFee < 0) {
+		alert('배송비를 올바르게 입력하세요.');
+		$('#deliveryFee').focus();
+		return false;
+	}
+    
+	const varietyNum = $('#varietyNum').val();
+	if (!varietyNum) {
+		alert('상품 카테고리를 선택하세요.');
+		$('#varietyCategory').focus();
+		return false;
+	}
+    
+	if (productClassification === '100') { // 일반 상품
+		const stockQuantity = $('#stockQuantity').val();
+		if (stockQuantity === '' || stockQuantity < 0) {
+			alert('초기 재고 수량을 올바르게 입력하세요.');
+			$('#stockQuantity').focus();
+			return false;
+		}
+	} else if (productClassification === '200') { // 구출 상품
+		const farmNum = $('#farmNum').val();
+		if (farmNum === '' || farmNum <= 0) {
+			alert('농장 번호를 올바르게 입력하세요.');
+			$('#farmNum').focus();
+			return false;
+		}
+
+		const endDate = $('#endDate').val();
+		if (!endDate) {
+			alert('판매 종료일을 선택하세요.');
+			$('#endDate').focus();
+			return false;
+		}
+		
+		// 납품 내역이 있을 경우, 하나 이상 선택했는지 확인
+		const $supplyCheckboxes = $('#supply-checkbox-list input[type="checkbox"]');
+		if ($supplyCheckboxes.length > 0 && $supplyCheckboxes.filter(':checked').length === 0) {
+			alert('납품 내역을 하나 이상 선택해주세요.');
+			$('#supply-checkbox-list').focus();
+			return false;
+		}
+	}
+
+	// 모든 유효성 검사 통과
+	return true;
+};

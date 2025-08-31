@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sp.app.admin.model.Claim;
+import com.sp.app.admin.model.FaqManage;
+import com.sp.app.admin.service.AdminClaimService;
+import com.sp.app.admin.service.FaqManageService;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.common.StorageService;
-import com.sp.app.mapper.MyPageMapper;
 import com.sp.app.model.Member;
 import com.sp.app.model.Order;
 import com.sp.app.model.PackageOrder;
@@ -62,6 +64,8 @@ public class MyPageApiController {
 	private final RefundService refundService;
 	private final MemberService memberService;
 	private final MyShoppingService myShoppingService;
+	private final FaqManageService faqService;
+	private final AdminClaimService claimService;
 	
 	private String productReviewUploadPath;
 	// 프로필 사진 업로드 경로 변수
@@ -517,6 +521,62 @@ public class MyPageApiController {
 		}
 	}
 	
+	// 반품 가능 수량 데이터
+	@GetMapping("/return/{orderDetailNum}/available-quantity")
+	public ResponseEntity<?> getReturnableQuantity(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			@RequestParam(name = "orderQuantity") int orderQuantity,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> paramMap = new HashMap<>();
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			paramMap.put("orderDetailNum", orderDetailNum);
+			paramMap.put("orderQuantity", orderQuantity);
+			paramMap.put("memberId", info.getMemberId());
+			
+			int quantity = returnService.getReturnableQuantity(paramMap);
+			
+			body.put("returnableQuantity", quantity);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getReturnableQuantity: ", e);
+			body.put("message", "반품 가능 수량을 불러오는중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 환불 가능 수량 데이터
+	@GetMapping("/refund/{orderDetailNum}/available-quantity")
+	public ResponseEntity<?> getRefundableQuantity(
+			@PathVariable("orderDetailNum") long orderDetailNum,
+			@RequestParam(name = "orderQuantity") int orderQuantity,
+			HttpSession session
+			) {
+		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> paramMap = new HashMap<>();
+		
+		try {
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+			
+			paramMap.put("orderDetailNum", orderDetailNum);
+			paramMap.put("orderQuantity", orderQuantity);
+			paramMap.put("memberId", info.getMemberId());
+			
+			int quantity = refundService.getRefundableQuantity(paramMap);
+			
+			body.put("refundableQuantity", quantity);
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getRefundableQuantity: ", e);
+			body.put("message", "환불 가능 수량을 불러오는중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
 	// 반품 신청
 	@PostMapping("/return/{orderDetailNum}")
 	public ResponseEntity<?> insertReturn(
@@ -658,7 +718,7 @@ public class MyPageApiController {
 			
 			body.put("list", list);
 			body.put("pageNo", current_page);
-			body.put("replyCount", dataCount);
+			body.put("dataCount", dataCount);
 			body.put("total_page", total_page);
 			body.put("paging", paging);
 			
@@ -671,17 +731,127 @@ public class MyPageApiController {
 	}
 	// 내 활동 - FAQ 데이터
 	@GetMapping("/faqs")
-	public ResponseEntity<?> getMyFaqList(HttpSession session) {
+	public ResponseEntity<?> getMyFaqList(@RequestParam(name = "pageNo", defaultValue = "1") int current_page) {
 		Map<String, Object> body = new HashMap<>();
 		try {
+			int size = 10;
+            int total_page = 0;
+            int dataCount = 0;
+            
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("schTypeFAQ", "memberFAQ");
+            paramMap.put("categoryNum", 4);
+            
+            FaqManage dto = faqService.dataCount(paramMap);
+            dataCount = dto.getMemberCount();
+            
+			total_page = paginateUtil.pageCount(dataCount, size);
+			current_page = Math.min(current_page, total_page);
 			
+			int offset = (current_page - 1) * size;
+			if(offset < 0) offset = 0;
+            
+            paramMap.put("offset", offset);
+            paramMap.put("size", size);
+            
+            List<FaqManage> listFAQ = faqService.faqList(paramMap);
+            
+            // AJAX 용 페이징
+         	String paging = paginateUtil.pagingMethod(current_page, total_page, "faqListPage");
+            
+			body.put("list", listFAQ);
+			body.put("pageNo", current_page);
+			body.put("dataCount", dataCount);
+			body.put("total_page", total_page);
+			body.put("paging", paging);
 			
-			List<ProductReview> list = null;
-			body.put("list", list);
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
 			log.error("getMyFaqList: ", e);
 			body.put("message", "FAQ 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 클레임 리스트 데이터
+	@GetMapping("/claims")
+	public ResponseEntity<?> getMyClaimList(
+			@RequestParam(name = "status", required = false) Integer status,
+			@RequestParam(name = "pageNo", required = false, defaultValue = "1") int current_page,
+			HttpSession session
+		) {
+		Map<String, Object> body = new HashMap<>();
+		Map<String, Object> paramMap = new HashMap<>();
+		try {			
+			SessionInfo info = (SessionInfo)session.getAttribute("member");
+
+			// 페이징 정보
+			int size = 10;
+			int total_page = 0; 
+			int dataCount = 0;
+			
+			paramMap.put("size", size);
+			paramMap.put("total_page", total_page);
+			paramMap.put("dataCount", dataCount);
+			paramMap.put("current_page", current_page);
+			
+			// 전체 클레임 리스트 - 타입 X
+			paramMap.put("type", null);
+			paramMap.put("status", status);
+			paramMap.put("memberId", info.getMemberId());
+
+			Map<String, Object> ListAndPaging = claimService.getClaimListAndPaging(paramMap); 
+			
+			body.put("list", ListAndPaging.get("list"));
+			
+			body.put("dataCount", ListAndPaging.get("dataCount"));
+			body.put("size", ListAndPaging.get("size"));
+			body.put("total_page", ListAndPaging.get("total_page"));
+			body.put("page", ListAndPaging.get("current_page"));
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getClaimList: ", e);
+			body.put("message", "나의 클레임 목록 정보를 불러오는 중 오류가 발생했습니다.");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
+		}
+	}
+	
+	// 내 활동 - 클레임 데이터
+	@GetMapping("/claims/{num}")
+	public ResponseEntity<?> getMyClaimInfo(
+			@PathVariable("num") long num,
+			@RequestParam(name = "type", required = false) String type
+			) {
+		Map<String, Object> body = new HashMap<>();
+		try {			
+			Map<String, Object> paramMap = new HashMap<>();
+
+			paramMap.put("type", type);
+			paramMap.put("num", num);
+			
+			Claim info = claimService.getClaimInfo(paramMap); 
+			
+			if(info == null) {
+				body.put("message", "현재 클레임 상세 정보가 없습니다.");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body); // 404
+			}
+			
+			switch (type) {
+				case "refund": 
+					body.put("info", info.getRefundObj());				
+					break;
+				
+				case "return": 
+					body.put("info", info.getReturnObj());				
+					break;
+				
+			}
+			
+			return ResponseEntity.ok(body); // 200 OK
+		} catch (Exception e) {
+			log.error("getClaimInfo: ", e);
+			body.put("message", "나의 클레임 정보를 불러오는 중 오류가 발생했습니다.");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body); // 500
 		}
 	}

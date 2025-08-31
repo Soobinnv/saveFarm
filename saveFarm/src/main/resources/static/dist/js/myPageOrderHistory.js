@@ -108,20 +108,33 @@ const renderMyPageMainHtml = function(data) {
   const generateActionButtons = (item) => {
     let buttons = [];
     if (item.orderState === 1 && item.detailState === 0) {
+		
       buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">결제취소</button>`);
+	  
     } else if (item.orderState >= 2 && item.orderState <= 4) {
       buttons.push(`<button type="button" class="btn-ghost btn-track-shipment" data-orderdetailnum="${item.orderDetailNum}">배송조회</button>`);
       if(item.detailState === 0) {
 	  	buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
       }
 	} else if (item.orderState === 5) {
+		
       if (item.reviewWrite === 0) {
          buttons.push(`<button type="button" class="btn-ghost btn-review-write" data-orderdetailnum="${item.orderDetailNum}">리뷰쓰기</button>`);
       }
+	  
 	  if (item.detailState === 0) {
-        buttons.push(`<button type="button" class="btn-ghost btn-return-request" data-orderdetailnum="${item.orderDetailNum}">반품요청</button>`);
         buttons.push(`<button type="button" class="btn-ghost btn-confirm-purchase" data-orderdetailnum="${item.orderDetailNum}">구매확정</button>`);
-      }
+      
+		  if (item.detailState !== 12) {
+		    buttons.push(`<button type="button" class="btn-ghost btn-return-request" data-orderdetailnum="${item.orderDetailNum}">반품요청</button>`);
+		  }	
+		  
+		  if (item.detailState !== 20) {
+		    buttons.push(`<button type="button" class="btn-ghost btn-cancel-order" data-orderdetailnum="${item.orderDetailNum}">환불요청</button>`);
+		  }	
+	
+	  }
+      
 	} 
     buttons.push(`<button type="button" class="btn-ghost" onclick="location.href='${contextPath}/products/${item.productNum}?classifyCode=${item.productClassification}'">재구매</button>`);
     return buttons.join('');

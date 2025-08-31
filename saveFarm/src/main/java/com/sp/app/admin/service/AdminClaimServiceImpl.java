@@ -11,6 +11,8 @@ import com.sp.app.admin.model.Claim;
 import com.sp.app.common.PaginateUtil;
 import com.sp.app.mapper.RefundMapper;
 import com.sp.app.mapper.ReturnMapper;
+import com.sp.app.model.Refund;
+import com.sp.app.model.Return;
 import com.sp.app.service.RefundService;
 import com.sp.app.service.ReturnService;
 
@@ -123,6 +125,76 @@ public class AdminClaimServiceImpl implements AdminClaimService {
 		}
 		
 		return dto;
+	}
+
+	@Override
+	public void updateClaimState(Claim dto) throws Exception {
+		try {
+			String type = dto.getListType();
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			switch (type) {
+				case "return": {
+					paramMap.put("num", dto.getNum());
+					
+					Return returnDto = returnService.getReturnInfo(paramMap);
+					
+					// 수정할 상태코드로 변경
+					returnDto.setStatus(dto.getStatus());
+					
+					returnService.updateReturn(returnDto, null);
+					break;
+				}
+				case "refund": {
+					paramMap.put("num", dto.getNum());
+					
+					Refund refundDto = refundService.getRefundInfo(paramMap);
+					
+					// 수정할 상태코드로 변경
+					refundDto.setStatus(dto.getStatus());
+					
+					// 환불 처리 완료
+					if(dto.getStatus() == 2) {
+						
+						int price = refundDto.getSalePrice() == 0 ? refundDto.getPrice() : refundDto.getSalePrice();
+						int qty = refundDto.getQuantity();
+						
+						int refundAmount = price * qty;
+						
+						// 환불 금액 DB 저장
+						refundDto.setRefundAmount(refundAmount);
+					}
+					
+					refundService.updateRefund(refundDto, null);
+					break;
+				}
+			}
+		} catch (Exception e) {
+			log.info("updateClaimState: ", e);
+			throw e;
+		}
+		
+	}
+
+	@Override
+	public void deleteClaim(long num, String type) throws Exception {
+		try {
+			
+			switch (type) {
+				case "return": {
+					returnService.deleteReturn(num, null);
+					break;
+				}
+				case "refund": {
+					refundService.deleteRefund(num, null);
+					break;
+				}
+			}
+		} catch (Exception e) {
+			log.info("deleteClaim: ", e);
+			throw e;
+		}
+		
 	}
 
 }

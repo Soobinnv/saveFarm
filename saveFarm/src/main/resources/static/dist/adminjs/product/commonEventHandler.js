@@ -42,6 +42,32 @@ const reviewTabConfig = {
     'tab-status-hidden': { url: '/api/admin/reviews', params: { reviewBlock: 1 }, pagingMethodName: 'reviewListPage', render: renderProductReviewListHTML }
 };
 
+// - 반품 하위 탭(전체, 접수, 처리중, 처리완료)
+const returnTabConfig = {
+    'tab-status-all': { url: '/api/admin/claims', params: {type:"return"}, pagingMethodName: 'returnListPage', render: renderReturnListHTML },
+    'tab-status-pending': { url: '/api/admin/claims', params: {type:"return", status: 0 }, pagingMethodName: 'returnListPage', render: renderReturnListHTML },
+    'tab-status-processing': { url: '/api/admin/claims', params: {type:"return", status: 1 }, pagingMethodName: 'returnListPage', render: renderReturnListHTML },
+    'tab-status-completed': { url: '/api/admin/claims', params: {type:"return", status: 2 }, pagingMethodName: 'returnListPage', render: renderReturnListHTML },
+    'tab-status-rejected': { url: '/api/admin/claims', params: {type:"return", status: 3 }, pagingMethodName: 'returnListPage', render: renderReturnListHTML }
+};
+
+// - 환불 하위 탭(전체, 접수, 처리중, 처리완료)
+const refundTabConfig = {
+    'tab-status-all': { url: '/api/admin/claims', params: {type:"refund"}, pagingMethodName: 'refundListPage', render: renderRefundListHTML },
+    'tab-status-pending': { url: '/api/admin/claims', params: {type:"refund", status: 0 }, pagingMethodName: 'refundListPage', render: renderRefundListHTML },
+    'tab-status-processing': { url: '/api/admin/claims', params: {type:"refund", status: 1 }, pagingMethodName: 'refundListPage', render: renderRefundListHTML },
+    'tab-status-completed': { url: '/api/admin/claims', params: {type:"refund", status: 2 }, pagingMethodName: 'refundListPage', render: renderRefundListHTML },
+    'tab-status-rejected': { url: '/api/admin/claims', params: {type:"refund", status: 3 }, pagingMethodName: 'refundListPage', render: renderRefundListHTML }
+};
+
+// - 클레임 하위 탭(전체, 접수, 처리중, 처리완료)
+const claimTabConfig = {
+    'tab-status-all': { url: '/api/admin/claims', params: '', pagingMethodName: 'allClaimListPage', render: renderAllClaimListHTML },
+    'tab-status-pending': { url: '/api/admin/claims', params: { status: 0 }, pagingMethodName: 'allClaimListPage', render: renderAllClaimListHTML },
+    'tab-status-processing': { url: '/api/admin/claims', params: { status: 1 }, pagingMethodName: 'allClaimListPage', render: renderAllClaimListHTML },
+    'tab-status-completed': { url: '/api/admin/claims', params: { status: 2 }, pagingMethodName: 'allClaimListPage', render: renderAllClaimListHTML },
+    'tab-status-rejected': { url: '/api/admin/claims', params: { status: 3 }, pagingMethodName: 'allClaimListPage', render: renderAllClaimListHTML }
+};
 
 // - 상세 정보 조회
 const detailViewConfig = {
@@ -85,13 +111,13 @@ $(function() {
 		        config = qnaTabConfig[navId];
 		        break;
 		    case 'return-card':
-		        config = qnaTabConfig[navId];
+		        config = returnTabConfig[navId];
 		        break;
 		    case 'refund-card':
-		        config = qnaTabConfig[navId];
+		        config = refundTabConfig[navId];
 		        break;
 		    case 'claim-card':
-		        config = qnaTabConfig[navId];
+		        config = claimTabConfig[navId];
 		        break;
 		    default:
 		        return false;

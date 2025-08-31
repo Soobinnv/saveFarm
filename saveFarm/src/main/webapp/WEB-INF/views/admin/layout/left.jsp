@@ -205,17 +205,17 @@
 				<ul class="collapse list-unstyled pl-4 w-100" id="ui-elements-withdraw">
 					<li class="nav-item">
 						<a id="refundList" class="nav-link pl-3" href="javascript:void(0);">
-							<span class="ml-1 item-text">주문 취소</span>
+							<span class="ml-1 item-text">환불 / 취소 관리</span>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a id="returnList" class="nav-link pl-3" href="javascript:void(0);">
-							<span class="ml-1 item-text">반품 관리</span>
+							<span class="ml-1 item-text">반품 및 교환 관리</span>
 						</a>
 					</li>
 					<li class="nav-item">
 						<a id="refundReturnList" class="nav-link pl-3" href="javascript:void(0);">
-							<span class="ml-1 item-text">취소/반품 통합 내역</span>
+							<span class="ml-1 item-text">클레임 통합 내역</span>
 						</a>
 					</li>
 				</ul>

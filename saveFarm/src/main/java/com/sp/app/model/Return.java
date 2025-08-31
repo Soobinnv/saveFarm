@@ -12,10 +12,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Return {
-	// 반품 정보
 	private long returnNum;
     private String reqDate;
     private String reason;
+    // 반품 수량
     private int quantity;
     // status - 0: 신청, 1: 처리중, 2: 처리 완료, 3: 기각
     private int status;
@@ -34,4 +34,15 @@ public class Return {
     
     // 반품 가능 수량
     private int claimableQuantity;
+    
+    // 추가 정보
+    private long productNum;
+	private String productName;
+	// salePrice: 개당 판매가
+	private int salePrice;
+	private String orderNum;
+	private int orderState;
+	
+	// 주문 수량
+	private int orderQuantity;
 }

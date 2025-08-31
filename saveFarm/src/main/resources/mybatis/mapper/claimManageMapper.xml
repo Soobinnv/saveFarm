@@ -14,7 +14,13 @@
 				<when test="status == 2">
 					AND status = 2
 				</when>
+				<when test="status == 3">
+					AND status = 3
+				</when>
 			</choose>
+		</if>
+		<if test="memberId != null">
+			AND po.memberId = #{memberId}
 		</if>
 	</sql>
 	

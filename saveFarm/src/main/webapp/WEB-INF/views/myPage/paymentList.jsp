@@ -29,7 +29,6 @@
       <ul>
         <li>주문내역 조회</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/paymentList', renderMyPageMainHtml);" clicked>주문/배송 조회</a></li>
-        <li style="margin-left: 10px;"><a href="javascript:void(0);">취소/교환/반품 조회</a></li>
         <li>정기 배송</li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subInfo', renderMySubInfoHtml);">정기배송 조회</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/subReview', renderMySubReviewHtml);">정기배송 리뷰</a></li>
@@ -38,6 +37,7 @@
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/reviews', renderMyReviewListHtml);">나의 리뷰</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/inquirys', renderMyInquiryListHtml);">나의 문의</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/qnas', renderMyQnaListHtml);">상품 문의</a></li>
+        <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/claims', renderClaimListHtml);">반품/환불 내역</a></li>
         <li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/faqs', renderFaqListHtml);">FAQ</a></li>
         <li>회원정보</li>
 		<li style="margin-left: 10px;"><a href="javascript:void(0);" onclick="loadContent('/api/myPage/destinations', renderDestinationHtml);">배송지 관리</a></li>

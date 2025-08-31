@@ -19,4 +19,5 @@ public interface RefundMapper {
 	public Refund getRefundInfo(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyRefundDataCount(long memberId);
+	public List<Integer> getMyProcessedRefundAmount(Map<String, Object> map);
 }

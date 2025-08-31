@@ -52,4 +52,8 @@ public class Claim {
     // 환불 정보
     private Refund refundObj;
     
+    // 주문 수량
+ 	private int orderQuantity;
+ 	// 환불 금액
+ 	private int refundAmount;
 }

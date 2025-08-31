@@ -31,15 +31,22 @@ public class RefundServiceImpl implements RefundService{
 			Map<String, Object> paramMap = new HashMap<>();
 			
 			paramMap.put("orderDetailNum", dto.getOrderDetailNum());
-			
-			// 주문 상세 - 주문 취소 요청 상태로 변경
-			paramMap.put("detailState", 4);
-			paramMap.put("stateMemo", "주문취소요청");
-			
 			paramMap.put("memberId", dto.getMemberId());
+			paramMap.put("orderQuantity", dto.getOrderQuantity());
+
+			int refundableQuantity = getRefundableQuantity(paramMap);
+			
+			// 환불가능 수량 = 환불 요청 수량
+			if(refundableQuantity == dto.getQuantity()) {
+				// 주문 상세 - 주문 취소 요청 상태로 변경
+				paramMap.put("detailState", 15);
+				paramMap.put("stateMemo", "환불요청");
+			} else {
+				paramMap.put("detailState", 17);
+				paramMap.put("stateMemo", "부분환불요청");				
+			}
 			
 			myPageService.updateOrderDetailState(paramMap);
-			
 		} catch (Exception e) {
 			log.info("insertRefund : ", e);
 			
@@ -47,10 +54,51 @@ public class RefundServiceImpl implements RefundService{
 		}
 	}
 
+	@Transactional
 	@Override
 	public void updateRefund(Refund dto, String uploadPath) throws Exception {
 		try {
 			mapper.updateRefund(dto);
+			
+			Map<String, Object> paramMap = new HashMap<>();
+			paramMap.put("orderDetailNum", dto.getOrderDetailNum());
+			paramMap.put("memberId", dto.getMemberId());
+			
+			int status = dto.getStatus();
+			
+			switch (status) {
+				// 환불 접수
+				case 1: {
+					paramMap.put("detailState", 21);
+					paramMap.put("stateMemo", "환불접수");
+					break;
+				}
+				// 환불 완료
+				case 2: {
+					// 상세 주문 수량
+					paramMap.put("orderQuantity", dto.getOrderQuantity());
+					
+					int refundableQuantity = getRefundableQuantity(paramMap);
+					
+					// 반품 가능 수량이 없는 경우
+					if(refundableQuantity == 0) {
+						paramMap.put("detailState", 20);
+						paramMap.put("stateMemo", "환불완료");
+					} else {
+						paramMap.put("detailState", 19);
+						paramMap.put("stateMemo", "부분환불완료");
+					}
+					break;
+				}
+				// 환불 기각
+				case 3: {
+					paramMap.put("detailState", 22);
+					paramMap.put("stateMemo", "환불불가");
+					break;
+				}
+			}
+			
+			myPageService.updateOrderDetailState(paramMap);
 		} catch (Exception e) {
 			log.info("updateRefund : ", e);
 			
@@ -154,6 +202,53 @@ public class RefundServiceImpl implements RefundService{
 		}
 		
 		return dto;
+	}
+
+	@Override
+	public List<Integer> getMyProcessedRefundAmount(Map<String, Object> map) {
+		List<Integer> list = null;
+		
+		try {
+			list = mapper.getMyProcessedRefundAmount(map);
+	
+			
+		} catch (Exception e) {
+			log.info("getMyProcessedRefundAmount : ", e);
+			
+			throw e;
+		}
+		
+		return list;
+	}
+
+	@Override
+	public int getRefundableQuantity(Map<String, Object> map) {
+		// 환불 가능 수량
+		int refundableQuantity = 0;
+		
+		try {
+			// 환불 불가 수량 목록
+			List<Integer> quantityList = getMyProcessedRefundAmount(map);
+
+			// 주문 수량
+			refundableQuantity = (int)map.get("orderQuantity");
+
+			for(int processedQuantity : quantityList) {
+				// 환불 가능 수량 = 주문 수량 - 환불 불가 수량
+				refundableQuantity = refundableQuantity - processedQuantity;
+				
+				if(refundableQuantity == 0) {
+					return 0;
+				}
+			}
+			
+		} catch (Exception e) {
+			log.info("getReturnableQuantity : ", e);
+			
+			throw e;
+		}
+		
+		return refundableQuantity;
 	}
 
 }

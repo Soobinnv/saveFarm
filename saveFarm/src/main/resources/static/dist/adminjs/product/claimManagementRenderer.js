@@ -43,7 +43,10 @@ const renderRefundListHTML = function(item, params) {
 					      <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
+					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">처리완료</button>
+					  </li>
+					  <li class="nav-item" role="presentation">
+					  	  <button class="nav-link ${params.status === 3 ? 'active' : ''}" id="tab-status-rejected" type="button" role="tab">기각</button>
 					  </li>
 				  </ul>
 	              <table data-type="refund" class="table datatables" id="contentTable">
@@ -84,7 +87,7 @@ const renderRefundListHTML = function(item, params) {
  */
 const renderRefundRows = function(list) {
     if (!list || list.length === 0) {
-        return `<tr><td colspan="7" class="text-center">표시할 환불 내역이 없습니다.</td></tr>`;
+        return `<tr><td colspan="7" class="text-center">표시할 환불 / 취소 내역이 없습니다.</td></tr>`;
     }
 
     return list.map(item => {
@@ -94,6 +97,8 @@ const renderRefundRows = function(list) {
             statusText = '처리중';
         } else if (item.status === 2) {
             statusText = '완료';
+        } else if (item.status === 3) {
+            statusText = '기각';
         }
 		
         return `
@@ -156,7 +161,10 @@ const renderReturnListHTML = function(item, params) {
 					      <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
+					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">처리완료</button>
+					  </li>
+					  <li class="nav-item" role="presentation">
+					      <button class="nav-link ${params.status === 3 ? 'active' : ''}" id="tab-status-rejected" type="button" role="tab">기각</button>
 					  </li>
 				  </ul>
 	              <table data-type="return" class="table datatables" id="contentTable">
@@ -197,17 +205,19 @@ const renderReturnListHTML = function(item, params) {
  */
 const renderReturnRows = function(list) {
     if (!list || list.length === 0) {
-        return `<tr><td colspan="7" class="text-center">표시할 반품 내역이 없습니다.</td></tr>`;
+        return `<tr><td colspan="7" class="text-center">표시할 반품 및 교환 내역이 없습니다.</td></tr>`;
     }
 
     return list.map(item => {
         // 'status' 값에 따라 상태 텍스트 결정
-        let statusText = '접수';
-        if (item.status === 1) {
-            statusText = '처리중';
-        } else if (item.status === 2) {
-            statusText = '완료';
-        }
+		let statusText = '접수';
+		if (item.status === 1) {
+		    statusText = '처리중';
+		} else if (item.status === 2) {
+		    statusText = '완료';
+		} else if (item.status === 3) {
+		    statusText = '기각';
+		}
 		
         return `
           <tr data-num="${item.returnNum}">
@@ -269,7 +279,10 @@ const renderAllClaimListHTML = function(item, params) {
 					      <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
 					  </li>
 					  <li class="nav-item" role="presentation">
-					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">완료</button>
+					      <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">처리완료</button>
+					  </li>
+					  <li class="nav-item" role="presentation">
+					       <button class="nav-link ${params.status === 3 ? 'active' : ''}" id="tab-status-rejected" type="button" role="tab">기각</button>
 					  </li>
 				  </ul>
 	              <table data-type="claim" class="table datatables" id="claimContentTable">
@@ -320,13 +333,15 @@ const renderAllClaimRows = function(list) {
         const typeBadge = item.listType === 'return'
             ? `<span>반품 및 교환</span>`
             : `<span>환불 / 취소</span>`;
-        
-        let statusText = '접수';
-        if (item.status === 1) {
-            statusText = '처리중';
-        } else if (item.status === 2) {
-            statusText = '완료';
-        }
+			
+		let statusText = '접수';
+			if (item.status === 1) {
+			    statusText = '처리중';
+			} else if (item.status === 2) {
+			    statusText = '완료';
+			} else if (item.status === 3) {
+			    statusText = '기각';
+			}
 
         // detail1: 반품사유 또는 환불금액
 		const detail1Text = item.listType === 'refund'
@@ -366,6 +381,8 @@ const renderRefundHTML = function(data) {
 
 	const info = data.info;
 
+	let refundAmountText = '환불예상금액';
+	
 	let statusText = '';
 	switch (info.status) {
 		case 0:
@@ -376,17 +393,85 @@ const renderRefundHTML = function(data) {
 			break;
 		case 2:
 			statusText = '환불완료';
+			refundAmountText = '환불금액(완료)';
 			break;
 		default:
 			statusText = '기각';
 	}
 
+	let orderStateText = '';
+
+	switch (info.orderState) {
+	    case 0:
+	        orderStateText = '입금대기';
+	        break;
+	    case 1:
+	        orderStateText = '결제완료';
+	        break;
+	    case 2:
+	        orderStateText = '발송처리';
+	        break;
+	    case 3:
+	        orderStateText = '배송시작';
+	        break;
+	    case 4:
+	        orderStateText = '배송중';
+	        break;
+	    case 5:
+	        orderStateText = '배송완료';
+	        break;
+	    case 6:
+	        orderStateText = '전체판매취소완료(관리자)';
+	        break;
+	    case 7:
+	        orderStateText = '부분판매취소완료(관리자)';
+	        break;
+	    case 8:
+	        orderStateText = '주문자전체주문취소완료(배송전)';
+	        break;
+	    case 9:
+	        orderStateText = '주문자부분주문취소완료(배송전)';
+	        break;
+	    case 10:
+	        orderStateText = '주문자전체반품취소완료(배송후)';
+	        break;
+	    case 11:
+	        orderStateText = '주문자부분반품취소완료(배송후)';
+	        break;
+	    default:
+	        orderStateText = '알 수 없음';
+	        break;
+	}
+	
+	// 환불 처리 이전일 경우
+	if(info.refundAmount === 0) {
+		
+		// 할인이 없는 경우
+		if(info.salePrice === 0) {
+			info.salePrice = info.price;			
+		}
+		
+		info.refundAmount = info.salePrice * info.quantity;		
+		
+	}
+	
 	const refundDate = info.refundDate ? info.refundDate : '처리 전';
 
-	const actionButtons = info.status === 0 ? `
-		<button type="button" class="btn btn-primary" onclick="updateRefundStatus(${info.refundNum}, 1);">환불 승인</button>&nbsp;&nbsp;
-		<button type="button" class="btn btn-danger" onclick="updateRefundStatus(${info.refundNum}, 2);">기각</button>
-	` : '';
+	let actionButtons = '';
+	if (info.status === 0) {
+	    actionButtons = `
+	        <button type="button" class="btn btn-primary" onclick="updateRefundStatus(${info.refundNum}, 1, ${info.orderQuantity});">환불 승인</button>&nbsp;&nbsp;
+	        <button type="button" class="btn btn-danger" onclick="updateRefundStatus(${info.refundNum}, 3, ${info.orderQuantity});">기각</button>
+	    `;
+	} else if (info.status === 1) {
+	    actionButtons = `
+	        <button type="button" class="btn btn-primary" onclick="updateRefundStatus(${info.refundNum}, 2, ${info.orderQuantity});">환불 처리 완료</button>
+	    `;
+	} else if (info.status === 2 || info.status === 3) {
+		actionButtons = `
+			<button type="button" class="btn btn-danger" onclick="deleteRefund(${info.refundNum});">내역 삭제</button>
+		`;
+	}
 
 	const html = `
 		<div class="card shadow-sm">
@@ -409,6 +494,18 @@ const renderRefundHTML = function(data) {
 							<td><span>${statusText}</span></td>
 						</tr>
 						<tr>
+							<th class="text-center">주문 번호</th>
+							<td>${info.orderNum}</td>
+							<th class="text-center">주문 상태</th>
+							<td>${orderStateText}</td>
+						</tr>
+						<tr>
+							<th class="text-center">상품 이름</th>
+							<td>${info.productName}</td>
+							<th class="text-center">상품 번호</th>
+							<td>${info.productNum}</td>
+						</tr>
+						<tr>
 							<th class="text-center">요청 회원</th>
 							<td>회원번호: ${info.memberId} (${info.email})</td>
 							<th class="text-center">주문 상세 번호</th>
@@ -421,10 +518,22 @@ const renderRefundHTML = function(data) {
 							<td>${refundDate}</td>
 						</tr>
 						<tr>
-							<th class="text-center">환불 금액</th>
+							<th class="text-center">${refundAmountText}</th>
 							<td class="fw-bold">${info.refundAmount}원</td>
 							<th class="text-center">환불 수단</th>
 							<td>${info.refundMethod}</td>
+						</tr>
+						<tr>
+							<th class="text-center">예금주명</th>
+							<td class="fw-bold">${info.accountHolder || '-'}</td>
+							<th class="text-center">은행명 / 계좌번호</th>
+							<td>${info.bankName || ''}&nbsp;${info.accountNumber || '-'}</td>
+						</tr>
+						<tr>
+							<th class="text-center">개당 판매 금액</th>
+							<td>${info.salePrice}원</td>
+							<th class="text-center">환불 수량</th>
+							<td class="fw-bold">${info.quantity}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -467,16 +576,70 @@ const renderReturnHTML = function(data) {
 			statusText = '반품 완료';
 			break;
 		default: 
-			statusText = '반품 불가';
+			statusText = '반품 기각';
 			break;
 	}
 
+	let orderStateText = '';
+	switch (info.orderState) {
+	    case 0:
+	        orderStateText = '입금대기';
+	        break;
+	    case 1:
+	        orderStateText = '결제완료';
+	        break;
+	    case 2:
+	        orderStateText = '발송처리';
+	        break;
+	    case 3:
+	        orderStateText = '배송시작';
+	        break;
+	    case 4:
+	        orderStateText = '배송중';
+	        break;
+	    case 5:
+	        orderStateText = '배송완료';
+	        break;
+	    case 6:
+	        orderStateText = '전체판매취소완료(관리자)';
+	        break;
+	    case 7:
+	        orderStateText = '부분판매취소완료(관리자)';
+	        break;
+	    case 8:
+	        orderStateText = '주문자전체주문취소완료(배송전)';
+	        break;
+	    case 9:
+	        orderStateText = '주문자부분주문취소완료(배송전)';
+	        break;
+	    case 10:
+	        orderStateText = '주문자전체반품취소완료(배송후)';
+	        break;
+	    case 11:
+	        orderStateText = '주문자부분반품취소완료(배송후)';
+	        break;
+	    default:
+	        orderStateText = '알 수 없음';
+	        break;
+	}
+	
 	const returnDate = info.returnDate ? info.returnDate : '처리 전';
 
-	const actionButtons = info.status === 0 ? `
-		<button type="button" class="btn btn-primary" onclick="updateReturnStatus(${info.returnNum}, 1);">반품 승인</button>&nbsp;&nbsp;
-		<button type="button" class="btn btn-danger" onclick="updateReturnStatus(${info.returnNum}, 3);">반품 불가</button>
-	` : '';
+	let actionButtons = '';
+	if (info.status === 0) {
+	    actionButtons = `
+	        <button type="button" class="btn btn-primary" onclick="updateReturnStatus(${info.returnNum}, 1);">반품 승인</button>&nbsp;&nbsp;
+	        <button type="button" class="btn btn-danger" onclick="updateReturnStatus(${info.returnNum}, 3);">기각</button>
+	    `;
+	} else if (info.status === 1) {
+	    actionButtons = `
+	        <button type="button" class="btn btn-primary" onclick="updateReturnStatus(${info.returnNum}, 2, ${info.orderQuantity});">반품 처리 완료</button>
+	    `;
+	} else if (info.status === 2 || info.status === 3) {
+		actionButtons = `
+			<button type="button" class="btn btn-danger" onclick="deleteReturn(${info.returnNum});">내역 삭제</button>
+		`;
+	}
 
 	const html = `
 		<div class="card shadow-sm mt-4">
@@ -497,6 +660,18 @@ const renderReturnHTML = function(data) {
 							<td>${info.returnNum}</td>
 							<th class="text-center">처리 상태</th>
 							<td><span>${statusText}</span></td>
+						</tr>
+						<tr>
+							<th class="text-center">주문 번호</th>
+							<td>${info.orderNum}</td>
+							<th class="text-center">주문 상태</th>
+							<td>${orderStateText}</td>
+						</tr>
+						<tr>
+							<th class="text-center">상품 이름</th>
+							<td>${info.productName}</td>
+							<th class="text-center">상품 번호</th>
+							<td>${info.productNum}</td>
 						</tr>
 						<tr>
 							<th class="text-center">요청 회원</th>

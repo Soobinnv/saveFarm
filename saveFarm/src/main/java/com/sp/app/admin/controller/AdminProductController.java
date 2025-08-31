@@ -377,6 +377,7 @@ public class AdminProductController {
 		}
 	}
 	
+
 	// 상품 문의 수정 (답변 등록)
 	@PutMapping("/api/admin/inquiries/{qnaNum}")
 	public ResponseEntity<?> updateQna(

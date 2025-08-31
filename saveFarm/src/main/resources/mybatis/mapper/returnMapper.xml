@@ -20,8 +20,6 @@
     </update>
 
     <delete id="deleteReturn" parameterType="long">
-        DELETE FROM returnImage 
-			WHERE returnNum = #{returnNum}
         DELETE FROM return WHERE returnNum = #{returnNum}
     </delete>
     
@@ -36,6 +34,9 @@
 				</when>
 				<when test="status == 2">
 					AND status = 2
+				</when>
+				<when test="status == 3">
+					AND status = 3
 				</when>
 			</choose>
 		</if>
@@ -52,6 +53,14 @@
 		</where>
 	</select>
 	
+	<select id="getMyProcessedReturnQuantity" parameterType="map" resultType="int">
+		SELECT QUANTITY
+		FROM return r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId} AND od.orderDetailNum = #{orderDetailNum} AND status != 2
+	</select>
+	
 	<select id="getMyReturnDataCount" parameterType="long" resultType="int">
 		SELECT COUNT(*)
 		FROM return r
@@ -62,9 +71,10 @@
 	
 	<select id="getReturnInfo" parameterType="map" resultType="com.sp.app.model.Return">
 		SELECT RETURNNUM, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate, REASON, QUANTITY, TO_CHAR(RETURNDATE, 'YYYY-MM-DD HH24:MI') RETURNDATE, r.ORDERDETAILNUM, STATUS,
-			po.memberId, email
+			po.memberId, email, od.productNum, productName, po.orderState, po.orderNum, qty orderQuantity
 		FROM return r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN product p ON p.productNum = od.productNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
 		JOIN member2 m ON po.memberId = m.memberId
 		<where>

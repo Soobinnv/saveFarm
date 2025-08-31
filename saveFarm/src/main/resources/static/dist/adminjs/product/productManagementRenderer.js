@@ -274,10 +274,10 @@ const renderStockEditHTML = function(productInfo) {
 			</div>
 		</div>
 		<div class="card-footer text-end bg-light">
-			<button type="button" class="btn btn-secondary">취소</button>
 			<button data-num="${productInfo.productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn">
 				<i class="fas fa-save me-1"></i> 저장하기
 			</button>
+			<button type="button" class="btn btn-secondary">취소</button>
 		</div>
 	</div>
 	`;
@@ -314,7 +314,7 @@ const renderStockUpdateFromSupplyHTML = function(productInfo, initialSupplyList)
 					<label class="form-label"><strong>납품 내역 선택 (다중 선택 가능)</strong></label>
 					<div id="supply-checkbox-list" class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
 						${hasSupplies 
-							? createSupplyCheckboxesHTML(initialSupplyList) 
+							? createSupplyboxesHTML(initialSupplyList) 
 							: '<p class="text-muted mb-0">처리할 납품 내역이 없습니다.</p>'
 						}
 					</div>
@@ -333,10 +333,10 @@ const renderStockUpdateFromSupplyHTML = function(productInfo, initialSupplyList)
 			</div>
 		</div>
 		<div class="card-footer text-end bg-light">
-			<button type="button" class="btn btn-secondary">취소</button>
 			<button data-num="${productInfo.productNum}" type="button" class="btn btn-primary ms-2" id="save-stock-btn" ${!hasSupplies ? 'disabled' : ''}>
 				<i class="fas fa-save me-1"></i> 저장하기
 			</button>
+			<button type="button" class="btn btn-secondary">취소</button>
 		</div>
 	</div>
 	`;
@@ -348,16 +348,37 @@ const renderStockUpdateFromSupplyHTML = function(productInfo, initialSupplyList)
  * @param {Array<object>} supplyList - 납품 목록 배열
  * @returns {string} 체크박스 HTML 문자열
  */
-const createSupplyCheckboxesHTML = function(supplyList) {
+const createSupplyboxesHTML = function(supplyList, page='') {
 	if (!supplyList || supplyList.length === 0) {
 		return '';
 	}
 
+	// 구출 상품 등록 시 한 가지 납품 내역만 선택 가능 - radio 버튼 사용
+	if (page === 'INSERTRESCUEDPRODUCT') {
+		return supplyList.map(supply => `
+			<div class="form-check">
+				<input 
+					class="form-check-input supply-radio supply-input" 
+					type="radio"
+					name="supplySelection"
+					value="${supply.supplyNum}" 
+					id="supply-${supply.supplyNum}" 
+					data-num="${supply.supplyNum}"
+					data-quantity="${supply.supplyQuantity}"
+					data-variety-num="${supply.varietyNum}"
+					data-variety-name="${supply.varietyName}">
+				<label class="" for="supply-${supply.supplyNum}">
+					농가명: [${supply.farmName}] / 품종명: ${supply.varietyName} / 납품 수량: ${supply.supplyQuantity} / 납품일: ${supply.harvestDate}
+				</label>
+			</div>
+		`).join('');
+	}
+		
 	return supplyList.map(supply => `
 		<div class="form-check checkbox-container">
 			<input 
-				class="form-check-input supply-checkbox" 
-				type="checkbox" 
+				class="form-check-input supply-checkbox supply-input" 
+				type="checkbox"  
 				value="${supply.supplyNum}" 
 				id="supply-${supply.supplyNum}" 
 				data-num="${supply.supplyNum}"
@@ -419,7 +440,7 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 								<label class="form-label"><strong>납품 내역 선택</strong></label>
 								<div id="supply-checkbox-list" class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
 									${hasSupplies 
-										? createSupplyCheckboxesHTML(supplyList) 
+										? createSupplyboxesHTML(supplyList, 'INSERTRESCUEDPRODUCT') 
 										: '<p class="text-muted mb-0">처리할 납품 내역이 없습니다.</p>'
 									}
 								</div>
@@ -478,10 +499,10 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 				</div>
 			</div>
 			<div class="card-footer text-end bg-light">
-				<button type="button" class="btn btn-secondary">취소</button>
 				<button data-method="post" type="button" class="btn btn-primary ms-2" id="save-product-btn">
 					<i class="fas fa-save me-1"></i> 저장하기
 				</button>
+				<button type="button" class="btn btn-secondary">취소</button>
 			</div>
 		</form>
 	</div>
@@ -613,7 +634,7 @@ const renderFarmProductListHTML = function(item, params) {
 				  <ul class="nav nav-tabs" id="myTab" role="tablist">
 				    <li class="nav-item" role="presentation">
 				        <button class="nav-link ${params.state === '' || typeof params.state === 'undefined' 
-				  			? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체상품</button>
+				  			? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체납품</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
 				        <button class="nav-link ${params.state === 1 ? 'active' : ''}" id="tab-status-unapproved" type="button" role="tab">승인대기</button>
@@ -1069,7 +1090,7 @@ const renderProductReviewListHTML = function(item, params) {
 				  			? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체리뷰</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
-				        <button class="nav-link ${params.reviewBlock === 0 ? 'active' : ''}" id="tab-status-visible" type="button" role="tab">보임</button>
+				        <button class="nav-link ${params.reviewBlock === 0 ? 'active' : ''}" id="tab-status-visible" type="button" role="tab">게시</button>
 				    </li>
 				    <li class="nav-item" role="presentation">
 				        <button class="nav-link ${params.reviewBlock === 1 ? 'active' : ''}" id="tab-status-hidden" type="button" role="tab">숨김</button>

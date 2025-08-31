@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Refund {
-	// 환불 정보
 	private long refundNum;
+	// 환불 수량
     private int refundAmount;
     private String reqDate;
     private String refundDate;
@@ -35,4 +35,21 @@ public class Refund {
     // 환불 가능 수량
     private int claimableQuantity;
     
+    // 추가 정보
+    private long productNum;
+	private String productName;
+	private int price;
+	// salePrice: 할인된 가격
+	private int salePrice;
+	// quantity: 환불 수량
+	private int quantity;
+	private String orderNum;
+	private int orderState;
+	
+	// 주문 수량
+	private int orderQuantity;
+	
+	private String bankName;
+	private String accountNumber;
+	private String accountHolder;
 }

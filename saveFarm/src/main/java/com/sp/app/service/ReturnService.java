@@ -16,4 +16,6 @@ public interface ReturnService {
 	public Return getReturnInfo(Map<String, Object> map);
 	public int getDataCount(Map<String, Object> map);
 	public int getMyReturnDataCount(long memberId);
+	public int getReturnableQuantity(Map<String, Object> map);
+	public List<Integer> getMyProcessedReturnQuantity(Map<String, Object> map);
 }

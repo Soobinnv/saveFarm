@@ -3,21 +3,36 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sp.app.mapper.RefundMapper">
 	<insert id="insertRefund" parameterType="com.sp.app.model.Refund">
-		<selectKey keyProperty="refundNum" resultType="long" order="BEFORE">
-            SELECT refund_seq.NEXTVAL FROM dual
-        </selectKey>
-		INSERT INTO refund(refundNum, refundAmount, refundDate, refundMethod, orderDetailNum, status)
-			VALUES (#{refundNum}, #{refundAmount}, SYSDATE, #{refundMethod}, #{orderDetailNum}, #{status})
+	    <selectKey keyProperty="refundNum" resultType="long" order="BEFORE">
+	        SELECT refund_seq.NEXTVAL FROM dual
+	    </selectKey>
+	    INSERT INTO refund(
+	        refundNum, refundAmount, refundDate, refundMethod, orderDetailNum, status,
+	        bankName, accountNumber, accountHolder, reqDate
+	    )
+	    VALUES (
+	        #{refundNum}, #{refundAmount}, #{refundDate, jdbcType=VARCHAR}, #{refundMethod}, #{orderDetailNum}, #{status},
+	        #{bankName, jdbcType=VARCHAR}, #{accountNumber, jdbcType=VARCHAR}, #{accountHolder, jdbcType=VARCHAR}, SYSDATE
+	    )
 	</insert>
 	
 	<update id="updateRefund" parameterType="com.sp.app.model.Refund">
-		UPDATE refund SET refundAmount = #{refundAmount}, refundMethod = #{refundMethod}, status = #{status}
-			WHERE refundNum = #{refundNum}
+    UPDATE refund
+    <set>
+        <if test="refundAmount != null">
+            refundAmount = #{refundAmount},
+        </if>
+        <if test="refundMethod != null and refundMethod != ''">
+            refundMethod = #{refundMethod},
+        </if>
+        <if test="status != null">
+            status = #{status},
+        </if>
+    </set>
+    WHERE refundNum = #{refundNum}
 	</update>
 	
 	<delete id="deleteRefund" parameterType="long">
-		DELETE FROM refundImage 
-			WHERE refundNum = #{refundNum}
 		DELETE FROM refund WHERE refundNum = #{refundNum}
 	</delete>
 	
@@ -32,6 +47,9 @@
 				</when>
 				<when test="status == 2">
 					AND status = 2
+				</when>
+				<when test="status == 3">
+					AND status = 3
 				</when>
 			</choose>
 		</if>
@@ -49,9 +67,11 @@
 
 	<select id="getRefundInfo" parameterType="map" resultType="com.sp.app.model.Refund">
 		SELECT refundNum, refundAmount, TO_CHAR(refundDate, 'YYYY-MM-DD HH24:MI') refundDate,
-			   refundMethod, r.orderDetailNum, status, po.memberId, email, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate
+			   refundMethod, r.orderDetailNum, status, po.memberId, email, TO_CHAR(reqDate, 'YYYY-MM-DD HH24:MI') reqDate,
+			   od.productNum, productName, quantity, price, salePrice, po.orderNum, po.orderState, qty orderQuantity, bankName, accountNumber, accountHolder
 		FROM refund r
 		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN product p ON p.productNum = od.productNum
 		JOIN productOrder po ON po.orderNum = od.orderNum
 		JOIN member2 m ON po.memberId = m.memberId
 		<where>
@@ -72,6 +92,14 @@
 		</where>
 		ORDER BY reqDate DESC
 		OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
+	</select>
+	
+	<select id="getMyProcessedRefundAmount" parameterType="map" resultType="int">
+		SELECT refundAmount
+		FROM refund r
+		JOIN orderDetail od ON r.orderDetailNum = od.orderDetailNum
+		JOIN productOrder po ON po.orderNum = od.orderNum
+		WHERE po.memberId = #{memberId} AND od.orderDetailNum = #{orderDetailNum}
 	</select>
 	
 	<select id="getMyRefundDataCount" parameterType="long" resultType="int">

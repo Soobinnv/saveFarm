@@ -71,6 +71,21 @@ $(function() {
 		let url = contextPath + '/api/myPage/return/' + orderDetailNum;
 		let params = new FormData($form[0]);
 		
+		const reason = $form.find('#reason').val();
+		
+		const minLength = 10;
+		const maxLength = 1300;
+		
+		if (!reason.trim()) {
+		    alert('반품 사유를 입력해주세요.');
+		    return false; 
+		}
+		
+		if (reason.length < minLength || reason.length > maxLength) {
+		    alert(`반품 사유는 최소 ${minLength}자, 최대 ${maxLength}자까지 입력할 수 있습니다.`);
+		    return;
+		}
+		
 		const fn = function(data) {
 			loadContent('/api/myPage/paymentList', renderMyPageMainHtml);
 		}
@@ -141,9 +156,9 @@ $(function() {
 			orderDate: $orderItem.data('orderdate'),
 			productNum: $orderItem.data('productnum'),
 		}
-		
+
 		// 등록 - 리뷰 객체 X
-		renderReviewForm(orderDetailObject, null);
+		renderReviewForm(orderDetailObject, null);			
 	});
 	
 	// 반품 form
@@ -159,7 +174,14 @@ $(function() {
 			qty: $orderItem.data('qty')
 		}
 		
-		renderReturnForm(orderDetailObject);
+		let url = contextPath + '/api/myPage/return/' + orderDetailObject.orderDetailNum + "/available-quantity";
+
+		const fn = function(data) {
+			renderReturnForm(orderDetailObject, data);	
+		}
+
+		ajaxRequest(url, 'get', {orderQuantity:orderDetailObject.qty}, false, fn);
+		
 	});
 	
 	// 환불 form
@@ -172,12 +194,76 @@ $(function() {
 			productName: $orderItem.data('productname'),
 			orderDate: $orderItem.data('orderdate'),
 			productNum: $orderItem.data('productnum'),
+			qty: $orderItem.data('qty')
 		}
 		
-		renderRefundForm(orderDetailObject);
+		let url = contextPath + '/api/myPage/refund/' + orderDetailObject.orderDetailNum + "/available-quantity";
+		
+		const fn = function(data) {
+			renderRefundForm(orderDetailObject, data);				
+		}
+
+		ajaxRequest(url, 'get', {orderQuantity:orderDetailObject.qty}, false, fn);
 	});
 	
+	// 반품/문의 - 필터 tab, 상세 - 목록 불러오기 버튼
+	$('main').on('click', 'button.nav-link', function(e) {
+		const navId = $(e.target).attr('id');
+		let config = claimTabConfig[navId];
+		
+		if (config) {
+			loadContent(config.url, config.render, config.params, config.pagingMethodName);
+		}
+	});
 	
+	// 반품/문의 - 상세 보기
+	$('main').on('click', '#claimContentTable tbody tr', function(e) {
+		
+		const $tr = $(e.target).closest('tr');
+		
+		const num = $tr.attr('data-num');
+		const type = $tr.attr('data-type');
+		
+		let url = '/api/myPage/claims/' + num;
+		let params = '';
+		let render = '';
+		
+		switch(type) {
+			case 'refund': 
+				params = {type:"refund"};
+				render = renderRefundHTML;
+				break;
+			case 'return': 
+				params = {type:"return"};
+				render = renderReturnHTML;
+				break;
+		}
+		
+		loadContent(url, render, params);
+	});
+	
+	// 주문 상세 정보
+	$('main').on('click', '.claim-order-details', function() {
+	    let orderNum = $(this).attr('data-orderNum');
+	    let orderDetailNum = $(this).attr('data-orderDetailNum');
+
+		let params = { 
+		        orderNum: orderNum, 
+		        orderDetailNum: orderDetailNum,
+		        _: new Date().getTime() 
+		};
+		let url = contextPath + '/api/myPage/detailView';
+		
+	    const fn = function(data) {
+	       const detailHtml = renderOrderDetailHtml(data);
+	       
+	       $('.order-detail-view').html(detailHtml);
+	       
+		   $('#orderDetailViewDialogModal').modal('show');
+	    };
+		
+		ajaxRequest(url, 'get', params, 'json', fn);
+	});
 });
 
 /**
@@ -427,7 +513,7 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
 		  </div>
 		  <div class="mb-3">
 		    <label for="review" class="form-label">리뷰 내용</label>
-		    <textarea class="form-control" id="review" name="review" rows="5" placeholder="솔직한 리뷰를 남겨주세요." maxlength="4000" required>${mode === "update" ? `${reviewObject.review}` : ""}</textarea>
+		    <textarea class="form-control" id="review" name="review" rows="5" placeholder="솔직한 리뷰를 남겨주세요." maxlength="1300" required>${mode === "update" ? `${reviewObject.review}` : ""}</textarea>
 		  </div>
 		  <div class="mb-3">
 			<label for="reviewImages" class="form-label">사진 첨부 (선택)</label>
@@ -452,14 +538,16 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
 /**
  * 마이 페이지 - 반품 form 렌더링
  * @param {object} orderDetailObject - 주문 상세 정보 객체
+ * @param {object} data - 반품 가능 수량 데이터
+ * @param {object} data.returnableQuantity - 반품 가능 수량
  * @returns {void} #content에 HTML 렌더링
  */
-const renderReturnForm = function(orderDetailObject = null) {	
+const renderReturnForm = function(orderDetailObject = null, data) {	
 	const html = `
 	<div class="container mt-5">
 	    <div class="card">
 	        <div class="card-header">
-	            <h3 class="mb-0">반품 신청 📦</h3>
+	            <h3 class="mb-0">반품 및 교환 신청 📦</h3>
 	        </div>
 	        <div class="card-body">
 	            <div class="row mb-4 align-items-center">
@@ -480,7 +568,8 @@ const renderReturnForm = function(orderDetailObject = null) {
 	                
 	                <div class="mb-3">
 	                    <label for="quantity" class="form-label fw-bold">반품 수량</label>
-	                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="${orderDetailObject.qty}" value="1" required>
+	                    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="${data.returnableQuantity}" value="1" required>
+	                    <input type="hidden" id="orderQuantity" name="orderQuantity" value="${orderDetailObject.qty}">
 	                </div>
 	                
 	                <div class="mb-4">
@@ -490,7 +579,7 @@ const renderReturnForm = function(orderDetailObject = null) {
 	                </div>
 	                
 	                <div class="d-grid gap-2">
-	                    <button data-order-detail-num="${orderDetailObject.orderDetailNum}" type="button" class="btn-return-insert btn btn-success btn-lg">반품 신청하기</button>
+	                    <button data-order-detail-num="${orderDetailObject.orderDetailNum}" type="button" class="btn-return-insert btn btn-success btn-lg">반품 및 교환 신청하기</button>
 	                </div>
 	            </form>
 	        </div>
@@ -506,9 +595,11 @@ const renderReturnForm = function(orderDetailObject = null) {
 /**
  * 마이 페이지 - 환불 form 렌더링
  * @param {object} orderDetailObject - 주문 상세 정보 객체
+ * @param {object} data - 환불 가능 수량 데이터
+ * @param {object} data.refundableQuantity - 환불 가능 수량
  * @returns {void} #content에 HTML 렌더링
  */
-const renderRefundForm = function(orderDetailObject = null) {	
+const renderRefundForm = function(orderDetailObject = null, data) {	
 	const html = `
 	<div class="container mt-5">
 	    <div class="card">
@@ -535,7 +626,11 @@ const renderRefundForm = function(orderDetailObject = null) {
 	                        <option value="bank_transfer">계좌 이체</option>
 	                    </select>
 	                </div>
-
+					<div class="mb-3">
+					    <label for="quantity" class="form-label fw-bold">환불 수량</label>
+					    <input type="number" class="form-control" id="quantity" name="quantity" min="1" max="${data.refundableQuantity}" value="1" required>
+						<input type="hidden" id="orderQuantity" name="orderQuantity" value="${orderDetailObject.qty}">
+					</div>
 	                <div id="bankInfo" class="border p-3 rounded mb-4" style="display: none;">
 	                    <h6 class="mb-3">환불 계좌 정보 입력</h6>
 	                    <div class="mb-3">
@@ -563,6 +658,14 @@ const renderRefundForm = function(orderDetailObject = null) {
 	`;
 	
 	$('#content').html(html);
+	
+	$('#refundMethod').on('change', function() {
+		if ($(this).val() === 'bank_transfer') {
+			$('#bankInfo').slideDown();
+		} else {
+			$('#bankInfo').slideUp();
+		}
+	});
 }
 
 /**
@@ -571,9 +674,27 @@ const renderRefundForm = function(orderDetailObject = null) {
  */
 function manageReview(orderDetailNum, mode) {
 	let url = contextPath + '/api/myPage/reviews/' + orderDetailNum;
-	// const params = new FormData($('#reviewForm')[0]); 
-	// const method = mode === "insert" ? "POST" : "PUT";
 	let params = null;
+	
+	const form = document.reviewForm;
+	const reviewTitle = $(form.review).val();
+	const reviewContent = $(form.review).val();
+
+	if (!reviewTitle.trim()) {
+		alert('리뷰 제목을 입력해주세요.');
+		return false;
+	}
+	
+	
+	if (!reviewContent.trim()) {
+		alert('리뷰 내용을 입력해주세요.');
+		return false;
+	}
+
+	if (reviewContent.length >= 1300) {
+		alert(`리뷰 내용은 1300자를 초과할 수 없습니다.`);
+		return false;
+	}
 	
 	switch (mode) {
 		case 'insert':
@@ -768,35 +889,522 @@ function reviewListPage(page) {
 }
 
 /**
- * 마이 페이지 - 내 활동 - FAQ
+ * 마이 페이지 - 내 활동 - FAQ 페이징 처리
+ * @param {number} page - 현재 페이지
+ */
+function faqListPage(page) {
+	let parameter = {pageNo:page};
+	loadContent('/api/myPage/faqs', renderFaqListHtml, parameter)
+}
+
+/**
+ * 마이 페이지 - FAQ 렌더러
  * @param {object} data - FAQ 데이터
- * @param {Array<object>} data.list - FAQ 객체 배열
+ * @param {Array<object>} data.list - 현재 페이지의 FAQ 객체 배열
+ * @param {string} data.paging - 페이징 HTML 문자열
  * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
  */
 const renderFaqListHtml = function(data) {	
+	
 	let html = `
 		<div class="container-lg p-5 p-sm-5">
 			<div class="mb-5">
 				<h3 class="display-6 fw-bold text-dark">FAQ</h3>
-				<p class="text-muted">자주 묻는 질문</p>
-			</div>			
-	`; 
+				<p class="text-muted">자주 묻는 질문에 대한 답변을 확인해 보세요.</p>
+			</div>
+    `;
 	
-	if(! data.list || data.list.length === 0) {
+	if (!data.list || data.list.length === 0) {
 		html += `
 			<div class="text-center mt-3 p-5 border rounded">
-		        <iconify-icon icon="mdi:comment-off-outline" class="fs-1 text-muted"></iconify-icon>
+		        <i class="bi bi-info-circle fs-1 text-muted"></i>
 		        <p class="mt-3 mb-0 text-muted">아직 등록된 FAQ가 없습니다.</p>
 		    </div>
-		`;
+        </div> 
+        `; 
 		return html;
 	}
 	
-	html += data.list.map(item => `
+	html += `
+        <div class="faq-list-wrapper mt-4">
+            <div class="faq-list-header row text-center d-none d-md-flex">
+                <div class="col-md-2 text-md-start"><strong> 분류</strong></div>
+                <div class="col-md-6 text-md-start"><strong>제목</strong></div>
+                <div class="col-md-2 text-md-start"><strong>작성자</strong></div>
+                <div class="col-md-2 text-md-start"><strong>작성일</strong></div>
+            </div>
+            <div class="accordion accordion-flush mt-4" id="faqAccordion">
+                ${data.list.map((dto, index) => {
+					let regDate = new Date(dto.regDate);
+						
+					let year = regDate.getFullYear();
+					let month = regDate.getMonth() + 1;
+					let day = regDate.getDate();
+						
+					let formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+					
+                    const collapseId = `faq-content-${dto.num || index}`;
+                    
+                    return `
+                        <div class="accordion-item pt-3">
+                            <h2 class="accordion-header">
+                                <button style="padding: 0px;" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                                    <div class="row w-100 align-items-center text-md-center">
+                                        <div class="col-12 col-md-2 text-start text-md-start"><span class="d-md-none"><strong>  분류 | </strong></span> 마이페이지</div>
+                                        <div class="col-12 col-md-6 text-start">${dto.subject}</div>
+                                        <div class="col-12 col-md-2 text-start text-md-start"><span class="d-md-none"><strong>작성자 | </strong></span>${dto.name}</div>
+                                        <div class="col-12 col-md-2 text-start text-md-start"><span class="d-md-none"><strong>작성일 | </strong></span>${formattedDate}</div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    ${dto.content}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
 
-		
-	`).join('');
-	html += `</div>`;
+	html += `
+        <div class="myPagePaginate mt-5">
+            ${data.paging}
+        </div>
+    `;
+
+	html += `</div>`; 
 	
 	return html;
 }
+
+/**
+ * 내 클레임 리스트 HTML 문자열 생성 
+ * @param {object} item - 클레임 데이터 객체
+ * @param {object} params - 요청 파라미터
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderClaimListHtml = function(item, params) {
+	params = params || {};
+	
+	const tbodyHTML = renderAllClaimRows(item.list);
+	
+	const html = `
+	<div class="container-lg p-4 p-sm-5">
+		<div class="mb-5">
+			<h3 class="display-6 fw-bold text-dark">나의 반품/환불 내역</h3>
+			<p class="text-muted">신청하신 반품, 교환, 환불, 취소 내역을 확인하실 수 있습니다.</p>
+		</div>
+	  
+		<div class="card shadow-sm">
+			<div class="card-body">
+			  <div class="d-flex justify-content-between align-items-center mb-3">
+				  <div class="text-muted small">
+					총 ${item.dataCount}개 (${item.page}/${item.total_page}페이지)
+				  </div>
+			  </div>
+			  
+			  <ul class="nav nav-tabs nav-fill mb-3" id="myTab" role="tablist">
+				  <li class="nav-item" role="presentation">
+					  <button class="nav-link ${params.status === '' || typeof params.status === 'undefined' ? 'active' : ''}" id="tab-status-all" type="button" role="tab">전체</button>
+				  </li>
+				  <li class="nav-item" role="presentation">
+					  <button class="nav-link ${params.status === 0 ? 'active' : ''}" id="tab-status-pending" type="button" role="tab">접수</button>
+				  </li>
+				  <li class="nav-item" role="presentation">
+					  <button class="nav-link ${params.status === 1 ? 'active' : ''}" id="tab-status-processing" type="button" role="tab">처리중</button>
+				  </li>
+				  <li class="nav-item" role="presentation">
+					  <button class="nav-link ${params.status === 2 ? 'active' : ''}" id="tab-status-completed" type="button" role="tab">처리완료</button>
+				  </li>
+				  <li class="nav-item" role="presentation">
+					   <button class="nav-link ${params.status === 3 ? 'active' : ''}" id="tab-status-rejected" type="button" role="tab">기각</button>
+				  </li>
+			  </ul>
+
+			  <div class="table-responsive">
+				  <table class="table table-hover align-middle text-center" id="claimContentTable">
+					<thead class="table-light">
+					  <tr>
+						<th scope="col">구분</th>
+						<th scope="col">신청번호</th>
+						<th scope="col">상세내용1</th>
+						<th scope="col">상세내용2</th>
+						<th scope="col">신청일</th>
+						<th scope="col">처리일</th>
+						<th scope="col">상태</th>
+					  </tr>
+					</thead>
+					<tbody>
+					  ${tbodyHTML}
+					</tbody>
+				  </table>
+			  </div>
+			  <div class="row mt-4">
+				<div class="col-sm-12 col-md-12 page-navigation">
+				</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	`;
+	return html;
+}
+
+/**
+ * 전체 클레임 목록 테이블 - tbody HTML 생성
+ * @param {Array<object>} list - 클레임 데이터 리스트
+ * @returns {string} tbody에 렌더링될 HTML 문자열
+ */
+const renderAllClaimRows = function(list) {
+	const maxLength = 20; 
+	
+    if (!list || list.length === 0) {
+        return `<tr><td colspan="7" class="text-center p-5 text-muted">표시할 클레임 내역이 없습니다.</td></tr>`;
+    }
+
+    return list.map(item => {
+        const typeBadge = item.listType === 'return'
+            ? `<span class="badge bg-secondary-subtle text-secondary-emphasis rounded-pill">반품/교환</span>`
+            : `<span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">환불/취소</span>`;
+			
+		let statusBadge = '';
+		switch(item.status) {
+			case 1: 
+				statusBadge = `<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">처리중</span>`;
+				break;
+			case 2: 
+				statusBadge = `<span class="badge bg-success-subtle text-success-emphasis rounded-pill">완료</span>`;
+				break;
+			case 3:
+				statusBadge = `<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">기각</span>`;
+				break;
+			default: 
+				statusBadge = `<span class="badge bg-light text-dark rounded-pill">접수</span>`;
+				break;
+		}
+
+		const detail1Text = item.listType === 'refund'
+			? `${parseInt(item.detail1, 10).toLocaleString()}원`
+			: truncateText(item.detail1, maxLength);
+
+        let detail2Text = item.listType === 'return'
+            ? `${item.detail2}개`
+            : truncateText(item.detail2, maxLength);
+			
+		switch(detail2Text) {
+			case 'credit_card': 
+				detail2Text = '신용카드';
+				break;
+			case 'bank_transfer': 
+				detail2Text = '계좌이체';
+				break;
+		}
+			
+        return `
+          <tr data-num="${item.num}" data-type="${item.listType}" style="cursor: pointer;">
+            <td>${typeBadge}</td>
+            <td>${item.num}</td>
+            <td>${detail1Text}</td>
+            <td>${detail2Text}</td>
+            <td>${item.reqDate || '-'}</td>
+            <td>${item.processDate || '-'}</td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
+    }).join(''); 
+};
+
+/**
+ * 문자열이 긴 경우 '...' 처리 함수
+ * @param {string} text - 원본 문자열
+ * @param {number} maxLength - 최대 길이
+ * @returns {string} 줄임 처리된 문자열
+ */
+const truncateText = function(text, maxLength) {
+    if (!text) return "";
+    if (text.length > maxLength) {
+        return text.substring(0, maxLength) + '...';
+    }
+    return text;
+}; 
+
+/**
+ * 반품 상세 정보 HTML 문자열 생성
+ * @param {object} data - 서버에서 받은 데이터
+ * @param {object} data.info - 반품 상세 정보가 담긴 객체
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderReturnHTML = function(data) {
+	const item = data.info;
+
+	if (!item) {
+		return `
+		<div class="alert alert-danger" role="alert">
+		  반품 정보를 불러오는 데 실패했습니다.
+		</div>
+		`;
+	}
+	
+	let statusBadge = '';
+	switch(item.status) {
+		case 1: 
+			statusBadge = `<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">처리중</span>`;
+			break;
+		case 2: 
+			statusBadge = `<span class="badge bg-success-subtle text-success-emphasis rounded-pill">완료</span>`;
+			break;
+		case 3:
+			statusBadge = `<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">기각</span>`;
+			break;
+		default: 
+			statusBadge = `<span class="badge bg-light text-dark rounded-pill">접수</span>`;
+			break;
+	}
+	
+	let html = `
+	<div class="container-lg p-4 p-sm-5">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h3 class="display-6 fw-bold text-dark">반품 상세 내역</h3>
+				<p class="text-muted mb-0">반품번호: ${item.returnNum}</p>
+			</div>
+			${statusBadge}
+		</div>
+	  
+		<div class="card shadow-sm">
+			<div class="card-body p-4">
+				<div class="row g-4">
+					<div class="col-md-6">
+						<h5 class="card-title fw-bold mb-3">주문 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-4">주문번호</dt>
+							<dd class="col-sm-8">
+							<a href="javascript:void(0);" class="text-decoration-none claim-order-details"
+								data-ordernum="${item.orderNum}"
+								data-orderdetailnum="${item.orderDetailNum}"
+								>
+							${item.orderNum}</a></dd>
+							<dt class="col-sm-4">주문자 ID</dt>
+							<dd class="col-sm-8">${item.memberId}</dd>
+							<dt class="col-sm-4">이메일</dt>
+							<dd class="col-sm-8">${item.email}</dd>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						<h5 class="card-title fw-bold mb-3">상품 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-4">상품명</dt>
+							<dd class="col-sm-8">${item.productName}</dd>
+							<dt class="col-sm-4">총 주문수량</dt>
+							<dd class="col-sm-8">${item.orderQuantity}개</dd>
+						</dl>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<div class="row g-4">
+					<div class="col-md-12">
+						<h5 class="card-title fw-bold mb-3">반품 요청 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-2">요청일</dt>
+							<dd class="col-sm-10">${item.reqDate}</dd>
+							<dt class="col-sm-2">반품 수량</dt>
+							<dd class="col-sm-10">${item.quantity}개</dd>
+							<dt class="col-sm-2">반품 사유</dt>
+							<dd class="col-sm-10">${item.reason || '-'}</dd>
+							<dt class="col-sm-2">처리일</dt>
+							<dd class="col-sm-10">${item.returnDate || '-'}</dd>
+						</dl>
+					</div>
+				</div>
+				
+				<div class="d-flex justify-content-center mt-5">
+					<button type="button" class="btn btn-outline-success" id="btn-back-to-list">목록으로 돌아가기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+	
+	html += `
+	  <div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
+	      <div class="modal-dialog modal-dialog-centered modal-lg">
+	          <div class="modal-content">
+	              <div class="modal-header modal-header-custom">
+	                  <h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
+	                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	              </div>
+	              <div class="modal-body order-detail-view"></div>
+	          </div>
+	      </div>
+	  </div>
+	`;
+	
+	return html;
+}
+
+
+/**
+ * 환불 상세 정보 HTML 문자열 생성
+ * @param {object} data - 서버에서 받은 데이터
+ * @param {object} data.info - 환불 상세 정보가 담긴 객체
+ * @returns {string} 브라우저에 렌더링될 완성된 HTML 문자열
+ */
+const renderRefundHTML = function(data) {
+	const item = data.info;
+
+	if (!item) {
+		return `
+		<div class="alert alert-danger" role="alert">
+		  환불 정보를 불러오는 데 실패했습니다.
+		</div>
+		`;
+	}
+	
+	let statusBadge = '';
+	switch(item.status) {
+		case 1: 
+			statusBadge = `<span class="badge bg-warning-subtle text-warning-emphasis rounded-pill">처리중</span>`;
+			break;
+		case 2: 
+			statusBadge = `<span class="badge bg-success-subtle text-success-emphasis rounded-pill">완료</span>`;
+			break;
+		case 3:
+			statusBadge = `<span class="badge bg-danger-subtle text-danger-emphasis rounded-pill">기각</span>`;
+			break;
+		default: 
+			statusBadge = `<span class="badge bg-light text-dark rounded-pill">접수</span>`;
+			break;
+	}
+	
+	switch(item.refundMethod) {
+		case 'credit_card': 
+			item.refundMethod = '신용카드';
+			break;
+		case 'bank_transfer': 
+			item.refundMethod = '계좌이체';
+			break;
+	}
+	
+	const bankInfoHTML = item.accountNumber ? `
+		<div class="col-md-6">
+			<h5 class="card-title fw-bold mb-3">환불 계좌 정보</h5>
+			<dl class="row">
+				<dt class="col-sm-4">은행</dt>
+				<dd class="col-sm-8">${item.bankName}</dd>
+				<dt class="col-sm-4">계좌번호</dt>
+				<dd class="col-sm-8">${item.accountNumber}</dd>
+				<dt class="col-sm-4">예금주</dt>
+				<dd class="col-sm-8">${item.accountHolder}</dd>
+			</dl>
+		</div>
+	` : '';
+	
+	let html = `
+	<div class="container-lg p-4 p-sm-5">
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h3 class="display-6 fw-bold text-dark">환불 상세 내역</h3>
+				<p class="text-muted mb-0">환불번호: ${item.refundNum}</p>
+			</div>
+			${statusBadge}
+		</div>
+	  
+		<div class="card shadow-sm">
+			<div class="card-body p-4">
+				<div class="row g-4">
+					<div class="col-md-6">
+						<h5 class="card-title fw-bold mb-3">주문 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-4">주문번호</dt>
+							<dd class="col-sm-8">
+								<a href="javascript:void(0);" class="text-decoration-none claim-order-details"
+									data-ordernum="${item.orderNum}"
+									data-orderdetailnum="${item.orderDetailNum}"
+									>
+								${item.orderNum}
+								</a>
+							</dd>
+							<dt class="col-sm-4">주문자 ID</dt>
+							<dd class="col-sm-8">${item.memberId}</dd>
+							<dt class="col-sm-4">이메일</dt>
+							<dd class="col-sm-8">${item.email}</dd>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						<h5 class="card-title fw-bold mb-3">상품 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-4">상품명</dt>
+							<dd class="col-sm-8">${item.productName}</dd>
+							<dt class="col-sm-4">주문수량</dt>
+							<dd class="col-sm-8">${item.orderQuantity}개</dd>
+							<dt class="col-sm-4">결제금액</dt>
+							<dd class="col-sm-8">${(item.salePrice || item.price).toLocaleString()}원</dd>
+						</dl>
+					</div>
+				</div>
+
+				<hr class="my-4">
+
+				<div class="row g-4">
+					<div class="col-md-6">
+						<h5 class="card-title fw-bold mb-3">환불 요청 정보</h5>
+						<dl class="row">
+							<dt class="col-sm-4">요청일</dt>
+							<dd class="col-sm-8">${item.reqDate}</dd>
+							<dt class="col-sm-4">환불 금액</dt>
+							<dd class="col-sm-8 fw-bold text-primary">${(item.refundAmount || 0).toLocaleString()}원</dd>
+							<dt class="col-sm-4">환불 수단</dt>
+							<dd class="col-sm-8">${item.refundMethod || '-'}</dd>
+							<dt class="col-sm-4">처리일</dt>
+							<dd class="col-sm-8">${item.refundDate || '-'}</dd>
+						</dl>
+					</div>
+					${bankInfoHTML}
+				</div>
+				
+				<div class="d-flex justify-content-center mt-5">
+					<button type="button" class="btn btn-outline-success" id="btn-back-to-list">목록으로 돌아가기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+	
+	html += `
+	  <div class="modal fade" id="orderDetailViewDialogModal" tabindex="-1" aria-labelledby="orderDetailViewDialogModalLabel" aria-hidden="true">
+	      <div class="modal-dialog modal-dialog-centered modal-lg">
+	          <div class="modal-content">
+	              <div class="modal-header modal-header-custom">
+	                  <h5 class="modal-title" id="orderDetailViewDialogModalLabel">주문상세정보</h5>
+	                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	              </div>
+	              <div class="modal-body order-detail-view"></div>
+	          </div>
+	      </div>
+	  </div>
+	`;
+	
+	return html;
+}
+
+
+
+// 클레임 하위 탭(전체, 접수, 처리중, 처리완료, 기각) 설정 객체
+const claimTabConfig = {
+    'tab-status-all': { url: '/api/myPage/claims', params: '', pagingMethodName: 'claimListPage', render: renderClaimListHtml },
+    'tab-status-pending': { url: '/api/myPage/claims', params: { status: 0 }, pagingMethodName: 'claimListPage', render: renderClaimListHtml },
+    'tab-status-processing': { url: '/api/myPage/claims', params: { status: 1 }, pagingMethodName: 'claimListPage', render: renderClaimListHtml },
+    'tab-status-completed': { url: '/api/myPage/claims', params: { status: 2 }, pagingMethodName: 'claimListPage', render: renderClaimListHtml },
+    'tab-status-rejected': { url: '/api/myPage/claims', params: { status: 3 }, pagingMethodName: 'claimListPage', render: renderClaimListHtml }
+};  
+
+// 상세 정보 조회 설정 객체
+const detailViewConfig = {
+    'refund': { baseUrl: '/api/myPage/claims/', idAttr: 'num', params: {type:"refund"}, render: renderRefundHTML },
+    'return': { baseUrl: '/api/myPage/claims/', idAttr: 'num', params: {type:"return"}, render: renderReturnHTML }
+};

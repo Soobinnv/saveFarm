@@ -58,7 +58,7 @@
 					<div class="dropdown-menu m-0">
 						<a href="${pageContext.request.contextPath}/notice/list" class="dropdown-item">공지사항</a> <a
 							href="${pageContext.request.contextPath}/inquiry/write" class="dropdown-item">문의하기</a> <a
-							href="testimonial.html" class="dropdown-item">FAQ</a>
+							href="${pageContext.request.contextPath}/faq/list" class="dropdown-item">FAQ</a>
 					</div>
 				</div>
 				<a href="contact.html" class="nav-item nav-link headerNavText">Contact Us</a>
