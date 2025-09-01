@@ -157,10 +157,10 @@ public class NoticeManageController {
 			log.info("writeSubmit : ", e);
 		}
 		
-		if(itemId != 300) {
-			return "redirect:/admin/notice/noticeList/" + itemId;
+		if(itemId < 6) {
+			return "redirect:/admin/notice/guideLineslist/" + itemId;
 		} else {
-			return "redirect:/admin/notice/guideLineslist";
+			return "redirect:/admin/notice/noticeList/" + itemId;
 		}
 	}
 	
@@ -193,10 +193,10 @@ public class NoticeManageController {
 		} catch (Exception e) {
 			log.info("updateForm : ", e);
 		}
-		if(itemId != 300) {
-			return "redirect:/admin/notice/noticeList?page=" + page;
+		if(itemId < 6) {
+			return "redirect:/admin/notice/guideLineslist/${itemId}?page=" + page;
 		} else {
-			return "redirect:/admin/notice/guideLineslist?page=" + page;
+			return "redirect:/admin/notice/noticeList/${itemId}?page=" + page;
 		}
 	}
 
@@ -223,12 +223,12 @@ public class NoticeManageController {
             query += "&schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
         }
 		
-        if(itemId != 300) {
-			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+        if(itemId < 6) {
+			return "redirect:/admin/notice/guideLineslist/"+ itemId + "?" + query;
 		} else {
-			return "redirect:/admin/notice/guideLineslist?" + query;
+			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
 		}
-	
+
 	}
 	
 	@GetMapping("delete/{itemId}")
@@ -251,10 +251,10 @@ public class NoticeManageController {
 		} catch (Exception e) {
 			log.info("delete : ", e);
 		}
-		if(itemId != 300) {
-			return "redirect:/admin/notice/noticeList/ "+ itemId +"?" + query;
+		if(itemId < 6) {
+			return "redirect:/admin/notice/guideLineslist/"+ itemId + "?" + query;
 		} else {
-			return "redirect:/admin/notice/guideLineslist?" + query;
+			return "redirect:/admin/notice/noticeList/"+ itemId +"?" + query;
 		}
 	}
 	
@@ -283,6 +283,8 @@ public class NoticeManageController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("schType", schType);
 			map.put("kwd", kwd);
+			map.put("itemId", itemId);
+			map.put("classify", dto.getClassify());
 			map.put("updateDate", dto.getUpdateDate());
 
 			NoticeManage prevDto = service.findByPrev(map);
@@ -308,10 +310,10 @@ public class NoticeManageController {
 		} catch (Exception e) {
 			log.info("article : ", e);
 		}
-		if(itemId != 300) {
-			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
+		if(itemId < 6) {
+			return "redirect:/admin/notice/guideLineslist" + itemId + "?" + query;
 		} else {
-			return "redirect:/admin/notice/guideLineslist?" + query;
+			return "redirect:/admin/notice/noticeList/"+ itemId + "?" + query;
 		}
 	}
 	

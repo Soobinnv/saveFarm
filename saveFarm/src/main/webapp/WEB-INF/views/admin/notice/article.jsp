@@ -101,7 +101,7 @@
 
 									<tr>
 										<td colspan="2">
-											<div class="d-flex justify-content-between align-items-center py-2 border-top"> 
+											<div class="d-flex align-items-center py-2 border-top"> 
 												<span class="me-3 fw-bold">이전글 : </span>
 												<c:if test="${not empty prevDto}">
 													<a href="${pageContext.request.contextPath}/admin/notice/article/${itemId}?noticeNum=${prevDto.noticeNum}&${query}" class="text-decoration-none">${prevDto.subject}</a>
@@ -114,7 +114,7 @@
 									</tr>
 									<tr>
 										<td colspan="2">
-											<div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+											<div class="d-flex align-items-center py-2 border-bottom">
 												<span class="me-3 fw-bold">다음글 : </span>
 												<c:if test="${not empty nextDto}">
 													<a href="${pageContext.request.contextPath}/admin/notice/article/${itemId}?noticeNum=${nextDto.noticeNum}&${query}" class="text-decoration-none">${nextDto.subject}</a>
@@ -133,7 +133,7 @@
 									<button type="button" class="btn btn-secondary" onclick="deleteOk();">삭제</button>
 								</div>
 								<div class="col-md-6 align-self-center text-end">
-									<button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/notice/noticeList/${itemId}?${query}';">리스트</button>
+									<button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/notice/${itemId < 100 ? 'guideLineslist' : 'noticeList' }/${itemId}?${query}';">리스트</button>
 								</div>
 							</div>
 						</div>
@@ -150,7 +150,7 @@
 <script type="text/javascript">
 	function deleteOk() {
 		let params = 'noticeNum=${dto.noticeNum}&${query}';
-		let url = '${pageContext.request.contextPath}/admin/notice/delete/${itemId}?' + params;
+		let url = '${pageContext.request.contextPath}/admin/notice/delete/'+ ${itemId} + '?' + params;
 	
 		if(confirm('위 자료를 삭제 하시 겠습니까 ? ')) {
 			location.href = url;

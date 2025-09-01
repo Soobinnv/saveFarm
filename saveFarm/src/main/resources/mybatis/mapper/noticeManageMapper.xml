@@ -20,8 +20,7 @@
 	    <result property="updateName" column="updateName"/>
 	    <result property="loginId" column="loginId"/>
 	    <result property="loginUpdate" column="loginUpdate"/>
-	    <result property="name" column="name"/> <!-- DTO에 name 필드도 있으므로 추가 -->
-	    <!-- listFile, selectFile, fileNum, saveFilename, originalFilename, fileSize, gap 등 파일 관련 필드는 필요에 따라 별도 resultMap 또는 조인 매핑 -->
+	    <result property="name" column="name"/> 
 	</resultMap>
 	
 	<sql id="where-list">
@@ -56,6 +55,22 @@
 			</when>
 			<when test="classify &gt; 2">
 				classify = #{classify}
+			</when>
+		</choose>
+	</sql>
+	<sql id="itemId-list">
+		<choose>
+			<when test="itemId == 100">
+				c.classify = 0
+			</when>
+			<when test="itemId == 200">
+				c.classify = 1
+			</when>
+			<when test="itemId == 2">
+				c.classify > 2
+			</when>
+			<when test="itemId &lt; 100">
+				c.classify = #{classify}
 			</when>
 		</choose>
 	</sql>
@@ -247,17 +262,15 @@
 		SELECT noticeNum, subject
 		FROM notice n
 		JOIN member2 m ON n.memberId = m.memberId
+		JOIN category c ON n.categoryNum = c.categoryNum
 		<where>
-			<if test="showNotice != null">
-				showNotice = #{showNotice}
-			</if>		
 			<if test="kwd != null and kwd != '' ">
-				AND <include refid="where-list"/>
+				<include refid="where-list"/>
+			</if>
+			<if test="itemId != null">
+				<include refid="itemId-list"/>
 			</if>
 			AND (updateDate &gt; #{updateDate})
-			<if test="classify != null">
-				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
-			</if>
 		</where>
 		ORDER BY updateDate ASC
 		FETCH FIRST 1 ROWS ONLY
@@ -268,17 +281,15 @@
 		SELECT noticeNum, subject
 		FROM notice n
 		JOIN member2 m ON n.memberId = m.memberId
+		JOIN category c ON n.categoryNum = c.categoryNum
 		<where>
-			<if test="showNotice != null">
-				showNotice = #{showNotice}
-			</if>		
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
-			AND (updateDate &lt; #{updateDate})
-			<if test="classify != null">
-				AND n.categoryNum = (SELECT categoryNum FROM category WHERE classify = #{classify})
+			<if test="itemId != null">
+				<include refid="itemId-list"/>
 			</if>
+			AND (updateDate &lt; #{updateDate})
 		</where>
 		ORDER BY updateDate DESC
 		FETCH FIRST 1 ROWS ONLY

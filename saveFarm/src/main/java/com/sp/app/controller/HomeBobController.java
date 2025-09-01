@@ -149,7 +149,7 @@ public class HomeBobController {
 			HomeBob dto = Objects.requireNonNull(service.findById(num));
 
 			dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
-
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
 			// 이전 글, 다음 글
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("schType", schType);
@@ -163,6 +163,7 @@ public class HomeBobController {
 			List<HomeBob> listFile = service.listHomeBobFile(num);
 
 			model.addAttribute("dto", dto);
+			model.addAttribute("info", info);
 			model.addAttribute("prevDto", prevDto);
 			model.addAttribute("nextDto", nextDto);
 			model.addAttribute("listFile", listFile);
@@ -213,7 +214,7 @@ public class HomeBobController {
 			log.info("updateForm : ", e);
 		}
 		
-		return "redirect:/homebob/list?page=" + page;
+		return "redirect:/homebob/list";
 	}	
 	
 	@PostMapping("update")

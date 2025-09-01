@@ -85,7 +85,8 @@
 	<select id="findByPrev" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
 		SELECT inquiryNum, subject
 		FROM inquiry i
-		JOIN member2 m ON i.memberId = m.memberId
+		LEFT JOIN member2 m ON i.memberId = m.memberId
+        LEFT JOIN farm f ON i.farmNum = f.farmNum
 		<where>
 			<include refid="itemId-list"/>
 			<if test="kwd != null and kwd != '' ">
@@ -101,13 +102,14 @@
 	<select id="findByNext" parameterType="map" resultType="com.sp.app.admin.model.InquiryManage">
 		SELECT inquiryNum, subject
 		FROM inquiry i
-		JOIN member2 m ON i.memberId = m.memberId
+		LEFT JOIN member2 m ON i.memberId = m.memberId
+        LEFT JOIN farm f ON i.farmNum = f.farmNum
 		<where>
 			<include refid="itemId-list"/>
 			<if test="kwd != null and kwd != '' ">
 				AND <include refid="where-list"/>
 			</if>
-			AND (inquiryNum &gt; #{inquiryNum})
+			AND (inquiryNum &lt; #{inquiryNum})
 		</where>
 		ORDER BY inquiryNum DESC
 		FETCH FIRST 1 ROWS ONLY
@@ -121,7 +123,7 @@
 	</update>
       
 	<update id="deleteAnswer" parameterType="Long">
-		UPDATE inquiry SET answerId = NULL, answer = NULL, answerDate = NULL
+		UPDATE inquiry SET answerId = NULL, answer = NULL, answerDate = NULL, processResult = 0
 		WHERE inquiryNum = #{inquiryNum}
 	</update>
 	      
