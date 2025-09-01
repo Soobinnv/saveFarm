@@ -150,16 +150,6 @@
 						</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/100">
-							<span class="ml-1 item-text">배송 후 교환</span>
-						</a>
-					</li>
-					<li class="nav-item">
-						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderDetailList/110">
-							<span class="ml-1 item-text">구매확정</span>
-						</a>
-					</li>
-					<li class="nav-item">
 						<a class="nav-link pl-3" href="${pageContext.request.contextPath}/admin/order/orderList/120">
 							<span class="ml-1 item-text">주문리스트</span>
 						</a>
