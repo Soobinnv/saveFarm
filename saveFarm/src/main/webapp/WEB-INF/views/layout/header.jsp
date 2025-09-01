@@ -171,7 +171,7 @@
 								onclick="sendModalLogin();">로그인</button>
 						</div>
 						<div class="d-flex justify-content-between">
-							<button type="button" class="btn-light flex-fill me-2"
+							<button type="button" class="btn-light flex-fill me-2" onclick="kakaoLogin();"
 								title="Kakao">
 								KakaoTalk Login&nbsp;&nbsp;<i class="bi bi-chat-fill kakao-icon"></i>
 							</button>
@@ -228,5 +228,14 @@
 
 		f.action = '${pageContext.request.contextPath}/member/login';
 		f.submit();
+	}
+	
+	function kakaoLogin() {
+	    const REST_API_KEY = '';
+	    const REDIRECT_URI = 'http://localhost:9090/oauth/kakao/callback';
+	    
+	    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code`;
+
+	    window.open(KAKAO_AUTH_URL, "kakaoLogin", "width=500, height=600");
 	}
 </script>

@@ -365,3 +365,11 @@ textarea:focus {
 	margin: 0px !important;
 	margin-right: 7px !important;
 }
+
+.image-preview-box {
+  width: 120px !important;       /* 원하는 너비 */
+  height: 120px !important;      /* 원하는 높이 */
+  object-fit: cover !important;  /* 비율을 유지하면서 박스를 꽉 채움 */
+  border: 1px solid #ddd !important;
+  border-radius: 0.25rem !important; /* Bootstrap의 rounded 클래스와 유사한 효과 */
+}

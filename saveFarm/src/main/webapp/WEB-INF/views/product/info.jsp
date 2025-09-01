@@ -75,7 +75,7 @@
 								<c:forEach var="image" items="${productImageList}">
 									<div class="carousel-item">
 										<img class="d-block w-100 carousel-img-fixed"
-											src="${contextPath}/uploads/product/${image.savedFilename}"
+											src="${contextPath}/uploads/product/${image.productImageFilename}"
 											alt="Product detail image">
 									</div>
 								</c:forEach>
@@ -203,7 +203,7 @@
 					<p>${productInfo.productDesc}</p>
 
 					<c:choose>
-						<c:when test="${not empty productImageList}">
+						<c:when test="${not empty recommendList}">
 							<c:forEach items="${productImageList}" var="dto">
 								<div class="recommendation-section">
 									<h4>📢 이 상품은 어때요?</h4>

@@ -19,9 +19,10 @@ public class Product {
 	private int deliveryFee;
 	private String mainImageFilename;
 	private int productClassification;
-		// 상품 분류 코드
+	// 상품 분류 코드
 	private int varietyNum;
-	private MultipartFile mainImageFile;
+	private String varietyName;
+	private MultipartFile mainImage;
 	
 	// 상품 리뷰 수
 	private int reviewCount;
@@ -46,7 +47,8 @@ public class Product {
 	// 상품 이미지
 	private long productImageNum;
 	private String productImageFilename;
-	private List<MultipartFile> productImages;
+	private List<MultipartFile> subImages;
+	
 	
 	// 회원의 찜 여부
 	private int userWish;

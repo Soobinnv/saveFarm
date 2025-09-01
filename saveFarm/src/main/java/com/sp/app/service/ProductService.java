@@ -38,5 +38,5 @@ public interface ProductService {
 	public void updateProductWithDetails(Product dto, String uploadPath) throws Exception;
 	
 	public void deleteProduct(long productNum, String uploadPath) throws Exception;
-	public boolean deleteProductImageFile(String uploadPath, String filename);	
+	
 }

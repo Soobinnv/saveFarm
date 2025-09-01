@@ -27,7 +27,7 @@ public interface ProductMapper {
 	public void insertProduct(Product dto) throws SQLException;
 	public void insertProductDetail(Product dto) throws SQLException;
 	public void insertRescuedProduct(Product dto) throws SQLException;
-	public void insertProductImage(List<Product> list) throws SQLException;
+	public void insertProductImage(Product dto) throws SQLException;
 	
 	public void updateProduct(Product dto) throws SQLException;
 	public void updateProductDetail(Product dto) throws SQLException;

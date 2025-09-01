@@ -24,7 +24,9 @@ public interface ProductReviewMapper {
 	public int getMyReviewDataCount(long memberId);
 	public int getReviewLikeCount(long orderDetailNum);
 	
+	public void insertReviewImage(ProductReview dto) throws SQLException;
 	public void insertReviewLike(Map<String, Object> map) throws SQLException;
 	public void deleteReviewLike(Map<String, Object> map) throws SQLException;
+	public void deleteReviewImage(long orderDetailNum) throws SQLException;
 	
 }
