@@ -18,7 +18,7 @@
 		<ul class="nav nav-tabs mt-1" id="myTab" role="tablist">
 		    <li class="nav-item" role="presentation">
 				<button class="nav-link ${empty categoryNum ? 'active' : ''}" 
-				        id="tab-all" data-toggle="tab" href="#tab-pane" type="button" 
+				        id="tab-all" data-bs-toggle="tab" data-bs-target="#tab-pane" type="button" 
 				        role="tab" aria-controls="all" aria-selected="true" 
 				        onclick="loadCategory('');">전체</button>
 			</li>
@@ -26,7 +26,7 @@
 		    <c:forEach var="dto" items="${listFAQ}" varStatus="status">
 				<li class="nav-item" role="presentation">
 				    <button class="nav-link ${dto.categoryNum == numCategoryNum ? 'active' : ''} bg-white" 
-				           id="tab-${status.count}" data-toggle="tab" href="#tab-pane" 
+				           id="tab-${status.count}" data-bs-toggle="tab" data-bs-target="#tab-pane" 
 				           type="button" role="tab" aria-controls="${dto.categoryNum}" 
 				           aria-selected="false" data-category-num="${dto.categoryNum}" 
 				           onclick="loadCategory('${dto.categoryNum}');">${dto.categoryName}</button>
@@ -48,28 +48,24 @@
 						</thead>
 						<tbody>
 							<c:forEach var="dto" items="${list}" varStatus="status">
-								<tr>
-									<td>${dataCount - ( page - 1 ) * size - status.index }</td>
-									<td>${dto.categoryName}</td>
-									<td>
-										<a href="#collapse${status.index}" data-toggle="collapse" data-target="#collapse${status.index}" aria-expanded="false" aria-controls="collapse${status.index}">
-											${dto.subject}
-										</a>
-									</td>
-									<td>${dto.name}</td>
-									<td>${dto.regDate}</td>
-								</tr>
-								
-								<tr id="collapse${status.index}" class="collapse">
-									<td colspan=""></td>
-									<td> 내용</td>
-									<td>
-										${dto.content}
-									</td>
-									<td colspan="2"></td>
-									<td></td>
-								</tr>
-							</c:forEach> 
+                                <tr data-bs-toggle="collapse" data-bs-target="#collapse${status.index}" aria-expanded="false" aria-controls="collapse${status.index}" class="border-bottom-green">
+                                    <td>${dataCount - ( page - 1 ) * size - status.index }</td>
+                                    <td>${dto.categoryName}</td>
+                                    <td>
+                                        ${dto.subject}
+                                    </td>
+                                    <td>${dto.name}</td>
+                                    <td>${dto.regDate}</td>
+                                </tr>
+                                
+                                <tr id="collapse${status.index}" class="collapse">
+                                    <td class="p-3">내용</td>
+                                    
+                                    <td colspan="4" class="p-3">
+                                        ${dto.content}
+                                    </td>
+                                </tr>
+                            </c:forEach> 
 						</tbody>
 					</table>
 					<div class="row">

@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>스마트팜</title>
+<title>세이브팜</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/dist/css/board.css" type="text/css">
 <style type="text/css">

@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>스마트팜 - 나의 음식일기</title>
+<title>세이브팜 - 나의 음식일기</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 <style type="text/css">
 
