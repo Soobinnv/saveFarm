@@ -2,10 +2,15 @@ package com.sp.app.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sp.app.common.MyUtil;
+import com.sp.app.common.StorageService;
+import com.sp.app.exception.StorageException;
 import com.sp.app.mapper.ProductReviewMapper;
 import com.sp.app.model.ProductReview;
 
@@ -18,13 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductReviewServiceImpl implements ProductReviewService {
 	private final ProductReviewMapper mapper;
 	private final MyUtil myUtil;
+	private final StorageService storageService;
 	
+	@Transactional
 	@Override
 	public void insertReview(ProductReview dto, String uploadPath) throws Exception {
 		try {
 			mapper.insertReview(dto);
 			
-			// 파일 등록
+			// 리뷰 이미지 저장
+			if(! dto.getReviewImages().isEmpty()) {
+				insertReviewFile(dto, uploadPath);
+			}
+			
 			
 		} catch (Exception e) {
 			log.info("insertReview : ", e);
@@ -33,12 +44,31 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		}
 	}
 
+	private void insertReviewFile(ProductReview dto, String uploadPath) throws Exception {
+		for (MultipartFile mf : dto.getReviewImages()) {
+			try {
+				String saveFilename = Objects.requireNonNull(storageService.uploadFileToServer(mf, uploadPath));
+				dto.setProductReviewImageFilename(saveFilename);
+				
+				mapper.insertReviewImage(dto);
+			} catch (NullPointerException e) {
+			} catch (StorageException e) {
+			} catch (Exception e) {
+				throw e;
+			}
+		}
+	}
+	
+	@Transactional
 	@Override
 	public void updateReview(ProductReview dto, String uploadPath) throws Exception {
 		try {
 			mapper.updateReview(dto);
 			
 			// 파일 수정
+			if(! dto.getReviewImages().isEmpty()) {
+				insertReviewFile(dto, uploadPath);
+			}
 			
 		} catch (Exception e) {
 			log.info("updateReview : ", e);
@@ -47,12 +77,13 @@ public class ProductReviewServiceImpl implements ProductReviewService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public void deleteReview(long orderDetailNum, String uploadPath) throws Exception {
 		try {
 			mapper.deleteReview(orderDetailNum);
 			
-			// 파일 삭제
+			mapper.deleteReviewImage(orderDetailNum);
 			
 		} catch (Exception e) {
 			log.info("deleteReview : ", e);

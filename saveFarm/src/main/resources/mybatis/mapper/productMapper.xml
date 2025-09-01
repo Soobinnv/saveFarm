@@ -10,10 +10,11 @@
 	
 	<sql id="productSelect">
 		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, p.varietyNum,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, endDate, isUrgent, farmName, varietyName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
 		LEFT OUTER JOIN rescuedProductInfo rp ON p.PRODUCTNUM = rp.PRODUCTNUM
+		LEFT OUTER JOIN variety v ON p.varietyNum = v.varietyNum
 		LEFT OUTER JOIN supply s ON rp.supplyNum = s.supplyNum
         LEFT OUTER JOIN farm f ON f.farmNum = s.farmNum
 	</sql>
@@ -54,10 +55,11 @@
 	</select>
 
 	<select id="getProductInfo" parameterType="Long" resultType="com.sp.app.model.Product">
-		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, varietyNum,
-			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE
+		SELECT p.PRODUCTNUM, PRODUCTNAME, PRODUCTDESC, DELIVERYFEE, MAINIMAGEFILENAME, PRODUCTCLASSIFICATION, p.varietyNum,
+			STOCKQUANTITY, UNIT, pd.UNITPRICE, DISCOUNTRATE, varietyName
 		FROM product p
 		LEFT OUTER JOIN productDetail pd ON p.PRODUCTNUM = pd.PRODUCTNUM
+		LEFT OUTER JOIN variety v ON p.varietyNum = v.varietyNum
 		WHERE p.PRODUCTNUM = #{productNum} AND PRODUCTCLASSIFICATION = 100
 	</select>
 
@@ -108,9 +110,9 @@
         )
     </insert>
 
-    <insert id="insertProductImage" parameterType="java.util.List">
+    <insert id="insertProductImage" parameterType="com.sp.app.model.Product">
         INSERT INTO productImage (PRODUCTIMAGENUM, PRODUCTIMAGEFILENAME, PRODUCTNUM)
-	        VALUES (productImage_seq.nextVAL, #{PRODUCTIMAGEFILENAME}, #{PRODUCTNUM});
+	        VALUES (productImage_seq.nextVAL, #{productImageFilename}, #{productNum})
     </insert>
 
 

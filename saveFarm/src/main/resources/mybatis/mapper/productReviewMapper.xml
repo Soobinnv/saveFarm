@@ -32,6 +32,11 @@
 		WHERE ORDERDETAILNUM = #{orderDetailNum}
 	</delete>
 	
+	<delete id="deleteReviewImage" parameterType="long">
+        DELETE FROM reviewPhoto
+        WHERE ORDERDETAILNUM = #{orderDetailNum}
+    </delete>
+	
 	<select id="getReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
 		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, po.orderDate,
 			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto,
@@ -81,7 +86,7 @@
 	
 	<select id="getMyReviewList" resultType="com.sp.app.model.ProductReview" parameterType="map">
 		SELECT pr.orderDetailNum, review, star, reviewDate, reviewBlock, pr.productNum, reviewTitle, po.orderDate,
-			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto, pd.unit, 
+			productName, p.mainImageFilename, po.memberId reviewerMemberId, name reviewerName, profilePhoto reviewerProfilePhoto, pd.unit, po.orderDate,
 			(
 				SELECT COUNT(*)
 	     		FROM productReviewLike prl
@@ -140,6 +145,11 @@
 		INSERT INTO productReviewLike(memberId, orderDetailNum)
 			VALUES (#{memberId}, #{orderDetailNum})
 	</insert>
+
+	<insert id="insertReviewImage" parameterType="com.sp.app.model.ProductReview">
+        INSERT INTO reviewPhoto (productReviewImageNum, productReviewImageFilename, orderDetailNum)
+	        VALUES (reviewPhoto_seq.nextVAL, #{productReviewImageFilename}, #{orderDetailNum})
+    </insert>
 
 	<select id="getReviewLikeCount" resultType="int" parameterType="long">
     	SELECT COUNT(*) helpfulCount

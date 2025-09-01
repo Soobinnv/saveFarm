@@ -118,11 +118,11 @@ $(function() {
 		}
 		
 		const orderDetailObject = {
-			orderDetailNum: $reviewItem.data('orderDetailNum'),
-			mainImageFilename: $reviewItem.data('mainImageFilename'),
-			productName: $reviewItem.data('productName'),
-			orderDate: $reviewItem.data('orderDate'),
-			productNum: $reviewItem.data('productNum'),
+			orderDetailNum: $reviewItem.data('orderdetailnum'),
+			mainImageFilename: $reviewItem.data('mainimagefilename'),
+			productName: $reviewItem.data('productname'),
+			orderDate: $reviewItem.data('orderdate'),
+			productNum: $reviewItem.data('productnum'),
 		}
 		
 		const reviewObject = {
@@ -393,6 +393,7 @@ const renderMyReviewListHtml = function(data) {
 			data-productNum = "${item.productNum}"
 			data-mainImageFilename = "${item.mainImageFilename}"
 			data-productName = "${item.productName}"
+			data-orderdate = "${item.orderDate}"
 			data-reviewDate = "${formattedDate}"
 			data-unit = "${item.unit}"
 			data-reviewTitle = "${item.reviewTitle}"
@@ -476,15 +477,18 @@ const renderReviewForm = function(orderDetailObject = null, reviewObject = null)
 
 	let mode = reviewObject === null ? "insert" : "update";
 	
+	let title = mode === 'update' ? '리뷰 수정': '리뷰 작성';
+	
 	const html = `
 	<div class="container-lg p-4 p-sm-5">
 		<div class="mb-5">
-			<h3 class="display-6 fw-bold text-dark">리뷰 작성</h3>
+			<h3 class="display-6 fw-bold text-dark">${title}</h3>
 		</div>
 
 		<h4 class="display-8 text-dark">이 상품 어떠셨나요?</h4>
 		<div class="reivew-form-product-info d-flex align-items-center mb-4">
-			<img src="${contextPath}/uploads/product/${orderDetailObject.mainImageFilename}" class="reivew-form-product-image me-3">
+			<img src="${contextPath}/uploads/product/${orderDetailObject.mainImageFilename}" class="reivew-form-product-image me-3"
+				onerror="this.onerror=null;this.src='/uploads/product/apple.jpg';">
 			<div>
 				<p class="reivew-form-product-name mb-1">${orderDetailObject.productName}</p>
 				<p class="reivew-form-order-date text-muted">주문일자: ${orderDetailObject.orderDate}</p>
@@ -676,24 +680,26 @@ function manageReview(orderDetailNum, mode) {
 	let url = contextPath + '/api/myPage/reviews/' + orderDetailNum;
 	let params = null;
 	
-	const form = document.reviewForm;
-	const reviewTitle = $(form.review).val();
-	const reviewContent = $(form.review).val();
+	if(mode !== 'delete') {
+		const form = document.reviewForm;
+		const reviewTitle = $(form.review).val();
+		const reviewContent = $(form.review).val();
 
-	if (!reviewTitle.trim()) {
-		alert('리뷰 제목을 입력해주세요.');
-		return false;
-	}
-	
-	
-	if (!reviewContent.trim()) {
-		alert('리뷰 내용을 입력해주세요.');
-		return false;
-	}
+		if (!reviewTitle.trim()) {
+			alert('리뷰 제목을 입력해주세요.');
+			return false;
+		}
+			
+			
+		if (!reviewContent.trim()) {
+			alert('리뷰 내용을 입력해주세요.');
+			return false;
+		}
 
-	if (reviewContent.length >= 1300) {
-		alert(`리뷰 내용은 1300자를 초과할 수 없습니다.`);
-		return false;
+		if (reviewContent.length >= 1300) {
+			alert(`리뷰 내용은 1300자를 초과할 수 없습니다.`);
+			return false;
+		}
 	}
 	
 	switch (mode) {
@@ -716,6 +722,10 @@ function manageReview(orderDetailNum, mode) {
 	const fn = function(data) {
 		// 나의 리뷰 불러오기
 		loadContent('/api/myPage/reviews', renderMyReviewListHtml);
+		
+		if(mode === 'delete') {
+			alert('리뷰가 삭제되었습니다.')
+		}
 	}
 	
 	ajaxRequest(url, method, params, false, fn, true);

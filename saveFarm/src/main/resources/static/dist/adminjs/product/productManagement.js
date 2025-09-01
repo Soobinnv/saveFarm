@@ -168,20 +168,15 @@ $(function() {
 			loadContent('/api/admin/products', renderProductListHTML, '', 'productListPage');
 		}
 		
+		const productForm = $('#product-form');
+		params = new FormData(productForm[0]);
+		
 		if(method === 'post') {
-			const productForm = $('#product-form');
-			params = new FormData(productForm[0]);
 			
 			ajaxRequest(`/api/admin/products`, method, params, 'json', fn, true, 'multipart');	
 		} else if(method === 'put') {
-			params = getProductData(currentRow);		
 			
-			if(params.productDesc.length > 1300) {
-				alert('상품 설명은 1300자 이상 작성할 수 없습니다.')
-				return false;
-			}
-			
-			ajaxRequest(`/api/admin/products/${num}`, method, params, 'json', fn);	
+			ajaxRequest(`/api/admin/products/${num}`, method, params, 'json', fn, true, 'multipart');	
 		}
 		
 	});
@@ -189,8 +184,15 @@ $(function() {
 	// 커스텀 input(이미지) 이벤트 
 	$('main').on('change', '#mainImage', function() {
 	    const fileName = this.files.length > 0 ? this.files[0].name : '선택된 파일 없음';
-	    $('.custom-file-upload .file-name').text(fileName);
+	    $('.custom-file-upload .main-file-name').text(fileName);
 	});
+	
+	// 커스텀 input(이미지) 이벤트 - 2
+	$('main').on('change', '#subImages', function() {
+	    const fileName = this.files.length > 0 ? this.files[0].name : '선택된 파일 없음';
+	    $('.custom-file-upload .sub-file-name').text(fileName);
+	});
+	
 	
 	// 문의 답변 수정 버튼 - UI 변경
 	$('main').on('click', '.btn-edit-answer', function(e) {
@@ -254,6 +256,13 @@ $(function() {
 		const num = $(e.target).attr('data-num') || 0;
 		
 		if(! confirm('상품을 삭제하시겠습니까?')) {
+			return false;
+		}
+		
+		const stock = $(e.target).attr('data-stock') || 1;
+		
+		if(stock > 0) {
+			alert('납품정보가 있는 경우 상품을 삭제할 수 없습니다. 재고 수정 후 다시 시도해주세요.')
 			return false;
 		}
 		
@@ -363,6 +372,14 @@ $(function() {
 		
 	});
 	
+	// 상품 수정 form
+	$('main').on('click', '.product-edit-btn', function(e) {
+		const num = $(e.target).attr('data-num');
+		
+		loadContent(`/api/admin/products/${num}`, renderProductEditHTML);
+
+	});
+	
 	// 일반 상품 선택 시 카테고리 초기화
 	$('main').on('change', '#productClassification', function(e) {
 		const $categoryInputEL = $('#varietyCategory');
@@ -431,6 +448,8 @@ $(function() {
 		
 		ajaxRequest(`/api/admin/reviews/${num}`, 'put', {orderDetailNum:num, reviewBlock:afterBlock}, 'json', fn);		
 	});
+	
+	
 });
 
 // 상품 수정 데이터 반환
@@ -565,7 +584,7 @@ const validateProductForm = function() {
 	}
 
 	// 대표 이미지 파일 선택 여부 확인
-	if ($('#mainImage')[0].files.length === 0) {
+	if ($('#mainImage')[0].files.length === 0 && ! $('#mode').val()) { // 상품 수정일 경우 검사 X
 		alert('대표 이미지를 등록해주세요.');
 		$('label[for="mainImage"]').focus();
 		return false;
@@ -654,3 +673,62 @@ const validateProductForm = function() {
 	// 모든 유효성 검사 통과
 	return true;
 };
+
+// 파일 선택 시 파일명 업데이트 및 미리보기 생성
+$('main').on('change', '#mainImage, #subImages', function(e) {
+    const input = e.target;
+    
+    if (input.id === 'mainImage') {
+        // 대표 이미지 처리
+        const fileNameSpan = $('.main-file-name');
+        const previewContainer = $('#main-image-preview');
+        
+        previewContainer.empty(); // 기존 미리보기 삭제
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            fileNameSpan.text(file.name);
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = $('<img>').attr('src', event.target.result).addClass('image-preview-box');
+                previewContainer.append(img);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            fileNameSpan.text('선택된 파일 없음');
+        }
+
+    } else if (input.id === 'subImages') {
+        // 추가 이미지 처리
+        const fileNameSpan = $('.sub-file-name');
+        const previewContainer = $('#additional-images-preview');
+        
+        previewContainer.empty(); // 기존 미리보기 모두 삭제
+        
+        if (input.files && input.files.length > 0) {
+            // 파일 개수 제한 (최대 5개)
+            const files = Array.from(input.files).slice(0, 5);
+            
+            if (input.files.length > 5) {
+                alert('추가 이미지는 최대 5개까지 등록할 수 있습니다.');
+            }
+
+            fileNameSpan.text(`${files.length}개의 파일 선택됨`);
+            
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imgHtml = `
+                            <img src="${event.target.result}" class="image-preview-box pe-1">
+                        
+                    `;
+                    previewContainer.append(imgHtml);
+                };
+                reader.readAsDataURL(file);
+            });
+        } else {
+            fileNameSpan.text('선택된 파일 없음');
+        }
+    }
+});

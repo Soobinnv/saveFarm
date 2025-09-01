@@ -134,8 +134,10 @@ public class AdminProductController {
 		
 		try {
 			Product productInfo = productService.getProductAllInfo(productNum);
+			List<Product> subImageList = productService.getProductImageList(productNum);
 			
 			body.put("productInfo", productInfo);
+			body.put("imageList", subImageList);
 
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {
@@ -234,6 +236,8 @@ public class AdminProductController {
 		Map<String, Object> body = new HashMap<>();
 		try {			
 			Map<String, Object> paramMap = new HashMap<>();
+			
+			System.out.println(varietyNum);
 			
 			int total_page = 0; 
 			int dataCount = 0;

@@ -146,7 +146,7 @@ const renderProductRows = function(list) {
 					href="javascript:void(0);"
 					>재고수정</a>
                 <a data-num="${item.productNum}" class="dropdown-item product-edit-btn" href="javascript:void(0);">상품정보변경</a>
-                <a data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
+                <a data-stock="${item.stockQuantity}" data-num="${item.productNum}" class="dropdown-item product-delete-btn" href="javascript:void(0);">상품 삭제</a>
               </div>
             </td>
           </tr>
@@ -192,11 +192,12 @@ const renderProductDetailHTML = function(data) {
 							<div class="col-md-6">
 								<p class="mb-2"><strong>가격:</strong> ${price}원</p>
 								<p class="mb-0"><strong>재고:</strong> ${stock}</p>
-								<p class="mb-0"><strong>단위:</strong> ${unit}</p>
+								<p class="mb-0"><strong>단위:</strong> ${unit}g</p>
 							</div>
 							<div class="col-md-6">
 								<p class="mb-2"><strong>농장:</strong> ${product.farmName || '정보 없음'}</p>
 								<p class="mb-0"><strong>판매 종료일:</strong> ${product.endDate || '미정'}</p>
+								<p class="mb-0"><strong>카테고리명:</strong> ${product.varietyName || '미정'}</p>
 							</div>
 						</div>
 						<div class="row mt-3">
@@ -207,6 +208,7 @@ const renderProductDetailHTML = function(data) {
 										data-name="${product.productName}" 
 										data-unit="${product.unit}" 
 										data-stock="${product.stockQuantity}" 
+										data-variety="${product.varietyNum}"
 										type="button" class="btn btn-sm btn-outline-secondary stock-insert-btn">재고등록</button>
 									<button 
 										data-num="${product.productNum}" 
@@ -214,7 +216,7 @@ const renderProductDetailHTML = function(data) {
 										data-unit="${product.unit}" 
 										data-stock="${product.stockQuantity}"
 										type="button" class="btn btn-sm btn-outline-secondary stock-edit-btn">재고수정</button>
-									<button data-num="${product.productNum}" type="button" class="btn btn-sm btn-outline-secondary ms-2">수정하기</button>
+									<button data-num="${product.productNum}" type="button" class="btn btn-sm btn-outline-secondary product-edit-btn ms-2">수정하기</button>
 								</div>
 							</div>
 						</div>
@@ -393,17 +395,17 @@ const createSupplyboxesHTML = function(supplyList, page='') {
 
 
 /**
- * 신규 상품 등록 폼 HTML 문자열 생성 (조건부 필드 적용)
+ * 신규 상품 등록 폼 HTML 문자열 생성
  * @returns {string} 상품 등록 폼 HTML 문자열
  */
 const renderProductFormHTML = function(categoryList, supplyList) {
 	const hasSupplies = supplyList && supplyList.length > 0;
-	
+
 	const categoryItemsHTML = categoryList.map(dto => `
 		<li data-category-no="${dto.varietyNum}">${dto.varietyName}
 		</li>
 	`).join('');
-	
+
 	const html = `
 	<div class="product-registration-ui card shadow-sm mt-3 mb-3 border-light">
 		<div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -439,8 +441,8 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 							<div class="col-12">
 								<label class="form-label"><strong>납품 내역 선택</strong></label>
 								<div id="supply-checkbox-list" class="border rounded p-3" style="max-height: 180px; overflow-y: auto;">
-									${hasSupplies 
-										? createSupplyboxesHTML(supplyList, 'INSERTRESCUEDPRODUCT') 
+									${hasSupplies
+										? createSupplyboxesHTML(supplyList, 'INSERTRESCUEDPRODUCT')
 										: '<p class="text-muted mb-0">처리할 납품 내역이 없습니다.</p>'
 									}
 								</div>
@@ -450,11 +452,24 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 						    <strong>대표 이미지</strong>
 						    <label for="mainImage" class="form-label custom-file-upload mt-3">
 						        <span class="file-upload-button">파일 선택</span>
-						        <span class="file-name">선택된 파일 없음</span>
+						        <span class="main-file-name">선택된 파일 없음</span>
 						    </label>
 						    <input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*" style="display: none;">
+							<div id="main-image-preview" class="mt-3">
+															</div>
 					    </div>
-					<div class="col-12 mt-4">
+						<div class="col-12 mt-4">
+							<h6 class="fw-bold mb-3">추가 상품 이미지 (최대 5장)</h6>
+							<label for="subImages" class="form-label custom-file-upload mt-3">
+													        <span class="file-upload-button">파일 선택</span>
+													        <span class="sub-file-name">선택된 파일 없음</span>
+													    </label>
+													    <input class="form-control" type="file" id="subImages" name="subImages" accept="image/*" multiple style="display: none;">
+							<div id="additional-images-preview" class="mt-3">
+								</div>
+							<small class="form-text text-muted">여러 이미지를 선택할 수 있습니다.</small>
+						</div>
+						<div class="col-12 mt-4">
 						<label for="productDesc" class="form-label"><strong>상품 설명</strong></label>
 						<textarea class="form-control" id="productDesc" name="productDesc" rows="5" placeholder="상품에 대한 상세 설명을 입력하세요" required></textarea>
 					</div>
@@ -471,7 +486,7 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 						<input type="number" class="form-control" id="discountRate" name="discountRate" placeholder="0 ~ 100" min="0" max="100" value="0" required>
 					</div>
 					<div class="col-md-4">
-						<label for="unit" class="form-label"><strong>판매 단위: kg</strong></label>
+						<label for="unit" class="form-label"><strong>판매 단위: g</strong></label>
 						<input type="text" class="form-control" id="unit" name="unit" placeholder="kg" required>
 					</div>
 					<div class="col-md-6">
@@ -495,7 +510,7 @@ const renderProductFormHTML = function(categoryList, supplyList) {
 								</ul>
 							</div>
 						</div>
-					</div>							
+					</div>
 				</div>
 			</div>
 			<div class="card-footer text-end bg-light">
@@ -517,78 +532,146 @@ const renderProductFormHTML = function(categoryList, supplyList) {
  * @returns {string} 수정용 tr HTML 문자열
  */
 const renderProductEditHTML = function(data) {
-	const product = data.productInfo;
+		const product = data.productInfo;
+		const isRescueProduct = product.productClassification === 200;
 
-	const price = product.unitPrice || 0;
-	const stock = product.stockQuantity || 0;
-	const unit = product.unit || '';
-	const productName = product.productName || '';
-	const productDesc = product.productDesc || '';
-	const farmName = product.farmName || '';
-	const endDate = product.endDate || '';
+		const hasSubImages = data.imageList && data.imageList.length > 0;
 
-	const isNormalProduct = product.productClassification === 100;
+		const existingSubImagesHTML = hasSubImages 
+		    ? data.imageList.map(image => `
+		        <div class="col position-relative" id="sub-image-${image.productImageNum}">
+		            <img src="${webContextPath}/uploads/product/${image.productImageFilename}"
+		                 onerror="this.onerror=null;this.src='https://placehold.co/150x150/EFEFEF/31343C?text=Error';"
+		                 class="img-thumbnail" 
+		                 style="width: 150px; height: 150px; object-fit: cover;" 
+		                 alt="추가 이미지">
+		            <button 
+		                type="button" 
+		                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 delete-sub-image-btn" 
+		                data-image-num="${image.productImageNum}" 
+		                aria-label="Delete">
+		                &times;
+		            </button>
+		        </div>
+		    `).join('')
+		    : '<p class="col-12 text-muted">추가된 이미지가 없습니다.</p>';
+		
+		const html = `
+		<div class="product-edit-ui card shadow-sm mt-3 mb-3 border-light">
+			<div class="card-header bg-light d-flex justify-content-between align-items-center">
+				<h5 class="mb-0 fw-bold">
+					<i class="fas fa-edit me-2"></i>상품 수정
+				</h5>
+			</div>
+			<form id="product-form" enctype="multipart/form-data">
+	            <input type="hidden" name="productNum" value="${product.productNum}">
+	            <input type="hidden" id="mode" value="update">
 
-	const html = `
-	<table>
-		<tr class="product-edit-row" style="background-color: #f8f9fa;" data-product-num="${product.productNum}">
-			<td colspan="7">
-				<div class="row m-3 p-3 align-items-center">
-					<div class="col-md-3 text-center">
-						<img src="${webContextPath}/uploads/product/${product.mainImageFilename}" 
-							 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/31343C?text=Image+Error';"
-							 class="img-fluid rounded border mb-3" style="max-height: 200px;" alt="${productName} 이미지">
-						<input type="file" class="form-control form-control-sm" id="productImageFile">
-					</div>
-					<div class="col-md-9">
-						<div class="d-flex justify-content-between align-items-center mb-2">
-							<input type="text" class="form-control" id="productName" value="${productName}" placeholder="상품명">
-							<select class="form-select form-select-sm ms-3" id="productClassification" style="width: 120px;">
-								<option value="100" ${isNormalProduct ? 'selected' : ''}>일반 상품</option>
-								<option value="200" ${!isNormalProduct ? 'selected' : ''}>구출 상품</option>
+				<div class="card-body p-4">
+					<h5 class="mb-3 fw-bold text-primary">상품 정보</h5>
+					<div class="row g-3 mb-4">
+						<div class="col-md-6">
+							<label for="productName" class="form-label"><strong>상품명</strong></label>
+							<input type="text" class="form-control" id="productName" name="productName" value="${product.productName || ''}" required>
+						</div>
+						<div class="col-md-6">
+							<label for="productClassification" class="form-label"><strong>상품 분류</strong></label>
+							<select class="form-select" id="productClassification" name="productClassification" disabled>
+								<option value="100" ${!isRescueProduct ? 'selected' : ''}>일반</option>
+								<option value="200" ${isRescueProduct ? 'selected' : ''}>구출 상품</option>
 							</select>
+							<small class="form-text text-muted">상품 분류는 변경할 수 없습니다.</small>
 						</div>
-						<textarea class="form-control" id="productDesc" rows="3" placeholder="상세 설명">${productDesc}</textarea>
-						<hr class="my-3">
-						<div class="row">
-							<div class="col-md-6">
-								<div class="input-group mb-2">
-									<span class="input-group-text" style="width: 80px;">가격</span>
-									<input type="number" class="form-control" id="unitPrice" value="${price}">
-									<span class="input-group-text">원</span>
-								</div>
-								<div class="input-group">
-									<span class="input-group-text" style="width: 80px;">단위</span>
-									<input type="text" class="form-control" id="unit" value="${unit}" placeholder="예: 1박스, 1kg">
-								</div>
+						
+						<div id="farm-info-section" class="${isRescueProduct ? '' : 'd-none'}">
+							<div class="col-md-12 mt-4">
+								<label for="farmNum" class="form-label"><strong>농장 번호</strong></label>
+								<input type="number" class="form-control" id="farmNum" name="farmNum" value="${product.farmNum || 0}" readonly>
 							</div>
-							<div class="col-md-6">
-								<div class="input-group mb-2">
-									<span class="input-group-text" style="width: 80px;">농장</span>
-									<input type="text" class="form-control" id="farmName" value="${farmName}">
-								</div>
-								<div class="input-group">
-									<span class="input-group-text" style="width: 80px;">판매 종료</span>
-									<input type="date" class="form-control" id="endDate" value="${endDate}">
-								</div>
+							<div class="col-md-12 mt-4 mb-4">
+								<label for="endDate" class="form-label"><strong>판매 종료일</strong></label>
+								<input type="date" class="form-control" id="endDate" name="endDate" value="${product.endDate || ''}">
 							</div>
 						</div>
-						<div class="row mt-3">
-							<div class="col-12 d-flex justify-content-end">
-								<div>
-									<button data-method="put" data-num="${product.productNum}" type="button" class="btn btn-sm btn-primary product-save-btn">저장</button>
-									<button type="button" class="btn btn-sm btn-outline-secondary ms-2 product-cancel-btn">취소</button>
-								</div>
+
+						<div class="col-12 mt-4">
+							<strong>대표 이미지</strong>
+							<div id="main-image-preview" class="mt-3 mb-3">
+								<img src="${webContextPath}/uploads/product/${product.mainImageFilename}" 
+									 onerror="this.onerror=null;this.src='https://placehold.co/200x200/EFEFEF/31343C?text=No+Image';"
+									 class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" alt="대표 이미지">
 							</div>
+							<label for="mainImage" class="form-label custom-file-upload">
+								<span class="file-upload-button">파일 변경</span>
+								<span class="main-file-name">새 이미지 선택</span>
+							</label>
+							<input class="form-control" type="file" id="mainImage" name="mainImage" accept="image/*" style="display: none;">
+						</div>
+
+						<div class="col-12 mt-4">
+							<h6 class="fw-bold mb-3">추가 상품 이미지 (최대 5장)</h6>
+							<label for="subImages" class="form-label custom-file-upload">
+								<span class="file-upload-button">파일 추가</span>
+								<span class="sub-file-name">선택된 파일 없음</span>
+							</label>
+							<input class="form-control" type="file" id="subImages" name="subImages" accept="image/*" multiple style="display: none;">
+							<div id="additional-images-preview d-grid" class="mt-3">
+								${existingSubImagesHTML}
+							</div>
+							<small class="form-text text-muted">기존 이미지를 유지하거나 새 이미지를 추가/변경할 수 있습니다.</small>
+						</div>
+
+						<div class="col-12 mt-4">
+							<label for="productDesc" class="form-label"><strong>상품 설명</strong></label>
+							<textarea class="form-control" id="productDesc" name="productDesc" rows="5" required>${product.productDesc || ''}</textarea>
+						</div>
+					</div>
+					<hr class="my-4">
+
+					<h5 class="mb-3 fw-bold text-primary">가격 및 재고 정보</h5>
+					<div class="row g-3">
+						<div class="col-md-4">
+							<label for="unitPrice" class="form-label"><strong>단위당 가격 (원)</strong></label>
+							<input type="number" class="form-control" id="unitPrice" name="unitPrice" value="${product.unitPrice || 0}" min="0" required>
+						</div>
+						<div class="col-md-4">
+							<label for="discountRate" class="form-label"><strong>할인율 (%)</strong></label>
+							<input type="number" class="form-control" id="discountRate" name="discountRate" value="${product.discountRate || 0}" min="0" max="100" required>
+						</div>
+						<div class="col-md-4">
+							<label for="unit" class="form-label"><strong>판매 단위: g</strong></label>
+							<input type="text" class="form-control" id="unit" name="unit" value="${product.unit || ''}" required>
+						</div>
+						<div class="col-md-6">
+							<label for="stockQuantity" class="form-label"><strong>현재 재고 수량</strong></label>
+							<input type="number" class="form-control" id="stockQuantity" name="stockQuantity" value="${product.stockQuantity || 0}" readonly>
+							<small class="form-text text-muted">재고는 '재고 관리' 메뉴에서 변경하세요.</small>
+						</div>
+						<div class="col-md-6">
+							<label for="deliveryFee" class="form-label"><strong>배송비 (원)</strong></label>
+							<input type="number" class="form-control" id="deliveryFee" name="deliveryFee" value="${product.deliveryFee || 3000}" min="0" required>
+						</div>
+					</div>
+					<div class="row g-3 mt-4">
+						<div class="form-group col-md-12">
+							<label for="varietyCategory"><strong>상품 카테고리</strong></label>
+							<input type="text" id="varietyCategory" class="form-control" value="${product.varietytName}" disabled>
+							<input type="hidden" id="varietyNum" name="varietyNum" value="${product.varietyNum}">
+							<small class="form-text text-muted">상품 카테고리는 변경할 수 없습니다.</small>
 						</div>
 					</div>
 				</div>
-			</td>
-		</tr>
-	</table>
-	`;
-	return html;
-}
+				<div class="card-footer text-end bg-light">
+					<button data-method="put" data-num="${product.productNum}" type="button" class="btn btn-primary ms-2" id="save-product-btn">
+						<i class="fas fa-save me-1"></i> 수정완료
+					</button>
+					<button type="button" class="btn btn-secondary product-cancel-btn">취소</button>
+				</div>
+			</form>
+		</div>
+		`;
+		return html;
+	}
 
 /**
  * 납품 리스트 HTML 문자열 생성

@@ -54,6 +54,7 @@ public class ProductPageController {
 			
 			model.addAttribute("productInfo", productInfo);
 			model.addAttribute("productImageList", productImageList);
+			model.addAttribute("recommendList", null);
 			
 			return "product/info";
 		} catch (Exception e) {

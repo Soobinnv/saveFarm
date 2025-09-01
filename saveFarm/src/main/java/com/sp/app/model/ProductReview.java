@@ -48,4 +48,7 @@ public class ProductReview {
 	
 	// 현재 사용자의 리뷰 추천 여부
 	private int userLike; // 0: false, 1: true
+
+	// 주문 날짜
+	private String orderDate;
 }

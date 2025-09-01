@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.sp.app.common.StorageService;
+import com.sp.app.exception.StorageException;
 import com.sp.app.farm.mapper.SupplyMapper;
 import com.sp.app.farm.mapper.VarietyMapper;
 import com.sp.app.farm.model.Variety;
@@ -26,6 +30,7 @@ public class ProductServiceImpl implements ProductService {
 	private final VarietyMapper varietyMapper;
 	private final ProductReviewService reviewService;
 	private final WishService wishService;
+	private final StorageService storageService;
 	
 	@Override
 	public Product getProductWithDetails(long productNum, int classifyCode, long memberId) throws Exception {
@@ -209,15 +214,19 @@ public class ProductServiceImpl implements ProductService {
 		return list;
 	}
 
+	@Transactional
 	@Override
 	public void insertProduct(Product dto, String uploadPath) throws Exception {
 		try {
-			dto.setMainImageFilename("test");
+			String filename = storageService.uploadFileToServer(dto.getMainImage(), uploadPath);
+			dto.setMainImageFilename(filename);
 			
 			mapper.insertProduct(dto);
 			
-			// 파일 등록
-			
+			// 추가 이미지 저장
+			if(! dto.getSubImages().isEmpty()) {
+				insertProductFile(dto, uploadPath);
+			}
 			
 		} catch (Exception e) {
 			log.info("insertProduct : ", e);
@@ -226,6 +235,21 @@ public class ProductServiceImpl implements ProductService {
 		
 	}
 
+	private void insertProductFile(Product dto, String uploadPath) throws Exception {
+		for (MultipartFile mf : dto.getSubImages()) {
+			try {
+				String saveFilename = Objects.requireNonNull(storageService.uploadFileToServer(mf, uploadPath));
+				dto.setProductImageFilename(saveFilename);
+				
+				mapper.insertProductImage(dto);
+			} catch (NullPointerException e) {
+			} catch (StorageException e) {
+			} catch (Exception e) {
+				throw e;
+			}
+		}
+	}
+	
 	@Override
 	public void insertProductDetail(Product dto) throws Exception {
 		try {
@@ -245,17 +269,38 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public void updateProduct(Product dto, String uploadPath) throws Exception {
 		try {
+			String filename = storageService.uploadFileToServer(dto.getMainImage(), uploadPath);
+			if(filename != null) {
+				// 이전 파일 지우기
+				if (! dto.getMainImageFilename().isBlank()) {
+					deleteUploadFile(uploadPath, dto.getMainImageFilename());
+				}
+				
+				dto.setMainImageFilename(filename);
+			}
+			
 			mapper.updateProduct(dto);
+			
+			// 추가 이미지
+			if(! dto.getSubImages().isEmpty()) {
+				insertProductFile(dto, uploadPath);
+			}
+			
 		} catch (Exception e) {
 			log.info("updateProduct : ", e);
 			throw e;
 		}
 		
 	}
-
+	
+	public boolean deleteUploadFile(String uploadPath, String filename) {
+		return storageService.deleteFile(uploadPath, filename);
+	}
+	
 	@Transactional
 	@Override
 	public void updateProductDetail(Product dto, List<Long> supplyNums) throws Exception {
@@ -263,7 +308,7 @@ public class ProductServiceImpl implements ProductService {
 			// 판매 상품 재고 등록
 			mapper.updateProductDetail(dto);
 			
-			if(supplyNums.size() != 0) {
+			if(supplyNums != null && supplyNums.size() != 0) {
 				Map<String, Object> paramMap = new HashMap<>();
 				
 				// 납품 목록 처리
@@ -294,20 +339,27 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public void deleteProduct(long productNum, String uploadPath) throws Exception {
 		try {
+			Product dto = getProductInfo(productNum);
+			
+			String filename = storageService.uploadFileToServer(dto.getMainImage(), uploadPath);
+			if(filename != null) {
+				// 파일 지우기
+				if (! dto.getMainImageFilename().isBlank()) {
+					deleteUploadFile(uploadPath, dto.getMainImageFilename());
+				}
+			}
+			
 			mapper.deleteProduct(productNum);
+			mapper.deleteProductImage(productNum);
+			
 		} catch (Exception e) {
 			log.info("deleteProduct : ", e);
 			throw e;
 		}
-	}
-
-	@Override
-	public boolean deleteProductImageFile(String uploadPath, String filename) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -340,7 +392,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void insertProductWithDetails(Product dto, String uploadPath) throws Exception {
 		try {
-			insertProduct(dto, null);
+			insertProduct(dto, uploadPath);
 			insertProductDetail(dto);
 			
 			if(dto.getFarmNum() != 0) {

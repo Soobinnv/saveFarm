@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class KakaoAuthService {
-	private final String REST_API_KEY = "카카오 - RESTAPIKEY";
+	private final String REST_API_KEY = "";
 	private final String TOKEN_URI = "https://kauth.kakao.com/oauth/token";
 	private final String USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
 	private final String REDIRECT_URI = "http://localhost:9090/oauth/kakao/callback";
