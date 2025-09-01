@@ -46,7 +46,7 @@
 								<th class="col-2">작성일</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody> 
 							<c:forEach var="dto" items="${list}" varStatus="status">
                                 <tr data-bs-toggle="collapse" data-bs-target="#collapse${status.index}" aria-expanded="false" aria-controls="collapse${status.index}" class="border-bottom-green">
                                     <td>${dataCount - ( page - 1 ) * size - status.index }</td>
