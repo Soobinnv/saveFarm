@@ -598,6 +598,10 @@ function sendOk(){
   document.getElementById('addr').value     = addr1;
   document.getElementById('zip').value      = addr2;
   
+  var subMonthVal = ${dto != null && dto.subMonth != null ? dto.subMonth : 1};
+  document.getElementById('subMonth').value = subMonthVal;
+  
+  
   const hasDto = '${not empty dto}' === 'true';
 
   if (hasDto) {
@@ -608,6 +612,8 @@ function sendOk(){
   } else {
 	  // 등록
     f.action = '${pageContext.request.contextPath}/package/payForm';
+    document.getElementById('subNum').value   = '0';
+    document.getElementById('subMonth').value = '1';
   }
   f.method = 'post';
   f.submit();

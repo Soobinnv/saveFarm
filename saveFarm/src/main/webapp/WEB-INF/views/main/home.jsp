@@ -63,7 +63,7 @@ body {
 	background: linear-gradient(180deg, rgba(0, 0, 0, .25),
 		rgba(0, 0, 0, .35)) !important;
 	padding: 0 16px !important;
-	height: 450px;
+	height: 100% !important;
 }
 
 .hero-title {
@@ -478,7 +478,7 @@ body {
 		style="font-family: 'Gowun Dodum', sans-serif;">
 		<div id="header-carousel" class="carousel slide"
 			data-bs-ride="carousel" style="margin-top: 78px;">
-			<div class="carousel-inner" style="height: 450px;">
+			<div class="carousel-inner" style="height: 350px;">
 				<div class="carousel-item active">
 					<img class="w-100"
 						src="${pageContext.request.contextPath}/dist/images/main_2.jpg"

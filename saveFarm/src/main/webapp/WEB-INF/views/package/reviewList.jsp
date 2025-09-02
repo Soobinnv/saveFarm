@@ -49,7 +49,7 @@
 </header>
 <c:set var="CP" value="${pageContext.request.contextPath}" />
 
-<div class="wrap">
+<div class="wrap" style="margin-top: 150px;">
   <div class="heading">
     <div class="pill">우리 농가를 구하는 구독자님들의 소중한 후기</div>
   </div>
@@ -104,7 +104,6 @@
           +   '<div class="excerpt">' + esc(it.content) + '</div>'
           +   '<div class="foot">'
           +     '<div class="stars">' + stars + '</div>'
-          +     '<a class="btn-view" href="' + DETAIL_URL(it.subNum) + '">자세히</a>'
           +   '</div>'
           + '</div>';
       }
