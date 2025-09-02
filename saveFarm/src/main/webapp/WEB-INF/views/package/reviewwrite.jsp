@@ -118,7 +118,7 @@
 	<jsp:include page="/WEB-INF/views/layout/header.jsp"/>
 </header>
 
-<div class="review-card">
+<div class="review-card" style="margin-top: 120px;">
   <div class="card-in">
     <div class="title">구독리뷰</div>
 

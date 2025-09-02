@@ -320,7 +320,7 @@ public class AdminProductController {
 			paramMap.put("supplyNum", supplyNum);
 			paramMap.put("state", state);
 			
-			supplyService.updateState1(paramMap);
+			supplyService.updateState2(paramMap);
 			
 			return ResponseEntity.ok(body); // 200 OK
 		} catch (Exception e) {

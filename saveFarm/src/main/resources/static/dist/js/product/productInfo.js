@@ -29,7 +29,7 @@ $(function() {
 	            renderRefund(); 
 	            break;
 	        case 'nav-qna-tab':
-	        	loadContent('/api/products/' + productNum + '/qnas', renderProductQnaHtml); 
+	        	loadContent('/api/products/' + productNum + '/qnas', setupQnaVirtualScroll); 
 	            break;
     	}
 	});

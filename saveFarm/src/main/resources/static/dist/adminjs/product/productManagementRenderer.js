@@ -655,7 +655,7 @@ const renderProductEditHTML = function(data) {
 					<div class="row g-3 mt-4">
 						<div class="form-group col-md-12">
 							<label for="varietyCategory"><strong>상품 카테고리</strong></label>
-							<input type="text" id="varietyCategory" class="form-control" value="${product.varietytName}" disabled>
+							<input type="text" id="varietyCategory" class="form-control" value="${product.varietyName}" disabled>
 							<input type="hidden" id="varietyNum" name="varietyNum" value="${product.varietyNum}">
 							<small class="form-text text-muted">상품 카테고리는 변경할 수 없습니다.</small>
 						</div>

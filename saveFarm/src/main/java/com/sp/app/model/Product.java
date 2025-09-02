@@ -20,6 +20,7 @@ public class Product {
 	private String mainImageFilename;
 	private int productClassification;
 	// 상품 분류 코드
+	
 	private int varietyNum;
 	private String varietyName;
 	private MultipartFile mainImage;
