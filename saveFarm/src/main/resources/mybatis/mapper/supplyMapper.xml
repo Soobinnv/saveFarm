@@ -250,8 +250,8 @@
     WHERE supplyNum = #{supplyNum}
   </select>
 
-  <!-- ★ WhereList 쓰므로 parameterType=map, alias/LEFT JOIN 추가 -->
-  <select id="listByFarm" parameterType="map" resultType="com.sp.app.farm.model.Supply">
+  <!-- WhereList 쓰므로 parameterType=map, alias/LEFT JOIN 추가 -->
+<select id="listByFarm" parameterType="map" resultType="com.sp.app.farm.model.Supply">
     SELECT
       s.supplyNum, s.supplyQuantity, s.unitQuantity, s.unitPrice,
       s.harvestDate, s.state, s.rescuedApply, s.coment, s.approvedDate,
@@ -261,9 +261,9 @@
     <where>
       <include refid="WhereList"/>
     </where>
-    ORDER BY s.supplyNum DESC
+    ORDER BY s.harvestDate ASC, s.supplyNum DESC
     OFFSET #{offset} ROWS FETCH FIRST #{size} ROWS ONLY
-  </select>
+</select>
 
   <select id="farmSupplyListCount" parameterType="map" resultType="Integer">
     SELECT COUNT(*)

@@ -41,7 +41,7 @@ public interface SupplyMapper {
 	public int farmSupplyListCount(Map<String, Object> map);
 	
 	// 승인여부 대상 조회용
-	public List<Supply> listByState(int state);
+	public List<Supply> listByState(Map<String, Object> map);
  	public int stateListCount(int state);
  	
  	// 긴급구출상품신청여부조회용
