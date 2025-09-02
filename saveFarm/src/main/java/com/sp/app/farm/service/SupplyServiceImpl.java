@@ -181,10 +181,10 @@ public class SupplyServiceImpl implements SupplyService {
 	}
 
 	@Override
-	public List<Supply> listByState(int state) {
+	public List<Supply> listByState(Map<String, Object> map) {
 		List<Supply> list = null;
 		try {
-			list = mapper.listByState(state);
+			list = mapper.listByState(map);
 	    } catch (Exception e) {
 	        log.info("listByState : ", e);
 	    }
@@ -346,6 +346,16 @@ public class SupplyServiceImpl implements SupplyService {
 	    } catch (Exception e) {
 	        log.info("insertCrops : ", e);
 	    }
+	}
+
+	@Override
+	public void updateProductNum(Map<String, Object> map) throws Exception {
+		try {
+			mapper.updateProductNum(map);
+		} catch (Exception e) {
+			log.info("updateRescuedApply : ", e);
+			throw e;
+		}
 	}
 
 

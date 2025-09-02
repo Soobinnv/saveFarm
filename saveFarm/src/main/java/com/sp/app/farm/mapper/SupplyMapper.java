@@ -19,6 +19,7 @@ public interface SupplyMapper {
     public int updateState(Map<String, Object> map) throws SQLException;        
     public void updateState1(Map<String, Object> map) throws SQLException;     
     public void updateState2(Map<String, Object> map) throws SQLException;       
+    public void updateProductNum(Map<String, Object> map) throws SQLException;       
     public void updateRescuedApply(Map<String, Object> map) throws SQLException;        
     public void deleteSupply(Map<String, Object> map) throws SQLException;      
 

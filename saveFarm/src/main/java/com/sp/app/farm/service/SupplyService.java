@@ -15,6 +15,7 @@ public interface SupplyService {
     public void updateState1(Map<String, Object> mapm) throws Exception;        // supplyNum
     public void updateState2(Map<String, Object> map) throws Exception;        // supplyNum, state
     public void updateRescuedApply(Map<String, Object> map) throws Exception; // supplyNum, rescuedApply
+    public void updateProductNum(Map<String, Object> map) throws Exception; // supplyNum, rescuedApply
     public void deleteSupply(Map<String, Object> map) throws Exception;       // supplyNum 또는 ids(다건)
 
     public List<Variety> listFarmVarieties(Map<String, Object> map);
@@ -36,7 +37,7 @@ public interface SupplyService {
 	public int farmSupplyListCount(Map<String, Object> map);
 	
 	// 승인여부 대상 조회용
-	public List<Supply> listByState(int state);
+	public List<Supply> listByState(Map<String, Object> map);
  	public int stateListCount(int state);
  	
  	// 긴급구출상품신청여부조회용

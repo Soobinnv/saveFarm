@@ -167,6 +167,11 @@
     WHERE supplyNum = #{supplyNum}
   </update>
 
+  <update id="updateProductNum" parameterType="map">
+    UPDATE supply SET productNum = #{productNum}
+    WHERE supplyNum = #{supplyNum}
+  </update>
+
   <update id="updateRescuedApply" parameterType="map">
     UPDATE supply SET rescuedApply = #{rescuedApply}
     WHERE supplyNum = #{supplyNum}
