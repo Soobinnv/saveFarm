@@ -740,7 +740,7 @@ public class MyPageApiController {
             
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("schTypeFAQ", "memberFAQ");
-            paramMap.put("categoryNum", 4);
+            paramMap.put("categoryNum", 17);
             
             FaqManage dto = faqService.dataCount(paramMap);
             dataCount = dto.getMemberCount();
