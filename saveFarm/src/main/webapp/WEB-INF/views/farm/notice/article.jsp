@@ -41,7 +41,7 @@
 .board-article thead td{ font-size:1.1rem; font-weight:600; padding:1rem; }
 .board-article tbody td{ padding:.9rem 1rem; }
 .board-article tbody tr+tr td{ border-top:1px dashed rgba(0,0,0,.08); }
-.article-content{ line-height:1.8; font-size:1.05rem; }
+.article-content{ line-height:1.8; font-size:1.05rem; white-space: pre-line;}
 
 /* 파일 박스(기존 border/p-2 유지하면서 톤만 업) */
 .board-section .file-box{
