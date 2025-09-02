@@ -88,7 +88,7 @@
 						</tbody>
 					</table>
 					<div class="row justify-content-center">
-						${paging}
+						${empty paging ? '등록된 데이터가 없습니다.' : paging }
 					</div>	
 				</div>		
 			</div>
@@ -106,7 +106,7 @@
 				</div>
 			</div>
 			<div class="col-sm-12 col-md-3 d-flex justify-content-end align-items-start">
-				<button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/FAQManage';">FAQ 카테고리 관리</button>
+				
 				<button type="button" class="btn btn-outline-primary mb-2 mr-1" onclick="location.href='${pageContext.request.contextPath}/admin/FAQ/write';">질문 등록</button>
 			</div>
 		</div>

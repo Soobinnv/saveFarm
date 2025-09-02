@@ -109,7 +109,7 @@ main {
 							</c:if>
 						</div>
 						<div class="col-md-6 align-self-center text-end">
-							<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/homebob/list?${query}';">리스트</button>
+							<button type="button" class="btn-default" onclick="location.href='${pageContext.request.contextPath}/homebob/list';">리스트</button>
 						</div>
 					</div>
 

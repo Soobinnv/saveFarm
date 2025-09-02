@@ -75,16 +75,13 @@
 	<select id="dataCount" parameterType="map" resultType="com.sp.app.admin.model.FaqManage">
 	SELECT
 	    NVL(COUNT(*),0) AS dataCount,
-	    SUM(DECODE(classify, 1, 1, 0)) AS memberCount,
-	    SUM(DECODE(classify, 2, 1, 0)) AS farmCount
+	    NVL(SUM(DECODE(f.classify, 1, 1, 0)),0) AS memberCount,
+	    NVL(SUM(DECODE(f.classify, 2, 1, 0)),0) AS farmCount
 	FROM FAQ f
 	LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
 		<where>
-			<if test="schTypeFAQ != null and schTypeFAQ != ''">
-				<include refid="FAQ-classify-list"/>
-			</if>
 			<if test="categoryNum != null and categoryNum != ''">
-				AND f.categoryNum = #{categoryNum}
+				f.categoryNum = #{categoryNum}
 			</if>
 			<if test="kwd != null and kwd != ''">
 				AND <include refid="where-list"/>
@@ -101,8 +98,8 @@
 	
 	<!-- FAQ 추가 -->
 	<insert id="insertFAQ" parameterType="com.sp.app.admin.model.FaqManage">
-		INSERT INTO FAQ(faqNum, categoryNum, memberId, subject, content, regDate)
-		VALUES (FAQ_SEQ.NEXTVAL, #{categoryNum}, #{memberId}, #{subject}, #{content}, SYSDATE)
+		INSERT INTO FAQ(faqNum, categoryNum, memberId, subject, content, regDate, classify)
+		VALUES (FAQ_SEQ.NEXTVAL, #{categoryNum}, #{memberId}, #{subject}, #{content}, SYSDATE, #{classify})
 	</insert>
 	
 	<!-- FAQ 수정 -->

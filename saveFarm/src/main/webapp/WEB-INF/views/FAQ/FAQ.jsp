@@ -69,9 +69,8 @@
 						</tbody>
 					</table>
 					<div class="row">
-						<div class="col-5"></div>
-						<div class="col-auto justify-content-center">
-							${paging}
+						<div class="d-flex justify-content-center">
+							${empty paging ? '등록된 데이터가 없습니다.' : paging}
 						</div>
 					</div>	
 				</div>		

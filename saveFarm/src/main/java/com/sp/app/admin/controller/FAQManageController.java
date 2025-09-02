@@ -142,6 +142,20 @@ public class FAQManageController {
         return "admin/FAQ/FAQ";
     }
     
+    @GetMapping("categoryList")
+    @ResponseBody
+    public List<FaqManage> getCategoryList(
+            @RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ) throws Exception {
+
+        Map<String, Object> categoryMap = new HashMap<>();
+        categoryMap.put("schTypeFAQ", schTypeFAQ);
+        
+        // schTypeFAQ 값에 따라 필터링된 카테고리 목록을 반환
+        List<FaqManage> listFAQ = service.categoryFAQList(categoryMap);
+        
+        return listFAQ;
+    }
+    
     @GetMapping("write")
 	public String writeForm(
 			@RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ,
@@ -158,20 +172,7 @@ public class FAQManageController {
 
 		return "admin/FAQ/write";
 	}
-	
-    @GetMapping("categoryList")
-    @ResponseBody
-    public List<FaqManage> getCategoryList(
-            @RequestParam(name = "schTypeFAQ", defaultValue = "memberFAQ") String schTypeFAQ) throws Exception {
-
-        Map<String, Object> categoryMap = new HashMap<>();
-        categoryMap.put("schTypeFAQ", schTypeFAQ);
-        
-        // schTypeFAQ 값에 따라 필터링된 카테고리 목록을 반환
-        List<FaqManage> listFAQ = service.categoryFAQList(categoryMap);
-        
-        return listFAQ;
-    }
+  
     
 	@PostMapping("write")
 	public String writeSubmit(

@@ -76,6 +76,7 @@
 										            <option value="memberFAQ" ${schTypeFAQ == 'memberFAQ' ? 'selected' : ''}> 회원</option>
 										            <option value="farmFAQ" ${schTypeFAQ == 'farmFAQ' ? 'selected' : ''}>농가</option>
 										        </select>
+										        <input type="hidden" name="classify" value="1">
 										    </div>
 										</div>
 										<div class="form-group row mb-3">
@@ -139,7 +140,15 @@ $(function(){
 });
 
 function changeFaqWriteType(selectElement) {
-    const schTypeFAQ = selectElement.value;
+	const f = document.faqForm;
+	let classifyValue = 1;
+	
+	if(selectElement.value == 'farmFAQ') {
+		classifyValue = 2;
+	}
+	f.classify.value = classifyValue;
+
+	const schTypeFAQ = selectElement.value;
     const url = '${pageContext.request.contextPath}/admin/FAQ/categoryList';
     const params = { schTypeFAQ: schTypeFAQ };
 
@@ -147,12 +156,11 @@ function changeFaqWriteType(selectElement) {
         type: "GET",
         url: url,
         data: params,
-        dataType: "json", // 서버에서 JSON 데이터를 반환한다고 가정
+        dataType: "json", 
         success: function(response) {
             const categorySelect = $('#category');
             categorySelect.empty(); // 기존 옵션 삭제
             
-            // 서버에서 받은 카테고리 목록으로 옵션 추가
             $.each(response, function(index, dto) {
                 categorySelect.append(
                     $('<option></option>').val(dto.categoryNum).text(dto.categoryName)

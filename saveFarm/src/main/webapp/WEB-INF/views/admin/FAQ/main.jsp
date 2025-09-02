@@ -62,7 +62,7 @@
 					<div class="col-md-9" id="nav-tabContent"> </div>
 						
 					<form name="faqSearchForm">
-						<input type="hidden" name="schTypeFAQ" value="memberFAQ">
+						<input type="hidden" name="schTypeFAQ" value="">
 						<input type="hidden" name="schType" value="all">
 						<input type="hidden" name="kwd" value="">
 						<input type="hidden" name="categoryNum" value="">
@@ -106,6 +106,18 @@ function changeFaqType() {
     listFaq(1); // 이 함수가 최종 목록을 다시 불러옵니다.
 }
 
+/* 
+function changeFaqType() {
+    const f = document.faqSearchForm;
+    const schTypeFAQ = document.getElementsByName('schTypeFAQ');
+    f.kwd.value = '';
+    f.schType.value = 'all';
+    f.categoryNum.value = '';
+    f.schTypeFAQ.value = schTypeFAQ[0].value;
+    
+    listFaq(1); // 이 함수가 최종 목록을 다시 불러옵니다.
+}
+ */
 // 네비바 카테고리 탭 클릭 시 호출되는 함수
 function loadCategory(categoryNum) {
     const f = document.faqSearchForm;
