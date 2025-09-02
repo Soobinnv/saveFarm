@@ -31,7 +31,7 @@ $(function() {
 			// state: 5 - 납품 완료 (재고 등록 전)			
 	});
 	
-	// 재고 수정 버튼 (실사 조정)
+	// 재고 수정 폼 버튼 (실사 조정)
 	$('main').on('click', '.stock-edit-btn', function(e) {
 		const $btnEL = $(e.target);
 		const productNum = $btnEL.attr('data-num');
@@ -138,6 +138,8 @@ $(function() {
 	$('main').on('click', '#save-stock-btn', function(e) {
 		const num = $(e.target).attr('data-num');
 		let afterStock = Number($('#stock-after-quantity').val());
+		
+		console.log(afterStock);
 		
 		const checkedSupplyNums = $('.supply-checkbox:checked').map(function() {
 		    return parseInt($(this).attr('data-num'), 10);

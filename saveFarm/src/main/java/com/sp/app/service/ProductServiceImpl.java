@@ -14,6 +14,7 @@ import com.sp.app.common.StorageService;
 import com.sp.app.exception.StorageException;
 import com.sp.app.farm.mapper.SupplyMapper;
 import com.sp.app.farm.mapper.VarietyMapper;
+import com.sp.app.farm.model.Supply;
 import com.sp.app.farm.model.Variety;
 import com.sp.app.mapper.ProductMapper;
 import com.sp.app.model.Product;
@@ -305,7 +306,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public void updateProductDetail(Product dto, List<Long> supplyNums) throws Exception {
 		try {
-			// 판매 상품 재고 등록
+			// 판매 상품 재고 등록 / 수정
 			mapper.updateProductDetail(dto);
 			
 			if(supplyNums != null && supplyNums.size() != 0) {
@@ -350,6 +351,26 @@ public class ProductServiceImpl implements ProductService {
 				// 파일 지우기
 				if (! dto.getMainImageFilename().isBlank()) {
 					deleteUploadFile(uploadPath, dto.getMainImageFilename());
+				}
+			}
+			
+			Map<String, Object> paramMap = new HashMap<>();
+			
+			paramMap.put("productNum", productNum);
+			paramMap.put("offset", 0);
+			paramMap.put("size", productNum);
+			
+			// 삭제할 상품 번호가 있는 납품 리스트 조회
+			List<Supply> supplyList = supplyMapper.listByState(paramMap);
+			
+			if(! supplyList.isEmpty()) {
+				// 상품 등록되어 있는 상품 번호 제거
+				paramMap.put("productNum", null);
+				
+				for(Supply supply : supplyList) {
+					paramMap.put("supplyNum", supply.getSupplyNum());
+					
+					supplyMapper.updateProductNum(paramMap);
 				}
 			}
 			

@@ -131,7 +131,7 @@
     <update id="updateProductDetail" parameterType="com.sp.app.model.Product">
         UPDATE productDetail
         <set>
-            <if test="stockQuantity != null and stockQuantity != ''">STOCKQUANTITY = #{stockQuantity},</if>
+            <if test="stockQuantity != null">STOCKQUANTITY = #{stockQuantity},</if>
             <if test="unit != null and unit != ''">UNIT = #{unit},</if>
             <if test="unitPrice != null and unitPrice != ''">UNITPRICE = #{unitPrice},</if>
             <if test="discountRate != null and discountRate != ''">DISCOUNTRATE = #{discountRate},</if>

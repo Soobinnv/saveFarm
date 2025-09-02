@@ -61,7 +61,7 @@
 							href="${pageContext.request.contextPath}/faq/list" class="dropdown-item">FAQ</a>
 					</div>
 				</div>
-				<a href="contact.html" class="nav-item nav-link headerNavText">Contact Us</a>
+				<a href="${pageContext.request.contextPath}/homebob/list" class="nav-item nav-link headerNavText">집밥일기</a>
 				<a href="javascript:dialogLogin();" class="nav-item nav-link headerNavText loginHeader">Log In</a>
 			</div>
 		</div>

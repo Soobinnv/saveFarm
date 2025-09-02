@@ -168,7 +168,7 @@
   </update>
 
   <update id="updateProductNum" parameterType="map">
-    UPDATE supply SET productNum = #{productNum}
+    UPDATE supply SET productNum = #{productNum, jdbcType=NUMERIC}
     WHERE supplyNum = #{supplyNum}
   </update>
 
