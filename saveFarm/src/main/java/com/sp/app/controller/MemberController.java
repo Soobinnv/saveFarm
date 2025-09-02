@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -162,7 +163,7 @@ public class MemberController {
 
 	@ResponseBody
 	@PostMapping("userIdCheck")
-	public Map<String, ?> idCheck(@RequestParam(name = "login_id") String login_id) throws Exception {
+	public Map<String, ?> idCheck(@RequestParam(name = "loginId") String login_id) throws Exception {
 		Map<String, Object> model = new HashMap<>();
 		
 		String p = "false";
@@ -173,6 +174,7 @@ public class MemberController {
 			}
 		} catch (Exception e) {
 		}
+		
 		
 		model.put("passed", p);
 		
@@ -282,7 +284,7 @@ public class MemberController {
 	}
 	
 	@PostMapping("pwdFind")
-	public String pwdFindSubmit(@RequestParam(name = "login_id") String login_id,
+	public String pwdFindSubmit(@RequestParam(name = "loginId") String login_id,
 			RedirectAttributes reAttr,
 			Model model) throws Exception {
 		

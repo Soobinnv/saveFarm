@@ -303,106 +303,151 @@ function isValidDateString(dateString) {
 function memberOk() {
 	const f = document.memberForm;
 	let str, p;
+	let mode = '${mode}'; // JSP에서 mode 값을 받아옴
 
-	p = /^[a-z][a-z0-9_]{4,9}$/i;
-	str = f.login_id.value;
-	if( ! p.test(str) ) { 
-		alert('아이디를 다시 입력 하세요. ');
-		f.login_id.focus();
-		return;
+	// --- 아이디 검증 ---
+	if (mode === 'account') {
+		p = /^[a-z][a-z0-9_]{4,9}$/i;
+		str = f.loginId.value;
+		if (!p.test(str)) {
+			alert('아이디는 5~10자 이내이며, 첫글자는 영문자로 시작해야 합니다.');
+			f.loginId.focus();
+			return;
+		}
+
+		// 아이디 중복 검사 여부 확인
+		if (f.loginIdValid.value === 'false') {
+			alert('아이디 중복 검사를 실행해 주세요.');
+			f.loginId.focus();
+			return;
+		}
 	}
 
-	let mode = '${mode}';
-	if( mode === 'account' && f.loginIdValid.value === 'false' ) {
-		str = '아이디 중복 검사가 실행되지 않았습니다.';
-		$('.wrap-loginId').find('.help-block').html(str);
-		f.login_id.focus();
-		return;
+	// --- 비밀번호 검증 ---
+	// 수정 모드일 때, 비밀번호를 입력하지 않으면 유효성 검사를 건너뛰도록 처리
+	if (mode === 'update' && !f.password.value && !f.password2.value) {
+		// 비밀번호, 비밀번호 확인 둘 다 비어있으면 통과
+	} else {
+		p = /^(?=.*[a-z])(?=.*[0-9!@#$%^&*+=,.-]).{5,10}$/i;
+		str = f.password.value;
+		if (!p.test(str)) {
+			alert('패스워드는 5~10자이며 하나 이상의 영문, 숫자/특수문자를 포함해야 합니다.');
+			f.password.focus();
+			return;
+		}
+
+		if (str !== f.password2.value) {
+			alert('패스워드가 일치하지 않습니다.');
+			f.password2.focus();
+			return;
+		}
 	}
 
-	p =/^(?=.*[a-z])(?=.*[!@#$%^*+=-]|.*[0-9]).{5,10}$/i;
-	str = f.password.value;
-	if( ! p.test(str) ) { 
-		alert('패스워드를 다시 입력 하세요. ');
-		f.password.focus();
+	// --- 이름 검증 ---
+	p = /^[가-힣]{2,5}$/;
+	str = f.name.value;
+	if (!p.test(str)) {
+		alert('이름은 2~5자의 한글만 입력 가능합니다.');
+		f.name.focus();
 		return;
-	}
-
-	if( str !== f.password2.value ) {
-        alert('패스워드가 일치하지 않습니다. ');
-        f.password.focus();
-        return;
 	}
 	
-	p = /^[가-힣]{2,5}$/;
-    str = f.name.value;
-    if( ! p.test(str) ) {
-        alert('이름을 다시 입력하세요. ');
-        f.name.focus();
-        return;
-    }
+	// --- 이메일 검증 ---
+	p = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	str = f.email.value;
+	if (!str || !p.test(str)) {
+		alert('올바른 이메일 형식을 입력하세요.');
+		f.email.focus();
+		return;
+	}
+	
+	// --- 휴대폰 번호 검증 ---
+	// 하이픈(-)을 포함하거나 숫자만 있는 경우 모두 검증하도록 수정
+	p = /^010-?\d{4}-?\d{4}$/;
+	str = f.tel.value;
+	if (!p.test(str)) {
+		alert('휴대폰 번호 형식이 올바르지 않습니다 (예: 01012345678 또는 010-1234-5678).');
+		f.tel.focus();
+		return;
+	}
+	
+	// --- 생년월일 검증 ---
+	// isValidDateString 함수 대신 값이 비어있는지만 확인 (HTML5 type="date"가 형식은 보장)
+	str = f.birth.value;
+	if (!str) {
+		alert('생년월일을 입력하세요.');
+		f.birth.focus();
+		return;
+	}
 
-    str = f.birth.value;
-    if( ! isValidDateString(str) ) {
-        alert('생년월일를 입력하세요. ');
-        f.birth.focus();
-        return;
-    }
-    
-    p = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;    
-    str = f.email.value;
-    if( ! p.test(str) ) {
-        alert('이메일을 입력하세요. ');
-        f.email.focus();
-        return;
-    }
-    
-    p = /^(010)-?\d{4}-?\d{4}$/;    
-    str = f.tel.value;
-    if( ! p.test(str) ) {
-        alert('전화번호를 입력하세요. ');
-        f.tel.focus();
-        return;
-    }
+	// --- 주소 검증 ---
+	if (!f.zip.value || !f.addr1.value) {
+		alert('주소를 검색하여 입력하세요.');
+		f.zip.focus();
+		return;
+	}
+	if (!f.addr2.value) {
+		alert('상세주소를 입력하세요.');
+		f.addr2.focus();
+		return;
+	}
+	
+	// --- 약관 동의 (가입 모드에서만) ---
+	if (mode === 'account' && !f.agree.checked) {
+		alert('이용약관에 동의하셔야 합니다.');
+		f.agree.focus();
+		return;
+	}
 
-    f.action = '${pageContext.request.contextPath}/member/${mode}';
-    f.submit();
+	f.action = '${pageContext.request.contextPath}/member/' + mode;
+	f.submit();
 }
 
+// 아이디 중복 검사
 function userIdCheck() {
-	// 아이디 중복 검사
-	let login_id = $('#loginId').val();
-
-	if(!/^[a-z][a-z0-9_]{4,9}$/i.test(login_id)) { 
-		let str = '아이디는 5~10자 이내이며, 첫글자는 영문자로 시작해야 합니다.';
-		$('#login_id').focus();
-		$('#login_id').closest('.wrap-loginId').find('.help-block').html(str);
+	// 1. 입력 값 가져오기 및 형식 검사
+	const loginId = $('#loginId').val();
+	if (!/^[a-z][a-z0-9_]{4,9}$/i.test(loginId)) {
+		const str = '아이디는 5~10자 이내이며, 첫글자는 영문자로 시작해야 합니다.';
+		$('#loginId').focus();
+		// HTML의 #loginIdHelp 요소에 메시지를 표시하도록 수정
+		$('#loginIdHelp').html(str).css('color', 'red');
 		return;
 	}
+
+	// 2. 서버에 AJAX 요청 보내기
+	const url = '${pageContext.request.contextPath}/member/userIdCheck';
 	
-	let url = '${pageContext.request.contextPath}/member/userIdCheck';
-	let params = 'login_id=' + login_id;
 	$.ajax({
 		type: 'POST',
 		url: url,
-		data: params,
+		data: { loginId: loginId }, 
 		dataType: 'json',
 		success: function(data) {
-			let passed = data.passed;
+			const passed = data.passed;
+			let message = '';
 			
-			if(passed === 'true') {
-				let str = '<span style="color:blue; font-weight: bold;">' + login_id + '</span> 아이디는 사용가능 합니다.';
-				$('#login_id').closest('.wrap-loginId').find('.help-block').html(str);
+			if (passed === "true") {
+				// 사용 가능한 아이디
+				message = `<span style="color:blue; font-weight: bold;">\${loginId}</span> 아이디는 사용 가능합니다.`;
+				$('#loginIdHelp').html(message);
 				$('#loginIdValid').val('true');
 			} else {
-				let str = '<span style="color:red; font-weight: bold;">' + login_id + '</span> 아이디는 사용할수 없습니다.';
-				$('#login_id').closest('.wrap-loginId').find('.help-block').html(str);
-				$('#login_id').val('');
+				// 이미 사용 중인 아이디
+				message = `<span style="color:red; font-weight: bold;">\${loginId}</span> 아이디는 사용할 수 없습니다.`;
+				$('#loginIdHelp').html(message);
+				$('#loginId').val('');
 				$('#loginIdValid').val('false');
-				$('#login_id').focus();
+				$('#loginId').focus();
 			}
+		},
+		error: function(jqXHR) {
+			// AJAX 요청 실패 시 콘솔에 에러 기록
+			console.log(jqXHR.responseText);
+			alert('아이디 중복 검사 중 오류가 발생했습니다.');
 		}
-	});	
+	});
+
 }
 
 /*

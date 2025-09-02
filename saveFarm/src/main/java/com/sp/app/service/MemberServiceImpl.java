@@ -60,7 +60,8 @@ public class MemberServiceImpl implements MemberService {
 				dto.setProfilePhoto(saveFilename);
 			}
 
-			mapper.insertMember12(dto);
+			mapper.insertMember1(dto);
+			mapper.insertMember2(dto);
 
 		} catch (Exception e) {
 			log.info("insertMember : ", e);

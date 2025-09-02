@@ -30,6 +30,40 @@
 		WHERE m1.memberId = #{memberId}
 	</select>
 	
+	<select id="findByLoginId" parameterType="String" resultType="com.sp.app.model.Member">
+		SELECT m1.memberId, m1.loginId
+		FROM member1 m1
+		WHERE m1.loginId = #{loginId}
+	</select>
+	
+	<insert id="insertMember1" parameterType="com.sp.app.model.Member">
+        <selectKey keyProperty="memberId" resultType="long" order="BEFORE">
+            SELECT member_seq.NEXTVAL FROM dual
+        </selectKey>
+        
+        INSERT INTO member1 (
+            MEMBERID, LOGINID, PASSWORD, SNSPROVIDER, SNSID, 
+            USERLEVEL, ENABLED, CREATEDAT, UPDATEAT, LASTLOGIN, 
+            FAILURECNT
+        ) VALUES (
+            #{memberId}, #{loginId, jdbcType=VARCHAR}, #{password, jdbcType=VARCHAR}, #{snsProvider, jdbcType=VARCHAR}, #{snsId, jdbcType=VARCHAR}, 
+            #{userLevel, jdbcType=NUMERIC}, 1, SYSDATE, SYSDATE, #{lastLogin, jdbcType=DATE},
+            #{failureCnt, jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <insert id="insertMember2" parameterType="com.sp.app.model.Member">
+        INSERT INTO member2 (
+            MEMBERID, NAME, BIRTH, PROFILEPHOTO, TEL, 
+            ZIP, ADDR1, ADDR2, EMAIL, RECEIVEEMAIL, 
+            IPADDR
+        ) VALUES (
+            #{memberId}, #{name}, #{birth, jdbcType=DATE}, #{profilePhoto, jdbcType=VARCHAR}, #{tel, jdbcType=VARCHAR}, 
+            #{zip, jdbcType=VARCHAR}, #{addr1, jdbcType=VARCHAR}, #{addr2, jdbcType=VARCHAR}, #{email, jdbcType=VARCHAR}, #{receiveEmail, jdbcType=NUMERIC}, 
+            #{ipAddr, jdbcType=VARCHAR}
+        )
+    </insert>
+	
 	<!-- 회원정보 수정 -->
     <update id="updateMember1" parameterType="com.sp.app.model.Member">
 		UPDATE member1 SET loginId = #{loginId, jdbcType=VARCHAR}, 
