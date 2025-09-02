@@ -28,7 +28,7 @@
 	    LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
 	    LEFT OUTER JOIN member2 m ON f.memberId = m.memberId  
 	    <where>
-	        classify = 2
+	        f.classify = 2
 	        <if test="categoryNum != null and categoryNum &gt; 0">
 		    	AND f.categoryNum = #{categoryNum}
 		    </if>
@@ -36,13 +36,13 @@
 		    	AND <include refid="where-list"/>
 		    </if>
 		</where>
-		ORDER BY f.faqNum DESC, f.regDate DESC
+		ORDER BY f.regDate DESC, f.faqNum DESC
 		OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
 	</select>
 	
 	<select id="dataCount" parameterType="map" resultType="com.sp.app.farm.model.Faq">
 	SELECT
-	    SUM(DECODE(classify, 2, 1, 0)) AS farmCount
+	    SUM(DECODE(f.classify, 2, 1, 0)) AS farmCount
 	FROM FAQ f
 	LEFT OUTER JOIN categoryFAQ cf ON f.categoryNum = cf.categoryNum
 		<where>

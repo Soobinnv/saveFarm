@@ -189,9 +189,8 @@
       FROM agg a
     ) x
     WHERE 1=1
-      <if test="minReviewsPerMonth != null">AND reviewCount &gt;= #{minReviewsPerMonth}</if>
       <if test="topN != null">AND rn &lt;= #{topN}</if>
-    ORDER BY monthKey, avgStar DESC, reviewCount DESC;
+    ORDER BY monthKey, avgStar DESC, reviewCount DESC
   </select>
 
   <!-- 단일 월 – 품목별 평균 별점 (Top N 옵션) -->
@@ -237,9 +236,8 @@
       FROM agg a
     ) x
     WHERE 1=1
-      <if test="minReviewsPerMonth != null">AND reviewCount &gt;= #{minReviewsPerMonth}</if>
       <if test="topN != null">AND rn &lt;= #{topN}</if>
-    ORDER BY monthKey, avgStar DESC, reviewCount DESC;
+    ORDER BY monthKey, avgStar DESC, reviewCount DESC
   </select>
 
   <!-- 달별 전체 평균 별점 (월별 전체 평균 별점 (품목 구분 없음)) -->	
@@ -279,10 +277,7 @@
     )
     SELECT monthKey, avgStar, reviewCount
     FROM agg
-    <if test="minReviewsPerMonth != null">
-    WHERE reviewCount &gt;= #{minReviewsPerMonth}
-    </if>
-    ORDER BY monthKey;
+    ORDER BY monthKey
   </select>
 
 
