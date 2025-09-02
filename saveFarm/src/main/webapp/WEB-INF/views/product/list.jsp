@@ -23,9 +23,9 @@
 </header>
 <main>
 	<div class="container-xxl py-5 mt-5">
-		<section class="blog-banner-area" id="category">
-		</section>
 		<section class="content-section">
+			<section class="blog-banner-area" id="category">
+			</section>
 			<div class="search-bar border rounded-2 border-dark-subtle mb-4">
 				<div id="search-form" class="text-center d-flex align-items-center">
 					<input type="text" class="searchInput form-control border-0 bg-transparent" placeholder="Search Here" />

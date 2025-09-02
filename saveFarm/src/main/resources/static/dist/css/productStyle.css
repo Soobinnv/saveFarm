@@ -363,7 +363,7 @@ a {
 		margin-right: 28px
 	}
 	.home_banner_area .banner_inner {
-		padding: 100px 0px
+		padding: 0px 0px
 	}
 	.header_area .navbar .tickets_btn {
 		margin-left: 40px
@@ -636,8 +636,16 @@ a {
 }
 
 .card-product__img {
-	position: relative
+	position: relative;
+	width: 310px !important;
+	height: 310px !important;
 }
+
+.card-product__img img {
+width: 310px !important;
+	height: 310px !important;
+	}
+
 
 .card-product__imgOverlay {
 	background: rgba(255, 255, 255, 0.5);
@@ -4529,11 +4537,11 @@ a {
 
 	.blog-banner-area {
 		background-image: url(../images/product/banner1.png) !important;
-		background-size: contain !important;
+		background-size: cover !important;
 		background-repeat: no-repeat !important;
 		background-position: top center !important;
 		max-height: 310px;
-		
+		min-width: 1190px !important;
 	}
 
 

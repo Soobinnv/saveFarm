@@ -103,7 +103,7 @@
 				</div>
 
 				<div class="col-md-6">
-					<h4>${productInfo.productName}&nbsp;${productInfo.unit}</h4>
+					<h4>${productInfo.productName}</h4>
 
 					<div class="mt-3 mb-3">
 						<c:choose>
@@ -203,19 +203,20 @@
 					<p>${productInfo.productDesc}</p>
 
 					<c:choose>
-						<c:when test="${not empty recommendList}">
+						<c:when test="${empty recommendList}">
 							<c:forEach items="${productImageList}" var="dto">
+							</c:forEach>
 								<div class="recommendation-section">
 									<h4>📢 이 상품은 어때요?</h4>
 									<div class="recommendation-list">
 
 										<div class="recommendation-item">
 											<img
-												src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+												src="${pageContext.request.contextPath}/uploads/product/rc1.jpg"
 												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
 												alt="유기농 방울토마토" class="recImage">
 											<div class="item-info">
-												<p class="item-title">[유기농] 달콤한 방울토마토 500g</p>
+												<p class="item-title">달콤한 방울토마토 500g</p>
 												<div class="item-price">
 													<span class="discount-rate">15%</span> <span
 														class="final-price">5,950원</span> <span
@@ -224,10 +225,99 @@
 											</div>
 
 										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/uploads/product/rc2.jpg"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">못난이 사과 300g</p>
+												<div class="item-price">
+													<span class="discount-rate">30%</span> <span
+														class="final-price">10,000원</span> <span
+														class="original-price">7,000원</span>
+												</div>
+											</div>
+
+										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/uploads/product/rc3.jpg"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">흠집난 못난이 배 700g</p>
+												<div class="item-price">
+													<span class="discount-rate">20%</span> <span
+														class="final-price">15,000원</span> <span
+														class="original-price">12,000원</span>
+												</div>
+											</div>
+
+										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/uploads/product/rt4.jpg"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">B급 딸기 600g</p>
+												<div class="item-price">
+													<span class="discount-rate">20%</span> <span
+														class="final-price">5,000원</span> <span
+														class="original-price">4,000원</span>
+												</div>
+											</div>
+
+										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/uploads/product/rt5.jpg"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">꼬불이 오이 700g</p>
+												<div class="item-price">
+													<span class="discount-rate">30%</span> <span
+														class="final-price">9,000원</span> <span
+														class="original-price">6,300원</span>
+												</div>
+											</div>
+
+										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">모양이 삐뚤빼뚤! 못난이 토마토</p>
+												<div class="item-price">
+													<span class="discount-rate">25%</span> <span
+														class="final-price">6,000원</span> <span
+														class="original-price">4,500원</span>
+												</div>
+											</div>
+
+										</div>
+										<div class="recommendation-item">
+											<img
+												src="${pageContext.request.contextPath}/dist/images/product/product1.png"
+												onerror="this.onerror=null; this.src='${contextPath}/dist/images/product/product1.png';"
+												alt="유기농 방울토마토" class="recImage">
+											<div class="item-info">
+												<p class="item-title">껍질만 살짝! 흠집난 복숭아</p>
+												<div class="item-price">
+													<span class="discount-rate">35%</span> <span
+														class="final-price">12,000원</span> <span
+														class="original-price">7,800원</span>
+												</div>
+											</div>
+
+										</div>
 
 									</div>
 								</div>
-							</c:forEach>
 						</c:when>
 						<c:otherwise>
 							<br>

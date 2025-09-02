@@ -344,3 +344,8 @@ main {
 	padding-right: 0px !important;
 	}
 }
+
+.carousel-item img {
+	width: 480px !important;
+	height: 480px !important;
+}
