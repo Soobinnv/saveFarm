@@ -112,6 +112,16 @@ body{
 }
 .pay-select .pay-option:hover{ background:#f7f7f7; }
 
+.card-product__img {
+	position: relative;
+	width: 250px !important;
+	height: 250px !important;
+}
+
+.card-product__img img {
+width: 250px !important;
+	height: 250px !important;
+	}
 
 </style>
 </head>
@@ -180,10 +190,7 @@ body{
       <div class="modal-body">
         <!-- 검색 바 -->
         <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="상품명 검색"
-                 data-role="searchInput">
-          <button class="btn btn-outline-secondary" type="button"
-                  data-role="searchIcon">검색</button>
+          
         </div>
 
         <div class="row g-3" id="productLayout"></div>
