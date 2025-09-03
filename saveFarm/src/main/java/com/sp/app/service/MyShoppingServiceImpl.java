@@ -83,8 +83,6 @@ public class MyShoppingServiceImpl implements MyShoppingService {
 	@Override
 	public void insertDestination(Destination dto) throws Exception {
 		try {
-			String tel = dto.getTel1() + "-" + dto.getTel2() + "-" + dto.getTel3();
-			dto.setTel(tel);
 			
 			if(dto.getDefaultDest() == 1) {
 				Map<String, Object> map = new HashMap<>();
