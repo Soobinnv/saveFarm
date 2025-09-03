@@ -73,11 +73,19 @@
                                             <label for="classify" class="col-sm-2 col-form-label">분류</label>
                                             <div class="col-sm-10">
                                                 <select class="form-control" id="classify" name="classify">
+                                                	<c:choose>
+                                                	<c:when test="${itemId == 100 }">
                                                     <option value="0" ${itemId == 100 ? 'selected' : ''}>회원</option>
+                                                    </c:when>
+                                                    <c:when test="${itemId == 200 }">
                                                     <option value="1" ${itemId == 200 ? 'selected' : ''}>농가</option>
+                                                    </c:when>
+                                                    <c:otherwise>
                                                     <option value="3" ${itemId == 300 ? 'selected' : ''}>가입서류 가이드라인</option>
                                                     <option value="4">유통 가이드라인</option>
                                                     <option value="5">상품등록 가이드라인</option>
+                                                    </c:otherwise>
+                                                    </c:choose>
                                                 </select>
                                             </div>
                                         </div>
@@ -132,11 +140,11 @@
 			                                            <div class="col-sm-10">
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="notice" id="noticeRadio1" value="1" checked>
-			                                                    <label class="form-check-label" for="noticeRadio1">고정</label>
+			                                                    <label  for="noticeRadio1">고정</label>
 			                                                </div>
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="notice" id="noticeRadio2" value="0">
-			                                                    <label class="form-check-label" for="noticeRadio2">일반</label>
+			                                                    <label  for="noticeRadio2">일반</label>
 			                                                </div>
 			                                            </div>
 		                                            </c:when>
@@ -144,11 +152,11 @@
 		                                            	<div class="col-sm-10">
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="notice" id="noticeRadio1" value="1" >
-			                                                    <label class="form-check-label" for="noticeRadio1">고정</label>
+			                                                    <label  for="noticeRadio1">고정</label>
 			                                                </div>
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="notice" id="noticeRadio2" value="0" checked>
-			                                                    <label class="form-check-label" for="noticeRadio2">일반</label>
+			                                                    <label  for="noticeRadio2">일반</label>
 			                                                </div>
 			                                            </div>
 		                                            </c:otherwise>
@@ -163,11 +171,11 @@
 			                                            <div class="col-sm-10">
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="showNotice" id="showNoticeRadio1" value="1" >
-			                                                    <label class="form-check-label" for="showNoticeRadio1">표시</label>
+			                                                    <label for="showNoticeRadio1">표시</label>
 			                                                </div>
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="showNotice" id="showNoticeRadio2" value="0" checked>
-			                                                    <label class="form-check-label" for="showNoticeRadio2">숨김</label>
+			                                                    <label for="showNoticeRadio2">숨김</label>
 			                                                </div>
 			                                            </div>
 		                                            </c:when>
@@ -175,11 +183,11 @@
 		                                            	<div class="col-sm-10">
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="showNotice" id="showNoticeRadio1" value="1" checked>
-			                                                    <label class="form-check-label" for="showNoticeRadio1">표시</label>
+			                                                    <label for="showNoticeRadio1">표시</label>
 			                                                </div>
 			                                                <div class="form-check form-check-inline">
 			                                                    <input class="form-check-input" type="radio" name="showNotice" id="showNoticeRadio2" value="0">
-			                                                    <label class="form-check-label" for="showNoticeRadio2">숨김</label>
+			                                                    <label for="showNoticeRadio2">숨김</label>
 			                                                </div>
 			                                            </div>
 		                                            </c:otherwise>
@@ -191,7 +199,7 @@
                                         <div class="form-group row">
                                             <div class="col-sm-10 offset-sm-2">
                                                 <button type="submit" class="btn btn-primary">${mode == 'update' ? '수정완료' : '등록완료'}</button>
-                                                <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/notice/noticeList/${itemId}';">${mode == 'update' ? '수정취소' : '등록취소' }</button>
+                                                <button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/notice/${itemId < 100 ? 'guideLineslist' : 'noticeList'}/${itemId}';">${mode == 'update' ? '수정취소' : '등록취소' }</button>
                                             </div>
                                         </div>
                                         
