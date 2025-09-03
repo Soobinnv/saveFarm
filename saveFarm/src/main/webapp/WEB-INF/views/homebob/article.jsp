@@ -30,7 +30,7 @@ main {
 	<!-- Page Title -->
 	<div class="page-title">
 		<div class="container align-items-center">
-			<h1>나의 음식일기</h1>
+			<h1>나의 집밥일기</h1>
 			<div class="page-title-underline-accent"></div>
 		</div>
 	</div>

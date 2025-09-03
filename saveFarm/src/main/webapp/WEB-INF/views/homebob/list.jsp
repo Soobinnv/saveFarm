@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>세이브팜 - 나의 음식일기</title>
+<title>세이브팜 - 나의 집밥일기</title>
 <jsp:include page="/WEB-INF/views/layout/headerResources.jsp"/>
 <style type="text/css">
 
@@ -27,7 +27,7 @@ main {
 		<div class="col-6">
 		<div class="page-title">
 			<div class="wrap">
-				<h1>나의 음식일기</h1>
+				<h1>나의 집밥일기</h1>
 			</div>
 		</div>
 	    

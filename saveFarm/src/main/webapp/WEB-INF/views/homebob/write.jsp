@@ -25,7 +25,7 @@ main {
 	<!-- Page Title -->
 	<div class="page-title">
 		<div class="wrap align-items-center">
-			<h1>나의 음식일기 ${mode=='update'?'수정':'등록'}</h1>
+			<h1>나의 집밥일기 ${mode=='update'?'수정':'등록'}</h1>
 		</div>
 	</div>
     

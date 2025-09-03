@@ -62,7 +62,7 @@
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-9">
-                    <h2 class="mb-2 page-title">${mode == 'update' ? (classify < 2 ? '공지사항 수정' : '가이드라인 수정') : (classify < 2 ? '공지사항 등록' : '가이드라인 등록')}</h2>
+                    <h2 class="mb-2 page-title">${mode == 'update' ? (itemId >= 100 ? '공지사항 수정' : '가이드라인 수정') : (itemId >= 100 ? '공지사항 등록' : '가이드라인 등록')}</h2>
                     <div class="row my-4">
                         <div class="col-md-12">
                             <div class="card shadow">

@@ -132,7 +132,7 @@
 									<button type="button" class="btn btn-secondary me-2" onclick="location.href='${pageContext.request.contextPath}/admin/notice/update/${itemId}?noticeNum=${dto.noticeNum}&page=${page}';">수정</button>
 									<button type="button" class="btn btn-secondary" onclick="deleteOk();">삭제</button>
 								</div>
-								<div class="col-md-6 align-self-center text-end">
+								<div class="col-md-6 align-self-center text-right">
 									<button type="button" class="btn btn-secondary" onclick="location.href='${pageContext.request.contextPath}/admin/notice/${itemId < 100 ? 'guideLineslist' : 'noticeList' }/${itemId}?${query}';">리스트</button>
 								</div>
 							</div>

@@ -168,6 +168,7 @@ public class InquiryManageController {
 			@RequestParam(name = "page") String page,
 			@RequestParam(name = "schType", defaultValue = "inquiryNum") String schType,
 			@RequestParam(name = "kwd", defaultValue = "") String kwd,
+			Model model,
 			HttpSession session) throws Exception {
 
 		String query = "page=" + page;
@@ -181,7 +182,8 @@ public class InquiryManageController {
 			dto.setAnswerId(info.getMemberId());
 			service.updateAnswer(dto);
 			
-			System.out.println("값이 뭘까요 ? " +dto.getProcessResult());
+			model.addAttribute("itemId", itemId);
+			
 		} catch (Exception e) {
 			log.info("answerSubmit : ", e);
 		}

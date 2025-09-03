@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.sp.app.common.MyUtil;
 import com.sp.app.common.PaginateUtil;
@@ -124,6 +125,9 @@ public class HomeBobController {
 			dto.setMemberId(info.getMemberId());
 			
 			service.insertHomeBob(dto, uploadPath);
+			
+		} catch (MaxUploadSizeExceededException e) {
+			return "redirect:/homebob/write";
 		} catch (Exception e) {
 			log.info("writeSubmit : ", e);
 		}
