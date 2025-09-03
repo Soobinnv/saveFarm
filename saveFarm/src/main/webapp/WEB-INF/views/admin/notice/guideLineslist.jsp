@@ -77,7 +77,7 @@
         <div class="container-fluid">
           <div class="row justify-content-center">
             <div class="col-12">
-              <h2 class="mb-2 page-title">농가 가이드라인</h2>
+              <h2 class="mb-2 page-title text-center">농가 가이드라인</h2>
               <div class="row my-4">
                 <!-- Small table -->
                   

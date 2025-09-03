@@ -97,7 +97,6 @@ public class NoticeManageController {
 			
 			String cp = req.getContextPath();
 			String listUrl = cp + "/admin/notice/noticeList/" + itemId;
-			
 			String query = "";
 			if (kwd.length() != 0) {
 				query = "schType=" + schType + "&kwd=" + myUtil.encodeUrl(kwd);
@@ -448,7 +447,7 @@ public class NoticeManageController {
 			List<NoticeManage> list = service.listNotice2(map);
 			
 			String cp = req.getContextPath();
-			String listUrl = cp + "/admin/notice/guide/" + itemId;
+			String listUrl = cp + "/admin/notice/guideLineslist/" + itemId;
 			
 			String query = "";
 			if (kwd.length() != 0) {

@@ -74,9 +74,9 @@
 <jsp:include page="/WEB-INF/views/admin/layout/left.jsp"/>
 <main role="main" class="main-content">
 	<div class="container-fluid">
-		<div class="row justify-content-center">
+		<div class="row">
 			<div class="col-12">
-				<h2 class="mb-2 page-title">${title}</h2>
+				<h2 class="mb-2 page-title text-center">${title}</h2>
 				<div class="row my-4">
 					<div class="col-md-12">
 						<div class="card shadow">
